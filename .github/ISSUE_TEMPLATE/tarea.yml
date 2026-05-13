@@ -1,0 +1,32 @@
+name: Tarea / Subtarea
+description: Nueva tarea de desarrollo o redacción
+labels: ["task"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - LaTeX (memoria)
+        - Backend
+        - Frontend
+        - Documentación
+    validations:
+      required: true
+  - type: input
+    id: capitulo
+    attributes:
+      label: Capítulo / Módulo
+      placeholder: "Ej: Cap. 6 — Motor de priorización"
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción de la tarea
+      placeholder: Qué hay que hacer y por qué
+    validations:
+      required: true
+  - type: textarea
+    id: criterio
+    attributes:
+      label: Criterio de completitud
+      placeholder: Cómo sabremos que está terminado
