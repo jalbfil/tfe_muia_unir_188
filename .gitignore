@@ -1,0 +1,61 @@
+# ─── Sistema operativo ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ─── Editores / IDEs ──────────────────────────────────────────────────────────
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+*.so
+.env
+.venv/
+venv/
+env/
+ENV/
+.python-version
+*.log
+
+# ─── Node.js ──────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# ─── Frontend (Vite / React / Next) ──────────────────────────────────────────
+dist/
+.next/
+out/
+.nuxt/
+.svelte-kit/
+
+# ─── Variables de entorno ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── LaTeX build (gestionado en latex/.gitignore) ─────────────────────────────
+latex/build/
+
+# ─── Archivos temporales varios ───────────────────────────────────────────────
+*.tmp
+*.bak
+*.orig
