@@ -1,0 +1,31 @@
+name: Bug / Error
+description: Algo no funciona como se esperaba
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - LaTeX (compilación / formato)
+        - Backend
+        - Frontend
+        - Otro
+    validations:
+      required: true
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: ¿Qué ocurre?
+      placeholder: Descripción del problema
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: ¿Qué debería ocurrir?
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: "1. ...\n2. ...\n3. ..."
