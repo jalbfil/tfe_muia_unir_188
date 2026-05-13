@@ -1,0 +1,299 @@
+Capítulo 7. Diseño de datos y construcción del dataset
+Introducción al capítulo
+El diseño analítico del motor de priorización presentado en el capítulo anterior define qué variables considera el sistema, qué reglas aplica y qué salidas produce. Sin embargo, un motor sin datos carece de utilidad operativa y de posibilidad de evaluación: necesita un esquema que estructure la información y un dataset que permita probar, calibrar y valorar su comportamiento. Este capítulo aborda precisamente esas dos cuestiones.
+En primer lugar, se expone la estrategia general de datos del TFM y se justifica la elección de un enfoque híbrido. En segundo lugar, se define el esquema de datos del sistema, entendido como la estructura formal con la que el prototipo representa cada incidente, su contexto y la decisión humana asociada. En tercer lugar, se describe el proceso de construcción del dataset piloto, su dimensionamiento, sus fuentes, los criterios de plausibilidad de los casos simulados y sus principales limitaciones. Por último, se analizan los riesgos metodológicos vinculados a la calidad del dato y a la interpretación de los resultados.
+La finalidad de este capítulo no es presentar un histórico operativo real del 112 Aragón, sino fijar una base de datos de trabajo metodológicamente defendible, suficiente para probar y evaluar el baseline interpretable dentro del alcance de un TFM de desarrollo software.
+7.1. Estrategia general de datos
+La estrategia de datos del TFM parte de una premisa metodológica explícita: no se asume disponibilidad garantizada de microdatos operativos completos de 112 Aragón. Esta decisión no es coyuntural, sino estructural. En el dominio de las emergencias, la publicación de datos a nivel de incidente individual se ve limitada por razones de privacidad, protección de datos, seguridad y ausencia de formatos abiertos homogéneos. En consecuencia, el trabajo no puede depender de una fuente que no está confirmada ni convertir esa ausencia en una excusa para diseñar un sistema sin base empírica.
+Ante esta realidad, el TFM adopta una estrategia híbrida compuesta por tres elementos complementarios. El primero son las fuentes oficiales reutilizables, que aportan contexto, estructura y distribución de referencia. El segundo son los casos simulados controlados, construidos manualmente por el equipo para cubrir escenarios plausibles y representativos que no pueden obtenerse de forma abierta con el nivel de detalle requerido. El tercero es el enriquecimiento contextual, mediante el cual cada incidente se complementa con información oficial territorial, meteorológica, demográfica o de riesgo industrial, de forma coherente con la lógica que aplicará el motor.
+Esta estrategia no pretende sustituir un dataset real ni presentar el prototipo como una solución ya lista para operación institucional. Su finalidad es más acotada y metodológicamente honesta: construir una base de trabajo suficientemente sólida para probar, calibrar y evaluar el baseline en escenarios simulados, manteniendo trazabilidad entre variables, reglas, etiquetas y resultados. Esta delimitación es coherente con la base maestra del proyecto, que fija expresamente un dataset piloto híbrido y una validación en simulación, no un despliegue operativo real.
+7.2. Esquema de datos del sistema
+Antes de construir el dataset piloto o implementar el backend, es necesario definir con precisión la estructura de datos del sistema: qué representa un incidente, qué evidencias se asocian a él, qué contexto externo se incorpora, qué variables calcula el motor y cómo se registra la decisión humana. Sin esta especificación, el diseño analítico del capítulo 6 y la implementación técnica posterior quedarían desacoplados.
+El esquema se organiza en cinco bloques funcionales: estructura del incidente, evidencias y señales asociadas, contexto territorial y meteorológico, variables calculadas por el motor y decisión humana con trazabilidad. Esta organización refleja la arquitectura lógica del prototipo y responde a la necesidad de mantener separadas las entradas observadas, las evidencias adicionales, el contexto oficial, las salidas calculadas y la intervención del operador.
+7.2.1. Estructura del incidente
+La unidad de análisis del sistema es el incidente operativo consolidado, no la llamada individual. Esta distinción es relevante porque, en un centro de coordinación, un mismo suceso puede generar varias llamadas ciudadanas, partes de servicios y avisos institucionales. Si el sistema trabajara sobre llamadas aisladas en lugar de sobre incidentes consolidados, correría el riesgo de duplicar artificialmente eventos y de distorsionar la priorización.
+Los campos básicos de este bloque son: identificador único del incidente, fecha y hora de recepción de la primera comunicación, localización geográfica, municipio y comarca, descripción textual inicial, clasificación tipológica del incidente según la taxonomía operativa del sistema y fuente del primer aviso. A estos campos se añaden las quince variables de entrada definidas en el capítulo 6, así como un mecanismo explícito para distinguir entre valor informado y dato ausente. Esta decisión es importante porque la ausencia de un dato también tiene valor metodológico: no debe confundirse con un valor negativo ni rellenarse de forma opaca.
+7.2.2. Evidencias y señales asociadas
+Cada incidente puede estar respaldado por varias señales que se reciben en momentos distintos y desde fuentes diferentes. Por ello, el sistema incorpora un bloque específico de evidencias asociadas, en el que se registran las señales relevantes que confirman, contradicen o complementan la información inicial.
+Este bloque incluye, al menos, identificador de la evidencia, fuente de la señal, tipo de señal, contenido relevante, marca temporal y relación con la información previa. Su función es doble. Por un lado, permite alimentar variables como el número de avisos simultáneos y mejorar la trazabilidad del incidente. Por otro, facilita la reconstrucción a posteriori de qué información estaba disponible cuando el motor produjo una determinada recomendación. En el dataset piloto, este bloque se simplifica y no se explota con toda su riqueza relacional, pero se mantiene en el esquema porque forma parte de la lógica real del sistema.
+7.2.3. Contexto territorial y meteorológico
+El tercer bloque recoge la información contextual que el sistema no recibe directamente del informante, sino que obtiene a partir de la localización y del momento del incidente. Este contexto es esencial para que el motor no opere exclusivamente sobre texto libre o sobre una descripción inicial incompleta.
+En este bloque se incluyen el nivel de aviso AEMET y el fenómeno meteorológico activo, la peligrosidad por inundación según el SNCZI, la presencia de instalación Seveso en el entorno o radio de influencia del incidente, la población total del municipio, la proporción de población mayor de 65 años y la accesibilidad estimada del punto. La inclusión de estos campos es coherente con la estrategia de fuentes oficiales cerrada en el proyecto y con las variables contextuales definidas en el motor.
+Es importante señalar que varias variables de entrada del motor —concretamente V08 (nivel de aviso AEMET), V09 (fenómeno meteorológico activo), V10 (peligrosidad por inundación), V11 (presencia de instalación Seveso) y V15 (accesibilidad al punto)— se alimentan precisamente desde este bloque de contexto territorial. Su aparición tanto en el bloque 1 (como parte de las quince variables de entrada del motor) como en el bloque 3 (como dato contextual con fuente oficial) no implica duplicación, sino que refleja la doble naturaleza de estas variables: son datos de contexto que el sistema captura de fuentes externas y que, una vez incorporados, se utilizan como entradas operativas del motor de priorización.
+7.2.4. Variables calculadas por el motor
+El cuarto bloque recoge las variables que no forman parte del dato inicial, sino que son calculadas por el sistema al procesar el incidente. Aquí se incluyen las cuatro variables derivadas ya definidas en el capítulo 6: necesidad de coordinación multiagencia, necesidad estimada de PMA, situación operativa sugerida y plan activable recomendado. Este punto es metodológicamente importante: estas variables no deben tratarse como inputs puros del modelo, porque forman parte de la salida intermedia o final del motor.
+Junto a ellas, este bloque registra la prioridad recomendada, la puntuación de scoring, el nivel de confianza, las reglas duras activadas y la explicación textual generada. De esta forma, el sistema no solo produce una recomendación, sino que deja constancia explícita de cómo la ha construido.
+7.2.5. Decisión humana y trazabilidad
+El quinto bloque recoge la interacción del operador con la recomendación del sistema. Los campos mínimos incluidos son la prioridad final asignada por el operador, la marca temporal de validación, la acción realizada sobre la recomendación —aceptación, modificación o rechazo— y, cuando proceda, una justificación breve del cambio.
+Este bloque es imprescindible para dos finalidades. La primera es la evaluación: sin registrar la decisión humana, no puede medirse la coherencia entre la recomendación del motor y la respuesta final validada. La segunda es la trazabilidad operativa: el sistema debe poder reconstruir qué sugirió, cuándo lo hizo y qué decidió finalmente el operador.
+
+Tabla 7.1. Esquema de datos del sistema: campos principales por bloque funcional
+Bloque
+Campo
+Tipo de dato
+Fuente / origen
+Descripción
+1. Estructura del incidente
+id_incidente
+Texto (UUID)
+Generado
+Identificador único del incidente
+1. Estructura del incidente
+fecha_hora_recepcion
+Datetime
+Sistema
+Marca temporal de la primera comunicación
+1. Estructura del incidente
+latitud / longitud
+Float
+Operador / GPS
+Coordenadas geográficas
+1. Estructura del incidente
+municipio / comarca
+Texto
+Operador / cartografía oficial
+Localización administrativa
+1. Estructura del incidente
+descripcion_textual
+Texto libre
+Operador / informante
+Descripción inicial del suceso
+1. Estructura del incidente
+tipo_incidente_n1 / n2
+Categórica
+Operador / estructuración
+Clasificación según taxonomía operativa
+1. Estructura del incidente
+fuente_primer_aviso
+Categórica
+Sistema
+Ciudadano / servicio oficial / organismo / automático
+1. Estructura del incidente
+V01–V15
+Variable
+Múltiples
+Variables de entrada del motor (valores operativos)
+2. Evidencias y señales
+id_evidencia
+Texto
+Generado
+Identificador de cada señal
+2. Evidencias y señales
+fuente_senal
+Categórica
+Sistema
+Origen de la señal
+2. Evidencias y señales
+tipo_senal
+Categórica
+Sistema
+Llamada / alerta / parte / aviso automático
+2. Evidencias y señales
+contenido_relevante
+Texto
+Extracción / operador
+Resumen o contenido útil
+2. Evidencias y señales
+marca_temporal
+Datetime
+Sistema
+Momento de recepción
+2. Evidencias y señales
+relacion_info_previa
+Categórica
+Sistema / motor
+Confirma / contradice / complementa
+3. Contexto territorial y meteorológico
+nivel_aviso_aemet
+Ordinal
+AEMET
+Verde / amarillo / naranja / rojo
+3. Contexto territorial y meteorológico
+fenomeno_meteo_activo
+Categórica
+AEMET
+Tipo de fenómeno activo
+3. Contexto territorial y meteorológico
+peligrosidad_inundacion
+Binaria
+SNCZI
+Zona inundable cartografiada
+3. Contexto territorial y meteorológico
+proximidad_seveso
+Binaria
+Registro Seveso
+Instalación en radio de influencia
+3. Contexto territorial y meteorológico
+poblacion_municipio
+Numérica
+INE
+Población total del municipio
+3. Contexto territorial y meteorológico
+pct_mayor_65
+Float
+INE
+Proporción de población mayor de 65 años
+3. Contexto territorial y meteorológico
+accesibilidad_punto
+Ordinal
+Cartografía oficial / operador
+Fácil / moderada / difícil / muy difícil
+4. Variables calculadas
+coord_multiagencia
+Binaria
+Calculada
+Necesidad estimada de coordinación multiagencia
+4. Variables calculadas
+necesidad_pma
+Binaria
+Calculada
+Necesidad estimada de PMA
+4. Variables calculadas
+sit_operativa_sugerida
+Ordinal
+Calculada
+0 / 1 / 2 / 3
+4. Variables calculadas
+plan_activable
+Categórica
+Calculada
+PLATEAR / plan especial / ninguno
+4. Variables calculadas
+prioridad_recomendada
+Ordinal
+Motor
+P1 / P2 / P3 / P4
+4. Variables calculadas
+puntuacion_scoring
+Float [0–100]
+Motor
+Puntuación del scoring
+4. Variables calculadas
+nivel_confianza
+Float [0–1]
+Motor
+Solidez de la recomendación
+4. Variables calculadas
+reglas_duras_activadas
+Lista
+Motor
+Reglas duras activadas
+4. Variables calculadas
+explicacion_textual
+Texto
+Motor
+Justificación automática
+5. Decisión humana y trazabilidad
+prioridad_final_operador
+Ordinal
+Operador
+P1 / P2 / P3 / P4
+5. Decisión humana y trazabilidad
+marca_temporal_validacion
+Datetime
+Sistema
+Momento de la validación
+5. Decisión humana y trazabilidad
+accion_operador
+Categórica
+Operador
+Acepta / modifica / rechaza
+5. Decisión humana y trazabilidad
+justificacion_cambio
+Texto opcional
+Operador
+Motivo del cambio
+
+Fuente: elaboración propia. El detalle completo del esquema, con restricciones de integridad, valores por defecto y reglas de consistencia, se incluye en el Anexo F.
+7.3. Construcción del dataset piloto
+El dataset piloto es un instrumento metodológico diseñado para probar, calibrar y evaluar el motor de priorización dentro del alcance del TFM. No es un histórico real del 112 Aragón ni debe presentarse como tal. Su valor reside en que permite comprobar la coherencia del baseline, su capacidad de discriminación entre niveles de prioridad y la trazabilidad de sus recomendaciones en escenarios simulados y contextualmente enriquecidos. Esta formulación es coherente con la estrategia de datos cerrada del proyecto y con la prohibición expresa de depender de datos reales no confirmados o inaccesibles.
+El dataset piloto se diseña con un tamaño objetivo de entre 120 y 150 casos. Esta cifra responde a un equilibrio entre cobertura de la escala de prioridad, cobertura tipológica y viabilidad de construcción manual. Un conjunto más pequeño dificultaría la evaluación de precisión, recall o distribución de prioridades, mientras que uno muy superior desbordaría la capacidad razonable de diseño y etiquetado justificado dentro del TFM.
+Además, la distribución objetivo de prioridades responde a un principio operativo razonable: los incidentes de máxima urgencia representan una fracción pequeña del volumen total, mientras que los de prioridad media y baja constituyen la mayor parte de la carga cotidiana de un centro de coordinación. El dataset se diseña así para evitar un sesgo artificial hacia incidentes extremos.
+Tabla 7.2. Distribución objetivo del dataset piloto por nivel de prioridad
+Prioridad
+% objetivo
+N.º aproximado de casos
+Justificación
+P1
+10–15 %
+12–22
+Casos críticos necesarios para evaluar falsos negativos graves
+P2
+20–25 %
+24–37
+Escenarios de urgencia alta y potencial de escalado
+P3
+35–40 %
+42–60
+Mayor volumen de gestión activa sin urgencia vital
+P4
+20–25 %
+24–37
+Incidentes menores y casos de baja urgencia
+Total
+100 %
+120–150
+Cobertura suficiente del espectro P1–P4
+
+Fuente: elaboración propia.
+Tabla 7.3. Distribución tipológica orientativa del dataset piloto
+Familia / categoría
+% orientativo
+N.º aproximado de casos
+Observaciones
+Riesgos naturales
+25–30 %
+30–45
+Inundaciones, FMA, incendios forestales, sísmicos
+Riesgos tecnológicos e industriales
+8–12 %
+10–18
+MMPP, entornos Seveso, infraestructuras de riesgo
+Riesgos antrópicos y accidentales
+25–30 %
+30–45
+Tráfico, derrumbes, incendios urbanos
+Emergencias sanitarias
+10–15 %
+12–22
+Urgencias relevantes y AMV
+Emergencias sociales y de seguridad
+5–8 %
+6–12
+Búsquedas, violencia con riesgo, otros casos sensibles
+Emergencias operativas ordinarias
+15–20 %
+18–30
+Incidencias menores y avisos de baja urgencia
+
+Fuente: elaboración propia. Distribución orientativa inspirada en el perfil operativo recogido en las memorias del 112 Aragón y en el uso estructural del dataset abierto del CAT112.
+El dataset se ha diseñado de forma que todas las reglas duras definidas en el capítulo 6 estén representadas por al menos un subconjunto de casos. Esto incluye escenarios con riesgo vital inmediato (RD1), víctimas múltiples (RD2, RD5), aviso AEMET rojo (RD3), incidentes en entorno Seveso con afectación directa (RD4), búsqueda de personas vulnerables (RD6), inundaciones con personas aisladas (RD7) e incendios forestales en interfaz urbano-forestal con aviso meteorológico adverso (RD8). La cobertura explícita de cada regla permite que la fase de evaluación valore no solo el rendimiento global del baseline, sino también la sensibilidad del motor frente a los escenarios de máxima criticidad.
+7.3.1. Datos oficiales reutilizables
+Las fuentes oficiales reutilizables cumplen tres funciones dentro del dataset piloto: aportar estructura de referencia, proporcionar contexto territorial y meteorológico verificable y ofrecer una distribución operativa aproximada sobre la que construir casos plausibles.
+En primer lugar, las memorias anuales del 112 Aragón permiten conocer el volumen y la distribución agregada de incidentes, así como mantener el diseño del dataset dentro de un marco operativo creíble para el caso piloto. El portal oficial del 112 Aragón mantiene una zona de descarga con memorias anuales del centro, lo que respalda su uso como fuente institucional de referencia.
+En segundo lugar, AEMET OpenData aporta contexto meteorológico oficial. Su valor para el dataset radica en que permite asignar o verificar niveles de aviso y fenómenos meteorológicos de forma coherente con la realidad institucional, y no mediante supuestos arbitrarios.
+En tercer lugar, el SNCZI del MITECO proporciona el contexto oficial de inundabilidad territorial, como instrumento de apoyo a la gestión del riesgo de inundación, con visor cartográfico y descargas oficiales, por lo que resulta adecuado para alimentar la variable de peligrosidad por inundación o para verificar la plausibilidad de casos hidrológicos.
+En cuarto lugar, los datos del INE, el registro Seveso y la cartografía oficial aragonesa permiten enriquecer exposición, vulnerabilidad territorial, criticidad de emplazamiento y accesibilidad del punto. En el marco del TFM, su función es contextual, no de sustitución del dato operativo.
+Por último, el conjunto de datos abierto del CAT112, publicado en Datos.gob.es, se utiliza como referencia estructural. Este recurso es útil como apoyo para el diseño del esquema y como referencia de estructura abierta de incidentes 112, pero no sustituye el caso piloto aragonés ni constituye entrenamiento directo del motor.
+7.3.2. Datos sintéticos y casos simulados controlados
+Los casos simulados constituyen el componente más extenso del dataset piloto y también el más exigente desde el punto de vista metodológico. No se generan de forma automática ni se producen mediante técnicas generativas, sino que se construyen manualmente a partir del conocimiento del dominio, la taxonomía operativa, la matriz de variables y la guía de etiquetado del sistema. Esta decisión se toma para asegurar que cada caso sea individualmente justificable y pueda explicarse ante tribunal sin recurrir a una caja negra adicional.
+Para que un caso simulado se considere apto para formar parte del dataset, debe superar cinco controles de plausibilidad: coherencia geográfica, coherencia temporal, coherencia meteorológica, coherencia interna de variables y coherencia con el etiquetado. Es decir, el tipo de incidente debe ser compatible con el territorio asignado, con la época del año, con el aviso meteorológico correspondiente, con los valores del resto de variables y con la prioridad finalmente asignada. Este criterio evita escenarios artificiales o incoherentes que debilitarían la evaluación del motor.
+El protocolo de construcción de cada caso sigue una secuencia fija: selección del tipo de incidente, asignación de localización aragonesa plausible, definición de valores para las quince variables de entrada, incorporación de contexto oficial verificable o razonablemente asignado y etiquetado final conforme a la guía del capítulo 6. Además, se incluyen de forma deliberada casos ambiguos o de frontera entre P2 y P3 para poner a prueba los criterios de resolución de conflictos del baseline.
+Ejemplos representativos de casos simulados
+Con el fin de ilustrar el proceso de construcción, se incorporan tres fichas resumen de casos representativos: un caso P1 crítico, un caso P3 medio y un caso de frontera P2/P3. Estas fichas no sustituyen al anexo completo del dataset, pero muestran cómo se articulan variables, contexto y etiquetado.
+Caso tipo P1. Inundación fluvial en municipio aragonés con personas aisladas, aviso AEMET naranja y localización en zona cartografiada como inundable. Etiquetado P1 por riesgo vital y evolución en agravamiento.
+Caso tipo P3. Accidente de tráfico leve en autovía, sin atrapamiento, con una persona herida leve, sin aviso meteorológico y con accesibilidad alta. Etiquetado P3 por gestión activa sin urgencia vital.
+Caso ambiguo P2/P3. Incendio urbano en edificio residencial con humo en escalera y persona mayor no localizada, sin confirmación de atrapamiento. Etiquetado P2 por principio de precaución operativa, con confianza media y necesidad de verificación adicional.
+Estas fichas permiten mostrar que el dataset no se limita a escenarios extremos, sino que cubre tanto casos claros como situaciones intermedias, que son precisamente las más útiles para evaluar la discriminación fina del motor.
+7.3.3. Limitaciones del dataset
+Las limitaciones del dataset piloto deben quedar explicitadas con claridad. La primera es de representatividad: el dataset no reproduce con exactitud la distribución real de incidentes del 112 Aragón, porque no se dispone de microdatos operativos abiertos a ese nivel. La segunda es de cobertura: ningún dataset de este tamaño puede abarcar toda la casuística real del dominio. La tercera es de realismo temporal: los casos se modelan como instantáneas de decisión, no como secuencias evolutivas completas donde la información llega progresivamente. La cuarta es de validación independiente: el etiquetado se apoya en una guía cerrada y en revisión interna del equipo, pero no en un panel externo amplio de operadores expertos.
+Estas limitaciones no invalidan el TFM, pero sí acotan correctamente el alcance de sus resultados. La evaluación posterior deberá interpretarse como una validación de coherencia, aplicabilidad y explicabilidad del baseline en simulación, no como demostración de rendimiento en explotación real.
+7.4. Calidad del dato y riesgos metodológicos
+La calidad del dato constituye una condición crítica para cualquier sistema de apoyo a la decisión. En este TFM, los riesgos metodológicos no proceden únicamente de la posible inexactitud del valor observado, sino también de la naturaleza híbrida del dataset, del uso de proxies contextuales y del hecho de trabajar con casos construidos y no con un histórico operativo completo.
+El primer riesgo es la subjetividad del etiquetado. Aunque la guía de etiquetado y las reglas duras reducen la arbitrariedad, sigue existiendo un margen interpretativo en los casos de frontera. Para mitigarlo, el equipo utiliza revisión cruzada y criterios explícitos de resolución de conflictos.
+El segundo riesgo es el uso de proxies. Variables como la proporción de población mayor de 65 años o la presencia de cartografía de inundabilidad no describen directamente a los afectados concretos del incidente, sino su contexto potencial. El sistema debe tratar estos valores como indicadores complementarios y no como sustitutos de la observación operativa directa.
+El tercer riesgo es la dependencia parcial de datos simulados. Un motor calibrado con escenarios construidos manualmente solo puede considerarse validado en simulación. Esta limitación se asume de forma explícita desde la estrategia general de datos.
+El cuarto riesgo es la integración incompleta de contexto en tiempo real. En una solución operativa real, AEMET, SNCZI u otras fuentes se consultarían dinámicamente. En el prototipo, la evaluación se realiza con datos históricos, verificables o plausiblemente asignados. Por tanto, se está evaluando la lógica de uso del contexto, no una integración productiva completa.
+El quinto riesgo es el sesgo de distribución. Si el dataset sobrerrepresenta incidentes graves, el sistema tenderá a sobrepriorizar; si infrarrepresenta los casos críticos, puede degradar la sensibilidad ante falsos negativos graves. Por eso el dimensionamiento del dataset incorpora una distribución objetivo explícita y deliberadamente no uniforme.
+La estrategia global de mitigación consiste en reconocer estos riesgos de forma transparente, documentar las decisiones adoptadas y acompañar toda evaluación de la explicación metodológica necesaria para no sobredimensionar el alcance del sistema.
+

@@ -1,0 +1,102 @@
+\chapter{Conclusiones y trabajo futuro}
+\label{cap:10}
+
+% Este capítulo cierra el TFM ofreciendo una valoración integrada de lo que se ha logrado, de cómo se responde al problema planteado al inicio del trabajo y de las vías de investigación y desarrollo que este trabajo deja abiertas.
+
+% \section{Respuesta al problema planteado}
+
+% El TFM partió de una pregunta concreta: ¿es posible diseñar y construir un sistema inteligente que apoye la decisión de priorización de emergencias civiles en un puesto de mando, que sea interpretable, que gestione la incertidumbre, que se base en fuentes oficiales y que mantenga al operador humano como responsable final de la decisión?
+
+% La respuesta que ofrece este trabajo es afirmativa, con las matizaciones propias de un prototipo académico. Se ha demostrado que:
+
+% \begin{itemize}
+%     \item Es posible construir un motor de priorización interpretable y trazable basado en un baseline de reglas expertas y scoring ponderado, sin necesidad de técnicas de aprendizaje automático de caja negra.
+%     \item Es posible integrar información de fuentes oficiales (AEMET, SNCZI, registro Seveso, INE, cartografía) como señales contextuales que enriquecen la evaluación del incidente sin depender de datos propietarios.
+%     \item Es posible diseñar una capa de confianza y de explicación automática que comunique al operador no solo la recomendación, sino también el razonamiento que la sustenta y sus limitaciones.
+%     \item Es posible implementar todo lo anterior en un prototipo funcional que reproduzca el flujo operativo básico de un centro de coordinación de emergencias civiles, garantizando la supervisión humana en cada ciclo de decisión.
+% \end{itemize}
+
+% El sistema construido no pretende reemplazar al operador ni automatizar la activación de planes. Su función es reducir la carga cognitiva en los primeros minutos de un incidente, proporcionar una recomendación fundamentada y documentar la decisión para su trazabilidad. En ese ámbito acotado, el TFM ha alcanzado su objetivo.
+
+% \section{Principales aportaciones del TFM}
+
+% Las aportaciones de este trabajo se pueden sintetizar en siete contribuciones diferenciadas:
+
+% \begin{enumerate}
+%     \item \textbf{Arquitectura de motor en tres capas}. El diseño del baseline interpretable (reglas duras, scoring ponderado y confianza/explicación) con lógica de precedencia explícita constituye una propuesta metodológica transferible a otros dominios de apoyo a la decisión en contextos de emergencia.
+%     \item \textbf{Fundamentación normativa y operativa}. La síntesis del marco jurídico y operativo aragonés (PROCIVIL, INFOAR, INUNCATA, FEROCCAT, METEOCAB, NCAE y Directriz CECOP-CECOPI) como base para el diseño del motor garantiza que el sistema no opera en un vacío conceptual, sino en coherencia con el marco institucional vigente.
+%     \item \textbf{Integración de fuentes oficiales abiertas}. El diseño del módulo de contexto oficial y su integración con la API AEMET, el SNCZI, el registro Seveso, el INE y ICEARAGON demuestra la viabilidad de un sistema de apoyo a la decisión basado exclusivamente en datos públicos y reutilizables.
+%     \item \textbf{Taxonomía operativa de incidentes}. La taxonomía de dos niveles (Anexo~A) organiza los tipos de incidentes en cuatro familias principales y sus subcategorías, con criterios de clasificación alineados con los planes de emergencia aragoneses. Constituye un recurso útil para el etiquetado del dataset y para la clasificación automática del tipo de incidente.
+%     \item \textbf{Guía de etiquetado y casos piloto}. El protocolo del Anexo~C y los ocho casos piloto del Anexo~D proporcionan una metodología reproducible para la construcción de datasets de emergencias civiles etiquetados, que puede ser reutilizada o adaptada en trabajos posteriores.
+%     \item \textbf{Prototipo funcional}. La implementación del prototipo en cinco módulos desacoplados (entrada, contexto, motor, backend y frontend) demuestra la viabilidad técnica del sistema y proporciona un artefacto concreto sobre el que basar la evaluación y la mejora iterativa.
+%     \item \textbf{Estrategia de evaluación multidimensional}. El diseño de la evaluación en siete dimensiones (coherencia, precisión, distribución, seguridad operativa, funcional, aplicabilidad y usabilidad) establece un marco de referencia para la evaluación de sistemas de apoyo a la decisión en emergencias civiles que va más allá de las métricas estándar de clasificación.
+% \end{enumerate}
+
+% \section{Cumplimiento de objetivos específicos y preguntas de investigación}
+
+% \paragraph{OE1 --- Caracterizar el contexto normativo y operativo.}
+% Cumplido en el Capítulo~3, que sintetiza los planes de emergencia de Aragón relevantes y la estructura operativa del CECOP, y en el Capítulo~4, que analiza los factores de priorización derivados del marco normativo.
+
+% \paragraph{OE2 --- Identificar las variables de priorización.}
+% Cumplido en el Capítulo~6 (diseño del motor) y en el Anexo~B (matriz detallada de las quince variables V01--V15 y las cuatro variables derivadas D01--D04), con justificación de cada variable y su papel en el baseline.
+
+% \paragraph{OE3 --- Diseñar el motor de priorización.}
+% Cumplido en el Capítulo~6, con diseño completo del baseline de tres capas, y en el Anexo~E, con especificación detallada de las reglas duras, los pesos del scoring, los umbrales y la lógica de integración.
+
+% \paragraph{OE4 --- Diseñar el esquema de datos y el dataset piloto.}
+% Cumplido en el Capítulo~7, con el esquema de cinco bloques, y en los Anexos~C y D, con el protocolo de etiquetado y los ocho casos piloto.
+
+% \paragraph{OE5 --- Desarrollar el prototipo funcional.}
+% Cumplido en el Capítulo~8, con descripción completa de los cinco módulos y el flujo de funcionamiento del prototipo.
+
+% \paragraph{OE6 --- Evaluar el sistema.}
+% Cumplido en el Capítulo~9, con la estrategia de evaluación en siete dimensiones y los resultados obtenidos en la fase de evaluación.
+
+% \paragraph{OE7 --- Documentar la taxonomía y los recursos metodológicos.}
+% Cumplido en los Anexos~A--F, que constituyen la documentación completa de los recursos metodológicos del sistema.
+
+% \paragraph{OE8 --- Identificar líneas de trabajo futuro.}
+% Cumplido en el apartado~10.5.
+
+% \paragraph{PI1 --- ¿Qué información es suficiente para priorizar en los primeros minutos?}
+% El diseño del motor permite priorizar con tres variables mínimas (V01, V02, V04) aunque con baja confianza. La integración del contexto oficial (módulo 2) eleva sustancialmente la calidad de la recomendación incluso cuando la información textual inicial es fragmentaria.
+
+% \paragraph{PI2 --- ¿Cómo gestionar la incertidumbre y la información incompleta?}
+% Mediante la capa de confianza del baseline (tercera capa), que distingue entre datos informados y ausentes, aplica valores por defecto conservadores (Anexo~B) y comunica al operador el nivel de certeza de la recomendación.
+
+% \paragraph{PI3 --- ¿Qué papel debe tener el operador?}
+% El sistema está diseñado para que el operador sea siempre el responsable de la decisión final. La prioridad que se aplica es la validada por el operador, no la recomendada por el motor. El sistema registra la diferencia cuando existe, permitiendo aprender de las discrepancias.
+
+% \paragraph{PI4 --- ¿Puede un baseline interpretable competir en utilidad con técnicas de ML de caja negra?}
+% En el contexto específico de un prototipo de investigación sobre emergencias civiles, el baseline interpretable ofrece ventajas evidentes en trazabilidad, explicabilidad y confianza institucional. Las métricas de evaluación del Capítulo~9 permitirán cuantificar hasta qué punto su precisión es suficiente para ser útil en el contexto operativo.
+
+% \section{Limitaciones del trabajo}
+
+% Siete limitaciones enmarcan el alcance de este TFM:
+
+% \begin{enumerate}
+%     \item \textbf{Prototipo académico, no sistema en producción.} El prototipo no ha sido desplegado ni evaluado en un centro de coordinación real, lo que limita la validez ecológica de los resultados de evaluación.
+%     \item \textbf{Dataset sintético.} La mayor parte del dataset piloto está compuesto por casos simulados, no por registros de incidentes reales con etiquetas operativas verificadas por expertos en servicio activo.
+%     \item \textbf{Contexto geográfico acotado.} El sistema ha sido diseñado específicamente para Aragón. La transferibilidad a otras comunidades autónomas requiere una fase de adaptación normativa y operativa.
+%     \item \textbf{Evaluación de usabilidad limitada.} La muestra de evaluación SUS es pequeña y puede no ser representativa de la diversidad de perfiles de los operadores de emergencias.
+%     \item \textbf{Integración parcial de fuentes externas.} La integración en tiempo real con fuentes como SNCZI o registros Seveso está implementada de forma simplificada para el prototipo.
+%     \item \textbf{Baseline no calibrado con datos reales.} Los pesos y umbrales del scoring son orientativos y no han sido calibrados con datos históricos de incidentes reales.
+%     \item \textbf{Alcance temporal del TFM.} El plazo académico ha limitado la profundidad de la evaluación y el tamaño del dataset piloto. Una validación más exhaustiva requeriría un proyecto de continuación.
+% \end{enumerate}
+
+% \section{Líneas de trabajo futuro}
+
+% El sistema construido en este TFM abre ocho líneas de investigación y desarrollo que podrían materializarse en trabajos futuros:
+
+% \begin{enumerate}
+%     \item \textbf{Calibración con datos históricos reales.} La colaboración con centros de coordinación de emergencias aragoneses para obtener datos históricos anonimizados permitiría calibrar los pesos del scoring y los umbrales con evidencia empírica, mejorando la precisión del baseline.
+%     \item \textbf{Ampliación del dataset con etiquetado experto.} La construcción de un dataset más amplio con etiquetas asignadas por múltiples expertos en servicio activo y protocolo de consenso estructurado reforzaría la validez de la evaluación y el entrenamiento de modelos de aprendizaje automático.
+%     \item \textbf{Extensión del motor con modelos de aprendizaje automático.} Una vez calibrado el baseline, podría añadirse una capa de ML que aprenda patrones no capturados por las reglas expertas, manteniendo el baseline como capa de referencia interpretable y usando el ML como complemento.
+%     \item \textbf{Integración en tiempo real con fuentes oficiales.} El desarrollo de conectores productivos con las API oficiales de AEMET, SNCZI, INE y registros Seveso elevaría la calidad del contexto disponible y permitiría evaluaciones en condiciones más cercanas al uso real.
+%     \item \textbf{Evaluación en entorno operativo real.} La colaboración con la Dirección General de Protección Civil de Aragón u otro organismo equivalente para una prueba piloto controlada del sistema en un entorno operativo real permitiría obtener retroalimentación de usuarios reales y medir el impacto sobre la toma de decisiones.
+%     \item \textbf{Extensión a otras comunidades autónomas.} La adaptación del marco normativo y de los planes de emergencia del sistema a otras regiones españolas permitiría evaluar la transferibilidad del diseño y ampliar el impacto del trabajo.
+%     \item \textbf{Mejora de la capa de explicabilidad.} El desarrollo de explicaciones más ricas ---incluyendo visualizaciones de los factores de contribución al scoring, comparación con casos históricos similares y justificación de la situación operativa sugerida--- podría aumentar la confianza del operador en la recomendación.
+%     \item \textbf{Integración con sistemas de gestión de emergencias.} La conexión del prototipo con plataformas de gestión de emergencias existentes (SIGEM, SiGES u otros) permitiría que el sistema operara como módulo de apoyo a la decisión dentro de un ecosistema tecnológico más amplio, sin requerir la adopción de una plataforma completamente nueva.
+% \end{enumerate}
+
+% El sistema inteligente de apoyo a la decisión desarrollado en este TFM es un primer paso en la dirección de una gestión de emergencias civiles más eficiente, más trazable y más fundamentada. Las limitaciones reconocidas no invalidan el valor del trabajo: delimitan el contexto en el que sus resultados son válidos y señalan el camino hacia un sistema más maduro. El trabajo futuro descripto en este capítulo ofrece un programa de investigación concreto para quien quiera continuar en esta línea.

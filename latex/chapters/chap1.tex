@@ -1,0 +1,89 @@
+
+\chapter{Introducción}
+
+\section{Contexto general del trabajo}
+
+La gestión de emergencias es uno de los ámbitos de actuación pública donde la rapidez y la calidad de las decisiones tienen consecuencias directas sobre la vida de las personas. Cuando se produce un incidente grave —un incendio forestal, una inundación, un accidente con sustancias peligrosas o cualquier otra situación que comprometa la seguridad ciudadana—, los centros de coordinación operativa (CECOP) y los puestos de mando avanzado (PMA) deben procesar un volumen elevado de información heterogénea en plazos de tiempo muy reducidos. La capacidad del responsable operativo para tomar una primera decisión adecuada —activar un plan, movilizar recursos, elevar el nivel de alerta— depende en gran medida de que la información disponible en los primeros minutos sea suficiente, esté bien estructurada y resulte interpretable en el contexto de la situación.
+
+El marco institucional español de protección civil, articulado principalmente a través de la Ley 17/2015, de 9 de julio, del Sistema Nacional de Protección Civil \cite{Ley17_2015}, y del Real Decreto 524/2023, de 20 de junio, por el que se aprueba la Norma Básica de Protección Civil \cite{RD524_2023}, establece una estructura de respuesta basada en la coordinación entre múltiples administraciones y organismos. Esta estructura define diferentes niveles de activación —las denominadas situaciones operativas 0, 1, 2 y 3— que determinan quién dirige y coordina la respuesta en función de la gravedad y la extensión de la emergencia. En el ámbito autonómico, la Comunidad Autónoma de Aragón cuenta con su propio marco normativo, recientemente actualizado mediante la Ley 4/2024, de 28 de junio, del Sistema de Protección Civil y Gestión de Emergencias de Aragón \cite{Ley4_2024}, así como con planes territoriales y especiales —como el Plan Territorial de Protección Civil de Aragón (PLATEAR)— que desarrollan la operativa concreta ante distintos tipos de riesgo.
+
+El presente Trabajo Fin de Máster se sitúa en la intersección entre la gestión operativa de emergencias y la inteligencia artificial aplicada. Su propósito es explorar de qué manera las técnicas de procesamiento de datos y razonamiento automatizado pueden contribuir a mejorar la calidad de la primera decisión en entornos de coordinación de emergencias, sin pretender sustituir al operador humano, sino ofreciéndole un apoyo estructurado, explicable y fundamentado.
+
+\section{Planteamiento del problema: la saturación informativa en emergencias}
+
+En los primeros momentos de una emergencia, el responsable de un puesto de mando o de un centro de coordinación recibe información de múltiples fuentes a la vez: llamadas de ciudadanos al servicio 112, partes de los servicios de intervención ya desplegados, avisos meteorológicos emitidos por la Agencia Estatal de Meteorología (AEMET), alertas hidrológicas del Sistema Nacional de Cartografía de Zonas Inundables (SNCZI) del Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO), notificaciones de planes de autoprotección y, en algunos casos, datos procedentes de sensores o sistemas de vigilancia.
+
+Esta confluencia de fuentes genera lo que habitualmente se conoce como saturación informativa, un fenómeno que se manifiesta con especial intensidad precisamente cuando más importa: en las fases iniciales de la emergencia, cuando la presión temporal es máxima y las decisiones tienen mayor impacto. El operador debe, en un plazo breve, identificar la naturaleza del incidente, estimar su gravedad, valorar si puede escalar, determinar si hay población vulnerable afectada, y decidir qué recursos movilizar y bajo qué marco de coordinación hacerlo. Y todo ello, a menudo, con información fragmentaria, incompleta o contradictoria.
+
+El problema que aborda este TFM puede formularse de la siguiente manera: en un entorno de coordinación de emergencias donde confluyen múltiples incidentes simultáneos e información fragmentaria, ¿cómo puede un sistema de apoyo a la decisión ayudar al responsable operativo a estructurar la información disponible, priorizar los incidentes según criterios operativos justificados y reducir el tiempo necesario para adoptar una primera decisión fundamentada?
+
+Ese tiempo —que en el presente trabajo se denomina Time To First Decision (TTFD)— constituye la métrica operativa central del sistema propuesto. Conviene subrayar desde el principio que no se trata de automatizar la decisión ni de reemplazar al operador humano, sino de proporcionarle una recomendación estructurada, explicable y revisable que le permita orientar su atención hacia los incidentes de mayor urgencia operativa relativa.
+
+\section{Justificación del tema e impacto social}
+
+La relevancia de este trabajo se apoya en tres dimensiones complementarias.
+Desde la perspectiva operativa, las emergencias de gran magnitud o las situaciones de concurrencia de múltiples incidentes ponen a prueba la capacidad de decisión de los equipos de coordinación. Cualquier mejora en la rapidez y la fundamentación de la primera decisión puede tener un impacto positivo directo sobre la protección de las personas y los bienes afectados. No se trata de una mejora teórica: en contextos reales, la diferencia entre una decisión temprana bien orientada y una decisión tardía o desinformada puede traducirse en vidas, en recursos mal asignados o en una escalada evitable del incidente.
+
+Desde la perspectiva tecnológica, el dominio de las emergencias presenta un conjunto de características que lo convierten en un caso de uso notablemente exigente para la inteligencia artificial aplicada: la información suele ser incompleta o incierta, la presión temporal es alta, la explicabilidad de las recomendaciones no es opcional sino imprescindible, la supervisión humana es un requisito normativo y ético, y la trazabilidad de cada decisión debe estar garantizada. Estas restricciones obligan a diseñar sistemas que vayan más allá de producir una puntuación numérica, y que sean capaces de justificar su recomendación de forma comprensible para quien debe actuar sobre ella.
+
+Desde la perspectiva social, el trabajo concibe la inteligencia artificial como una herramienta al servicio de la protección civil y el bienestar colectivo, en línea con la creciente corriente de aplicación responsable de la tecnología a problemas de interés público \cite{Floridi2018}. El sistema propuesto no persigue la automatización de las decisiones de emergencia, sino el apoyo al decisor humano mediante una lógica transparente, revisable y fundamentada en criterios operativos extraídos de la normativa oficial y de fuentes institucionales verificables. En este sentido, el proyecto se inscribe en una visión de la IA como recurso de apoyo responsable, no como sustituto del criterio profesional.
+\section{Relevancia de la inteligencia artificial aplicada al dominio}
+
+La aplicación de técnicas de inteligencia artificial a la gestión de emergencias ha sido objeto de una atención creciente en la literatura académica de los últimos años. El procesamiento del lenguaje natural (NLP) ha demostrado su utilidad para extraer información relevante a partir de fuentes textuales no estructuradas, como los partes de incidentes o las transcripciones de llamadas de emergencia. Los modelos de clasificación y priorización permiten ordenar incidentes en función de su gravedad estimada. Y la explicabilidad algorítmica —lo que en la literatura se conoce como Explainable Artificial Intelligence (XAI)— ofrece mecanismos para que las recomendaciones de un sistema automatizado resulten comprensibles y auditables por los operadores humanos que deben validarlas.
+
+Sin embargo, buena parte de los trabajos publicados en este ámbito se han desarrollado en contextos anglosajones, con marcos normativos, estructuras operativas y bases de datos diferentes a las del sistema español de protección civil. Además, muchas de estas propuestas asumen la disponibilidad de grandes volúmenes de datos históricos etiquetados, una condición que difícilmente se cumple de forma generalizada en los centros de coordinación de emergencias españoles, donde la información operativa rara vez está estructurada en formatos reutilizables para el entrenamiento de modelos de aprendizaje automático.
+
+El presente TFM parte de estas limitaciones como punto de partida metodológico, no como obstáculo. Diseña un sistema que prioriza un baseline interpretable antes de recurrir a modelos más complejos de aprendizaje automático; que trabaja con un dataset piloto híbrido ante la ausencia de microdatos operativos garantizados; y que justifica cada una de sus variables y criterios de priorización en la normativa oficial española y en fuentes institucionales verificables, en lugar de depender de supuestos difícilmente replicables en el contexto nacional.
+
+\section{Finalidad y alcance del sistema propuesto}
+
+El objetivo general de este TFM es diseñar e implementar un prototipo software modular de apoyo a la decisión para puestos de mando de emergencias civiles que permita estructurar, contextualizar y priorizar incidentes operativos, con el fin de reducir el Time To First Decision (TTFD) mediante una lógica explicable basada en criterios operativos y fuentes oficiales.
+
+\subsection{Alcance funcional}
+
+El sistema propuesto abarca las siguientes funcionalidades: la recepción y estructuración de la información del incidente; el enriquecimiento contextual mediante fuentes oficiales —avisos meteorológicos, cartografía de riesgo, datos demográficos—; la priorización del incidente mediante un baseline interpretable de tres capas —reglas duras, scoring explicable y capa de confianza y explicación—; y la presentación de la recomendación al operador con los mecanismos necesarios para la supervisión humana.
+
+No forman parte del alcance de este TFM las siguientes funcionalidades: el despacho automático de recursos, la integración productiva con sistemas institucionales cerrados, la sustitución del operador humano ni la construcción de una plataforma industrial completa. El sistema se concibe como un prototipo de investigación cuyo valor reside en el diseño analítico del motor y en la demostración de su viabilidad, no en su despliegue operativo inmediato.
+
+\subsection{Alcance territorial: España y caso piloto en Aragón}
+
+El marco normativo general del sistema es el sistema español de protección civil, lo que asegura la transferibilidad del enfoque a cualquier comunidad autónoma. La particularización operativa se realiza sobre Aragón como caso piloto, aprovechando su marco normativo reciente (Ley 4/2024), la disponibilidad de planes especiales específicos y la estructura del 112 Aragón como centro de coordinación de referencia.
+
+\subsection{Limitaciones del trabajo}
+
+El TFM tiene un conjunto de limitaciones que conviene explicitar desde el principio para que el lector sitúe correctamente el alcance de sus aportaciones.
+En primer lugar, el sistema no ha sido desplegado en un entorno operativo real. Su evaluación se realiza sobre escenarios simulados con un dataset piloto híbrido, lo cual permite valorar la coherencia y la viabilidad del enfoque, pero no equivale a una validación institucional.
+
+En segundo lugar, el dataset piloto no se basa en microdatos operativos reales del 112 Aragón, cuyo acceso detallado no está disponible de forma pública. Se ha construido un dataset híbrido compuesto por estructura inspirada en datos institucionales, variables contextuales procedentes de fuentes oficiales y casos simulados controlados, etiquetados conforme a una guía de etiquetado rigurosa.
+
+En tercer lugar, la escala de prioridad P1–P4 empleada por el sistema es una construcción propia del prototipo, no una clasificación oficial. Se inspira en la lógica normativa de las situaciones operativas, pero no pretende equivaler a ellas en términos jurídicos.
+
+En cuarto lugar, la evaluación del sistema se realiza sobre escenarios simulados. Los resultados obtenidos permiten valorar la coherencia interna, la explicabilidad y la aplicabilidad potencial del enfoque, pero no equivalen a una validación en condiciones operativas reales.
+
+Por último, el sistema está concebido como herramienta de apoyo al decisor humano. En ningún caso sustituye su criterio profesional ni pretende automatizar la toma de decisiones en situaciones de emergencia.
+
+\section{Enfoque del TFM como desarrollo software (Tipo 2)}
+
+Este trabajo se desarrolla bajo la modalidad de TFM de Tipo 2 (Desarrollo de software), conforme a la clasificación establecida por la UNIR para los Trabajos Fin de Estudios del Máster Universitario en Inteligencia Artificial. En esta modalidad, se espera que el estudiante aborde un problema concreto y proporcione una solución tecnológica específica mediante el desarrollo de una aplicación informática, acompañada de una validación a través de pruebas de usabilidad o aceptación por parte de expertos.
+
+En coherencia con este enfoque, el TFM no se limita a un análisis teórico del problema ni a una revisión del estado del arte, sino que produce un prototipo funcional que puede ser demostrado. La contribución principal del trabajo reside en el diseño analítico del motor de priorización: la justificación de las variables a partir de la normativa, la construcción de la escala operativa, la lógica del baseline interpretable y la evaluación de su aplicabilidad en el dominio de las emergencias. El frontend y el backend son componentes necesarios para materializar el prototipo, pero no constituyen por sí mismos la aportación central del TFM.
+
+La metodología de desarrollo adoptada es iterativa e incremental, adaptada a un equipo de tres personas y combinando principios ágiles con fases claramente delimitadas. Los detalles metodológicos completos se presentan en el Capítulo 4 de esta memoria.
+
+\section{Estructura de la memoria}
+
+El presente documento se organiza en diez capítulos agrupados en seis bloques temáticos, precedidos por el apartado de organización del trabajo en grupo y seguidos de las referencias bibliográficas y los anexos.
+
+El \textbf{Bloque I --- Contextualización} comprende los tres primeros capítulos. El Capítulo 1 (Introducción) ha presentado el problema, justificado el tema y delimitado el alcance del trabajo. El Capítulo 2 (Contexto del problema y estado del arte) analiza el dominio operativo de las emergencias, revisa los sistemas de apoyo a la decisión existentes y sitúa el trabajo en relación con la literatura académica y las soluciones previas. El Capítulo 3 (Marco operativo y normativo) desarrolla la base normativa e institucional que fundamenta las decisiones de diseño del sistema.
+
+El \textbf{Bloque II --- Dominio y fundamento operativo} comprende el Capítulo 3, dedicado al marco normativo español de protección civil, la taxonomía operativa de incidentes y las fuentes de datos oficiales disponibles.
+
+El \textbf{Bloque III --- Diseño del sistema} comprende los capítulos 4 y 5. El Capítulo 4 formula los objetivos del trabajo, describe la metodología adoptada y aborda las consideraciones éticas, incluyendo la transparencia sobre el uso de herramientas de IA en la elaboración del TFM. El Capítulo 5 identifica los requisitos funcionales y no funcionales del sistema.
+
+El \textbf{Bloque IV --- Diseño analítico} constituye el núcleo del trabajo y comprende los capítulos 6 y 7. El Capítulo 6 (Diseño del motor de priorización) presenta la escala de prioridad operativa, las variables de entrada y derivadas, la guía de etiquetado, la arquitectura del baseline interpretable y la fórmula conceptual del motor. El Capítulo 7 (Diseño de datos y construcción del dataset) desarrolla el esquema de datos del sistema y la estrategia de construcción del dataset piloto híbrido.
+
+El \textbf{Bloque V --- Implementación y evaluación} comprende los capítulos 8 y 9. El Capítulo 8 documenta la arquitectura del prototipo, sus módulos y su funcionamiento. El Capítulo 9 presenta los resultados de la evaluación en escenarios simulados.
+
+El \textbf{Bloque VI --- Cierre} comprende el Capítulo 10, que sintetiza las aportaciones del trabajo, discute sus limitaciones y propone líneas de desarrollo futuro.
+
+Los anexos incluyen la taxonomía completa de incidentes (Anexo A), la matriz detallada de variables de priorización (Anexo B), la guía de etiquetado completa (Anexo C), la plantilla de etiquetado y casos piloto (Anexo D), la tabla de reglas y pesos del baseline (Anexo E), el esquema de datos del sistema (Anexo F), las capturas del prototipo (Anexo G) y la evidencia del uso de inteligencia artificial en la elaboración del trabajo (Anexo H).

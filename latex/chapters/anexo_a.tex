@@ -1,0 +1,169 @@
+\chapter{Taxonomía completa de incidentes}
+\label{cap:anexoa}
+
+\section*{A.1. Finalidad del anexo}
+
+% Este anexo despliega con mayor detalle la taxonomía operativa de incidentes del sistema, cuya presentación resumida se realiza en el apartado~3.4 del Capítulo~3. La taxonomía no es un catálogo administrativo con fines clasificatorios abstractos, sino un mecanismo funcional que permite al motor de priorización decidir qué variables contextuales deben activarse, qué comprobaciones conviene realizar y qué reglas de priorización son potencialmente aplicables a cada incidente.
+
+% El anexo cumple tres finalidades. En primer lugar, documenta la estructura completa de la taxonomía en dos niveles, asignando códigos, descripciones operativas y justificaciones a cada categoría. En segundo lugar, establece la relación explícita entre cada tipo de incidente y la lógica del motor: qué variables contextuales se consultan, qué reglas duras pueden activarse y qué planes o contextos normativos son relevantes. En tercer lugar, proporciona una referencia de implementación para la variable V04 (tipo de incidente) del motor, documentada en el Anexo~B.
+
+% El contenido de este anexo es coherente con los apartados~3.4.1 a 3.4.3 del Capítulo~3, con la variable V04 del Capítulo~6, con la distribución tipológica del dataset piloto (Tabla~7.3 del Capítulo~7) y con los Anexos~B y E. No introduce familias nuevas, no modifica la lógica del motor y no amplía el alcance del sistema.
+
+\section*{A.2. Criterios de construcción de la taxonomía}
+
+% La taxonomía operativa del sistema se ha construido aplicando cuatro criterios complementarios, coherentes con los establecidos en el apartado~3.4 del Capítulo~3:
+
+% \textbf{Alineación con el catálogo de riesgos oficial.} Las familias del Nivel~1 se corresponden con las categorías de riesgo reconocidas en la Norma Básica de Protección Civil (RD~524/2023) y con los planes especiales de Aragón (PROCINFO, PROCINAR, PROCIFEMAR, PROCIMER). El Nivel~2 se inspira en la tipología operativa habitual de los centros 112, utilizando como referencia estructural el dataset abierto del CAT112 y las memorias del 112~Aragón.
+
+% \textbf{Funcionalidad para el motor.} Cada categoría debe activar un perfil de contexto diferenciado. Un incendio forestal y una emergencia sanitaria no comparten las mismas variables contextuales ni las mismas reglas potenciales. La taxonomía garantiza que el motor consulte el contexto pertinente y no aplique indiscriminadamente todas las comprobaciones.
+
+% \textbf{Granularidad operativa viable.} La taxonomía no pretende reproducir la totalidad de la tipificación interna del 112~Aragón (a la que no se tiene acceso detallado), sino establecer un nivel de granularidad suficiente para que el motor discrimine entre tipos de incidente operativamente distintos dentro del alcance del TFM.
+
+% \textbf{Compatibilidad con el dataset piloto.} Las categorías de la taxonomía deben poder instanciarse en casos simulados plausibles conforme a la distribución tipológica orientativa de la Tabla~7.3 del Capítulo~7.
+
+\section*{A.3. Taxonomía completa: Nivel 1 --- Emergencias de protección civil}
+
+% El Nivel~1 agrupa incidentes con potencial de activar lógica de protección civil o de requerir un tratamiento reforzado de coordinación y contexto. Se organiza en cuatro familias, coherentes con el apartado~3.4.1 del Capítulo~3.
+
+% \begin{table}[ht]
+% \centering
+% \caption{Taxonomía Nivel 1: Emergencias de protección civil}
+% \label{tab:a1}
+% \small
+% \begin{tabularx}{\textwidth}{|l|l|X|X|}
+% \hline
+% \textbf{Código} & \textbf{Familia} & \textbf{Descripción operativa} & \textbf{Justificación normativa} \\ \hline
+% N1.1 & Riesgos naturales & Incidentes de origen natural con potencial de afectación colectiva: inundaciones, fenómenos meteorológicos adversos, incendios forestales y eventos sísmicos o geológicos. & Catálogo de riesgos (RD~524/2023). Planes: PROCINAR, PROCIFEMAR, PROCINFO. \\ \hline
+% N1.2 & Riesgos tecnológicos e industriales & Accidentes con mercancías peligrosas, incidentes en instalaciones Seveso e infraestructuras energéticas. & RD~840/2015 (Seveso~III). Planes: PROCIMER, PROCIGO. \\ \hline
+% N1.3 & Grandes accidentes y eventos antrópicos & Accidentes con múltiples afectados, derrumbes, incendios urbanos de gran entidad. & PLATEAR; Ley~4/2024. \\ \hline
+% N1.4 & Escenarios multirriesgo & Concurrencia simultánea de varias amenazas o complejidad de coordinación superior. & PLEGEM; Ley~17/2015. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Coherente con el apartado~3.4.1 del Capítulo~3.}
+
+\subsection*{A.3.1. Subcategorías del Nivel 1}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Subcategorías operativas del Nivel 1}
+% \label{tab:a2}
+% \footnotesize
+% \begin{tabularx}{\textwidth}{|l|X|X|l|l|l|}
+% \hline
+% \textbf{Código} & \textbf{Subcategoría} & \textbf{Descripción} & \textbf{Var. ctx.} & \textbf{RD potencial} & \textbf{Plan} \\ \hline
+% N1.1.1 & Inundación fluvial o pluvial & Crecida de ríos, desbordamientos. & V08, V09, V10 & RD3, RD7 & PROCINAR \\ \hline
+% N1.1.2 & Fenómeno meteorológico adverso & Viento extremo, nieve, heladas, tormentas. & V08, V09 & RD3 & PROCIFEMAR \\ \hline
+% N1.1.3 & Incendio forestal & Fuego en masa forestal, incluida IUF. & V08, V09 & RD8 (si IUF) & PROCINFO \\ \hline
+% N1.1.4 & Evento sísmico o geológico & Terremoto, deslizamiento. & (específico) & (no aplica) & Plan Sísmico \\ \hline
+% N1.2.1 & Accidente MMPP & Transporte de mercancías peligrosas. & V11 & RD4 (si Seveso) & PROCIMER \\ \hline
+% N1.2.2 & Incidente industrial Seveso & Accidente en instalación RD~840/2015. & V11 & RD4 & Seveso~III \\ \hline
+% N1.2.3 & Infraestructura energética & Fugas en gasoductos u oleoductos. & V11 & (potencial RD4) & PROCIGO \\ \hline
+% N1.3.1 & Accidente AMV transporte & Accidentes con múltiples víctimas. & (general) & RD2, RD5 & PLATEAR \\ \hline
+% N1.3.2 & Derrumbe o colapso & Hundimiento con posible atrapamiento. & V15 & RD1 & PLATEAR \\ \hline
+% N1.3.3 & Incendio urbano gran entidad & Incendio con propagación extensa. & (general) & RD1, RD2 & PLATEAR \\ \hline
+% N1.4.1 & Multirriesgo concurrente & Combinación simultánea de amenazas. & V08--V11 & Múltiples & Planes específicos \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Coherente con los planes especiales de Aragón y con el Anexo~E.}
+
+\section*{A.4. Taxonomía completa: Nivel 2 --- Emergencias operativas ordinarias (112)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Taxonomía Nivel 2: Emergencias operativas ordinarias}
+% \label{tab:a3}
+% \small
+% \begin{tabularx}{\textwidth}{|l|l|X|X|}
+% \hline
+% \textbf{Código} & \textbf{Familia} & \textbf{Descripción operativa} & \textbf{Justificación} \\ \hline
+% N2.1 & Emergencias sanitarias & Urgencias médicas sin dimensión de protección civil: paradas cardiacas, traumatismos, urgencias psiquiátricas. & Ley~4/2024; memorias 112~Aragón. \\ \hline
+% N2.2 & Tráfico y transporte & Accidentes leves, incidencias viales. & PLATEAR; memorias 112~Aragón. \\ \hline
+% N2.3 & Incendios urbanos y vehículos & Incendios en viviendas, locales o vehículos. & Ley~1/2013 de SPEIS de Aragón. \\ \hline
+% N2.4 & Rescates y salvamentos & Rescates en montaña, acuático, espacios confinados. & PLATEAR; Ley~4/2024 art.~6.2. \\ \hline
+% N2.5 & Seguridad y personas & Incidentes con componente de seguridad. & Ley~4/2024; coordinación FCSE. \\ \hline
+% N2.6 & Asistencia técnica y servicios & Cortes de suministro, averías en infraestructura. & Ley~4/2024; PLATEAR. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Coherente con el apartado~3.4.2 del Capítulo~3.}
+
+\subsection*{A.4.1. Subcategorías del Nivel 2}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Subcategorías operativas del Nivel 2}
+% \label{tab:a4}
+% \footnotesize
+% \begin{tabularx}{\textwidth}{|l|X|X|l|l|l|}
+% \hline
+% \textbf{Código} & \textbf{Subcategoría} & \textbf{Descripción} & \textbf{Var. ctx.} & \textbf{RD potencial} & \textbf{Contexto} \\ \hline
+% N2.1.1 & Emergencia vital & Parada cardiaca, hemorragia masiva. & (general) & RD1 & Sanitario \\ \hline
+% N2.1.2 & Urgencia sanitaria no vital & Traumatismo moderado, crisis psiquiátrica. & (general) & (no aplica) & Sanitario \\ \hline
+% N2.1.3 & AMV sanitario & Múltiples personas afectadas. & (general) & RD2, RD5 & PLATEAR \\ \hline
+% N2.2.1 & Tráfico con víctimas & Accidente vial con heridos. & V15 & RD1, RD2 & Emergencia \\ \hline
+% N2.2.2 & Incidencia vial sin víctimas & Vehículo averiado, obstáculo en calzada. & V15 & (no aplica) & Tráfico \\ \hline
+% N2.3.1 & Incendio vivienda o local & Fuego en edificio residencial o comercial. & (general) & RD1 (si atrap.) & Bomberos \\ \hline
+% N2.3.2 & Incendio vehículo/contenedor & Fuego en elemento aislado. & (general) & (no aplica) & Bomberos \\ \hline
+% N2.4.1 & Rescate en montaña & Persona accidentada en entorno montaña. & V15 & RD6 (si vuln.) & GREIM \\ \hline
+% N2.4.2 & Rescate acuático & Persona en peligro en río o embalse. & (general) & RD1 & Rescate \\ \hline
+% N2.4.3 & Búsqueda desaparecido & Búsqueda activa de persona. & (general) & RD6 (si menor) & FCSE; PC \\ \hline
+% N2.4.4 & Rescate espacio confinado & Atrapado en ascensor o sótano. & V15 & RD1 & Bomberos \\ \hline
+% N2.5.1 & Seguridad con riesgo & Violencia activa, amenaza grave. & (general) & RD1 & FCSE \\ \hline
+% N2.5.2 & Seguridad menor & Conflicto vecinal sin riesgo operativo. & (general) & (no aplica) & FCSE \\ \hline
+% N2.6.1 & Corte suministro esencial & Interrupción eléctrica, agua o gas. & (general) & (no aplica) & Compañías \\ \hline
+% N2.6.2 & Avería infraestructura & Semáforo, alumbrado, incidencia viaria. & (general) & (no aplica) & Municipal \\ \hline
+% N2.6.3 & Consulta informativa & Consulta sin incidente activo. & (ninguna) & (no aplica) & 112 \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Coherente con el apartado~3.4.2 del Capítulo~3 y la Tabla~7.3 del Capítulo~7.}
+
+\section*{A.5. Relación entre taxonomía y activación del motor}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Matriz de activación: tipo de incidente $\rightarrow$ contexto, reglas y planes}
+% \label{tab:a5}
+% \footnotesize
+% \begin{tabularx}{\textwidth}{|l|l|l|X|X|}
+% \hline
+% \textbf{Tipo} & \textbf{Var. ctx.} & \textbf{RD potenciales} & \textbf{Plan/contexto} & \textbf{Observaciones} \\ \hline
+% N1.1.1 Inundación & V08--V10, V15 & RD3, RD7 & PROCINAR & Cruce obligatorio SNCZI y AEMET. \\ \hline
+% N1.1.2 FMA & V08, V09 & RD3 & PROCIFEMAR & Coherencia fenómeno-incidente. \\ \hline
+% N1.1.3 Incendio forestal & V08, V09, V15 & RD8 (si IUF) & PROCINFO & IUF vs. forestal puro. \\ \hline
+% N1.1.4 Sísmico & V15 & (transversales) & Plan Sísmico & Magnitud y proximidad. \\ \hline
+% N1.2.1 MMPP & V11, V15 & RD4 (si afect.) & PROCIMER & Tipo de sustancia. \\ \hline
+% N1.2.2 Industrial Seveso & V11 & RD4 & RD~840/2015 & Máxima criticidad si afect. directa. \\ \hline
+% N1.2.3 Infraest. energética & V11 & (potencial RD4) & PROCIGO & Gasoductos, alta tensión. \\ \hline
+% N1.3.1 AMV transporte & V15 & RD2, RD5 & PLATEAR & Número de víctimas clave. \\ \hline
+% N1.3.2 Derrumbe & V15 & RD1 & PLATEAR & Atrapamiento = riesgo vital. \\ \hline
+% N1.3.3 Incendio urbano & V15 & RD1, RD2 & PLATEAR & Propagación y población expuesta. \\ \hline
+% N1.4.1 Multirriesgo & V08--V11, V15 & Múltiples & Planes específicos & Perfiles múltiples simultáneos. \\ \hline
+% N2.1.1 Emerg. vital & (general) & RD1 & Sanitario & Prioridad crítica directa. \\ \hline
+% N2.1.3 AMV sanitario & (general) & RD2, RD5 & PLATEAR & Magnitud de víctimas. \\ \hline
+% N2.2.1 Tráfico con víctimas & V15 & RD1, RD2 & Emergencia & Atrapamiento y víctimas. \\ \hline
+% N2.3.1 Incendio vivienda & (general) & RD1 & Bomberos & Personas en interior. \\ \hline
+% N2.4.1 Rescate montaña & V15 & RD6 (si vuln.) & GREIM & Accesibilidad clave. \\ \hline
+% N2.4.3 Búsqueda persona & (general) & RD6 (si menor) & FCSE; PC & Vulnerabilidad diferenciadora. \\ \hline
+% N2.5.1 Seguridad riesgo & (general) & RD1 & FCSE & Coordinación fuerzas seguridad. \\ \hline
+% N2.6.3 Consulta & (ninguna) & (ninguna) & 112 & Sin contexto. P4 típica. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Coherente con el apartado~3.4.3 del Capítulo~3 y el Anexo~E. Tabla representativa, no exhaustiva.}
+
+\section*{A.6. Observaciones metodológicas}
+
+% \paragraph{A.6.1. La taxonomía no es un catálogo jurídico.}
+% La taxonomía operativa del sistema es una herramienta funcional diseñada para el prototipo. No constituye una clasificación jurídica oficial, no sustituye la tipificación interna del 112~Aragón y no pretende agotar toda la casuística real del dominio de emergencias.
+
+% \paragraph{A.6.2. Frontera entre Nivel~1 y Nivel~2.}
+% La frontera entre ambos niveles no es rígida. Un incidente clasificado inicialmente como Nivel~2 puede escalar a Nivel~1 si su evolución lo justifica. El motor gestiona esta transición a través de la variable V12 (tendencia del incidente) y de la actualización de las variables de entrada.
+
+% \paragraph{A.6.3. Coherencia con el dataset piloto.}
+% La distribución tipológica orientativa del dataset piloto es coherente con esta taxonomía: riesgos naturales (25--30\,\%), tecnológicos (8--12\,\%), antrópicos y accidentales (25--30\,\%), sanitarios (10--15\,\%), sociales y de seguridad (5--8\,\%) y ordinarios (15--20\,\%).
+
+% \paragraph{A.6.4. Extensibilidad.}
+% La taxonomía está diseñada para ser extensible en líneas de trabajo futuro, sin alterar la lógica del baseline, siempre que cada nueva categoría defina su perfil de activación de contexto.

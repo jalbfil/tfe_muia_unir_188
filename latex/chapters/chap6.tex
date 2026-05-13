@@ -1,0 +1,261 @@
+\chapter{Diseño del motor de priorización}
+
+% Este capítulo presenta el núcleo analítico del TFM: el diseño del motor de priorización, que constituye la aportación principal del trabajo. Todo lo desarrollado en los capítulos anteriores converge aquí en una especificación funcional que define qué información entra en el motor, cómo se procesa y qué salida produce.
+
+% El capítulo se organiza de forma progresiva. En primer lugar, se presenta el motor como sistema de apoyo a la decisión y se delimita su función dentro del prototipo. A continuación, se desarrolla la escala de prioridad operativa P1-P4, se definen las variables de entrada y las variables derivadas, se introduce la guía de etiquetado y se describe la arquitectura del baseline interpretable de tres capas.
+
+% Después, se formulan las reglas duras del sistema, se establecen pesos orientativos y umbrales iniciales del scoring, se justifica la elección metodológica del baseline frente a modelos más complejos y se muestra un ejemplo de funcionamiento paso a paso. Por último, se sintetiza la lógica del sistema mediante una fórmula conceptual de prioridad.
+
+% La finalidad de este capítulo no es describir una implementación cerrada y ya validada empíricamente, sino fijar con precisión el diseño analítico y funcional del motor. La calibración definitiva de pesos y umbrales, así como la evaluación cuantitativa del comportamiento del sistema, se desarrollan en el capítulo de evaluación.
+
+% \subsection*{6.1. Planteamiento general: el «cerebro» del sistema}
+
+% El motor de priorización es el componente que transforma la información disponible sobre un incidente en una recomendación estructurada de urgencia operativa. Si el prototipo completo funciona como un sistema de apoyo a la decisión, el motor constituye su núcleo lógico: recibe datos del incidente, integra contexto oficial, aplica reglas y una lógica de ponderación explicable, y devuelve una salida que el operador puede utilizar como apoyo para la primera decisión.
+
+% La entrada del motor está delimitada a un conjunto cerrado de quince variables operativas. Esta restricción es deliberada y responde a una decisión metodológica del proyecto: priorizar un diseño robusto, trazable y viable frente a un modelo excesivamente amplio y difícil de justificar. Las entradas del motor son las siguientes: riesgo vital inmediato, víctimas confirmadas o probables, tipo de daño principal, tipo de incidente, población vulnerable, personas en riesgo estimadas, emplazamiento crítico, nivel de aviso AEMET, fenómeno meteorológico activo, peligrosidad por inundación, presencia de instalación Seveso, tendencia del incidente, fiabilidad del informador, número de avisos simultáneos y accesibilidad al punto.
+
+% La salida del motor está compuesta por cuatro elementos funcionales: prioridad operativa recomendada en escala P1-P4, nivel de confianza de la recomendación, situación operativa sugerida y explicación resumida de los factores determinantes. Estas salidas no constituyen una decisión automática ni un despacho de recursos, sino una recomendación revisable por el operador humano. El sistema no sustituye al decisor; reduce el tiempo necesario para alcanzar una primera valoración razonada y trazable.
+
+% La explicabilidad no se incorpora como una capa estética posterior, sino como un requisito de diseño desde el origen. En un dominio donde las recomendaciones afectan a la protección de personas y a la activación de respuestas coordinadas, una prioridad que no pueda entenderse, discutirse o corregirse carece de valor operativo. Por esa razón, el motor se construye sobre un baseline interpretable, basado en reglas duras, scoring explicable y cálculo explícito de confianza.
+
+% \subsection*{6.2. Escala de prioridad operativa del sistema (P1-P4)}
+
+% El motor necesita una escala con capacidad discriminante suficiente para ordenar incidentes en condiciones de información incompleta. Se ha optado por una escala de cuatro niveles —P1, P2, P3 y P4— porque permite distinguir con claridad entre incidentes críticos, altos, medios y bajos sin introducir una granularidad artificial difícil de sostener en la práctica operativa.
+
+% La escala P1-P4 es una abstracción operativa propia del prototipo. Se inspira en la lógica gradual de las situaciones operativas de protección civil y en los criterios de activación de planes, pero no constituye una categoría jurídica oficial ni una reproducción literal del marco normativo. Su función es ordenar incidentes individuales por urgencia operativa relativa dentro de un entorno de coordinación, no declarar formalmente una situación operativa ni activar jurídicamente un plan.
+
+% \subsubsection*{6.2.1. P1 - Prioridad crítica}
+% La prioridad P1 se asigna a incidentes que requieren atención inmediata porque existe riesgo vital confirmado o altamente probable, o porque concurren condiciones que hacen previsible una escalada extremadamente rápida con afectación grave a personas. Se trata de incidentes en los que una demora en la primera decisión puede traducirse en pérdida de vidas o en un deterioro severo del escenario. De forma orientativa, pertenecen a este nivel los incidentes con personas atrapadas en riesgo vital, accidentes con múltiples víctimas graves, inundaciones con personas aisladas o arrastradas, fugas tóxicas con afectación en zona habitada o incendios con amenaza directa e inmediata a población expuesta.
+
+% \subsubsection*{6.2.2. P2 - Prioridad alta}
+% La prioridad P2 se asigna a incidentes con gravedad significativa o con potencial de escalado relevante, pero en los que el riesgo vital no es inmediato o no está todavía confirmado. Requieren una respuesta rápida y coordinada, aunque admiten un margen breve para la verificación y la valoración adicional. Pertenecen típicamente a este nivel los incendios forestales en interfaz urbano-forestal con condiciones meteorológicas desfavorables, los accidentes de tráfico con víctimas no críticas, los fenómenos meteorológicos adversos con aviso naranja o rojo asociados al incidente, o los incidentes en entornos Seveso sin afectación directa confirmada.
+
+% \subsubsection*{6.2.3. P3 - Prioridad media}
+% La prioridad P3 corresponde a incidentes que exigen gestión activa, pero que no presentan urgencia vital ni un potencial de escalado elevado a corto plazo. Son escenarios controlables con medios ordinarios, en los que una demora razonable no produce, previsiblemente, un agravamiento sustancial. Se incluyen aquí, por ejemplo, accidentes sin víctimas graves, incendios contenidos sin amenaza a personas, incidencias meteorológicas con afectación limitada o rescates sin compromiso vital inmediato.
+
+% \subsubsection*{6.2.4. P4 - Prioridad baja}
+% La prioridad P4 se reserva para incidentes menores que requieren registro, seguimiento o gestión diferida, pero que no compiten en urgencia con incidentes de niveles superiores. Este nivel es necesario para evitar que el sistema sature artificialmente los niveles altos de la escala y pierda poder discriminante. Se incluyen en este grupo consultas informativas, incidencias menores sin daño relevante, verificaciones rutinarias y avisos sin componente claro de urgencia operativa.
+
+% \begin{table}[h!]
+% \centering
+% \caption{Escala de prioridad operativa P1-P4 del sistema}
+% \small
+% \begin{tabularx}{\textwidth}{|l|l|X|X|l|}
+% \hline
+% \textbf{Nivel} & \textbf{Denominación} & \textbf{Condiciones típicas} & \textbf{Referente normativo orientativo} & \textbf{Acción} \\ \hline
+% P1 & Prioridad crítica & Riesgo vital confirmado o muy probable; AMV; personas atrapadas; fuga tóxica en zona habitada; inundación con personas aisladas & Referencia funcional frecuente a escenarios compatibles con mayor complejidad de coordinación & Atención inmediata; movilización urgente \\ \hline
+% P2 & Prioridad alta & Gravedad sin riesgo vital inmediato; potencial de escalado relevante; aviso AEMET naranja/rojo; proximidad Seveso sin afectación directa & Referencia funcional frecuente a escenarios de respuesta rápida reforzada & Respuesta rápida coordinada \\ \hline
+% P3 & Prioridad media & Gestión activa sin urgencia vital; controlable con medios ordinarios; afectación moderada & Referencia funcional frecuente a gestión ordinaria reforzada & Gestión activa con demora razonable \\ \hline
+% P4 & Prioridad baja & Incidente menor; consultas informativas; verificaciones rutinarias & Sin correlato operativo reforzado & Registro y seguimiento diferido \\ \hline
+% \end{tabularx}
+% \label{tabla:6.1}
+% \end{table}
+
+% \textit{Fuente: elaboración propia. La columna «Referente normativo orientativo» expresa una correspondencia funcional frecuente, no una equivalencia jurídica.}
+
+% \subsubsection*{6.2.5. Relación entre P1-P4 y situaciones operativas 0-3}
+% La relación entre la escala P1-P4 y las situaciones operativas 0-3 exige una formulación cuidadosa. Las situaciones operativas son categorías normativas que describen el estado global de una emergencia desde la perspectiva de la coordinación institucional. Determinan quién dirige, qué planes se activan y qué marco de coordinación resulta aplicable. La prioridad P1-P4, en cambio, es una escala funcional interna del prototipo que ordena incidentes individuales por urgencia operativa relativa.
+
+% La inspiración entre ambas escalas es deliberada, pero la equivalencia no existe. Un incidente puede recibir prioridad P1 por riesgo vital inmediato sin que la situación operativa global del territorio exceda una situación 0 o 1. Del mismo modo, una situación operativa 2 o 3 puede englobar incidentes heterogéneos cuya prioridad individual no sea idéntica. En consecuencia, la salida «situación operativa sugerida» que produce el motor debe entenderse siempre como una orientación complementaria no vinculante para el operador, nunca como una declaración formal de la situación.
+
+% \subsection*{6.3. Variables de entrada del motor}
+
+% La selección de variables de entrada constituye una de las decisiones de diseño más importantes del motor. Una selección demasiado amplia haría inviable el sistema dentro del alcance del TFM; una selección demasiado reducida lo convertiría en un clasificador trivial e incapaz de discriminar entre incidentes operativamente diferentes. La selección se ha guiado por cuatro criterios: respaldo normativo u oficial, impacto esperado sobre la prioridad, viabilidad de obtención en los primeros minutos y no redundancia con otras variables. El resultado es un conjunto cerrado de quince variables de entrada organizadas en seis grupos funcionales.
+
+% \subsubsection*{6.3.1. Gravedad inmediata}
+% Este grupo captura el daño actual o inminente a personas y ocupa la posición central en la lógica del sistema.
+% \begin{itemize}
+%     \item \textbf{Riesgo vital inmediato.} Variable binaria que indica si existe peligro de muerte inminente.
+%     \item \textbf{Víctimas confirmadas o probables.} Variable ordinal codificada por rangos, adecuada para información temprana incompleta.
+%     \item \textbf{Tipo de daño principal.} Variable categórica que diferencia entre daño a personas, bienes, medioambiente o ausencia de daño aparente.
+% \end{itemize}
+
+% \subsubsection*{6.3.2. Vulnerabilidad y exposición}
+% Este grupo incorpora el contexto humano y territorial del incidente.
+% \begin{itemize}
+%     \item \textbf{Población vulnerable.} Variable binaria que recoge la presencia confirmada o probable de menores, personas mayores, personas con discapacidad u otros colectivos especialmente sensibles.
+%     \item \textbf{Personas en riesgo estimadas.} Variable ordinal que estima cuántas personas podrían verse afectadas por la evolución del incidente, aunque todavía no exista daño confirmado.
+%     \item \textbf{Emplazamiento crítico.} Variable categórica que identifica si el incidente afecta a centros sanitarios, centros educativos, residencias, infraestructuras esenciales u otros emplazamientos sensibles.
+% \end{itemize}
+
+% \subsubsection*{6.3.3. Amenaza contextual}
+% Estas variables convierten el motor en un sistema contextual y no meramente reactivo.
+% \begin{itemize}
+%     \item \textbf{Nivel de aviso AEMET.} Variable ordinal con valores verde, amarillo, naranja o rojo.
+%     \item \textbf{Fenómeno meteorológico activo.} Variable categórica que identifica el fenómeno relevante para el incidente.
+%     \item \textbf{Peligrosidad por inundación.} Variable binaria derivada del cruce espacial con cartografía oficial.
+%     \item \textbf{Presencia de instalación Seveso.} Variable binaria que indica si el incidente se ubica en el entorno de una instalación industrial de especial riesgo.
+% \end{itemize}
+
+% \subsubsection*{6.3.4. Escalado y evolución del incidente}
+% \begin{itemize}
+%     \item \textbf{Tipo de incidente.} Variable categórica que activa la taxonomía y condiciona qué contexto se consulta y qué reglas se aplican.
+%     \item \textbf{Tendencia del incidente.} Variable ordinal con cuatro estados: mejoría, estable, agravamiento o desconocida.
+% \end{itemize}
+
+% \subsubsection*{6.3.5. Calidad de la información}
+% Estas variables no miden gravedad, sino solidez informativa.
+% \begin{itemize}
+%     \item \textbf{Fiabilidad del informador.} Variable ordinal que diferencia entre fuente oficial, testigo directo o fuente indirecta.
+%     \item \textbf{Número de avisos simultáneos.} Variable numérica agrupada en rangos, útil para reforzar la confirmación del evento y modular la confianza.
+% \end{itemize}
+
+% \subsubsection*{6.3.6. Contexto operativo}
+% \begin{itemize}
+%     \item \textbf{Accesibilidad al punto.} Variable ordinal que refleja dificultad de acceso al lugar del incidente y, por tanto, condiciona la urgencia práctica de la decisión y de la movilización.
+% \end{itemize}
+
+% \subsection*{6.4. Variables derivadas y salidas intermedias}
+
+% Además de las quince variables de entrada, el motor calcula cuatro variables derivadas. Estas no deben tratarse como entradas puras del modelo, sino como resultados intermedios obtenidos a partir de la combinación de entradas y de la lógica del motor.
+% \begin{itemize}
+%     \item \textbf{Necesidad de coordinación multiagencia.} Indica si el incidente exige previsiblemente la intervención simultánea de varios servicios.
+%     \item \textbf{Necesidad estimada de PMA.} Sugiere si el escenario apunta a la conveniencia de un puesto de mando avanzado.
+%     \item \textbf{Situación operativa sugerida.} Orientación no vinculante derivada de gravedad, extensión, coordinación y suficiencia de medios.
+%     \item \textbf{Plan activable recomendado.} Sugerencia del plan territorial o especial potencialmente aplicable, en función del tipo de incidente y del contexto.
+% \end{itemize}
+
+% \subsection*{6.5. Matriz resumida de variables de priorización}
+
+% La matriz de variables es el instrumento que consolida, para cada variable, su definición operativa, tipo de dato, valores posibles, fuente principal y papel dentro del motor. La versión completa de esta matriz se incorpora en el Anexo B. En el cuerpo del capítulo se incluye una versión resumida que permite visualizar de forma compacta el diseño.
+
+% \begin{table}[h!]
+% \centering
+% \caption{Variables de entrada y derivadas del motor: resumen operativo}
+% \tiny
+% \begin{tabularx}{\textwidth}{|l|X|l|X|X|l|l|}
+% \hline
+% \textbf{ID} & \textbf{Variable} & \textbf{Tipo} & \textbf{Valores posibles} & \textbf{Fuente principal} & \textbf{Papel motor} & \textbf{Grupo} \\ \hline
+% V01 & Riesgo vital inmediato & Binaria & Si/No & Com. inicial & Regla dura & G. inmediata \\ \hline
+% V02 & Víctimas confirmadas & Ordinal & 0 / 1-2 / 3-10 / $>10$ & Com. inicial & Regla + scoring & G. inmediata \\ \hline
+% V03 & Tipo daño principal & Categ. & Pers./Bien./Medioa./Sin & Com. inicial & Scoring & G. inmediata \\ \hline
+% V04 & Tipo de incidente & Categ. & Taxonomía operativa & Com./Estruct. & Activ. + scoring & Escalado \\ \hline
+% V05 & Población vulnerable & Binaria & Si/No & Com./Contexto & Scoring & Vulnerabilidad \\ \hline
+% V06 & Personas en riesgo est. & Ordinal & 0 / 1-10 / 11-100 / $>100$ & Com./Contexto & Scoring & Exposición \\ \hline
+% V07 & Emplazamiento crítico & Categ. & Sanit./Educ./Resid./Infra./Otro & Com./Cartogr. & Scoring & Vulnerabilidad \\ \hline
+% V08 & Nivel aviso AEMET & Ordinal & Verde/Amar./Nar./Rojo & OpenData & Regla + scoring & Contexto \\ \hline
+% V09 & Fenómeno met. activo & Categ. & Viento/Lluvia/Nieve/etc. & OpenData & Scoring condic. & Contexto \\ \hline
+% V10 & Peligrosidad inundac. & Binaria & Si/No & SNCZI/MITECO & Scoring & Contexto \\ \hline
+% V11 & Inst. Seveso & Binaria & Si/No & Reg. oficial & Regla + scoring & Contexto \\ \hline
+% V12 & Tendencia incidente & Ordinal & Mej./Est./Agrav./Desc. & Com./Parte & Scoring & Escalado \\ \hline
+% V13 & Fiabilidad informador & Ordinal & Alta / Media / Baja & Com. inicial & Confianza & Calidad info. \\ \hline
+% V14 & Num. avisos simult. & Num. & 1 / 2-3 / $>3$ & Reg. avisos & Confianza & Calidad info. \\ \hline
+% V15 & Accesibilidad & Ordinal & Fác./Mod./Dif./Muy dif. & Com./Cartogr. & Scoring & Contexto op. \\ \hline
+% \hline
+% D01 & Coord. multiagencia & Deriv. & Si/No & Calc. motor & Salida interm. & Complejidad \\ \hline
+% D02 & Necesidad PMA & Deriv. & Si/No & Calc. motor & Salida interm. & Complejidad \\ \hline
+% D03 & Sit. op. sugerida & Deriv. & 0 / 1 / 2 / 3 & Calc. motor & Salida orient. & Global \\ \hline
+% D04 & Plan recomendado & Deriv. & Territ./Especial/Ninguno & Calc. motor & Salida orient. & Global \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \textit{Fuente: elaboración propia. La matriz detallada completa se incluye en el Anexo B. Su inclusión en anexo responde a una decisión de claridad expositiva.}
+
+% \subsection*{6.6. Guía de etiquetado}
+
+% La guía de etiquetado define cómo asignar una prioridad de referencia a los casos del dataset piloto y cumple dos funciones complementarias: reducir la subjetividad del etiquetado y proporcionar el estándar contra el que se evaluará la coherencia del baseline.
+
+% \subsubsection*{6.6.1. Reglas maestras}
+% La prioridad debe entenderse como urgencia operativa relativa, no como importancia abstracta. Debe reflejar la necesidad de atención temprana en un entorno de coordinación, no la gravedad final observada horas después. Cuando la información sea incompleta, el etiquetado debe asumir un criterio de precaución razonable, pero sin convertir la incertidumbre en dramatización sistemática. Además, toda asignación debe poder justificarse mediante variables, reglas o criterios operativos trazables.
+
+% \subsubsection*{6.6.2. Reglas duras del baseline}
+% Las reglas duras son condiciones deterministas que fijan o limitan la prioridad sin necesidad de aplicar todavía la capa de scoring. Su función es actuar como red de seguridad del sistema para garantizar que ciertos escenarios no negociables no queden infraestimados.
+
+% \begin{table}[h!]
+% \centering
+% \caption{Reglas duras del baseline interpretable}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|l|X|X|}
+% \hline
+% \textbf{ID} & \textbf{Condición} & \textbf{Prioridad} & \textbf{Base normativa} & \textbf{Justificación} \\ \hline
+% RD1 & Riesgo vital confirmed $(V01=Si)$ & P1 fija & Prot. vida & Vida prevalece \\ \hline
+% RD2 & Víctimas confirmed $\ge 3$ & P2 mínima & AMV & Coord. reforzada \\ \hline
+% RD3 & Aviso AEMET rojo activo & P2 mínima & Planes met. & Riesgo extremo \\ \hline
+% RD4 & Seveso c/ afectación directa & P1 mínima & Riesgo químico & Catastrófico \\ \hline
+% RD5 & Víctimas confirmed $> 10$ & P1 mínima & AMV alta entidad & Magnitud crítica \\ \hline
+% RD6 & Búsqueda menor/vulnerable & P2 mínima & Prot. colectivos & Sensibilidad \\ \hline
+% RD7 & Inundación personas aisladas & P1 fija & Riesgo hidrol. & Máxima urgencia \\ \hline
+% RD8 & IF Interfaz con AEMET N/R & P2 mínima & Propagación & Escalada rápida \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \textit{Fuente: elaboración propia. Estas reglas expresan condiciones funcionales y no decisiones jurídicas de activación.}
+
+% \subsubsection*{6.6.3. Criterios de resolución de conflictos}
+% Cuando diferentes variables apunten hacia prioridades distintas, prevalece la señal de mayor urgencia compatible con la información disponible. Este criterio evita que factores secundarios rebajen artificialmente la prioridad de escenarios con indicadores críticos. La resolución del conflicto debe quedar reflejada en la explicación final del motor.
+
+% \subsubsection*{6.6.4. Etiquetado de confianza}
+% Además de la prioridad, cada caso se acompaña de un nivel de confianza del etiquetado: alto, medio o bajo. Este nivel no mide la gravedad del incidente, sino la completitud y robustez de la información disponible para etiquetarlo. Su incorporación permite diferenciar entre errores del motor y limitaciones estructurales del dato.
+
+% \subsection*{6.7. Arquitectura del baseline interpretable}
+
+% El motor se implementa como un baseline interpretable de tres capas. Esta arquitectura responde a una decisión metodológica deliberada: priorizar explicabilidad, trazabilidad y robustez frente a complejidad innecesaria.
+
+% \subsubsection*{6.7.1. Capa 1: reglas duras}
+% La primera capa evalúa secuencialmente las reglas duras. Si una de ellas se activa, fija una prioridad mínima o absoluta según el caso. Si ninguna se activa, el incidente pasa a la segunda capa. Esta capa garantiza que los incidentes más sensibles no dependan exclusivamente de una ponderación gradual. Así, el sistema no puede «promediar» un riesgo vital confirmado con factores secundarios hasta degradar indebidamente la urgencia.
+
+% \subsubsection*{6.7.2. Capa 2: scoring explicable}
+% La segunda capa calcula una puntuación de prioridad mediante una combinación ponderada de variables normalizadas. El scoring no sustituye a las reglas duras, sino que actúa sobre los casos en los que no existe una condición determinista suficiente o en los que conviene modular la urgencia con mayor gradación. Los pesos iniciales se asignan por grupos funcionales, como punto de partida fundamentado en la jerarquía normativa.
+
+% \begin{table}[h!]
+% \centering
+% \caption{Pesos orientativos del scoring por grupo funcional}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|l|X|}
+% \hline
+% \textbf{Grupo funcional} & \textbf{Variables} & \textbf{Peso} & \textbf{Justificación} \\ \hline
+% Gravedad inmediata & V01, V02, V03 & 0,30-0,40 & Protección de personas \\ \hline
+% Vulnerabilidad y exp. & V05, V06, V07 & 0,15-0,20 & Magnitud potencial \\ \hline
+% Amenaza contextual & V08, V09, V10, V11 & 0,15-0,20 & Planes y contexto oficial \\ \hline
+% Escalado y evolución & V04, V12 & 0,10-0,15 & Evolución previsible \\ \hline
+% Contexto operativo & V15 & 0,05-0,10 & Condiciona la respuesta \\ \hline
+% Calidad información & V13, V14 & No pond. & Modula confianza \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% La puntuación se normaliza en el rango 0-100 y se traduce a la escala P1-P4 mediante umbrales:
+
+% \begin{table}[h!]
+% \centering
+% \caption{Umbrales indicativos de corte del scoring}
+% \begin{tabular}{|l|l|l|}
+% \hline
+% \textbf{Prioridad} & \textbf{Rango} & \textbf{Interpretación} \\ \hline
+% P1 & $\ge 75$ & Urgencia crítica \\ \hline
+% P2 & 50-74 & Urgencia alta \\ \hline
+% P3 & 25-49 & Urgencia media \\ \hline
+% P4 & $< 25$ & Urgencia baja \\ \hline
+% \end{tabular}
+% \end{table}
+
+% \subsubsection*{6.7.3. Capa 3: confianza y explicación}
+% La tercera capa genera el nivel de confianza y la explicación textual. La confianza se basa en la calidad de variables informadas. La explicación resume reglas activadas, variables de mayor impacto y señales contextuales.
+
+% \subsection*{6.8. Justificación del baseline frente a modelos más complejos}
+
+% La elección de un baseline interpretable responde a:
+% 1. \textbf{Viabilidad:} No hay garantía de acceso a microdatos reales masivos de 112 Aragón.
+% 2. \textbf{Explicabilidad:} Permite justificar cada recomendación internamente.
+% 3. \textbf{Trazabilidad normativa:} Vincula variables a lógica operativa documentada.
+% 4. \textbf{Línea base:} Sirve como estándar para futuros modelos complejos.
+% 5. \textbf{Coherencia:} El objetivo es diseñar una lógica explicable, no un despliegue industrial.
+
+% \subsection*{6.9. Ejemplo de funcionamiento del motor}
+
+% Supóngase un incendio forestal en interfaz urbano-forestal (Cinco Villas) en julio, con aviso AEMET naranja, dos avisos ciudadanos y sin víctimas iniciales.
+% \begin{itemize}
+%     \item \textbf{Capa 1:} Se activa RD8 (incendio interfaz + aviso naranja). Fija prioridad mínima P2.
+%     \item \textbf{Capa 2:} El scoring suma amenaza contextual y exposición. Se mantiene en rango P2.
+%     \item \textbf{Capa 3:} Confianza alta. Explicación: incendio interfaz, aviso naranja, riesgo propagación, sin víctimas confirmadas.
+% \end{itemize}
+
+% \subsection*{6.10. Fórmula conceptual del motor de priorización}
+
+% La lógica puede sintetizarse en:
+% \begin{equation*}
+% \text{PRIORIDAD} = f(\text{gravedad}, \text{vulnerabilidad}, \text{exposición}, \text{contexto}, \text{escalado}, \text{coordinación}, \text{calidad info.})
+% \end{equation*}
+
+% La calidad de la información modula la confianza, no rebaja la urgencia. Con esto queda cerrado el diseño analítico. El siguiente capítulo desarrolla el esquema de datos y el dataset piloto.
+
+% \end{document}

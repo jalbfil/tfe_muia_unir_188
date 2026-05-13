@@ -1,0 +1,136 @@
+% !TEX root = main.tex
+\documentclass[11pt,a4paper,spanish, oneside]{book}
+\usepackage{estilo_unir-1}
+\usepackage{apacite}
+
+\usepackage{hyperref}
+\numberwithin{equation}{chapter}
+%\usepackage{caption}
+\numberwithin{figure}{chapter}
+\usepackage{longtable, booktabs, array, ragged2e, multirow, tabularx}
+%\usepackage{chngcntr}
+%\counterwithin{equation}{chapter}
+%\counterwithin{figure}{chapter}
+%\counterwithin{table}{chapter}
+%\renewcommand\theequation{\thechapter.\arabic{equation}}
+%\renewcommand\thefigure{\thechapter.\arabic{figure}}
+%\renewcommand\thetable{\thechapter.\arabic{table}}
+%\renewcommand\theequation{\thechapter.\arabic{equation}}
+%\counterwithin{figure}{chapter}
+%\counterwithin{table}{chapter}
+%\renewcommand\thefigure{\thechapter.\arabic{figure}}
+%\renewcommand\thetable{\thechapter.\arabic{table}}
+%\renewcommand\thefigure{\thechapter.\arabic{figure}}
+%\makeatletter
+%\renewcommand\p@figure{\thechapter..\arabic{figure}}
+%\makeatother
+
+
+
+%---------------------------
+%título del trabajo y autor
+%---------------------------
+\title{Sistema inteligente de apoyo a la decisión para puestos de mando de emergencias}
+\titulacion{Máster Universitario en Inteligencia Artificial}
+\author{Juan Carlos Albert Fillol, Ancor González Carballo y Brian Mathias Pesci Juliani}
+\date{22 de abril de 2026}
+\director{Dr. Andrés Soto Villaverde}
+\nombreciudad{ Madrid, Tenerife y Alicante}
+
+%---------------------------
+%marges
+%---------------------------
+%\usepackage[margin=1.9cm]{geometry}
+%---------------------------
+%---------------------------
+%---------------------------
+%---------------------------
+\begin{document}
+\renewcommand{\listfigurename}{Índice de Ilustraciones}
+\renewcommand{\listtablename}{Índice de Tablas}
+\renewcommand{\contentsname}{Índice de Contenidos}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla} 
+
+% Portada inlined para que pandoc/docx procese el logo
+\makeatletter
+\begingroup
+\thispagestyle{empty}
+\includegraphics[width=0.8\textwidth]{figures/logo_unir}
+
+\vspace{1cm}
+\centering{
+\begin{tabular}{!{\color{azulunir}\vrule width 2pt}p{12cm}}
+{\Large {\bf Universidad Internacional de la Rioja (UNIR)}} \\ \vspace{0.1cm}
+{ \huge {\bf Escuela Superior de Ingeniería y Tecnología}} \\ \vspace{0.1cm}
+{ \Large {\bf \@titulacion}}\\ \vspace{1cm}
+{\Huge {\bf {\color{azulunir}{\thetitle} }  }  }
+\end{tabular}
+}
+\vfill
+
+\noindent
+\flushleft{
+{\bf Trabajo Fin de Estudios}\\  \vspace{0.3cm}
+{\bf Presentado por:} \theauthor\\  \vspace{0.3cm}
+{\bf Dirigido por:} \@director
+}
+\vspace{3cm}
+
+{\color{azulunir}{Ciudad:}}\@nombreciudad\\
+{\color{azulunir}{Fecha:}} \thedate
+\newpage
+\thispagestyle{empty}
+\endgroup
+\makeatother
+
+\frontmatter
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+La gestión de emergencias civiles exige decisiones rápidas y fundamentadas ante información heterogénea, incompleta y fragmentaria. En este contexto, los operadores de los puestos de mando se enfrentan a una presión temporal elevada que puede comprometer la calidad de la primera valoración y, con ello, la eficacia de la respuesta. Este trabajo diseña e implementa un prototipo modular de apoyo a la decisión para puestos de mando de emergencias, orientado a reducir el \textit{Time To First Decision} (TTFD) mediante una lógica explicable basada en criterios operativos y fuentes oficiales. La metodología sigue un enfoque iterativo e incremental sustentado en el marco normativo del sistema español de protección civil, con caso piloto en Aragón. El prototipo integra quince variables operativas organizadas en seis grupos funcionales e incorpora contexto oficial procedente de AEMET y del Sistema Nacional de Cartografía de Zonas Inundables (SNCZI) del MITECO. El motor de priorización adopta una arquitectura de tres capas ---reglas duras, \textit{scoring} ponderado y capa de confianza y explicación--- que produce recomendaciones estructuradas, trazables y justificables sin recurrir a modelos de caja negra. La evaluación sobre escenarios simulados demuestra coherencia con el criterio experto y la viabilidad técnica del enfoque. Los resultados apoyan la aplicabilidad de la inteligencia artificial explicable en contextos operativos de emergencia, manteniendo al operador humano como responsable final de la decisión.
+
+\medskip
+\textbf{Palabras clave:} emergencias civiles, apoyo a la decisión, priorización de incidentes, inteligencia artificial explicable, protección civil.
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Civil emergency management demands rapid, evidence-based decisions under heterogeneous, incomplete and fragmented information. In this context, command post operators face intense time pressure that can compromise the quality of the initial assessment and, consequently, the effectiveness of the response. This work designs and implements a modular decision-support prototype for emergency command posts, aimed at reducing the \textit{Time To First Decision} (TTFD) through an explainable logic grounded in operational criteria and official sources. The methodology follows an iterative and incremental approach, grounded in the Spanish civil protection normative framework with a pilot case in Aragón. The prototype integrates fifteen operational variables organised into six functional groups, incorporating official contextual data from AEMET and the National Flood Zone Mapping System (SNCZI). The prioritisation engine adopts a three-layer architecture---hard rules, weighted scoring, and a confidence and explanation layer---producing structured, traceable and justifiable recommendations without black-box models. Evaluation on simulated scenarios demonstrates coherence with expert judgment and technical viability of the approach. The results support the applicability of explainable artificial intelligence in operational emergency contexts, while preserving the human operator as the final decision-maker.
+
+\medskip
+\textbf{Keywords:} civil emergency management, decision support system, incident prioritisation, explainable artificial intelligence, civil protection.
+
+
+
+
+\mainmatter
+\input{chapters/chap0}
+\input{chapters/chap1}
+\input{chapters/chap2}
+\input{chapters/chap3}
+\input{chapters/chap4}
+\input{chapters/chap5}
+\input{chapters/chap6}
+\input{chapters/chap7}
+\input{chapters/chap8}
+\input{chapters/chap9}
+\input{chapters/chap10}
+
+\bibliographystyle{apacite}
+\bibliography{bibliografia}
+
+\appendix
+\input{chapters/anexo_a}
+\input{chapters/anexo_b}
+\input{chapters/anexo_c}
+\input{chapters/anexo_d}
+\input{chapters/anexo_e}
+\input{chapters/anexo_f}
+
+\end{document}
+

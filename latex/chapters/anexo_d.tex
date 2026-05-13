@@ -1,0 +1,292 @@
+\chapter{Plantilla de etiquetado y casos piloto}
+\label{cap:anexod}
+
+\section*{D.1. Finalidad del anexo}
+
+% Este anexo materializa la guía de etiquetado (Anexo~C) en dos instrumentos concretos: una plantilla maestra reutilizable para documentar cada caso del dataset piloto y un conjunto representativo de fichas de casos piloto. La plantilla define los campos que debe contener cada ficha, garantizando homogeneidad y trazabilidad. Las fichas demuestran cómo se asigna la prioridad en escenarios claros y en escenarios de frontera.
+
+\section*{D.2. Plantilla maestra de etiquetado}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Plantilla maestra de etiquetado de casos}
+% \label{tab:d1}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \multicolumn{2}{|c|}{\textbf{BLOQUE 1: IDENTIFICACIÓN}} \\ \hline
+% ID del caso & Código único (formato: CASO-NNN) \\ \hline
+% Fecha/hora simulada & YYYY-MM-DD HH:MM \\ \hline
+% Localización & Municipio, comarca y provincia de Aragón \\ \hline
+% Descripción textual & Relato breve del incidente \\ \hline
+% Tipo de incidente (V04) & Código de la taxonomía operativa (Anexo~A) \\ \hline
+% Fuente del aviso & Ciudadano / testigo / agente / servicio / institucional \\ \hline
+% \multicolumn{2}{|c|}{\textbf{BLOQUE 2: VARIABLES DE ENTRADA}} \\ \hline
+% V01--V15 & Valor informado de cada variable según Anexo~B o «Ausente» \\ \hline
+% \multicolumn{2}{|c|}{\textbf{BLOQUE 3: ETIQUETADO}} \\ \hline
+% Reglas duras activadas & Lista de reglas (RD1--RD8) o «ninguna» \\ \hline
+% Prioridad de referencia & P1 / P2 / P3 / P4 \\ \hline
+% Nivel de confianza & Alto / Medio / Bajo \\ \hline
+% Justificación & 1--3 frases: variables y criterios determinantes \\ \hline
+% \multicolumn{2}{|c|}{\textbf{BLOQUE 4: CONTROL DE PLAUSIBILIDAD}} \\ \hline
+% Coherencia geográfica & ¿Tipo de incidente compatible con localización? \\ \hline
+% Coherencia temporal & ¿Fecha/hora coherente con la época del año? \\ \hline
+% Coherencia meteorológica & ¿Aviso AEMET coherente con el fenómeno y la fecha? \\ \hline
+% Coherencia interna & ¿Variables mutuamente compatibles? \\ \hline
+% Coherencia con etiquetado & ¿Prioridad coherente con la guía (Anexo~C)? \\ \hline
+% \multicolumn{2}{|c|}{\textbf{BLOQUE 5: METADATOS}} \\ \hline
+% Etiquetador & Iniciales del miembro del equipo \\ \hline
+% Revisor & Iniciales del revisor cruzado \\ \hline
+% Discrepancia & Sí / No. Si sí: resolución y criterio aplicado \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Coherente con el esquema de datos (Cap.~7, apartado~7.2) y la guía de etiquetado (Anexo~C).}
+
+\section*{D.3. Casos piloto representativos}
+
+% Los ocho casos incluyen al menos un caso claro de cada nivel (P1, P2, P3, P4) y cuatro casos de frontera. Todos están localizados en Aragón y superan los cinco controles de plausibilidad del apartado~7.3.2 del Capítulo~7.
+
+\subsection*{CASO-001: Inundación con personas aisladas (P1)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Ficha CASO-001}
+% \label{tab:caso001}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \textbf{ID} & CASO-001 \\ \hline
+% \textbf{Fecha/hora} & 2024-10-15 16:30 \\ \hline
+% \textbf{Localización} & Ejea de los Caballeros, Cinco Villas, Zaragoza \\ \hline
+% \textbf{Descripción} & Crecida del río Arba con agua entrando en calles del casco urbano. Varias personas en tejados solicitan ayuda. \\ \hline
+% \textbf{V04} & N1.1.1 --- Inundación fluvial \\ \hline
+% \textbf{V01} & Sí (aislados = riesgo vital) \\ \hline
+% \textbf{V02} & 0 (sin víctimas confirmadas) \\ \hline
+% \textbf{V06} & >100 \\ \hline
+% \textbf{V08} & Naranja (lluvia) \\ \hline
+% \textbf{V10} & Sí (zona SNCZI) \\ \hline
+% \textbf{V12} & Agravamiento \\ \hline
+% \textbf{V13} & Alta (múltiples alertantes) \\ \hline
+% \textbf{V14} & >3 \\ \hline
+% \textbf{V15} & Difícil (calles anegadas) \\ \hline
+% \textbf{Reglas duras} & RD1 (V01=Sí → P1 fija); RD7 (inundación + aislados → P1 fija) \\ \hline
+% \textbf{Prioridad} & P1 \\ \hline
+% \textbf{Confianza} & Alto \\ \hline
+% \textbf{Justificación} & Riesgo vital confirmado por personas aisladas. RD1 y RD7 activadas. Contexto hidrológico coherente (SNCZI + AEMET naranja + agravamiento + múltiples fuentes). \\ \hline
+% \end{tabularx}
+% \end{table}
+
+\subsection*{CASO-002: Incendio forestal IUF con AEMET naranja (P2)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Ficha CASO-002}
+% \label{tab:caso002}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \textbf{ID} & CASO-002 \\ \hline
+% \textbf{Fecha/hora} & 2024-07-22 14:15 \\ \hline
+% \textbf{Localización} & Zuera, Comarca Central, Zaragoza \\ \hline
+% \textbf{Descripción} & Columna de humo visible desde urbanización próxima a masa forestal. Viento fuerte del noroeste. Sin víctimas. AEMET naranja por temperaturas. \\ \hline
+% \textbf{V04} & N1.1.3 --- Incendio forestal (IUF) \\ \hline
+% \textbf{V01} & No \\ \hline
+% \textbf{V02} & 0 \\ \hline
+% \textbf{V05} & Sí (urbanización próxima) \\ \hline
+% \textbf{V06} & 11--100 \\ \hline
+% \textbf{V08} & Naranja (temperatura) \\ \hline
+% \textbf{V12} & Agravamiento (viento fuerte) \\ \hline
+% \textbf{V13} & Media (testigo directo) \\ \hline
+% \textbf{Reglas duras} & RD8 (incendio IUF + AEMET $\geq$ naranja → P2 mínima) \\ \hline
+% \textbf{Prioridad} & P2 \\ \hline
+% \textbf{Confianza} & Alto \\ \hline
+% \textbf{Justificación} & RD8 activa: IUF con AEMET naranja. Tendencia de agravamiento por viento. Población en urbanización próxima. Scoring confirma P2. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+\subsection*{CASO-003: Accidente de tráfico leve (P3)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Ficha CASO-003}
+% \label{tab:caso003}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \textbf{ID} & CASO-003 \\ \hline
+% \textbf{Fecha/hora} & 2024-03-10 09:45 \\ \hline
+% \textbf{Localización} & A-2 km~315, Calatayud, Zaragoza \\ \hline
+% \textbf{Descripción} & Colisión por alcance entre dos turismos. Un herido leve, consciente y orientado, sin atrapamiento. Tráfico ralentizado. \\ \hline
+% \textbf{V04} & N2.2.1 --- Tráfico con víctimas \\ \hline
+% \textbf{V01} & No \\ \hline
+% \textbf{V02} & 1--2 \\ \hline
+% \textbf{V08} & Verde \\ \hline
+% \textbf{V12} & Estable \\ \hline
+% \textbf{V15} & Fácil \\ \hline
+% \textbf{Reglas duras} & Ninguna \\ \hline
+% \textbf{Prioridad} & P3 \\ \hline
+% \textbf{Confianza} & Alto \\ \hline
+% \textbf{Justificación} & Sin riesgo vital, sin atrapamiento, un herido leve. Sin factores agravantes. Gestión activa sin urgencia vital. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+\subsection*{CASO-004: Consulta informativa (P4)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Ficha CASO-004}
+% \label{tab:caso004}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \textbf{ID} & CASO-004 \\ \hline
+% \textbf{Fecha/hora} & 2024-01-20 11:00 \\ \hline
+% \textbf{Localización} & Huesca capital, Hoya de Huesca \\ \hline
+% \textbf{Descripción} & Ciudadano consulta si la A-136 está cortada por nieve. No reporta incidente. \\ \hline
+% \textbf{V04} & N2.6.3 --- Consulta informativa \\ \hline
+% \textbf{V01} & No \\ \hline
+% \textbf{V02} & 0 \\ \hline
+% \textbf{V08} & Amarillo (nieve) \\ \hline
+% \textbf{Reglas duras} & Ninguna \\ \hline
+% \textbf{Prioridad} & P4 \\ \hline
+% \textbf{Confianza} & Alto \\ \hline
+% \textbf{Justificación} & No hay incidente activo. Consulta sin urgencia operativa. P4 sin ambigüedad. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+\subsection*{CASO-005: Incidente industrial con proximidad Seveso (Frontera P1/P2)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Ficha CASO-005}
+% \label{tab:caso005}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \textbf{ID} & CASO-005 \\ \hline
+% \textbf{Fecha/hora} & 2024-06-05 08:20 \\ \hline
+% \textbf{Localización} & Polígono industrial Malpica, Zaragoza capital \\ \hline
+% \textbf{Descripción} & Fuga de producto químico en nave industrial próxima a instalación Seveso. Olor fuerte reportado por trabajadores. Afectación directa a la instalación Seveso aún sin determinar. \\ \hline
+% \textbf{V04} & N1.2.2 --- Incidente industrial Seveso \\ \hline
+% \textbf{V01} & No confirmado \\ \hline
+% \textbf{V02} & 0 \\ \hline
+% \textbf{V06} & 11--100 \\ \hline
+% \textbf{V11} & Sí \\ \hline
+% \textbf{V12} & Desconocida \\ \hline
+% \textbf{V13} & Media \\ \hline
+% \textbf{Reglas duras} & RD4 no activada (afectación directa no confirmada). \\ \hline
+% \textbf{Prioridad} & P2 \\ \hline
+% \textbf{Confianza} & Medio \\ \hline
+% \textbf{Justificación} & Frontera P1/P2. RD4 requiere afectación directa aún no confirmada. Proximidad Seveso + fuga + exposición potencial → P2 por scoring. Si se confirma afectación directa: RD4 activa P1~mín. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+\subsection*{CASO-006: Incendio urbano con persona mayor no localizada (Frontera P2/P3)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Ficha CASO-006}
+% \label{tab:caso006}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \textbf{ID} & CASO-006 \\ \hline
+% \textbf{Fecha/hora} & 2024-11-18 21:30 \\ \hline
+% \textbf{Localización} & Teruel capital, Comunidad de Teruel \\ \hline
+% \textbf{Descripción} & Humo en escalera de edificio de 4 plantas. Persona mayor en el 3.º no responde al timbre. Sin confirmación de atrapamiento. \\ \hline
+% \textbf{V04} & N2.3.1 --- Incendio vivienda \\ \hline
+% \textbf{V01} & No confirmado \\ \hline
+% \textbf{V02} & 0 \\ \hline
+% \textbf{V05} & Sí (persona mayor) \\ \hline
+% \textbf{V07} & Residencia \\ \hline
+% \textbf{V12} & Desconocida \\ \hline
+% \textbf{V13} & Media \\ \hline
+% \textbf{Reglas duras} & Ninguna activada \\ \hline
+% \textbf{Prioridad} & P2 \\ \hline
+% \textbf{Confianza} & Medio \\ \hline
+% \textbf{Justificación} & Frontera P2/P3. Humo + persona mayor no localizada + tendencia desconocida = dos factores hacia P2. Precaución razonable aplicada. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+\subsection*{CASO-007: Corte de suministro eléctrico con frío extremo (Frontera P3/P4)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Ficha CASO-007}
+% \label{tab:caso007}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \textbf{ID} & CASO-007 \\ \hline
+% \textbf{Fecha/hora} & 2024-12-08 19:00 \\ \hline
+% \textbf{Localización} & Jaca, La Jacetania, Huesca \\ \hline
+% \textbf{Descripción} & Corte de electricidad en barrio residencial. Temperatura bajo cero. Familias con menores y mayores afectadas. Reparación estimada en 4--6 horas. \\ \hline
+% \textbf{V04} & N2.6.1 --- Corte suministro esencial \\ \hline
+% \textbf{V05} & Sí (menores y mayores) \\ \hline
+% \textbf{V06} & 11--100 \\ \hline
+% \textbf{V08} & Amarillo (nieve/helada) \\ \hline
+% \textbf{V09} & Temperatura \\ \hline
+% \textbf{V12} & Estable \\ \hline
+% \textbf{V13} & Alta (compañía + vecinos) \\ \hline
+% \textbf{Reglas duras} & Ninguna \\ \hline
+% \textbf{Prioridad} & P3 \\ \hline
+% \textbf{Confianza} & Alto \\ \hline
+% \textbf{Justificación} & Frontera P3/P4. Corte solo sería P4, pero temperatura bajo cero + población vulnerable + 4--6 h duración eleva a P3. Requiere coordinación sin urgencia vital. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+\subsection*{CASO-008: Búsqueda de menor desaparecido en montaña (P2)}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Ficha CASO-008}
+% \label{tab:caso008}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|}
+% \hline
+% \textbf{ID} & CASO-008 \\ \hline
+% \textbf{Fecha/hora} & 2024-08-12 18:45 \\ \hline
+% \textbf{Localización} & Albarracín, Sierra de Albarracín, Teruel \\ \hline
+% \textbf{Descripción} & Desaparición de niño de 7 años en zona de senderos. Una hora sin localizarlo. Atardecer próximo. Terreno montañoso con barrancos. \\ \hline
+% \textbf{V04} & N2.4.3 --- Búsqueda de persona \\ \hline
+% \textbf{V01} & No confirmado \\ \hline
+% \textbf{V02} & 0 \\ \hline
+% \textbf{V05} & Sí (menor de edad) \\ \hline
+% \textbf{V12} & Desconocida \\ \hline
+% \textbf{V13} & Alta (familia directa) \\ \hline
+% \textbf{V15} & Difícil (montaña, barrancos) \\ \hline
+% \textbf{Reglas duras} & RD6 (búsqueda de menor → P2 mínima) \\ \hline
+% \textbf{Prioridad} & P2 \\ \hline
+% \textbf{Confianza} & Alto \\ \hline
+% \textbf{Justificación} & RD6 activada. Atardecer + terreno difícil agravan. No se eleva a P1 sin evidencia de riesgo vital inmediato, aunque podría justificarse si la búsqueda se prolonga. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+\section*{D.4. Criterios de plausibilidad de casos}
+
+% Cada caso del dataset piloto debe superar cinco controles antes de incorporarse:
+
+% \begin{enumerate}
+%     \item \textbf{Coherencia geográfica.} El tipo de incidente debe ser compatible con la localización aragonesa. Una inundación fluvial en Ejea de los Caballeros es plausible; una inundación marítima en Teruel no.
+%     \item \textbf{Coherencia temporal.} Fecha y hora coherentes con la época del año. Incendio forestal en julio es plausible; en enero con nieve acumulada, no.
+%     \item \textbf{Coherencia meteorológica.} El aviso AEMET debe ser coherente con el fenómeno y la época.
+%     \item \textbf{Coherencia interna de variables.} Los valores de las quince variables deben ser mutuamente compatibles. V01=Sí con V02=0 y V03=Sin daño sería incoherente.
+%     \item \textbf{Coherencia con el etiquetado.} La prioridad debe ser defendible mediante la guía del Anexo~C.
+% \end{enumerate}
+
+% Los ocho casos presentados superan los cinco controles.
+
+\section*{D.5. Observaciones metodológicas}
+
+% \paragraph{D.5.1. Representatividad.}
+% Los ocho casos cubren los cuatro niveles de prioridad, cuatro casos frontera o especiales, seis de las diez familias de la taxonomía y cinco de las ocho reglas duras.
+
+% \paragraph{D.5.2. El dataset completo usa la misma plantilla.}
+% Los 120--150 casos del dataset piloto se documentan con la Tabla~D.1. Cada caso supera los cinco controles y se etiqueta con revisión cruzada.
+
+% \paragraph{D.5.3. Variables ausentes deliberadas.}
+% Algunos casos tienen variables ausentes de forma deliberada para evaluar el requisito RNF5. La plantilla registra «ausente», el valor por defecto del Anexo~B se documenta y la confianza se reduce.
+
+% \paragraph{D.5.4. Limitaciones.}
+% Los casos son simulados, no reales. El etiquetado es interno al equipo y no ha sido validado por un panel externo de operadores del 112. Estas limitaciones se reconocen en el Capítulo~7 y no invalidan el TFM, pero acotan el alcance de la evaluación.

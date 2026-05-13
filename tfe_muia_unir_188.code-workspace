@@ -1,0 +1,13 @@
+{
+    "folders": [
+        {
+            "name": "Proyecto (raíz)",
+            "path": "."
+        },
+        {
+            "name": "LaTeX",
+            "path": "latex"
+        }
+    ],
+    "settings": {}
+}

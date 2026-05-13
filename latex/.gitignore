@@ -1,0 +1,30 @@
+build/**
+
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.toc
+*.log
+*.out
+*.synctex.gz
+*.synctex(busy)
+
+# Temporary Word/Office lock files
+~$*.docx
+~$*.doc
+~$*.xlsx
+~$*.pptx
+
+# Generated output
+main.docx
+main.pdf
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

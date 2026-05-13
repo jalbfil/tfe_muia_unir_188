@@ -1,0 +1,202 @@
+\chapter{Tabla de reglas y pesos del baseline}
+\label{cap:anexoe}
+
+\section*{E.1. Finalidad del anexo}
+
+% Este anexo constituye la especificación técnica completa del razonamiento del motor de priorización. Cumple cuatro finalidades: especificar la tabla ampliada de reglas duras, desarrollar los pesos del scoring por grupos funcionales, documentar los umbrales de corte P1--P4 y formalizar las reglas de combinación entre las tres capas del baseline.
+
+% No introduce decisiones nuevas: expande con precisión técnica las decisiones cerradas en los apartados~6.6.2, 6.7.1, 6.7.2, 6.7.3, Tablas~6.3--6.5 del Capítulo~6.
+
+\section*{E.2. Tabla ampliada de reglas duras}
+
+\subsection*{E.2.1. Naturaleza y función de las reglas duras}
+
+% Las reglas duras son condiciones deterministas que fijan o limitan la prioridad sin necesidad de aplicar el scoring. Constituyen la primera línea de evaluación y actúan como red de seguridad ante los escenarios más críticos.
+
+% Existen dos tipos de asignación:
+% \begin{itemize}
+%     \item \textbf{Prioridad fija.} La prioridad es inamovible. El scoring se calcula para la explicación, pero no altera el nivel (RD1, RD7).
+%     \item \textbf{Prioridad mínima.} Establece un suelo que el scoring no puede perforar. El scoring puede igualar o elevar, pero nunca rebajar (RD2--RD6, RD8).
+% \end{itemize}
+
+\subsection*{E.2.2. Regla de precedencia entre reglas duras}
+
+% Cuando múltiples reglas duras se activan simultáneamente, prevalece la que asigne la prioridad más alta.
+
+\subsection*{E.2.3. Fichas detalladas de las reglas duras}
+
+% \begin{description}
+%     \item[\textbf{RD1. Riesgo vital inmediato confirmado.}] \textit{Condición:} V01 = Sí. \textit{Prioridad:} P1 fija. \textit{Tipo:} fija. \textit{Justificación:} principio de protección de la vida (Ley~17/2015 art.~1; Ley~4/2024 art.~3). Prevalece sobre cualquier otra regla. Regla con mayor impacto del sistema; la no negociabilidad del riesgo vital justifica su carácter fijo, no solo mínimo.
+    
+%     \item[\textbf{RD2. Víctimas confirmadas $\geq$ 3.}] \textit{Condición:} V02 $\geq$ 3 (rango 3--10 o superior). \textit{Prioridad:} P2 mínima. \textit{Tipo:} mínima. \textit{Justificación:} lógica AMV y criterios de escalado del PLATEAR. Si V02 > 10, también se activa RD5. El umbral de 3 víctimas es una decisión de diseño del prototipo.
+    
+%     \item[\textbf{RD3. Aviso AEMET rojo con coherencia de incidente.}] \textit{Condición:} V08 = Rojo Y coherencia entre V09 y V04. \textit{Prioridad:} P2 mínima. \textit{Tipo:} mínima. \textit{Justificación:} PROCIFEMAR; Directriz Básica de Inundaciones; PROCINFO. La condición de coherencia evita que un aviso rojo genérico eleve la prioridad de incidentes no relacionados.
+    
+%     \item[\textbf{RD4. Incidente Seveso con afectación directa confirmada.}] \textit{Condición:} V11 = Sí Y afectación directa confirmada. \textit{Prioridad:} P1 mínima. \textit{Tipo:} mínima. \textit{Justificación:} RD~840/2015 (Seveso~III). La mera proximidad no activa la regla; el scoring añade un incremento moderado por proximidad sin afectación.
+    
+%     \item[\textbf{RD5. Víctimas confirmadas > 10.}] \textit{Condición:} V02 > 10. \textit{Prioridad:} P1 mínima. \textit{Tipo:} mínima. \textit{Justificación:} escenario AMV de alta entidad; PLATEAR y PLEGEM. Subsume a RD2.
+    
+%     \item[\textbf{RD6. Búsqueda de persona menor o vulnerable.}] \textit{Condición:} V04 = búsqueda Y (V05 = Sí O persona buscada es menor). \textit{Prioridad:} P2 mínima. \textit{Tipo:} mínima. \textit{Justificación:} Ley~4/2024 art.~6.2. El scoring puede elevar a P1 con factores agravantes. No aplica a búsquedas de adultos sin indicadores de vulnerabilidad.
+    
+%     \item[\textbf{RD7. Inundación con personas aisladas o atrapadas.}] \textit{Condición:} V04 = inundación Y personas aisladas o atrapadas por agua. \textit{Prioridad:} P1 fija. \textit{Tipo:} fija. \textit{Justificación:} Directriz Básica de Inundaciones; PROCINAR. Vinculada conceptualmente a RD1 pero formulada de forma independiente para garantizar su activación explícita en el contexto hidrológico.
+    
+%     \item[\textbf{RD8. Incendio IUF con AEMET naranja o rojo.}] \textit{Condición:} V04 = incendio IUF Y V08 $\geq$ Naranja Y fenómeno coherente (viento o temperatura). \textit{Prioridad:} P2 mínima. \textit{Tipo:} mínima. \textit{Justificación:} PROCINFO; PROCIFEMAR. Un incendio forestal puro sin IUF no activa esta regla.
+% \end{description}
+
+\subsection*{E.2.4. Tabla resumen de reglas duras}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Resumen de reglas duras del baseline interpretable}
+% \label{tab:e1}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|l|l|X|l|}
+% \hline
+% \textbf{ID} & \textbf{Condición} & \textbf{Prioridad} & \textbf{Tipo} & \textbf{Base normativa} & \textbf{Variables} \\ \hline
+% RD1 & V01 = Sí & P1 & Fija & Protección de la vida & V01 \\ \hline
+% RD2 & V02 $\geq$ 3 & P2 mín. & Mínima & Lógica AMV & V02 \\ \hline
+% RD3 & AEMET rojo + coherencia & P2 mín. & Mínima & PROCIFEMAR & V08, V09, V04 \\ \hline
+% RD4 & Seveso + afect. directa & P1 mín. & Mínima & RD~840/2015 & V11, V04 \\ \hline
+% RD5 & V02 > 10 & P1 mín. & Mínima & AMV alta entidad & V02 \\ \hline
+% RD6 & Búsqueda menor/vulnerable & P2 mín. & Mínima & Colectivos vuln. & V04, V05 \\ \hline
+% RD7 & Inundación + aislados & P1 & Fija & Directriz Inundaciones & V04 \\ \hline
+% RD8 & Incendio IUF + AEMET $\geq$ naranja & P2 mín. & Mínima & PROCINFO & V04, V08, V09 \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Ampliación de la Tabla~6.3 del Capítulo~6.}
+
+\section*{E.3. Pesos del scoring por grupos funcionales}
+
+\subsection*{E.3.1. Principios de diseño del scoring}
+
+% Cuatro principios: ponderación por grupos funcionales (no por variables aisladas), jerarquía normativa, carácter orientativo calibrable y exclusión de la calidad de información del scoring (V13 y V14 modulan solo la confianza).
+
+\subsection*{E.3.2. Tabla ampliada de pesos}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Pesos orientativos del scoring por grupo funcional}
+% \label{tab:e2}
+% \small
+% \begin{tabularx}{\textwidth}{|l|l|l|X|}
+% \hline
+% \textbf{Grupo} & \textbf{Variables} & \textbf{Peso} & \textbf{Justificación} \\ \hline
+% Gravedad inmediata & V01, V02, V03 & 0,30--0,40 & Mayor peso: principio de protección de la vida. V01 con mayor impacto unitario (aunque suele activar RD1). V02 modula por rango. V03 aplica jerarquía Personas > Bienes > Medioambiente > Sin daño. \\ \hline
+% Vulnerabilidad y exposición & V05, V06, V07 & 0,15--0,20 & Magnitud potencial y sensibilidad de la población. V06 perspectiva prospectiva. Ley~4/2024 art.~6.2. \\ \hline
+% Amenaza contextual & V08, V09, V10, V11 & 0,15--0,20 & Contexto oficial (AEMET, SNCZI, Seveso). V09 condicional: solo cuando coherente con V04. Activación crítica ya canalizada por RD3, RD4, RD8. \\ \hline
+% Escalado y evolución & V04, V12 & 0,10--0,15 & V04 no puntúa gravedad: activa contexto. V12 agravamiento recibe incremento significativo; desconocida recibe precaución moderada. \\ \hline
+% Contexto operativo & V15 & 0,05--0,10 & Menor peso: accesibilidad no modifica gravedad intrínseca, solo urgencia práctica. \\ \hline
+% Calidad de la información & V13, V14 & No pondera & Excluidas del scoring. Modulan solo la capa de confianza. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Ampliación de la Tabla~6.4 del Capítulo~6.}
+
+\subsection*{E.3.3. Normalización de variables para el scoring}
+
+% \begin{itemize}
+%     \item \textbf{Variables binarias} (V01, V05, V10, V11): codificadas como 0 o 1.
+%     \item \textbf{Variables ordinales} (V02, V06, V08, V12, V13, V15): mapeadas a $[0, 1]$ respetando el orden. Ejemplo V02: 0 → 0,0; 1--2 → 0,33; 3--10 → 0,67; >10 → 1,0.
+%     \item \textbf{Variables categóricas} (V03, V04, V07, V09): codificadas por asignación ordinal basada en jerarquía operativa. Ejemplo V03: Sin daño → 0,0; Medioambiente → 0,25; Bienes → 0,5; Personas → 1,0.
+%     \item \textbf{Variable numérica agrupada} (V14): no participa en el scoring.
+% \end{itemize}
+
+\subsection*{E.3.4. Fórmula del scoring}
+
+$$S = w_1 \cdot G + w_2 \cdot V + w_3 \cdot A + w_4 \cdot E + w_5 \cdot C$$
+
+Donde $S$ es la puntuación (rango 0--100), $G$ es la contribución del grupo de gravedad inmediata, $V$ la de vulnerabilidad y exposición, $A$ la de amenaza contextual, $E$ la de escalado y evolución, y $C$ la de contexto operativo.
+
+Los coeficientes se normalizan para que sumen exactamente 1,0 dividiendo cada peso por la suma total (0,92), obteniendo los \textbf{pesos efectivos}: $w_1 = 0{,}380$ (Gravedad), $w_2 = 0{,}196$ (Vulnerabilidad), $w_3 = 0{,}196$ (Amenaza), $w_4 = 0{,}141$ (Escalado), $w_5 = 0{,}087$ (Contexto operativo).
+
+\section*{E.4. Umbrales iniciales de corte P1--P4}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Umbrales indicativos de corte del scoring}
+% \label{tab:e3}
+% \small
+% \begin{tabularx}{\textwidth}{|l|l|X|X|}
+% \hline
+% \textbf{Prioridad} & \textbf{Rango} & \textbf{Interpretación} & \textbf{Observaciones} \\ \hline
+% P1 & $\geq 75$ & Urgencia crítica. Gravedad extrema o riesgo vital probable. & Muchos P1 vienen de reglas duras (RD1, RD4, RD5, RD7). \\ \hline
+% P2 & 50--74 & Urgencia alta. Gravedad significativa o potencial de escalado. & Rango amplio: desde próximos a P1 hasta elevados por contexto. \\ \hline
+% P3 & 25--49 & Urgencia media. Gestión activa sin urgencia vital. & Rango esperado para el volumen cotidiano (35--40\,\% P3). \\ \hline
+% P4 & $< 25$ & Urgencia baja. Incidente menor o consulta sin urgencia. & Puntuaciones bajas por ausencia de factores significativos. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Ampliación de la Tabla~6.5 del Capítulo~6. Umbrales iniciales calibrables en el Capítulo~9.}
+
+% \paragraph{E.4.1. Criterios de calibración.}
+% La calibración en la fase de evaluación se guiará por: coherencia con el etiquetado humano, minimización de falsos negativos graves (P1 clasificado como P3/P4) y distribución razonable de prioridades.
+
+\section*{E.5. Reglas de combinación entre reglas duras, scoring y confianza}
+
+\subsection*{E.5.1. Flujo de evaluación del motor}
+
+% \begin{description}
+%     \item[\textbf{Paso 1. Evaluación de reglas duras (Capa 1).}] Evaluar secuencialmente RD1--RD8. Registrar todas las activadas. Determinar $P_{RD}$ como la prioridad más alta activada. Si ninguna se activa: sin restricción.
+    
+%     \item[\textbf{Paso 2. Cálculo del scoring (Capa 2).}] Calcular $S$ según la fórmula del E.3.4 y traducir a $P_S$ mediante la Tabla~E.3. El scoring se calcula siempre, incluso cuando una regla dura fija ha determinado la prioridad.
+    
+%     \item[\textbf{Paso 3. Combinación (Regla de integración).}] $P_{final}$ se determina así: si $P_{RD}$ es fija → $P_{final} = P_{RD}$; si $P_{RD}$ es mínima → $P_{final} = \max(P_{RD}, P_S)$; si no hay regla activa → $P_{final} = P_S$.
+    
+%     \item[\textbf{Paso 4. Cálculo de confianza (Capa 3).}] Tres factores: completitud de variables (con mayor peso para V01, V02, V04), fiabilidad del informador (V13) y confirmación por múltiples avisos (V14). Resultado: alto / medio / bajo.
+    
+%     \item[\textbf{Paso 5. Generación de la explicación.}] Texto que incluye: reglas duras activadas, variables de mayor impacto en el scoring (top 2--3), señales contextuales relevantes e información ausente. Cumple RF7 del Capítulo~5.
+% \end{description}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Umbrales orientativos del nivel de confianza}
+% \label{tab:e4}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|X|}
+% \hline
+% \textbf{Nivel} & \textbf{Condición} & \textbf{Interpretación para el operador} \\ \hline
+% Alto & Variables críticas informadas, V13 = Alta o Media, V14 $\geq$ 2 & Información suficiente y verificada. Confianza razonable. \\ \hline
+% Medio & Alguna variable relevante ausente, V13 = Media, V14 = 1 & Información parcial. Conviene verificar datos ausentes. \\ \hline
+% Bajo & Variables críticas ausentes, V13 = Baja, muy fragmentaria & Interpretar con cautela. Priorizar verificación. \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Coherente con el apartado~6.7.3 y el requisito RF5 del Capítulo~5.}
+
+\subsection*{E.5.2. Tabla resumen del flujo de integración}
+
+% \begin{table}[ht]
+% \centering
+% \caption{Resumen del flujo de integración de las tres capas del baseline}
+% \label{tab:e5}
+% \small
+% \begin{tabularx}{\textwidth}{|l|l|X|X|}
+% \hline
+% \textbf{Paso} & \textbf{Capa} & \textbf{Operación} & \textbf{Salida} \\ \hline
+% 1 & Reglas duras & Evaluar RD1--RD8. Determinar $P_{RD}$. & $P_{RD}$ o sin restricción; reglas activadas \\ \hline
+% 2 & Scoring & Normalizar, calcular $S$, traducir a $P_S$. & $P_S$ (P1--P4); $S$ (0--100) \\ \hline
+% 3 & Integración & Aplicar lógica de precedencia. & $P_{final}$ (P1--P4) \\ \hline
+% 4 & Confianza & Evaluar completitud, V13, V14. & Confianza (Alto / Medio / Bajo) \\ \hline
+% 5 & Explicación & Construir texto con reglas, variables, señales y ausencias. & Texto de explicación \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia. Coherente con el apartado~6.7 del Capítulo~6.}
+
+\section*{E.6. Observaciones de calibración futura}
+
+% \paragraph{E.6.1. Calibración de pesos.}
+% Mediante contraste entre prioridades del motor y prioridades de referencia del dataset. La jerarquía normativa (gravedad con mayor peso, calidad de información excluida) se mantiene.
+
+% \paragraph{E.6.2. Calibración de umbrales.}
+% Optimizando concordancia con etiquetado humano, priorizando sensibilidad en niveles críticos. El ajuste puede mover límites entre rangos pero no altera la escala P1--P4.
+
+% \paragraph{E.6.3. Reglas duras: estabilidad del diseño.}
+% Las reglas duras no están sujetas a calibración paramétrica. Su diseño responde a condiciones lógicas deterministas.
+
+% \paragraph{E.6.4. Registro de cambios.}
+% Cualquier modificación de pesos o umbrales respecto a los valores iniciales se registrará en el Capítulo~9: valor inicial, valor calibrado, justificación e impacto sobre las métricas.
+
+% \paragraph{E.6.5. Limitaciones del enfoque de calibración.}
+% Los pesos y umbrales calibrados sobre el dataset piloto (mayoritariamente sintético) pueden no coincidir con los óptimos para datos operativos reales del 112~Aragón. Esta limitación se reconoce en las conclusiones como línea de trabajo futuro.

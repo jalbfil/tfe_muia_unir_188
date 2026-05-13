@@ -1,0 +1,157 @@
+\chapter{Evaluación}
+\label{cap:9}
+
+% Los capítulos anteriores han construido el sistema de forma incremental: identificaron el problema (Capítulo~1), revisaron la literatura (Capítulo~2), caracterizaron el contexto normativo y operativo (Capítulos~3 y 4), especificaron los requisitos (Capítulo~5), diseñaron el motor (Capítulo~6), definieron los datos (Capítulo~7) y materializaron el prototipo (Capítulo~8). Este capítulo cierra el ciclo analítico evaluando si el sistema construido es útil, coherente y mejorable.
+
+% La evaluación no tiene por objetivo validar un sistema en producción. Tiene por objetivo producir evidencia sobre el comportamiento del baseline en condiciones controladas y ofrecer al equipo los insumos necesarios para comprender sus fortalezas, sus limitaciones y las vías de mejora prioritarias.
+
+% \section{Estrategia general de evaluación}
+
+% La evaluación del sistema se organiza en siete dimensiones complementarias, que dan respuesta a diferentes aspectos del comportamiento esperado del prototipo. Estas dimensiones no son independientes: los resultados de la evaluación del baseline (dimensión~1) alimentan la discusión de la evaluación de aplicabilidad (dimensión~3) y la interpretación de las limitaciones (dimensión~7).
+
+% \begin{table}[ht]
+% \centering
+% \caption{Dimensiones de la evaluación del sistema}
+% \label{tab:9.1}
+% \small
+% \begin{tabularx}{\textwidth}{|l|X|X|l|}
+% \hline
+% \textbf{Dimensión} & \textbf{Objeto de evaluación} & \textbf{Métricas principales} & \textbf{Apartado} \\ \hline
+% 1. Coherencia del baseline & ¿El motor produce prioridades coherentes con las reglas diseñadas? & Coherencia interna, tasa de activación RD, scoring promedio por nivel & 9.2 \\ \hline
+% 2. Precisión y clasificación & ¿En qué medida coincide P\_final con P\_etiqueta del dataset piloto? & Precisión, recall, F1 por nivel; matriz de confusión & 9.2.1 \\ \hline
+% 3. Distribución y sesgo & ¿La distribución de prioridades es razonable? ¿Hay sesgo hacia algún nivel? & Distribución relativa P1--P4, comparación con distribución objetivo & 9.2.2 \\ \hline
+% 4. Seguridad operativa & ¿El sistema evita los falsos negativos graves? & Tasa FN(P1→P3/P4), tasa FN(P2→P4) & 9.2.3 \\ \hline
+% 5. Funcional & ¿El prototipo cumple los requisitos funcionales? & Verificación RF1--RF9 & 9.3 \\ \hline
+% 6. Aplicabilidad & ¿El sistema funciona razonablemente en escenarios reales de Aragón? & Análisis cualitativo de casos representativos & 9.4 \\ \hline
+% 7. Usabilidad & ¿El frontend es utilizable? & SUS, TTFD & 9.5, 9.6 \\ \hline
+% \end{tabularx}
+% \end{table}
+
+% \noindent\textit{Fuente: elaboración propia.}
+
+% Las evaluaciones de precisión (dimensiones~1--4) se realizan sobre el dataset piloto del Capítulo~7 (casos documentados con etiqueta de referencia asignada mediante el protocolo del Anexo~C). Las evaluaciones funcional y de aplicabilidad se realizan mediante inspección del prototipo (Capítulo~8). La evaluación de usabilidad se realizará mediante el cuestionario SUS con un subconjunto de usuarios con perfil operativo.
+
+% \section{Evaluación del baseline}
+
+% \subsection{Coherencia, precisión, recall y F1}
+
+% La evaluación de la capacidad de clasificación del baseline se realiza comparando la prioridad final producida por el motor ($P_{final}$, bloque~4 del esquema de datos) con la etiqueta de referencia asignada mediante el protocolo del Anexo~C ($P_{etiqueta}$, bloque~5, campo \texttt{prioridad\_validada}).
+
+% Esta comparación se materializa en la \textbf{matriz de confusión} de la Tabla~\ref{tab:9.2}, que cruza la prioridad predicha con la prioridad de referencia para los cuatro niveles P1--P4. Los valores de la matriz son \textbf{placeholders}: dependen de la ejecución del prototipo sobre el dataset piloto, que se realiza en la fase final del proyecto. En el momento de redacción, el prototipo está operativo pero el dataset completo aún se está generando; los valores se actualizarán en la entrega definitiva.
+
+% \begin{table}[ht]
+% \centering
+% \caption{Matriz de confusión: prioridad predicha vs. prioridad de referencia (dataset piloto)}
+% \label{tab:9.2}
+% \small
+% \begin{tabular}{|l|c|c|c|c|}
+% \hline
+% \textbf{Predicho $\backslash$ Referencia} & \textbf{P1 (ref.)} & \textbf{P2 (ref.)} & \textbf{P3 (ref.)} & \textbf{P4 (ref.)} \\ \hline
+% \textbf{P1 (pred.)} & VP(P1) & -- & -- & -- \\ \hline
+% \textbf{P2 (pred.)} & -- & VP(P2) & -- & -- \\ \hline
+% \textbf{P3 (pred.)} & -- & -- & VP(P3) & -- \\ \hline
+% \textbf{P4 (pred.)} & -- & -- & -- & VP(P4) \\ \hline
+% \end{tabular}
+% \end{table}
+
+% \noindent\textit{Nota: Valores pendientes de la ejecución del prototipo sobre el dataset piloto. VP = verdaderos positivos; -- = celdas fuera de la diagonal (errores de clasificación) a completar con datos reales. Fuente: elaboración propia.}
+
+% A partir de la matriz de confusión, se calcularán las métricas por nivel:
+% \begin{itemize}
+%     \item \textbf{Precisión} ($Pr_k$): fracción de casos asignados a $P_k$ que efectivamente son $P_k$ según la referencia. $Pr_k = VP_k / \sum_{j} \text{Predicho}_{jk}$.
+%     \item \textbf{Recall} ($Re_k$): fracción de casos realmente $P_k$ que el motor clasifica como $P_k$. $Re_k = VP_k / \sum_{j} \text{Referencia}_{kj}$.
+%     \item \textbf{F1} por nivel: media armónica de precisión y recall. $F1_k = 2 \cdot Pr_k \cdot Re_k / (Pr_k + Re_k)$.
+%     \item \textbf{Macro-F1}: media no ponderada del F1 de los cuatro niveles.
+% \end{itemize}
+
+% El objetivo del baseline no es maximizar la precisión global, sino garantizar que los errores que comete no comprometan la seguridad operativa (véase el apartado~9.2.3). Por ello, la métrica de mayor peso en la interpretación será el recall de P1 y P2, no la precisión global.
+
+% \subsection{Distribución y sesgo}
+
+% Una evaluación completa del baseline no puede limitarse a las métricas de clasificación: debe también verificar que la distribución de prioridades asignadas por el motor es razonable y que no existe un sesgo sistemático hacia algún nivel que comprometa su utilidad práctica.
+
+% La distribución objetivo del dataset piloto, establecida en el Capítulo~7, es deliberadamente no uniforme y refleja la distribución esperada en operaciones reales: P1 (incidentes críticos, activación inmediata) debe representar aproximadamente el 10--15\% de los casos; P2 (incidentes relevantes, coordinación ampliada) entre el 20 y el 25\%; P3 (incidentes menores gestionables con recursos ordinarios) entre el 35 y el 40\%; y P4 (consultas y situaciones de baja urgencia) entre el 20 y el 25\%.
+
+% Se analizará si la distribución de predicciones del motor se aproxima a esta distribución objetivo. Una concentración excesiva en P1 indicaría sobrepriorización (el motor tiende a activar reglas duras o asignar puntuaciones altas con más frecuencia de la prevista); una concentración en P3--P4 podría indicar infrasensibilidad ante señales de gravedad. Ambos patrones son indeseables por razones operativas: el primero genera fatiga de alerta y saturación de recursos; el segundo, falsos negativos graves.
+
+% \subsection{Seguridad operativa: análisis de falsos negativos graves}
+
+% En el contexto de un sistema de apoyo a la decisión para emergencias, no todos los errores tienen el mismo coste operativo. Un error de P3 clasificado como P4 tiene consecuencias limitadas ---el incidente se gestionará con algo menos urgencia de la adecuada--- pero es recuperable. Un error de P1 clasificado como P3 o P4 puede comprometer la respuesta ante una emergencia crítica y tiene consecuencias potencialmente graves.
+
+% Por tanto, la evaluación de seguridad operativa se centra en los \textbf{falsos negativos graves}, definidos como los casos en que el motor asigna una prioridad significativamente inferior a la prioridad de referencia:
+% \begin{itemize}
+%     \item FN-crítico: P1 clasificado como P3 o P4 (dos o más niveles de diferencia).
+%     \item FN-grave: P1 clasificado como P2, o P2 clasificado como P4 (un nivel crítico de diferencia).
+% \end{itemize}
+
+% La tasa objetivo de FN-críticos es cero o próxima a cero. El diseño de las reglas duras (Capítulo~6, Anexo~E) tiene precisamente este propósito: garantizar que los incidentes que cumplen condiciones deterministas de máxima gravedad reciben P1 independientemente del scoring. Los FN-graves son tolerables en un rango bajo, pero deben analizarse cualitativamente para identificar patrones y determinar si hay variables ausentes o combinaciones de condiciones no cubiertas por las reglas duras actuales.
+
+% \subsection{Explicabilidad}
+
+% La evaluación de la capa de explicabilidad complementa la evaluación cuantitativa del baseline. No se trata de medir la «calidad literaria» de la explicación, sino de verificar que el texto generado cumple las condiciones funcionales del requisito RF7: identifica las reglas duras activadas cuando las hay, menciona las variables de mayor impacto en el scoring, señala las señales contextuales relevantes y advierte sobre la información ausente cuando la confianza es baja.
+
+% La evaluación se realizará sobre una muestra representativa de explicaciones generadas, verificando sistemáticamente para cada caso la presencia de los cuatro elementos requeridos. Se documentará la tasa de cumplimiento de cada elemento y se identificarán los patrones de explicación incompleta o inadecuada.
+
+% \section{Evaluación funcional}
+
+% La evaluación funcional verifica que el prototipo implementa correctamente los nueve requisitos funcionales especificados en el Capítulo~5 (apartado~5.3). La verificación se realiza mediante pruebas de sistema sobre los casos del dataset piloto y la inspección del código de cada módulo.
+
+% \begin{description}
+%     \item[\textbf{RF1 -- Recepción y estructuración.}] Verificado si el prototipo recibe un incidente con al menos los campos obligatorios (V01, V02, V04, \texttt{fecha\_hora\_recepcion}), genera el identificador único y almacena el registro en el bloque~1 del esquema de datos.
+%     \item[\textbf{RF2 -- Clasificación del tipo.}] Verificado si el módulo de entrada asiste al operador en la clasificación del tipo de incidente según la taxonomía operativa del Anexo~A, utilizando técnicas básicas de NLP sobre la descripción textual.
+%     \item[\textbf{RF3 -- Integración de contexto oficial.}] Verificado si el módulo de contexto consulta las fuentes externas pertinentes para la localización del incidente y enriquece los campos V08--V11 y V15 conforme al bloque~3 del esquema de datos.
+%     \item[\textbf{RF4 -- Priorización automática.}] Verificado si el motor produce una prioridad recomendada P1--P4 para cada incidente a partir de las quince variables de entrada, aplicando las tres capas del baseline.
+%     \item[\textbf{RF5 -- Confianza y transparencia.}] Verificado si el motor produce un nivel de confianza (alto, medio, bajo) para cada recomendación, conforme a los umbrales del Anexo~E.
+%     \item[\textbf{RF6 -- Variables derivadas.}] Verificado si el motor calcula D01 (necesidad de coordinación multiagencia), D02 (necesidad de PMA), D03 (situación operativa sugerida) y D04 (plan activable recomendado).
+%     \item[\textbf{RF7 -- Explicación textual.}] Verificado si el motor genera una explicación que incluye los cuatro elementos requeridos (reglas duras, variables de impacto, señales contextuales, datos ausentes) para cada recomendación.
+%     \item[\textbf{RF8 -- Validación humana.}] Verificado si el frontend permite al operador aceptar, modificar o rechazar la recomendación, y el sistema registra la decisión en el bloque~5 del esquema de datos.
+%     \item[\textbf{RF9 -- Trazabilidad.}] Verificado si el backend persiste todos los datos del flujo y permite reconstruir el ciclo completo (incidente, recomendación, decisión) para cualquier caso procesado.
+% \end{description}
+
+% \section{Evaluación de aplicabilidad en escenarios de Aragón}
+
+% La evaluación de aplicabilidad analiza el comportamiento del sistema ante escenarios representativos del contexto operativo aragonés, verificando que las prioridades generadas son coherentes con la casuística real de emergencias civiles en esta comunidad autónoma.
+
+% Aragón presenta una combinación de riesgos específica: riesgo de inundación en cuencas del Ebro y sus afluentes, riesgo de incendio forestal en la interfaz urbano-forestal de amplias zonas del Pirineo y del Sistema Ibérico, riesgo industrial asociado a instalaciones Seveso en el corredor del Ebro, y riesgo de emergencias en zonas de baja densidad poblacional con accesibilidad limitada. Estos riesgos están representados en el dataset piloto y corresponden a las variables V08--V11 y V15 del motor.
+
+% El análisis cualitativo de aplicabilidad se organizará en torno a los ocho casos piloto del Anexo~D, evaluando si las prioridades producidas por el motor son coherentes con las asignadas por el protocolo de etiquetado del Anexo~C, y si las explicaciones generadas son pertinentes en el contexto operativo aragonés. Se prestará especial atención a los casos frontera (CASO-005, CASO-006, CASO-007) donde la diferencia entre niveles adyacentes es sutil y donde el motor puede producir recomendaciones discrepantes con la etiqueta de referencia.
+
+% \section{Evaluación de usabilidad (SUS)}
+
+% La evaluación de usabilidad se realizará mediante el cuestionario SUS (\textit{System Usability Scale}), compuesto por diez ítems valorados en escala Likert 1--5, que produce una puntuación final en el rango 0--100. El umbral de usabilidad aceptable para el prototipo es una puntuación SUS mayor de 70 (percentil~50, nivel «aceptable» en la escala de Bangor, Kortum y Miller, 2008).
+
+% El cuestionario SUS se administrará a un subconjunto de usuarios con perfil operativo compatible con el del usuario objetivo definido en el Capítulo~5 (apartado~5.2): técnicos de protección civil, coordinadores de emergencias o personal con experiencia en gestión de incidentes. La muestra prevista es de entre 5 y 10 participantes, número estándar en evaluaciones de usabilidad de prototipos académicos.
+
+% \section{Evaluación de tiempo hasta la primera decisión (TTFD)}
+
+% El TTFD (\textit{Time to First Decision}) mide el tiempo transcurrido desde que el operador recibe la notificación de un nuevo incidente hasta que valida (acepta, modifica o rechaza) la recomendación del motor. Esta métrica no busca medir la velocidad del operador, sino la fricción cognitiva que introduce el sistema en el flujo de trabajo.
+
+% La evaluación del TTFD se realizará de forma observacional durante la sesión de evaluación de usabilidad: se medirá el tiempo de respuesta para cada caso evaluado y se identificarán los pasos del flujo donde los participantes invierten más tiempo. Un TTFD medio inferior a 90 segundos para casos con alta confianza se considera indicativo de una interfaz suficientemente eficiente.
+
+% \section{Discusión de resultados}
+
+% La discusión de los resultados de evaluación se organiza en cuatro ejes analíticos, una vez que se disponga de los datos completos de la fase de evaluación.
+
+% El primer eje es la \textbf{coherencia del diseño y la implementación}: ¿coincide el comportamiento del motor con el comportamiento esperado según el diseño de las reglas y los pesos? ¿Las reglas duras se activan en los escenarios previstos? ¿El scoring es proporcional a la gravedad?
+
+% El segundo eje es el \textbf{análisis de errores}: ¿cuáles son los patrones de error más frecuentes? ¿Hay variables cuya ausencia sistemática degrada la confianza? ¿Los casos frontera entre P2 y P3 son los que producen más discrepancias, como se esperaría por el diseño?
+
+% El tercer eje es la \textbf{comparación con la etiqueta humana}: ¿hasta qué punto las prioridades del motor coinciden con las del operador experto? ¿Los casos donde el operador modifica la recomendación revelan algún patrón sistemático?
+
+% El cuarto eje es la \textbf{implicación para el trabajo futuro}: ¿qué reglas adicionales o ajustes de pesos parecen más prometedores a partir de los resultados? ¿La integración de técnicas de aprendizaje automático podría mejorar la sensibilidad ante combinaciones de condiciones no capturadas por las reglas actuales?
+
+% \section{Limitaciones de la evaluación}
+
+% La evaluación presenta seis limitaciones que es necesario reconocer explícitamente para no sobredimensionar los resultados.
+
+% La primera es el \textbf{tamaño del dataset}. El dataset piloto tiene un tamaño limitado (en el orden de decenas a centenares de casos) respecto a lo que requeriría una validación estadísticamente robusta. Los resultados son informativos, no estadísticamente generalizables.
+
+% La segunda es el \textbf{origen de las etiquetas}. Las etiquetas de referencia del dataset piloto han sido asignadas mediante el protocolo del Anexo~C (criterios de referencia) y verificadas mediante los casos piloto del Anexo~D. No provienen de un sistema operativo en producción con etiquetas de múltiples expertos, lo que introduce una limitación inherente al sesgo del etiquetador.
+
+% La tercera es la \textbf{naturaleza sintética de los datos}. La mayor parte del dataset piloto está compuesto por casos simulados controlados, construidos con el conocimiento del diseñador del motor. Esto introduce un riesgo de optimismo: el motor puede comportarse bien en los casos que el equipo tiene en mente al diseñarlo y peor ante casos imprevistos.
+
+% La cuarta es la \textbf{evaluación de usabilidad de bajo presupuesto}. La muestra de 5--10 participantes es estándar para estudios académicos de usabilidad, pero insuficiente para generalizar a la diversidad de perfiles operativos de los centros de coordinación de emergencias.
+
+% La quinta es la \textbf{integración parcial de fuentes externas}. Como se ha señalado en el Capítulo~8, la integración con fuentes como SNCZI o registros Seveso se ha implementado mediante tablas de referencia precargadas, no mediante consultas en tiempo real. La evaluación refleja el comportamiento del sistema en condiciones de laboratorio, no en integración productiva completa.
+
+% La sexta es el \textbf{contexto geográfico acotado}. El sistema ha sido diseñado y evaluado para el contexto operativo aragonés. La transferibilidad a otras comunidades autónomas con marcos normativos y casuísticas diferentes no puede afirmarse sin una fase de adaptación y reevaluación específica.

@@ -1,0 +1,49 @@
+{
+    // ─── LaTeX Workshop ───────────────────────────────────────────────────────
+    // Directorio de salida: build/ dentro del proyecto
+    "latex-workshop.latex.outDir": "%DIR%/build",
+
+    // Receta de compilación: latexmk con BibTeX automático
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk (PDF)",
+            "tools": ["latexmk"]
+        }
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "-outdir=%OUTDIR%",
+                "-halt-on-error",
+                "%DOC%"
+            ],
+            "env": {}
+        }
+    ],
+
+    // Limpiar archivos auxiliares al hacer Clean (no borra el PDF)
+    "latex-workshop.latex.clean.fileTypes": [
+        "*.aux", "*.bbl", "*.blg", "*.fdb_latexmk", "*.fls",
+        "*.log", "*.out", "*.toc", "*.lof", "*.lot", "*.synctex.gz"
+    ],
+
+    // Construir automáticamente al guardar
+    "latex-workshop.latex.autoBuild.run": "onSave",
+
+    // Mostrar el PDF en el visor integrado a la derecha
+    "latex-workshop.view.pdf.viewer": "tab",
+
+    // No preguntar si limpiar auxiliares al cerrar
+    "latex-workshop.latex.autoClean.run": "never",
+
+    // Asociar .pdf al visor de LaTeX Workshop
+    "workbench.editorAssociations": {
+        "*.pdf": "latex-workshop-pdf-hook"
+    }
+}

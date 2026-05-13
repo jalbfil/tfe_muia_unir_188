@@ -1,0 +1,132 @@
+Capítulo 3. Marco operativo y normativo del dominio de emergencias
+3.1. El sistema español de protección civil: estructura y principios
+El sistema de apoyo a la decisión propuesto en este TFM se sitúa en un entorno institucional fuertemente reglado, multinivel y orientado a la coordinación. Por ello, antes de diseñar el motor de priorización resulta necesario delimitar el marco operativo en el que ese motor va a producir sus recomendaciones: quién decide, con qué información, bajo qué lógica de escalado y dentro de qué estructura de mando.
+En España, la protección civil se configura como un sistema de seguridad pública orientado a la protección de las personas, los bienes y el medio ambiente ante situaciones de grave riesgo colectivo, catástrofe o calamidad pública. Su organización no responde a una competencia exclusiva de un único nivel administrativo, sino a una lógica de responsabilidad compartida entre la Administración General del Estado, las comunidades autónomas y las entidades locales. Esta característica tiene consecuencias directas para el diseño del sistema: la urgencia operativa de un incidente no depende únicamente de su gravedad intrínseca, sino también del nivel competencial afectado, de la capacidad disponible en ese nivel y de la necesidad de coordinar recursos adicionales.
+Desde una perspectiva funcional, tres principios resultan especialmente relevantes para este trabajo. El primero es la subsidiariedad, que sitúa la gestión inicial de la emergencia en el nivel más próximo al ciudadano afectado y solo justifica la intervención del nivel superior cuando la capacidad ordinaria se ve superada. El segundo es la complementariedad, conforme a la cual los recursos de distintos niveles pueden acumularse sin que ello implique automáticamente una sustitución del mando. El tercero es la coordinación, que garantiza que la respuesta se articule mediante una red de centros, procedimientos y órganos capaces de compartir información y sostener decisiones coherentes.
+Esta lógica se traduce operativamente en una arquitectura escalonada de centros de coordinación. En el nivel estatal, el Centro Nacional de Seguimiento y Coordinación de Emergencias de Protección Civil (CENEM) actúa como nodo de seguimiento y enlace. En el nivel autonómico, los centros de coordinación operativa (CECOP), y en su caso los CECOPI, concentran la dirección y seguimiento de la emergencia. En el plano táctico, el puesto de mando avanzado (PMA) coordina sobre el terreno la actuación de los grupos intervinientes. Esta estructura es importante porque el sistema propuesto no toma decisiones autónomas de despacho, sino que está pensado para asistir la primera valoración operativa de quienes trabajan en estos entornos.
+3.2. Marco normativo aplicable
+El motor de priorización no puede fundamentarse en intuiciones genéricas sobre gravedad o urgencia. Para que sus recomendaciones sean defendibles, auditables y operativamente útiles, sus variables y reglas deben poder trazarse hasta normas o fuentes institucionales que justifiquen por qué un determinado incidente debe elevar su prioridad, activar más coordinación o sugerir un posible escalado. Por ello, este apartado no persigue una revisión jurídica exhaustiva, sino una extracción funcional de criterios normativos útiles para el modelado.
+La Tabla 3.1 resume la utilidad directa de las principales normas del proyecto para el diseño del sistema.
+Tabla 3.1. Utilidad funcional del marco normativo para el diseño del motor
+Norma / documento
+Nivel
+Utilidad directa para el TFM
+Traducción a diseño
+Ley 17/2015, del Sistema Nacional de Protección Civil
+Estatal
+Define riesgo, vulnerabilidad, emergencia de protección civil, coordinación y escalado
+Justificación de variables de gravedad, vulnerabilidad, exposición y complejidad de coordinación
+Real Decreto 524/2023, Norma Básica de Protección Civil
+Estatal
+Establece fases y situaciones operativas 0–3, catálogo de riesgos y contenido mínimo de los planes
+Base conceptual para la lógica de escalado y para la relación no equivalente entre 0–3 y P1–P4
+PLEGEM
+Estatal
+Desarrolla la coordinación estatal y la movilización supraautonómica
+Referente de escalado y de coordinación multicapas
+Ley 4/2024, del Sistema de Protección Civil y Gestión de Emergencias de Aragón
+Autonómico
+Regula el 112 Aragón, el CECOP, la evaluación del incidente y la movilización
+Justificación del flujo recibir–identificar–evaluar–movilizar
+PLATEAR
+Autonómico
+Define estructura de coordinación y niveles de emergencia en Aragón
+Base para la lógica autonómica de escalado
+Planes especiales de Aragón
+Autonómico
+Aportan umbrales y criterios específicos por riesgo
+Activación de reglas contextuales y variables específicas
+
+Fuente: elaboración propia a partir de la normativa analizada.
+3.2.1. Ley 17/2015 del Sistema Nacional de Protección Civil
+La Ley 17/2015 constituye el marco general del sistema español de protección civil y resulta clave para este TFM porque aporta los conceptos básicos que permiten formalizar el problema de priorización. En particular, la ley proporciona un lenguaje operativo que luego puede traducirse a diseño analítico: peligro, vulnerabilidad, riesgo, afectación colectiva, servicios esenciales y coordinación entre niveles administrativos.
+Su principal utilidad para el motor radica en que desplaza la evaluación de la emergencia desde una lógica puramente reactiva hacia una lógica combinada de daño actual y potencial de afectación. Esto implica que la prioridad no puede definirse únicamente por lo ya confirmado, sino también por el contexto de vulnerabilidad, la exposición y la posibilidad de escalado. En términos de sistema, esta norma justifica que incidentes con daños aún limitados puedan recibir una prioridad elevada si concurren condiciones de riesgo relevante para población, servicios esenciales o coordinación operativa.
+3.2.2. Real Decreto 524/2023: Norma Básica de Protección Civil
+La Norma Básica de Protección Civil es la referencia más relevante para el diseño del motor desde el punto de vista operativo. Su valor no reside solo en el catálogo nacional de riesgos, sino sobre todo en la lógica de gradación que establece para la respuesta ante emergencias.
+La norma fija las situaciones operativas 0–3 y exige que los planes definan procedimientos de transición entre ellas. Esto aporta una base conceptual muy útil para el prototipo: la respuesta no es dicotómica, sino progresiva, y depende de la combinación entre gravedad, extensión territorial, suficiencia de medios y necesidad de coordinación. Esa lógica es la que inspira la construcción de la escala P1–P4 del sistema, aunque sin reproducirla jurídicamente.
+3.2.3. PLEGEM: estructura y escalado estatal
+El Plan Estatal General de Emergencias de Protección Civil (PLEGEM) se incorpora a este capítulo como referencia de contexto y de escalado. El prototipo no está diseñado para gestionar una emergencia de interés nacional, pero sí necesita contemplar la posibilidad de que determinados indicadores apunten hacia un escenario de coordinación supraautonómica o de necesidad de medios estatales.
+El interés del PLEGEM para el TFM es metodológico. Confirma que el sistema español opera por capas y que la intervención del nivel superior no debe anticiparse de manera arbitraria, sino justificarse por la insuficiencia de medios ordinarios o por la dimensión del incidente. En el motor, esta lógica no se traduce en una activación automática de recursos estatales, sino en un aumento de prioridad y en la generación de una explicación que advierta de una posible complejidad de coordinación superior.
+3.2.4. Ley 4/2024 de Protección Civil y Gestión de Emergencias de Aragón
+La Ley 4/2024 es una de las piezas centrales del capítulo porque Aragón es el caso piloto del TFM. Su valor es especialmente alto porque aterriza en el ámbito autonómico la lógica general del sistema estatal y, además, regula directamente el funcionamiento del 112 Aragón y de los órganos de coordinación asociados.
+Desde la perspectiva del motor, la aportación más importante de esta ley es que define el flujo operativo básico del servicio 112: recepción, identificación, tratamiento, evaluación y seguimiento de las comunicaciones de emergencia, así como movilización de los servicios competentes. Ese flujo coincide con el punto exacto donde el prototipo pretende aportar valor: la fase de evaluación temprana, en la que todavía hay incertidumbre, pero ya es necesario decidir qué atender primero y con qué marco de coordinación.
+La ley también diferencia entre emergencia ordinaria, emergencia de protección civil y emergencia integral. Esta gradación no debe confundirse con la escala P1–P4 del sistema, pero sí refuerza la idea de que la prioridad operativa es función de la gravedad, la extensión, la vulnerabilidad y la necesidad de coordinación. Además, la referencia expresa a colectivos vulnerables refuerza la legitimidad de incorporar la variable de población vulnerable en el diseño del motor.
+3.2.5. PLATEAR y planes especiales de Aragón
+PLATEAR es la norma autonómica más importante para la traducción del dominio a criterios de modelado. Su relevancia se debe a que organiza la coordinación en Aragón, fija niveles de emergencia y proporciona un marco operativo realista para el caso piloto.
+El plan distingue niveles de emergencia según la gravedad, la extensión y la necesidad de recursos adicionales, lo que aporta al sistema una referencia autonómica muy concreta de escalado. En términos de modelado, esto respalda la inclusión de variables como tendencia del incidente, personas en riesgo estimadas o necesidad previsible de coordinación ampliada.
+Junto a PLATEAR, los planes especiales aportan reglas sectoriales directamente reutilizables. El PROCIFEMAR justifica la inclusión del nivel de aviso AEMET y del fenómeno meteorológico activo. El PROCINAR respalda el uso de la peligrosidad por inundación como variable contextual. El PROCIMER y el marco Seveso justifican la consideración específica del riesgo químico e industrial. El PROCINFO, por su parte, aporta una lógica especialmente útil en relación con simultaneidad, progresión del incidente y amenaza a núcleos habitados o infraestructuras.
+La lectura conjunta de PLATEAR y de los planes especiales permite concluir que el sistema de protección civil aragonés ya contiene, de forma implícita, una lógica de priorización basada en gravedad, contexto, vulnerabilidad y escalado. La aportación del TFM consiste en convertir esa lógica dispersa en un mecanismo analítico coherente, explícito y explicable.
+3.3. Situaciones operativas (0–3): definición y criterios de activación
+Las situaciones operativas 0–3 constituyen un mecanismo normativo de gradación de la respuesta ante emergencias. Su función es ordenar el marco de mando, coordinación y movilización conforme cambian la gravedad del suceso, la extensión territorial y la suficiencia de los medios disponibles.
+La situación operativa 0 corresponde a la fase de alerta o preemergencia. Todavía no existe, necesariamente, una afectación grave confirmada, pero ya aparecen indicadores objetivos de deterioro posible: avisos meteorológicos, alertas hidrológicas, señales de evolución desfavorable o incremento de exposición. Desde la perspectiva del sistema, esta situación es importante porque legitima que la priorización incorpore señales tempranas y no se limite al daño ya consumado.
+La situación operativa 1 se produce cuando la emergencia requiere una intervención coordinada, pero puede ser gestionada con medios propios del nivel competente. Este es el escenario más próximo a la operativa ordinaria de un CECOP y, por tanto, el entorno más directamente alineado con el uso previsto del sistema.
+La situación operativa 2 aparece cuando la emergencia desborda los medios inicialmente asignados y exige recursos adicionales no previstos o una coordinación más compleja. Para el motor, esta transición es especialmente relevante porque marca el paso entre un incidente serio pero contenido y un incidente cuyo comportamiento comienza a comprometer la capacidad ordinaria de respuesta.
+La situación operativa 3 se reserva para escenarios de interés nacional o de necesidad extraordinaria de coordinación estatal. El prototipo no pretende gestionar este nivel, pero sí debe ser capaz de señalar indicadores que apunten a un posible escalado de esa naturaleza.
+Es esencial dejar constancia de que la escala P1–P4 del sistema no equivale jurídicamente a las situaciones operativas 0–3. Las situaciones operativas son categorías normativas de mando y coordinación. La escala P1–P4 es una abstracción funcional diseñada para ordenar incidentes por urgencia operativa relativa dentro de un mismo entorno de coordinación. Ambas comparten una lógica gradual, pero no mantienen una correspondencia mecánica ni uno a uno. Un incidente puede recibir prioridad P1 por riesgo vital inmediato sin que el territorio en su conjunto esté más allá de una situación 0 o 1.
+Esta distinción no es una precisión menor, sino una condición metodológica necesaria para mantener la coherencia del TFM: el sistema se inspira en la normativa, pero no suplanta sus categorías.
+3.4. Taxonomía operativa de incidentes del sistema
+El motor de priorización necesita clasificar cada incidente en una estructura tipológica que no sea solo descriptiva, sino funcional. La taxonomía no se introduce aquí como un catálogo cerrado con fines administrativos, sino como un mecanismo que permite decidir qué variables deben activarse, qué comprobaciones contextuales conviene realizar y qué reglas de priorización son aplicables.
+La necesidad de esta taxonomía se explica por una razón operativa: incidentes con gravedad comparable pueden requerir tratamientos analíticos distintos. Un incendio forestal y un accidente de tráfico con víctimas no comparten el mismo contexto operativo. El primero exige valorar meteorología, propagación y cercanía a núcleos. El segundo exige valorar víctimas, atrapamiento y accesibilidad. Sin una clasificación previa, el sistema no puede activar la lógica adecuada.
+La taxonomía adoptada se organiza en dos niveles. El primero cubre las familias de riesgo de protección civil con mayor relevancia para el caso piloto. El segundo recoge las emergencias operativas ordinarias que forman parte de la actividad habitual del 112.
+3.4.1. Nivel 1: Emergencias de Protección Civil y principales familias de riesgo
+El primer nivel agrupa incidentes con potencial de activar lógica de protección civil o de requerir un tratamiento reforzado de coordinación y contexto. Las familias principales son: riesgos naturales (inundaciones, fenómenos meteorológicos adversos, incendios forestales, eventos sísmicos o geológicos), riesgos tecnológicos e industriales (accidentes con mercancías peligrosas, incidentes en instalaciones industriales, situaciones vinculadas a infraestructuras energéticas o químicas), grandes accidentes y eventos antrópicos de alta complejidad (accidentes de transporte con múltiples afectados, derrumbes, incendios de gran entidad en entornos urbanos) y escenarios multirriesgo (situaciones en las que concurren simultáneamente varias amenazas o la complejidad del entorno convierte el incidente en un problema de coordinación superior). El detalle completo de la taxonomía, con códigos, descripciones y justificaciones, se documenta en el Anexo A.
+3.4.2. Nivel 2: Emergencias operativas ordinarias (112)
+El segundo nivel agrupa las emergencias que forman parte de la gestión ordinaria del 112 y que, aun sin activar necesariamente un plan de protección civil, deben ser priorizadas de forma relativa porque compiten por atención operativa. Las principales familias adoptadas son: emergencias sanitarias, tráfico y transporte, incendios urbanos o de vehículos, rescates y salvamentos, seguridad y personas, y asistencia técnica y servicios esenciales.
+La inclusión de este nivel es necesaria porque el sistema no puede reservar la priorización solo para grandes emergencias. Si lo hiciera, perdería utilidad precisamente en el entorno donde más necesita aportar valor: la gestión simultánea de incidentes heterogéneos bajo presión temporal.
+3.4.3. Relación entre taxonomía y lógica de priorización
+La relación entre taxonomía y priorización es estructural. El tipo de incidente no es una etiqueta decorativa, sino una variable central del sistema. Determina qué variables contextuales conviene activar, condiciona la activación de reglas específicas y mejora la explicabilidad de la recomendación. Un sistema que justifica la prioridad con factores coherentes con la naturaleza del incidente resulta más comprensible y más fácil de validar por el operador. Por tanto, la taxonomía cumple tres funciones simultáneas: reduce ambigüedad, activa el contexto correcto y mejora la calidad de la explicación final del motor.
+3.5. Fuentes de datos oficiales disponibles y su rol en el sistema
+El sistema no debe basarse exclusivamente en la descripción textual inicial del incidente. Esa información suele ser fragmentaria, incompleta o incierta en los primeros minutos. Por ello, el motor incorpora fuentes oficiales de contexto que permitan enriquecer la valoración sin depender de datos privados no accesibles o de integraciones institucionales cerradas que exceden el alcance del TFM.
+La Tabla 3.2 resume las fuentes principales consideradas en este trabajo.
+Tabla 3.2. Fuentes oficiales y función dentro del sistema
+Fuente
+Rol principal en el sistema
+Variables o decisiones que apoya
+Limitación principal
+AEMET OpenData
+Contexto meteorológico oficial
+Nivel de aviso AEMET, fenómeno meteorológico activo
+Granularidad zonal y dependencia técnica de consulta
+SNCZI / MITECO
+Contexto territorial de inundabilidad
+Peligrosidad por inundación
+No refleja por sí solo estado hidrológico en tiempo real
+INE
+Contexto demográfico agregado
+Apoyo a personas en riesgo estimadas y vulnerabilidad territorial
+No identifica afectados concretos
+ICEARAGON
+Contexto espacial y accesibilidad
+Accesibilidad al punto, emplazamiento crítico
+Requiere integración geoespacial
+Registro público Seveso (MITECO)
+Contexto industrial y químico
+Presencia de instalación Seveso
+No informa del estado operativo instantáneo de la instalación
+Memorias y estadísticas del 112 Aragón
+Calibración y plausibilidad operativa
+Distribución tipológica y carga global
+Son datos agregados, no dataset de entrenamiento
+
+Fuente: elaboración propia.
+3.5.1. AEMET OpenData
+AEMET OpenData constituye la fuente oficial más importante para el contexto meteorológico del sistema. Su aportación principal es doble: proporciona el nivel de aviso vigente y permite identificar el fenómeno meteorológico activo que puede estar modulando la evolución del incidente. Su valor para el motor es alto porque conecta directamente con la lógica normativa de los planes especiales: no se trata de una fuente contextual genérica, sino de una señal institucional que la propia planificación utiliza como criterio de activación y vigilancia.
+3.5.2. SNCZI / MITECO: cartografías de riesgo
+El Sistema Nacional de Cartografía de Zonas Inundables aporta una capa territorial oficial de gran relevancia para el prototipo. Su papel consiste en determinar si la localización del incidente cae dentro de zonas de peligrosidad por inundación oficialmente cartografiadas. Esta fuente es especialmente valiosa cuando se combina con el contexto meteorológico: un aviso localizado en una zona inundable durante un episodio de precipitación adversa tiene un potencial de deterioro superior al mismo aviso fuera de una zona de riesgo.
+3.5.3. INE: datos demográficos y vulnerabilidad
+Los datos demográficos del INE se incorporan como apoyo a la estimación de exposición y vulnerabilidad territorial. Su función no es identificar afectados concretos, sino aportar un marco razonable de contexto cuando todavía no se dispone de información completa sobre las personas implicadas. Su uso debe ser prudente: el sistema no puede convertir estadísticas municipales en certezas individuales.
+3.5.4. ICEARAGON: cartografía oficial de Aragón
+La infraestructura geográfica oficial de Aragón, actualmente denominada ICEARAGON (Infraestructura de Conocimiento Espacial de Aragón), aporta contexto territorial y de accesibilidad. Su interés para el sistema radica en que la prioridad operativa no depende solo del tipo de incidente o del riesgo directo, sino también de la facilidad o dificultad de llegar al punto, de la proximidad a equipamientos relevantes y de la localización dentro de un entorno territorial concreto.
+3.5.5. Registro Seveso
+El registro público de instalaciones sujetas a la normativa Seveso permite identificar entornos industriales que exigen una lectura reforzada del incidente. Su principal utilidad para el motor consiste en elevar la sensibilidad del sistema ante eventos que, por localización, puedan tener un potencial de escalado químico o industrial superior al que se observa en la descripción inicial. El buscador público de establecimientos afectados por la normativa Seveso está disponible a través del Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO), en el apartado de prevención de accidentes graves del portal del ministerio.
+[NOTA PARA INTEGRACIÓN: Verificar y añadir la URL exacta del buscador Seveso del MITECO en la lista consolidada de referencias o como nota al pie en este apartado.]
+3.5.6. Memorias y estadísticas del 112 Aragón
+Las memorias y estadísticas del 112 Aragón son relevantes para entender el perfil operativo real del servicio y para evitar diseñar un sistema desconectado de su carga habitual. Su uso en el TFM es de calibración y plausibilidad, no de entrenamiento supervisado. A falta de microdatos operativos públicos de Aragón, el dataset abierto del CAT112 se utiliza únicamente como referencia estructural para el diseño de categorías y del esquema de datos. El TFM no presupone disponer de un histórico detallado y accesible del 112 Aragón.
+3.6. Conclusiones: traducción del dominio a criterios de modelado
+El análisis desarrollado en este capítulo permite fijar varias conclusiones que son directamente operativas para el diseño del sistema.
+La primera es que el sistema de protección civil, tanto en el nivel estatal como en el autonómico aragonés, ya incorpora una lógica implícita de priorización basada en gravedad, vulnerabilidad, amenaza contextual, escalado y coordinación. El motor del TFM no inventa esa lógica desde cero, sino que la formaliza para hacerla más consistente, trazable y explicable.
+La segunda es que la prioridad operativa no puede reducirse a una única dimensión. La normativa y la estructura operativa obligan a considerar conjuntamente la gravedad actual del incidente, la exposición potencial, la vulnerabilidad de la población afectada, la amenaza contextual y la posibilidad de escalado, mientras que la calidad de la información disponible modula principalmente la confianza con la que esa prioridad se recomienda. Esa conclusión enlaza de forma natural con la fórmula conceptual del motor de priorización, que se presenta en el Capítulo 6.
+La tercera es que la taxonomía operativa no es un elemento accesorio, sino el mecanismo que permite activar el contexto correcto, aplicar reglas específicas y generar explicaciones comprensibles. Sin esa taxonomía, la priorización quedaría reducida a un scoring ciego y poco defendible.
+La cuarta es que las fuentes oficiales disponibles permiten enriquecer el contexto del incidente, pero no eliminan las limitaciones de acceso a datos operativos reales. Por tanto, el TFM debe mantener un enfoque realista: baseline interpretable, variables justificadas, dataset piloto híbrido y validación humana obligatoria. Asimismo, la escala P1–P4 del sistema debe seguir tratándose como una abstracción operativa propia del prototipo, cuya inspiración en las situaciones operativas 0–3 es metodológicamente adecuada pero que no debe presentarse como equivalencia jurídica.
+En consecuencia, este capítulo cumple una función decisiva dentro del TFM: cerrar el dominio, delimitar el marco normativo útil, fijar la taxonomía de trabajo y acotar las fuentes oficiales que alimentarán el diseño analítico del motor en los capítulos siguientes.
+

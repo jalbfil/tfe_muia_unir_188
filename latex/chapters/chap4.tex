@@ -1,0 +1,133 @@
+\chapter{Objetivos y metodología de trabajo}
+
+\section{Introducción al capítulo}
+
+Este capítulo cumple una función de bisagra dentro del TFM: conecta el problema identificado en los capítulos anteriores ---la saturación informativa en puestos de mando de emergencias y la necesidad de un sistema de apoyo a la primera decisión--- con la estrategia concreta que el equipo ha seguido para abordarlo. Si los capítulos previos han respondido al qué (cuál es el problema) y al por qué (qué marco operativo y normativo lo sustenta), este capítulo responde al para qué (qué se pretende lograr) y al cómo (con qué enfoque, en qué fases y con qué organización).
+
+Se formulan en primer lugar el objetivo general y los objetivos específicos del trabajo, verificando su cumplimiento de los criterios SMART \cite{Doran1981}. A continuación se plantean las preguntas de investigación que guían el desarrollo. Seguidamente se describe el enfoque metodológico adoptado ---iterativo e incremental, adaptado a un equipo de tres personas--- y las fases en que se ha estructurado el trabajo. Finalmente, se presenta la estrategia de colaboración interdisciplinar del equipo y las consideraciones éticas relevantes, incluyendo la transparencia sobre el uso de herramientas de inteligencia artificial en la propia elaboración del TFM.
+
+\section{Objetivo general (SMART)}
+
+El objetivo general de este Trabajo Fin de Máster es:
+
+\textit{Diseñar e implementar un prototipo software modular de apoyo a la decisión para puestos de mando de emergencias civiles que permita estructurar, contextualizar y priorizar incidentes operativos, con el fin de reducir el Time To First Decision (TTFD) mediante una lógica explicable basada en criterios operativos y fuentes oficiales, y evaluar su aplicabilidad en escenarios simulados durante el periodo de desarrollo del TFM.}
+
+Este objetivo cumple los criterios SMART de la siguiente manera. Es específico porque identifica con claridad qué se pretende construir ---un prototipo modular de apoyo a la decisión---, para qué contexto ---puestos de mando de emergencias civiles---, con qué funcionalidad central ---priorizar incidentes--- y con qué enfoque diferenciador ---lógica explicable basada en normativa y fuentes oficiales---. Es medible porque establece una métrica operativa concreta ---la reducción del TTFD--- que permite evaluar si el sistema cumple su propósito, y porque la aplicabilidad se valorará mediante escenarios simulados con criterios de evaluación definidos. Es alcanzable porque se apoya en tecnologías y técnicas adquiridas durante el máster (Python, NLP, Scikit-learn, desarrollo web), cuenta con un equipo de tres personas con perfiles complementarios y se delimita como prototipo de investigación, no como producto de despliegue industrial. Es relevante porque aborda un problema operativo real con impacto directo sobre la protección de personas en situaciones de emergencia, alineándose con los principios de Tech4Good y de IA responsable. Y tiene un tiempo determinado porque debe completarse dentro del periodo académico establecido para la asignatura de Trabajo Fin de Máster.
+
+\section{Objetivos específicos (SMART)}
+
+El objetivo general se descompone en ocho objetivos específicos que representan los pasos necesarios para su consecución. Cada uno de ellos se formula con un verbo en infinitivo, es individualmente evaluable y contribuye a una dimensión concreta del trabajo.
+
+\begin{enumerate}
+  \item[OE1.] Analizar el problema operativo de la priorización de incidentes en entornos de coordinación de emergencias, identificando las necesidades del operador, las fuentes de información disponibles y los factores que condicionan la calidad de la primera decisión.
+  \item[OE2.] Revisar el marco normativo estatal y autonómico aplicable al sistema de protección civil, extrayendo los conceptos, criterios de activación y lógica de escalado que fundamentan el diseño del motor de priorización.
+  \item[OE3.] Diseñar una taxonomía operativa de incidentes adecuada al caso piloto aragonés, organizada en dos niveles ---emergencias de protección civil y emergencias operativas ordinarias--- y alineada con el catálogo de riesgos de la Norma Básica y con los planes especiales de Aragón.
+  \item[OE4.] Definir una matriz de variables de priorización justificadas, especificando para cada variable su definición operativa, su base normativa, su fuente oficial y su papel dentro del motor.
+  \item[OE5.] Diseñar una guía de etiquetado para la construcción del dataset piloto, estableciendo reglas maestras, reglas duras de prioridad, criterios de resolución de conflictos y criterios de etiquetado de confianza.
+  \item[OE6.] Diseñar e implementar un baseline interpretable de priorización, con una arquitectura de tres capas ---reglas duras, scoring explicable y capa de confianza y explicación--- capaz de producir una recomendación de prioridad estructurada, trazable y revisable por el operador.
+  \item[OE7.] Construir un prototipo modular que integre el motor de priorización, el backend de servicios y la interfaz de usuario, permitiendo la demostración funcional del sistema.
+  \item[OE8.] Evaluar la aplicabilidad del sistema en escenarios simulados, midiendo la coherencia del baseline con el etiquetado humano, la distribución de prioridades, la tasa de falsos negativos graves, la explicabilidad de las recomendaciones y el impacto estimado sobre el TTFD.
+\end{enumerate}
+
+Los dos primeros objetivos (OE1 y OE2) son de naturaleza analítica y alimentan el diseño del sistema. Los objetivos OE3 a OE6 constituyen el núcleo del trabajo y se centran en el diseño del motor de priorización, que es la aportación principal del TFM. El objetivo OE7 materializa el prototipo como producto software demostrable, y el OE8 cierra el ciclo con la evaluación de la propuesta. Esta progresión ---analizar, diseñar, implementar, evaluar--- es coherente con el enfoque iterativo descrito en los apartados siguientes y garantiza que cada fase se construye sobre los resultados de la anterior.
+
+\section{Preguntas de investigación}
+
+Además de los objetivos, el desarrollo del TFM se ha orientado a dar respuesta a un conjunto de preguntas de investigación que concretan los interrogantes que el trabajo pretende abordar. Estas preguntas no son hipótesis en sentido experimental ---el TFM no plantea un diseño experimental con grupo de control---, sino cuestiones que guían el diseño, la implementación y la evaluación del sistema.
+
+\begin{enumerate}
+  \item[PI1.] ¿Es posible construir un motor de priorización de incidentes de emergencia basado en criterios operativos extraídos de la normativa oficial española, sin depender de grandes volúmenes de datos históricos etiquetados?
+
+  Esta pregunta justifica la decisión de diseñar un baseline interpretable basado en reglas y scoring, en lugar de recurrir directamente a modelos complejos de aprendizaje automático que requerirían datasets que no están disponibles.
+
+  \item[PI2.] ¿Puede un sistema de tres capas ---reglas duras, scoring explicable y capa de confianza--- producir recomendaciones de prioridad coherentes con el criterio de un operador experto?
+
+  Esta pregunta orienta la evaluación del sistema: si el baseline produce recomendaciones que un operador reconoce como razonables, el enfoque es viable; si no, las reglas o los pesos deben ajustarse.
+
+  \item[PI3.] ¿En qué medida la integración de fuentes oficiales de contexto ---avisos meteorológicos, cartografía de riesgo, datos demográficos--- mejora la capacidad de discriminación del motor respecto a una priorización basada solo en la información textual del incidente?
+
+  Esta pregunta justifica la incorporación de variables contextuales y permite evaluar su contribución real frente a un modelo que solo utilice la descripción del operador.
+
+  \item[PI4.] ¿Puede el sistema propuesto reducir el Time To First Decision (TTFD) en escenarios simulados, proporcionando al operador una recomendación estructurada y explicable antes de que complete su evaluación manual?
+
+  Esta pregunta conecta directamente con la métrica operativa central del TFM y con la evaluación de su aplicabilidad.
+
+  \item[PI5.] ¿En qué grado la explicación generada por el sistema resulta comprensible y útil para el operador, más allá de la prioridad numérica asignada?
+
+  Esta última pregunta aborda el requisito de explicabilidad, que no es un añadido decorativo sino un componente funcional del sistema cuya utilidad debe poder valorarse.
+\end{enumerate}
+
+\section{Enfoque metodológico: iterativo e incremental (Scrum adaptado)}
+
+El desarrollo de este TFM sigue un enfoque metodológico iterativo e incremental, inspirado en los principios de las metodologías ágiles y adaptado a las características específicas del proyecto: un equipo de tres personas, un alcance académico delimitado y un producto final que combina un componente analítico ---el diseño del motor--- con un componente software ---el prototipo funcional---.
+
+La elección de este enfoque responde a una razón práctica. El motor de priorización no puede diseñarse de una sola vez y validarse al final del proceso: las reglas, los pesos y los umbrales necesitan refinarse a medida que se construyen los primeros casos del dataset piloto y se observa el comportamiento del sistema ante escenarios concretos. Un enfoque puramente secuencial ---diseñar todo, implementar todo y evaluar al final--- habría expuesto al equipo al riesgo de descubrir problemas de diseño demasiado tarde para corregirlos dentro del plazo del TFM.
+
+En la práctica, la adaptación se concreta en ciclos de trabajo de duración variable ---entre una y tres semanas--- en los que el equipo se concentra en una tarea o grupo de tareas bien delimitados, produce un entregable parcial y lo revisa antes de avanzar al siguiente ciclo. La gestión visual de tareas se ha apoyado en un tablero tipo Kanban, y las reuniones semanales del equipo han funcionado como punto de sincronización equivalente al sprint review de Scrum, aunque sin la rigidez ceremonial de un marco ágil ortodoxo.
+
+Conviene aclarar que la metodología adoptada no es Scrum en sentido estricto: no se han designado roles formales de Product Owner o Scrum Master, no se han realizado retrospectivas formalizadas y la duración de los ciclos ha variado en función de la naturaleza de cada fase. Lo que se ha adoptado es la lógica de fondo ---construir de forma incremental, obtener feedback temprano, ajustar sobre la marcha--- aplicada con el pragmatismo que requiere un proyecto académico de estas características.
+
+Este enfoque ha resultado especialmente valioso en dos momentos del proyecto: durante la definición de las reglas del baseline, donde las primeras pruebas con casos simulados revelaron que ciertos criterios de priorización necesitaban ajustarse para evitar una concentración excesiva de incidentes en los niveles altos de la escala; y durante la integración del motor con el frontend, donde la visualización de las explicaciones del sistema obligó a replantear la forma en que la capa de confianza comunica sus resultados al operador.
+
+\section{Fases de desarrollo del TFM}
+
+El trabajo se ha estructurado en seis fases secuenciales, cada una de las cuales produce un resultado que alimenta la siguiente. Aunque el enfoque iterativo ha permitido revisitar decisiones anteriores cuando ha sido necesario, la progresión general ha respetado un orden lógico deliberado: primero se cierra el dominio, después la lógica del motor, después los datos, y solo entonces se implementa y evalúa el sistema.
+
+\subsection{Delimitación del problema y análisis del dominio}
+
+La primera fase se ha dedicado a acotar con precisión el problema que aborda el TFM: la priorización de incidentes operativos en entornos de coordinación de emergencias, con foco en la reducción del TTFD. Se ha analizado el marco normativo estatal y autonómico, se han identificado las fuentes de datos oficiales disponibles y se ha estudiado el contexto operativo real de los centros de coordinación y puestos de mando. El resultado principal de esta fase ha sido la definición del alcance funcional y territorial del sistema, documentado en los capítulos 1, 2 y 3 de esta memoria.
+
+\subsection{Diseño de taxonomía, variables y escala de prioridad}
+
+La segunda fase ha abordado las decisiones de diseño analítico que constituyen el núcleo conceptual del motor. Se ha definido la taxonomía operativa de incidentes en dos niveles, se ha construido la matriz de variables de priorización ---con 15 variables de entrada justificadas por normativa y fuentes oficiales--- y se ha diseñado la escala de prioridad operativa P1--P4 como abstracción propia del prototipo, inspirada en la lógica de las situaciones operativas normativas. El resultado de esta fase se presenta en el Capítulo 6.
+
+\subsection{Construcción del dataset piloto}
+
+La tercera fase ha consistido en el diseño de la guía de etiquetado y la construcción del dataset piloto híbrido. Ante la ausencia de un dataset operativo detallado del 112 Aragón de acceso público, se ha optado por un dataset compuesto por una estructura inspirada en datos institucionales, variables contextuales procedentes de fuentes oficiales y casos simulados plausibles etiquetados conforme a la guía definida. El detalle de esta estrategia se presenta en el Capítulo 7.
+
+\subsection{Diseño e implementación del baseline interpretable}
+
+La cuarta fase ha sido la más intensiva del proyecto y se ha centrado en el diseño e implementación del baseline interpretable de tres capas: la capa de reglas duras, que aplica condiciones deterministas no negociables; la capa de scoring explicable, que pondera las variables normalizadas para producir una puntuación de prioridad; y la capa de confianza y explicación, que estima la fiabilidad de la recomendación y genera un resumen de los factores determinantes. Esta arquitectura se ha refinado de forma iterativa a medida que se probaba con los casos del dataset piloto. El diseño completo se presenta en el Capítulo 6.
+
+\subsection{Desarrollo del prototipo software}
+
+La quinta fase ha materializado el motor en un prototipo funcional integrado. El backend ---desarrollado en Python--- implementa la lógica del motor, el pipeline de procesamiento de incidentes y la API de comunicación con el frontend. La interfaz de usuario permite al operador visualizar los incidentes priorizados, consultar la explicación del sistema y validar, corregir o rechazar la recomendación. El prototipo se documenta en el Capítulo 8.
+
+\subsection{Evaluación y ajuste}
+
+La sexta y última fase se ha dedicado a evaluar el sistema en escenarios simulados. La evaluación ha cubierto la coherencia del baseline con el etiquetado humano, la distribución de prioridades generada, la tasa de falsos negativos graves, la explicabilidad de las recomendaciones, la usabilidad del prototipo y la estimación del impacto sobre el TTFD. Los resultados de esta evaluación se presentan en el Capítulo 9 y se discuten en las conclusiones del Capítulo 10.
+
+\section{Estrategia de trabajo interdisciplinar del equipo}
+
+La naturaleza del problema que aborda este TFM no es exclusivamente técnica ni exclusivamente operativa: requiere combinar el conocimiento del dominio de emergencias, el diseño analítico del motor de priorización, la implementación software del prototipo y la producción documental académica. Esta combinación de dimensiones es la que ha dado forma a la organización del equipo y a la distribución de roles descrita en el apartado de organización del trabajo en grupo.
+
+La estrategia interdisciplinar ha partido de una premisa: el motor de priorización es el núcleo del TFM, y todas las demás dimensiones del trabajo ---el backend que lo ejecuta, la interfaz que lo presenta al operador, la documentación que lo justifica--- deben estar al servicio de ese núcleo. Esto ha implicado que las decisiones de diseño analítico se han tomado antes de las decisiones de implementación, que el backend se ha construido para ejecutar fielmente la lógica del motor ---no al revés--- y que la interfaz se ha diseñado para presentar al operador exactamente lo que el motor produce: prioridad, confianza, situación operativa sugerida y explicación.
+
+En la práctica, esta estrategia se ha traducido en que el responsable del dominio y del diseño del motor (Juan Carlos Albert Fillol) ha definido las reglas, las variables y la lógica funcional antes de que el responsable del backend (Brian Pesci Juliani) las implementara en código, y antes de que el responsable del frontend (Ancor González Carballo) diseñara los componentes de visualización. Las fases de integración y evaluación se han abordado de forma conjunta, porque en ellas convergen necesariamente las tres dimensiones del trabajo.
+
+Esta forma de organizarse no ha sido una mera cuestión administrativa, sino una decisión metodológica coherente con el principio de que en un TFM de desarrollo software la contribución principal no es el código, sino el diseño analítico que lo sustenta.
+
+% \section{Consideraciones éticas y uso de IA en la elaboración del TFM}
+
+% Las consideraciones éticas de este trabajo se articulan en dos planos: las relativas al sistema propuesto como herramienta de apoyo a la decisión en emergencias, y las relativas al uso de herramientas de inteligencia artificial en la propia elaboración del TFM.
+
+% \subsection{Consideraciones éticas del sistema propuesto}
+
+% El sistema de apoyo a la decisión diseñado en este TFM opera en un dominio donde los errores pueden tener consecuencias graves para las personas. Un falso negativo ---un incidente de alta urgencia clasificado erróneamente como prioritario bajo--- podría retrasar la movilización de recursos en una situación crítica. Esta responsabilidad exige que el diseño del sistema incorpore salvaguardas éticas desde el principio, no como un apéndice posterior.
+
+% La primera salvaguarda es el principio de supervisión humana obligatoria. El sistema recomienda, pero no decide. Toda recomendación del motor debe ser revisada, validada o corregida por el operador antes de traducirse en una acción operativa. El prototipo no incluye ningún mecanismo de actuación automática ---no moviliza recursos, no activa planes, no envía alertas sin intervención humana---.
+
+% La segunda salvaguarda es la explicabilidad. El sistema no se limita a asignar una prioridad numérica: genera una explicación de los factores que la determinan, lo que permite al operador evaluar si la recomendación es razonable en el contexto concreto de la situación. Si la explicación no resulta convincente, el operador tiene la capacidad ---y la responsabilidad--- de corregir la prioridad.
+
+% La tercera salvaguarda es la transparencia sobre la incertidumbre. Cuando la información disponible es insuficiente para producir una recomendación fiable, el sistema lo indica mediante un nivel de confianza bajo, en lugar de generar una prioridad aparentemente segura sobre una base informativa frágil. Esta decisión de diseño responde al principio de que, en un dominio crítico, una incertidumbre reconocida es preferible a una certeza fabricada.
+
+% La cuarta consideración se refiere a la equidad y la no discriminación. El sistema utiliza variables territoriales y demográficas como proxies contextuales, no como factores de discriminación individual. La inclusión de la variable de población vulnerable responde a un mandato normativo de protección reforzada, no a un criterio de exclusión.
+
+% \subsection{Uso de herramientas de IA en la elaboración del TFM}
+
+% El equipo ha utilizado herramientas de inteligencia artificial generativa como apoyo durante la elaboración de este TFM, fundamentalmente para la organización de información compleja, la producción de borradores de apartados y la revisión de la coherencia terminológica entre capítulos. Este uso se ha realizado dentro del marco previsto por la UNIR y con pleno conocimiento del director del trabajo.
+
+% Es importante precisar el alcance de este uso. La IA ha funcionado como herramienta de apoyo a la producción documental, no como sustituta de la autoría ni del criterio metodológico del equipo. Todas las decisiones de diseño ---qué variables incluir, qué arquitectura adoptar para el baseline, cómo diseñar la guía de etiquetado, qué criterios de evaluación aplicar--- han sido tomadas por los integrantes del equipo y validadas con el director. Los borradores producidos con apoyo de IA han sido revisados, corregidos y reescritos por los autores antes de su integración en la memoria, y la responsabilidad sobre el contenido final recae exclusivamente en el equipo.
+
+% El detalle de las herramientas utilizadas, las tareas en las que se han empleado y los mecanismos de revisión aplicados se documenta en el Anexo H de esta memoria, conforme al principio de transparencia que el propio TFM defiende como requisito ético para sistemas de IA.
+

@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        // Compilación LaTeX, visor PDF integrado y SyncTeX
+        "james-yu.latex-workshop",
+        // Iconos de archivos en el explorador
+        "vscode-icons-team.vscode-icons",
+        // Corrector ortográfico (español + inglés)
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-spanish"
+    ]
+}
