@@ -44,7 +44,9 @@ Además, la mayoría de los DSS documentados en la literatura se han desarrollad
 
 \section{Inteligencia artificial aplicada a la gestión de incidentes}
 
-La aplicación de técnicas de inteligencia artificial (IA) al dominio de las emergencias ha experimentado un crecimiento notable en la última década, impulsada por la disponibilidad de grandes volúmenes de datos ---tanto institucionales como generados por ciudadanos a través de redes sociales---, el aumento de la capacidad computacional y la madurez de técnicas como el procesamiento del lenguaje natural (NLP), el aprendizaje automático supervisado y no supervisado, y las redes neuronales profundas \cite{Castillo2016,Imran2015}.
+La aplicación de técnicas de inteligencia artificial (IA) al dominio de las emergencias ha experimentado un crecimiento notable en la última década, impulsada por la disponibilidad de grandes volúmenes de datos ---tanto institucionales como generados por ciudadanos a través de redes sociales---, el aumento de la capacidad computacional y la madurez de técnicas como el procesamiento del lenguaje natural (Natural Language Processing, NLP), el aprendizaje automático supervisado y no supervisado, y las redes neuronales profundas \cite{Castillo2016,Imran2015,Kuglitsch2022,SAPEA2025}.
+
+La literatura reciente coincide en que la IA puede aportar valor en tareas de procesamiento rápido de grandes volúmenes de información, monitorización ambiental, alerta temprana, evaluación de daños y análisis de información procedente de redes sociales \cite{Kuglitsch2022,SAPEA2025}. No obstante, también advierte que su rendimiento se reduce cuando se aplica a situaciones nuevas, con pocos datos, con fuerte variabilidad contextual o con decisiones que implican juicios operativos y éticos. Esta advertencia es relevante para el presente TFM, porque la priorización inicial de incidentes no es una tarea puramente estadística, sino una decisión de apoyo operativo que debe ser explicable, trazable y revisable por el operador.
 
 \subsection{Procesamiento del Lenguaje Natural en emergencias}
 
@@ -52,15 +54,19 @@ El procesamiento del lenguaje natural se ha utilizado ampliamente para extraer i
 
 Las técnicas empleadas abarcan desde métodos clásicos de clasificación de texto (Naive Bayes, SVM, regresión logística) hasta modelos preentrenados basados en transformers (BERT, RoBERTa y sus variantes). En el dominio de emergencias, las aplicaciones más desarrolladas incluyen la clasificación de mensajes según tipo de incidente, la detección de expresiones de urgencia, la extracción de entidades geográficas (geoparsing) y el análisis de sentimiento como indicador indirecto de gravedad percibida.
 
+En los últimos años han aparecido modelos específicos para textos de crisis. Un ejemplo relevante es CrisisTransformers, que propone modelos preentrenados y codificadores de oraciones ajustados al lenguaje de crisis, entrenados sobre un corpus amplio de publicaciones asociadas a eventos críticos y evaluados sobre múltiples conjuntos de datos públicos \cite{Lamsal2024}. Este tipo de trabajos muestra el avance del procesamiento textual en crisis, pero también confirma una limitación importante para este TFM: la mayoría de estas soluciones trabajan sobre mensajes individuales o sobre redes sociales, no sobre la priorización operativa multiincidente dentro de un centro de coordinación.
+
 Sin embargo, la transferencia de estos resultados al entorno operativo de un centro de coordinación presenta limitaciones importantes. En primer lugar, los mensajes de redes sociales no son la fuente principal de información en un CECOP o un servicio 112: las llamadas ciudadanas al 112, los partes de los servicios de intervención y los avisos de organismos oficiales constituyen el flujo informativo primario. En segundo lugar, la calidad lingüística y la estructura de un parte operativo o una transcripción de llamada difieren sustancialmente de un tuit, lo que limita la transferibilidad directa de modelos entrenados en datos de redes sociales. En tercer lugar, la información operativamente relevante en un centro de coordinación no se limita al texto: incluye datos meteorológicos, cartográficos, demográficos y normativos que deben integrarse con la señal textual para producir una evaluación útil.
 
 \subsection{Modelos de clasificación y priorización}
 
-Los modelos de clasificación aplicados a incidentes de emergencia han seguido dos enfoques principales. El primero es la clasificación por tipo de incidente, donde el objetivo es asignar cada suceso a una categoría predefinida a partir de la información disponible. Los trabajos en este ámbito utilizan tanto técnicas supervisadas clásicas como modelos de aprendizaje profundo, con resultados variables según el dominio, el idioma y la calidad de los datos de entrenamiento \cite{Caragea2011,Alam2018}.
+Los modelos de clasificación aplicados a incidentes de emergencia han seguido dos enfoques principales. El primero es la clasificación por tipo de incidente, donde el objetivo es asignar cada suceso a una categoría predefinida a partir de la información disponible. Los trabajos en este ámbito utilizan tanto técnicas supervisadas clásicas como modelos de aprendizaje profundo, con resultados variables según el dominio, el idioma y la calidad de los datos de entrenamiento \cite{Caragea2011,Alam2018,Lamsal2024}.
 
 El segundo enfoque, más relevante para este TFM, es la estimación de la urgencia o gravedad del incidente. Los trabajos más conocidos en este ámbito proceden del triaje médico en emergencias masivas (START, JumpSTART, SALT) y de su adaptación a contextos no sanitarios \cite{Kilner2005}. Sin embargo, trasladar la lógica de triaje médico ---diseñada para evaluar pacientes individuales--- a la priorización de incidentes operativos ---donde cada incidente puede implicar múltiples víctimas, recursos y dinámicas de evolución--- no es trivial.
 
 La principal limitación de los modelos puramente estadísticos de priorización es su dependencia de datos históricos etiquetados. Para entrenar un clasificador supervisado que estime la urgencia de un incidente se necesita un dataset amplio, representativo y correctamente etiquetado. En la mayoría de los sistemas de emergencias europeos, estos datos no están disponibles en formato abierto ni con el nivel de detalle necesario para un entrenamiento supervisado robusto. Esta limitación se ve acentuada en el contexto español, donde la publicación de microdatos operativos de los servicios 112 es muy limitada.
+
+Esta limitación no invalida el uso de aprendizaje automático, pero obliga a situarlo correctamente. En este TFM, los modelos supervisados se consideran una alternativa metodológica relevante, pero no el punto de partida más defendible para el alcance actual. Su aplicación tendría sentido en una fase futura si se dispusiera de un histórico suficiente de incidentes etiquetados por expertos y con criterios homogéneos de prioridad.
 
 \subsection{Sistemas híbridos: reglas + aprendizaje automático}
 
@@ -74,11 +80,13 @@ La combinación de ambos enfoques ---un layer de reglas duras que garantice la s
 
 \section{Explicabilidad (XAI) y supervisión humana en sistemas críticos}
 
-La explicabilidad de los sistemas de inteligencia artificial (Explainable AI, XAI) ha pasado de ser un desideratum académico a convertirse en un requisito técnico y, en algunos contextos, jurídico. El Reglamento Europeo de Inteligencia Artificial \cite{EUAIAct2024} clasifica los sistemas de IA que intervienen en la gestión de emergencias y servicios esenciales como sistemas de alto riesgo, lo que implica obligaciones específicas de transparencia, supervisión humana y documentación de las decisiones automatizadas.
+La explicabilidad de los sistemas de inteligencia artificial (Explainable Artificial Intelligence, XAI) ha pasado de ser un desideratum académico a convertirse en un requisito técnico y, en algunos contextos, jurídico. El Reglamento Europeo de Inteligencia Artificial \cite{EUAIAct2024} refuerza esta perspectiva al exigir medidas de transparencia, documentación y supervisión humana en sistemas de alto riesgo. En el ámbito de emergencias, esta orientación resulta especialmente importante, porque una recomendación automatizada puede influir en decisiones con impacto sobre la seguridad de las personas.
 
 En el contexto de un sistema de apoyo a la decisión para emergencias, la explicabilidad no es un complemento estético ni una función secundaria: es un requisito operativo de primer orden. Un operador de un centro de coordinación que recibe una recomendación de prioridad necesita saber por qué el sistema ha asignado esa prioridad para poder decidir si la acepta, la corrige o la rechaza. Si la explicación es opaca, el operador se enfrenta a un dilema: seguir ciegamente una recomendación que no comprende o ignorarla por prudencia, en cuyo caso el sistema carece de utilidad práctica.
 
 La literatura sobre XAI distingue entre explicabilidad intrínseca ---propia de modelos cuya estructura permite trazar internamente el razonamiento, como los árboles de decisión, las reglas o los sistemas de scoring ponderado--- y explicabilidad post-hoc ---obtenida mediante técnicas que se aplican después del modelo para aproximar su comportamiento, como LIME o SHAP \cite{Ribeiro2016,Lundberg2017}. En dominios donde la confianza del usuario final es condición necesaria para la utilidad del sistema, la explicabilidad intrínseca presenta ventajas significativas: no requiere una capa adicional de interpretación, no introduce aproximaciones que pueden ser engañosas y permite una trazabilidad directa entre las variables de entrada y la salida producida.
+
+La revisión sistemática de \citeA{Ghaffarian2023} sobre XAI en gestión del riesgo de desastres muestra que el interés por la explicabilidad ha aumentado de forma notable en los últimos años, especialmente por la necesidad de transparencia e interpretabilidad en sistemas de apoyo a la decisión. Esta conclusión resulta coherente con el enfoque del presente TFM: si el sistema debe apoyar decisiones en un dominio crítico, su valor no depende solo de acertar una prioridad, sino también de explicar por qué la recomienda.
 
 Complementariamente a la explicabilidad, la supervisión humana (human-in-the-loop) se ha consolidado como un principio de diseño esencial en los sistemas de IA aplicados a dominios críticos. El AI Act europeo insiste en que los sistemas de alto riesgo deben mantener la posibilidad de intervención humana significativa, entendida no como una mera opción de anulación, sino como un control activo sobre las decisiones que produce el sistema. En el ámbito de las emergencias, este principio tiene una justificación adicional de naturaleza operativa: el operador humano dispone de información contextual ---conocimiento del terreno, experiencia previa con situaciones similares, información verbal no codificable--- que ningún sistema automatizado puede capturar completamente. Renunciar a esa supervisión sería no solo imprudente, sino contrario al principio de precaución que rige la gestión de emergencias.
 
@@ -95,6 +103,35 @@ En el ámbito de la IA aplicada a emergencias, los trabajos de \citeA{Imran2015}
 En el ámbito de los DSS específicos para centros de coordinación, los trabajos de \citeA{Turoff2004} sobre diseño de sistemas de respuesta a emergencias y de \citeA{Comes2011} sobre toma de decisiones bajo incertidumbre profunda proporcionan marcos conceptuales sólidos, pero no presentan implementaciones funcionales de motores de priorización evaluados en escenarios simulados.
 
 Finalmente, en el contexto español, la producción académica sobre sistemas de apoyo a la decisión para emergencias es limitada. Existen trabajos sobre modelización de incendios forestales, sistemas de alerta hidrológica y plataformas de coordinación institucional, pero no se han identificado publicaciones que aborden específicamente el diseño de un motor de priorización explicable de incidentes operativos para centros de coordinación 112 o CECOP, basado en la normativa española de protección civil y alimentado por fuentes oficiales de datos.
+
+\section{Comparación con enfoques y sistemas existentes}
+
+La Tabla~\ref{tab:comparacion_enfoques_sistemas} sintetiza la comparación entre los enfoques revisados y la propuesta de este TFM. El objetivo de esta comparación no es afirmar que el sistema propuesto supere de forma general a todos los trabajos previos, sino precisar qué problema resuelve cada línea, qué limitaciones presenta para el caso de uso analizado y qué aporta específicamente el baseline interpretable diseñado en este trabajo.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{|p{3cm}|X|X|X|}
+\hline
+\textbf{Enfoque o sistema} & \textbf{Qué resuelve} & \textbf{Limitación para este TFM} & \textbf{Aportación del TFM} \\ \hline
+DSS clásicos en emergencias & Ayudan a organizar información y apoyar la decisión en entornos complejos. & Muchos se centran en visualización, gestión documental o simulación, no en priorización explicable multiincidente. & Se centra en ordenar incidentes por urgencia operativa relativa y explicar la recomendación. \\ \hline
+Plataformas GIS y conciencia situacional & Integran capas geográficas, información ciudadana y visualización territorial. & Mejoran la conciencia situacional, pero no generan una prioridad operativa trazable. & Usa el contexto territorial como variable activa del motor, no solo como capa visual. \\ \hline
+Modelos NLP para crisis & Clasifican mensajes, detectan necesidades y extraen información de textos no estructurados. & Suelen trabajar con redes sociales o mensajes individuales, no con flujos operativos 112/CECOP. & Integra la señal textual con normativa, variables contextuales y supervisión humana. \\ \hline
+Modelos supervisados clásicos & Pueden clasificar incidentes si existe un histórico amplio y etiquetado. & Requieren datos operativos etiquetados que no están disponibles públicamente para Aragón. & Propone un baseline interpretable viable con dataset piloto y trazabilidad normativa. \\ \hline
+Modelos de caja negra & Pueden capturar relaciones complejas en grandes volúmenes de datos. & Presentan baja explicabilidad intrínseca y son difíciles de defender en un dominio crítico. & Prioriza explicabilidad intrínseca, reglas auditables y salida revisable por operador. \\ \hline
+XAI post-hoc & Permite aproximar explicaciones sobre modelos opacos mediante técnicas como LIME o SHAP. & La explicación puede ser aproximada y no necesariamente coincide con el razonamiento real del modelo. & La explicación se genera desde el propio estado interno del motor. \\ \hline
+Baseline interpretable del TFM & Prioriza incidentes con reglas duras, scoring ponderado, confianza y explicación. & No sustituye una validación institucional real ni un histórico operativo completo. & Ofrece una solución académicamente viable, trazable y evaluable en escenarios simulados de Aragón. \\ \hline
+\end{tabularx}
+\caption{Comparación entre enfoques existentes y propuesta del TFM.}
+\label{tab:comparacion_enfoques_sistemas}
+\end{table}
+
+\noindent \textit{Fuente: elaboración propia.}
+
+La comparación permite extraer una conclusión importante: la propuesta del TFM no compite directamente con sistemas de simulación física ni con modelos avanzados de NLP, porque su objetivo es distinto. El trabajo se sitúa en el punto de unión entre información inicial del incidente, contexto oficial, criterios normativos, razonamiento explicable y supervisión humana. Esa combinación es precisamente la que permite defender la contribución de IA del sistema dentro de un TFM de desarrollo software.
+
+También permite precisar las limitaciones propias. El baseline propuesto no tiene la capacidad predictiva potencial de un modelo supervisado entrenado con miles de incidentes reales, ni pretende validar su rendimiento en una sala 112 real. Su aportación es establecer una base metodológica trazable y evaluable, adecuada para un escenario académico en el que no se dispone de microdatos operativos suficientes y en el que la explicabilidad resulta prioritaria.
 
 \section{Brecha identificada y aportación específica del TFM}
 
@@ -127,5 +164,7 @@ Cuarta. La inteligencia artificial puede aportar valor en la clasificación, la 
 Quinta. La explicabilidad intrínseca y la supervisión humana activa no deben ser funcionalidades añadidas a posteriori, sino principios de diseño que condicionen la arquitectura del sistema desde el inicio. El marco regulatorio europeo (AI Act) refuerza esta perspectiva.
 
 Sexta. En el contexto español, no se ha identificado un sistema de priorización de incidentes operativos que combine criterios normativos de protección civil, fuentes oficiales de datos, explicabilidad intrínseca y supervisión humana en un prototipo funcional evaluado en escenarios simulados. Esta brecha justifica la aportación del presente TFM.
+
+Séptima. La comparación con enfoques existentes permite justificar que el baseline interpretable no es una solución improvisada por falta de datos, sino una elección metodológica coherente con el dominio: permite razonar con información parcial, mantener la trazabilidad de las reglas y preservar la supervisión humana.
 
 Estas conclusiones preparan directamente el tránsito al Capítulo 3 ---donde se desarrolla el marco normativo que fundamenta las variables y reglas del motor--- y al Capítulo 4 ---donde se formulan los objetivos y la metodología que articulan la respuesta a la brecha identificada.
