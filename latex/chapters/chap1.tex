@@ -1,4 +1,3 @@
-
 \chapter{Introducción}
 
 \section{Contexto general del trabajo}
@@ -37,7 +36,7 @@ La aplicación de técnicas de IA a la gestión de emergencias ha sido objeto de
 
 Sin embargo, buena parte de los trabajos publicados en este ámbito se han desarrollado en contextos anglosajones, con marcos normativos, estructuras operativas y bases de datos diferentes a las del sistema español de protección civil. Además, muchas de estas propuestas asumen la disponibilidad de grandes volúmenes de datos históricos etiquetados, una condición que difícilmente se cumple de forma generalizada en los centros de coordinación de emergencias españoles, donde la información operativa rara vez está estructurada en formatos reutilizables para el entrenamiento de modelos de aprendizaje automático.
 
-El presente TFM parte de estas limitaciones como punto de partida metodológico, no como obstáculo. Diseña un sistema que prioriza un baseline interpretable antes de recurrir a modelos más complejos de aprendizaje automático; que trabaja con un dataset piloto híbrido ante la ausencia de microdatos operativos garantizados; y que justifica cada una de sus variables y criterios de priorización en la normativa oficial española y en fuentes institucionales verificables, en lugar de depender de supuestos difícilmente replicables en el contexto nacional.
+El presente TFM parte de estas limitaciones como punto de partida metodológico, no como obstáculo. Diseña un sistema que prioriza un baseline interpretable antes de recurrir a modelos más complejos de aprendizaje automático; que trabaja con un dataset piloto híbrido ante la ausencia de microdatos operativos abiertos equivalentes del 112 Aragón, incorporando como fuente empírica real el Registro de Emergencias del 112 de Castilla y León \cite{Registro112CyL}; y que justifica cada una de sus variables y criterios de priorización en la normativa oficial española y en fuentes institucionales verificables, en lugar de depender de supuestos difícilmente replicables en el contexto nacional.
 
 \section{Contribución específica desde la inteligencia artificial}
 
@@ -68,7 +67,7 @@ En consecuencia, la prueba del sistema en este TFM no debe entenderse como un de
 El TFM tiene un conjunto de limitaciones que conviene explicitar desde el principio para que el lector sitúe correctamente el alcance de sus aportaciones.
 En primer lugar, el sistema no ha sido desplegado en un entorno operativo real. Su evaluación se realiza sobre escenarios simulados con un dataset piloto híbrido, lo cual permite valorar la coherencia, la explicabilidad y la viabilidad técnica del enfoque, pero no equivale a una validación institucional.
 
-En segundo lugar, el dataset piloto no se basa en microdatos operativos reales del 112 Aragón, cuyo acceso detallado no está disponible de forma pública. Se ha construido un dataset híbrido compuesto por estructura inspirada en datos institucionales agregados, variables contextuales procedentes de fuentes oficiales y casos simulados controlados, etiquetados conforme a una guía de etiquetado rigurosa. Por tanto, los resultados deben interpretarse como evidencia de comportamiento del baseline en condiciones controladas, no como medida definitiva de rendimiento en operación real.
+En segundo lugar, el dataset piloto no se basa en microdatos operativos reales del 112 Aragón, cuyo acceso detallado no está disponible de forma pública. Para reforzar la base empírica del trabajo, se incorpora el Registro de Emergencias del 112 de Castilla y León como fuente real de incidentes, no como marco normativo ni como sustitución del caso piloto aragonés. Se ha construido, por tanto, un dataset híbrido compuesto por datos reales de una estructura 112 autonómica, variables contextuales procedentes de fuentes oficiales y casos simulados controlados, etiquetados conforme a una guía de etiquetado rigurosa. Esta decisión introduce una limitación de transferibilidad territorial que se reconoce explícitamente: los datos de Castilla y León se emplean como aproximación estructural para diseñar y probar el pipeline, mientras que la interpretación operativa de las variables y de la escala P1--P4 se mantiene alineada con el marco estatal y aragonés.
 
 En tercer lugar, la escala de prioridad P1–P4 empleada por el sistema es una construcción propia del prototipo, no una clasificación oficial. Se inspira en la lógica normativa de las situaciones operativas, pero no pretende equivaler a ellas en términos jurídicos.
 
