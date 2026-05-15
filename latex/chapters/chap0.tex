@@ -1,9 +1,13 @@
-\chapter{Organización del trabajo en grupo}
+\chapter*{Organización del trabajo en grupo}
+\addcontentsline{toc}{chapter}{Organización del trabajo en grupo}
+\setcounter{secnumdepth}{-1}
 
 \section{Introducción al trabajo grupal}
-El presente Trabajo Fin de Máster se ha desarrollado en modalidad grupal, de conformidad con el procedimiento establecido por la Universidad Internacional de La Rioja (UNIR) para la elaboración y defensa de Trabajos Fin de Estudios en grupo. Esta modalidad responde a la propia naturaleza del proyecto, que requiere combinar el diseño analítico del motor de priorización, la construcción del backend que lo sostiene y la interfaz que permite al operador interactuar con el sistema.
+El presente Trabajo Fin de Máster (TFM) se ha desarrollado en modalidad grupal, de conformidad con el procedimiento establecido por la Universidad Internacional de La Rioja (UNIR) para la elaboración y defensa de Trabajos Fin de Estudios (TFE) en grupo. Esta modalidad responde a la propia naturaleza del proyecto, que requiere combinar el diseño analítico del motor de priorización explicable, la construcción del backend que lo sostiene y la interfaz que permite al operador interactuar con el sistema.
 
-La organización se ha planteado de modo que cada integrante asuma un bloque de trabajo con entidad suficiente para constituir, por sí solo, un Trabajo Fin de Estudios individual. Al mismo tiempo, la coordinación entre los tres ejes garantiza que el prototipo resultante sea un producto coherente e integrado, y no la suma aislada de partes inconexas. A lo largo de las siguientes secciones se detallan los integrantes del equipo, sus roles, la distribución de responsabilidades técnicas y académicas, el reparto de capítulos de la memoria y los mecanismos de coordinación que han articulado el trabajo conjunto.
+La organización se ha planteado de modo que cada integrante asuma un bloque de trabajo con entidad suficiente para constituir, por sí solo, un Trabajo Fin de Estudios individual. Al mismo tiempo, la coordinación entre los tres ejes garantiza que el prototipo resultante sea un resultado coherente e integrado, y no la suma aislada de partes inconexas. A lo largo de las siguientes secciones se detallan los integrantes del equipo, sus roles, la distribución de responsabilidades técnicas y académicas, el reparto de capítulos de la memoria y los mecanismos de coordinación que han articulado el trabajo conjunto.
+
+Además, dado que el TFM pertenece al ámbito del Máster Universitario en Inteligencia Artificial, la organización del trabajo no se ha limitado a repartir tareas de implementación. Cada integrante ha asumido una contribución vinculada al componente inteligente del sistema: la formulación del problema de priorización, la implementación reproducible del pipeline de inferencia y la presentación explicable de las recomendaciones al operador humano.
 
 \section{Integrantes del equipo y roles asignados}
 El equipo está formado por tres estudiantes del Máster Universitario en Inteligencia Artificial de la UNIR, bajo la dirección del Dr. Andrés Soto Villaverde. Cada integrante aporta un perfil profesional distinto.
@@ -11,44 +15,71 @@ El equipo está formado por tres estudiantes del Máster Universitario en Inteli
 \subsection{Coordinación general, lógica funcional e integración}
 \textbf{Responsable principal:} Juan Carlos Albert Fillol.
 
-Su ámbito de trabajo abarca la definición y justificación del problema operativo desde la perspectiva del dominio de emergencias; el análisis del marco normativo estatal y autonómico aplicable; el diseño conceptual del motor de priorización, que incluye la taxonomía de incidentes, la matriz de variables, la escala de prioridad operativa P1–P4 y la guía de etiquetado; el diseño de la arquitectura lógica del baseline interpretable —con sus tres capas: reglas duras, scoring explicable y capa de confianza y explicación—; la coordinación general del proyecto en términos de planificación, seguimiento de entregas e integración de las contribuciones individuales; y la supervisión de la evaluación del sistema en escenarios simulados.
+Su ámbito de trabajo abarca la definición y justificación del problema operativo desde la perspectiva del dominio de emergencias; el análisis del marco normativo estatal y autonómico aplicable; el diseño conceptual del motor de priorización explicable, que incluye la taxonomía de incidentes, la matriz de variables, la escala de prioridad operativa P1--P4 y la guía de etiquetado; el diseño de la arquitectura lógica del baseline interpretable —con sus tres capas: reglas duras, \textit{scoring} explicable y capa de confianza y explicación—; la coordinación general del proyecto en términos de planificación, seguimiento de entregas e integración de las contribuciones individuales; y la supervisión de la evaluación del sistema en escenarios simulados.
+
+Desde el punto de vista de la inteligencia artificial (IA), su contribución principal se centra en formalizar el problema de priorización de incidentes como un problema de apoyo a la decisión bajo incertidumbre. Esta aportación incluye la exploración de alternativas metodológicas —modelos supervisados, modelos de caja negra, sistemas basados únicamente en reglas y baseline interpretable— y la justificación de una arquitectura explicable como opción más adecuada para el alcance del TFM. Por tanto, su contribución no se limita a la coordinación general del documento, sino que se vincula directamente con la formulación del núcleo inteligente del sistema.
 
 \subsection{Desarrollo backend, lógica de servicios y protocolos de inteligencia artificial}
 \textbf{Responsable principal:} Brian Mathias Pesci Juliani.
 
-Las tareas de este bloque comprenden el diseño e implementación de la arquitectura backend del prototipo; la traducción a código de la lógica del motor de priorización a partir del diseño analítico definido por el equipo; el diseño del esquema de datos y los mecanismos de persistencia; el desarrollo de los servicios de integración con fuentes de datos contextuales —como AEMET OpenData o el Sistema Nacional de Cartografía de Zonas Inundables (SNCZI) del MITECO—; la implementación del pipeline de
-procesamiento de incidentes, desde la ingesta hasta el cálculo de prioridad; el desarrollo de la API que conecta el backend con la interfaz de usuario; y la implementación de protocolos de Inteligencia Artificial.
+Las tareas de este bloque comprenden el diseño e implementación de la arquitectura backend del prototipo; la traducción a código de la lógica del motor de priorización a partir del diseño analítico definido por el equipo; el diseño del esquema de datos y los mecanismos de persistencia; el desarrollo de los servicios de integración con fuentes de datos contextuales —como AEMET OpenData o el Sistema Nacional de Cartografía de Zonas Inundables (SNCZI) del MITECO—; la implementación del \textit{pipeline} de procesamiento de incidentes, desde la ingesta hasta el cálculo de prioridad; el desarrollo de la interfaz de programación de aplicaciones (API, del inglés \textit{Application Programming Interface}) que conecta el backend con la interfaz de usuario; y la implementación de los componentes ejecutables asociados al motor de inteligencia artificial.
+
+Desde el punto de vista de la IA, su contribución se centra en convertir el diseño conceptual del motor en una lógica ejecutable, reproducible y evaluable, manteniendo la trazabilidad entre los datos de entrada, las reglas activadas, el \textit{scoring} obtenido, el nivel de confianza y la recomendación final. Esta aportación incluye también el soporte técnico para la ingesta y limpieza del dataset real de emergencias, la extracción de señales operativas y la preparación de evidencias que permitan comprobar el comportamiento del baseline interpretable.
 
 \subsection{Desarrollo frontend e interfaz de usuario}
 \textbf{Responsable principal:} Ancor González Carballo.
 
 La contribución de este bloque incluye el diseño e implementación de la interfaz de usuario del prototipo; los componentes de visualización de incidentes priorizados; la presentación al operador de la explicación que genera el sistema —factores determinantes, nivel de confianza y situación operativa sugerida—; los mecanismos de interacción que permiten revisar, validar, corregir o rechazar la recomendación del sistema; y los elementos de trazabilidad visual necesarios para garantizar la supervisión humana.
 
-\section{Distribución de capítulos y contribuciones individuales}
-La Tabla 1 presenta la distribución de responsabilidades sobre los capítulos y anexos de la memoria. Se ha buscado un reparto equilibrado de la carga, coherente con los perfiles y roles de cada integrante. Los nombres se listan en orden alfabético por apellido; el primero indica el responsable principal del apartado.
+Desde el punto de vista de la inteligencia artificial explicable (XAI, del inglés \textit{Explainable Artificial Intelligence}), su contribución se centra en materializar la supervisión humana y la explicabilidad visual del sistema, permitiendo que la recomendación generada por el motor no se presente como una salida opaca, sino como una propuesta comprensible, auditable y modificable por el operador. Esta aportación resulta esencial para evaluar si la salida del motor es realmente útil para el usuario final y si la explicación generada facilita una primera decisión informada.
+
+\section{Síntesis de contribuciones individuales desde la perspectiva de la IA}
+
+La Tabla \ref{tab:contribuciones-ia-individuales} resume la contribución específica de cada integrante desde el punto de vista de la inteligencia artificial. Esta tabla no sustituye al reparto de capítulos, sino que concreta cómo cada bloque de trabajo contribuye al objetivo académico principal del TFM.
 
 \begin{table}[ht]
 \centering
-\small
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|p{2.8cm}|p{4.1cm}|p{4.1cm}|p{3.1cm}|}
+\hline
+\textbf{Integrante} & \textbf{Subproblema de IA abordado} & \textbf{Decisión o contribución principal} & \textbf{Evidencia en la memoria} \\ \hline
+Juan Carlos Albert Fillol & Priorización explicable de incidentes bajo incertidumbre y con información incompleta & Diseño del baseline interpretable, variables, reglas duras, \textit{scoring}, confianza y guía de etiquetado & Caps. 3, 4, 6, 7 y 9 \\ \hline
+Brian Mathias Pesci Juliani & Ejecución reproducible del razonamiento del motor y trazabilidad de la inferencia & Implementación del pipeline, backend, persistencia, servicios, extracción de señales y registro de resultados & Caps. 5, 6, 7, 8 y 9 \\ \hline
+Ancor González Carballo & Explicabilidad visual, supervisión humana y validación de recomendaciones & Interfaz de revisión, explicación de factores, nivel de confianza y mecanismos de aceptación/corrección por el operador & Caps. 5, 8 y 9 \\ \hline
+\end{tabular}
+\caption{Contribuciones individuales desde la perspectiva de la inteligencia artificial.}
+\label{tab:contribuciones-ia-individuales}
+\end{table}
+
+\noindent \textit{Fuente: elaboración propia.}
+
+\section{Distribución de apartados, capítulos y contribuciones individuales}
+La Tabla \ref{tab:tab1secCTF} presenta la distribución de responsabilidades sobre el apartado preliminar de organización del trabajo en grupo, los capítulos y los anexos de la memoria. Se ha buscado un reparto equilibrado de la carga, coherente con los perfiles y roles de cada integrante. Los nombres se listan en orden alfabético por apellido; el primero indica el responsable principal del apartado.
+
+\begin{table}[ht]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{|p{3.5cm}|p{5cm}|p{4.5cm}|}
 \hline
-\textbf{Capítulo / Apartado} & \textbf{Responsables} & \textbf{Tipo de contribución} \\ \hline
-Organización del trabajo en grupo & Juan, Ancor, Brian & Redacción conjunta y validación \\ \hline
-Cap. 1. Introducción & Juan, Ancor, Brian & Redacción principal, revisión cruzada \\ \hline
-Cap. 2. Contexto y estado del arte & Juan, Ancor, Brian & Revisión bibliográfica y redacción \\ \hline
-Cap. 3. Marco normativo y fuentes & Juan, Ancor & Análisis normativo y extracción de criterios \\ \hline
-Cap. 4. Objetivos y metodología & Juan, Ancor, Brian & Formulación SMART y diseño metodológico \\ \hline
-Cap. 5. Requisitos del sistema & Juan, Brian & Especificación funcional y no funcional \\ \hline
-Cap. 6. Diseño del motor & Juan, Brian & Diseño analítico, variables, reglas, scoring \\ \hline
-Cap. 7. Diseño de datos y dataset & Juan, Brian & Esquema de datos, dataset piloto \\ \hline
-Cap. 8. Prototipo software & Juan, Ancor (front), Brian (back) & Implementación y documentación \\ \hline
-Cap. 9. Evaluación & Juan, Ancor, Brian & Ejecución, análisis e interpretación \\ \hline
-Cap. 10. Conclusiones & Juan, Ancor, Brian & Síntesis y líneas futuras \\ \hline
+\textbf{Apartado / Capítulo} & \textbf{Responsables} & \textbf{Tipo de contribución} \\ \hline
+Organización del trabajo en grupo & Juan, Ancor, Brian & Redacción conjunta, distribución de responsabilidades y validación \\ \hline
+Cap. 1. Introducción & Juan, Ancor, Brian & Redacción principal, revisión cruzada y delimitación del alcance \\ \hline
+Cap. 2. Contexto y estado del arte & Juan, Ancor, Brian & Revisión bibliográfica, comparación con trabajos previos y redacción \\ \hline
+Cap. 3. Marco normativo y fuentes & Juan, Ancor & Análisis normativo y extracción de criterios para el motor \\ \hline
+Cap. 4. Objetivos y metodología & Juan, Ancor, Brian & Formulación SMART, preguntas de investigación y diseño metodológico \\ \hline
+Cap. 5. Requisitos del sistema & Juan, Brian & Especificación funcional, no funcional y requisitos de explicabilidad \\ \hline
+Cap. 6. Diseño del motor & Juan, Brian & Diseño analítico, variables, reglas, \textit{scoring}, confianza y explicación \\ \hline
+Cap. 7. Diseño de datos y dataset & Juan, Brian & Esquema de datos, dataset piloto y controles de plausibilidad \\ \hline
+Cap. 8. Prototipo software & Juan, Ancor (frontend), Brian (backend) & Implementación, integración y documentación técnica \\ \hline
+Cap. 9. Evaluación & Juan, Ancor, Brian & Ejecución, análisis e interpretación de resultados \\ \hline
+Cap. 10. Conclusiones & Juan, Ancor, Brian & Síntesis de aportaciones, limitaciones y líneas futuras \\ \hline
 Anexos A--F & Juan (A,B,C,E), Ancor (Revisión), Brian (D,F) & Especificación técnica de soporte \\ \hline
 Anexo G. Capturas prototipo & Ancor, Brian & Capturas de interfaz y flujos \\ \hline
 Anexo H. Evidencia uso de IA & Juan, Ancor, Brian & Documentación de transparencia \\ \hline
 \end{tabular}
-\caption{Distribución de capítulos, responsables y tipo de contribución.}
+\caption{Distribución de apartados, capítulos, responsables y tipo de contribución.}
 \label{tab:tab1secCTF}
 \end{table}
 
@@ -73,3 +104,7 @@ La gestión documental del proyecto se ha apoyado en tres mecanismos complementa
 \end{itemize}
 
 Esta combinación de herramientas ha permitido mantener la trazabilidad tanto del código como de la documentación, facilitando que cada integrante pudiera trabajar de forma autónoma dentro de su eje funcional sin perder la visión de conjunto.
+
+De este modo, la organización del trabajo refleja que cada integrante realiza una aportación diferenciada al sistema, pero todas las contribuciones se articulan alrededor del objetivo central del TFM: diseñar, implementar y evaluar un motor de priorización explicable para apoyar la primera decisión en puestos de mando de emergencias.
+
+\setcounter{secnumdepth}{2}
