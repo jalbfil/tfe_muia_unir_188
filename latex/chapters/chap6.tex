@@ -1,4 +1,5 @@
 \chapter{Diseño del motor de priorización}
+\label{cap:6}
 
 Este capítulo presenta el núcleo analítico del TFM: el diseño del motor de priorización, que constituye la aportación principal del trabajo desde el punto de vista de la inteligencia artificial aplicada. Todo lo desarrollado en los capítulos anteriores converge aquí en una especificación funcional que define qué información entra en el motor, cómo se procesa, qué salida produce y por qué esa salida puede considerarse explicable y revisable por un operador humano.
 
@@ -6,7 +7,7 @@ El capítulo se organiza de forma progresiva. En primer lugar, se presenta el mo
 
 Después, se formulan las reglas duras del sistema, se establecen pesos orientativos y umbrales iniciales del scoring, se justifica la elección metodológica del baseline frente a modelos más complejos y se muestra un ejemplo de funcionamiento paso a paso. Por último, se sintetiza la lógica del sistema mediante una fórmula conceptual de prioridad.
 
-La finalidad de este capítulo no es describir una implementación cerrada y ya validada empíricamente, sino fijar con precisión el diseño analítico y funcional del motor. La calibración definitiva de pesos y umbrales, así como la evaluación cuantitativa del comportamiento del sistema, se desarrollan en el capítulo de evaluación.
+La finalidad de este capítulo no es describir una implementación cerrada y ya validada empíricamente, sino fijar con precisión el diseño analítico y funcional del motor. La calibración definitiva de pesos y umbrales, así como la evaluación cuantitativa del comportamiento del sistema, se desarrollan en el capítulo de evaluación. La comparación con alternativas de inteligencia artificial se plantea como una evaluación metodológica y técnica de adecuación al dominio, no como un benchmark experimental completo, ya que el dataset disponible no contiene una etiqueta oficial de prioridad operativa contra la que entrenar y comparar modelos supervisados.
 
 \section{Planteamiento general: el «cerebro» del sistema}
 
@@ -24,7 +25,7 @@ La explicabilidad no se incorpora como una capa estética posterior, sino como u
 
 El diseño del motor no depende exclusivamente del dataset utilizado como fuente empírica, sino de la combinación de tres elementos: normativa oficial, fuentes de datos contextuales y registros reales de incidentes. La normativa estatal y aragonesa justifica la lógica de prioridad, escalado y coordinación; las fuentes oficiales como AEMET, SNCZI/MITECO, INE o cartografía territorial aportan contexto; y el Registro de Emergencias del 112 de Castilla y León aporta una base real de incidentes para probar el pipeline de ingesta, limpieza, extracción de señales y trazabilidad \cite{Registro112CyL}.
 
-La auditoría realizada sobre el dataset de Castilla y León confirma que dispone de campos útiles como título, descripción, fecha, localidad, coordenadas, identificador y enlace al contenido original. Estos campos permiten alimentar parcialmente el motor y probar su funcionamiento sobre registros reales. Sin embargo, el dataset no contiene una etiqueta oficial de prioridad operativa ni una escala equivalente a P1--P4. Por tanto, no puede emplearse directamente para entrenar un modelo supervisado de priorización.
+La auditoría realizada sobre el dataset de Castilla y León confirma que dispone de campos útiles como título, descripción, fecha, localidad, coordenadas, identificador y enlace al contenido original. Tras la limpieza se conservan 9.380 registros válidos y una cobertura de coordenadas del 99,24\%, lo que permite probar el pipeline de ingesta, normalización, extracción de señales y trazabilidad sobre registros reales. Sin embargo, el dataset no contiene una etiqueta oficial de prioridad operativa ni una escala equivalente a P1--P4. Por tanto, no puede emplearse directamente para entrenar un modelo supervisado de priorización.
 
 Esta limitación refuerza la elección metodológica del baseline interpretable. El motor no aprende una prioridad oficial inexistente en el dataset, sino que aplica una lógica de priorización diseñada a partir de criterios normativos, variables operativas, reglas de etiquetado y fuentes oficiales de contexto. El dataset real se utiliza para estructurar incidentes, extraer señales textuales y validar la viabilidad del pipeline, mientras que la prioridad recomendada se obtiene mediante la lógica propia del sistema.
 
@@ -388,7 +389,7 @@ Esta explicación no pretende sustituir el criterio del operador, sino permitirl
 
 \section{Exploración de alternativas y justificación del baseline interpretable}
 
-La selección del baseline interpretable no se ha realizado de forma apriorística. Antes de cerrar el diseño se han considerado varias alternativas: modelos supervisados clásicos, redes neuronales profundas, modelos de lenguaje de gran escala, lógica difusa, redes bayesianas y sistemas puramente basados en reglas.
+La selección del baseline interpretable no se ha realizado de forma apriorística. Antes de cerrar el diseño se han considerado varias alternativas: modelos supervisados clásicos, redes neuronales profundas, modelos de lenguaje de gran escala, lógica difusa, redes bayesianas y sistemas puramente basados en reglas. Esta exploración no se presenta como una competición empírica entre modelos ya entrenados, sino como una comparación metodológica basada en los criterios que condicionan el problema: disponibilidad de datos etiquetados, explicabilidad, trazabilidad normativa, capacidad para operar con información incompleta, riesgo de fuga de información y viabilidad dentro del alcance temporal del TFM.
 
 \subsection{Modelos supervisados clásicos}
 
@@ -454,7 +455,7 @@ Baseline interpretable & Alta & Compatible con dataset piloto & Alta & Seleccion
 
 \noindent \textit{Fuente: elaboración propia.}
 
-Esta elección no implica que el baseline sea la solución definitiva al problema de priorización de incidentes. Implica que es la solución más defendible para una primera versión académica del sistema, dadas las restricciones de datos, tiempo, explicabilidad y validación institucional.
+Esta elección no implica que el baseline sea la solución definitiva al problema de priorización de incidentes. Implica que es la solución más defendible para una primera versión académica del sistema, dadas las restricciones de datos, tiempo, explicabilidad y validación institucional. Si en el futuro se dispusiera de un histórico amplio de incidentes con prioridad oficial validada por expertos, esta línea base permitiría comparar de forma más rigurosa modelos supervisados o híbridos frente al comportamiento del baseline.
 
 \section{Ejemplo de funcionamiento del motor}
 

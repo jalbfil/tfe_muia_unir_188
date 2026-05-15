@@ -3,21 +3,21 @@
 
 \section*{Introducción al capítulo}
 
-El diseño analítico del motor de priorización presentado en el capítulo anterior define qué variables considera el sistema, qué reglas aplica y qué salidas produce. Sin embargo, un motor sin datos carece de utilidad operativa y de posibilidad de evaluación: necesita un esquema que estructure la información y un dataset que permita probar, calibrar y valorar su comportamiento.
+El diseño analítico del motor de priorización presentado en el capítulo anterior define qué variables considera el sistema, qué reglas aplica y qué salidas produce. Sin embargo, un motor sin datos carece de utilidad operativa y de posibilidad de evaluación: necesita un esquema que estructure la información y un dataset que permita probar, ajustar y valorar su comportamiento.
 
-Este capítulo aborda precisamente esas dos cuestiones. En primer lugar, se expone la estrategia general de datos del TFM y se justifica la elección de un enfoque híbrido. En segundo lugar, se define el esquema de datos del sistema, entendido como la estructura formal con la que el prototipo representa cada incidente, su contexto y la decisión humana asociada. En tercer lugar, se describe el uso del Registro de Emergencias del 112 de Castilla y León como fuente empírica real, el proceso de auditoría y limpieza aplicado, y su relación con las variables del motor. Finalmente, se analizan las limitaciones del dataset y los principales riesgos metodológicos asociados a su uso.
+Este capítulo aborda precisamente esas dos cuestiones. En primer lugar, se expone la estrategia general de datos del TFM y se justifica la elección de un enfoque híbrido. En segundo lugar, se define el esquema de datos del sistema, entendido como la estructura formal con la que el prototipo representa cada incidente, su contexto y la decisión humana asociada. En tercer lugar, se describe el uso del Registro de Emergencias del 112 de Castilla y León como fuente empírica real de apoyo, el proceso de auditoría y limpieza aplicado, y su relación con las variables del motor. Finalmente, se analizan las limitaciones del dataset y los principales riesgos metodológicos asociados a su uso.
 
-La finalidad de este capítulo no es presentar un histórico operativo real del 112 Aragón, ya que no se dispone de un conjunto abierto de microdatos equivalente con granularidad suficiente. El objetivo es fijar una base de datos de trabajo metodológicamente defendible, apoyada en datos reales de un servicio autonómico 112, fuentes oficiales de contexto y criterios de etiquetado alineados con el caso piloto Aragón.
+La finalidad de este capítulo no es presentar un histórico operativo real del 112 Aragón, ya que no se dispone de un conjunto abierto de microdatos equivalente con granularidad suficiente. El objetivo es fijar una base de trabajo metodológicamente defendible, apoyada en datos reales de un servicio autonómico 112, fuentes oficiales de contexto y criterios de etiquetado alineados con el caso piloto Aragón.
 
 \section{Estrategia general de datos}
 
 La estrategia de datos del TFM parte de una premisa metodológica explícita: no se asume disponibilidad garantizada de microdatos operativos completos del 112 Aragón. Esta decisión no es coyuntural, sino estructural. En el dominio de las emergencias, la publicación de datos a nivel de incidente individual se ve limitada por razones de privacidad, protección de datos, seguridad, heterogeneidad de formatos y ausencia de una política homogénea de datos abiertos entre comunidades autónomas.
 
-Ante esta realidad, el TFM adopta una estrategia híbrida compuesta por cuatro elementos complementarios. El primero es el Registro de Emergencias del 112 de Castilla y León, utilizado como fuente empírica real de incidentes gestionados por un servicio autonómico 112 \cite{Registro112CyL}. El segundo son las fuentes oficiales reutilizables, que aportan contexto territorial, meteorológico, demográfico y de riesgo. El tercero son los casos simulados controlados, necesarios para cubrir escenarios críticos, variables no presentes en el dataset original y situaciones de frontera. El cuarto es la guía de etiquetado, que permite asignar una prioridad P1--P4 de referencia a partir de criterios explícitos y trazables.
+Ante esta realidad, el TFM adopta una estrategia híbrida compuesta por cuatro elementos complementarios. El primero es el Registro de Emergencias del 112 de Castilla y León, utilizado como fuente real de incidentes gestionados por un servicio autonómico 112 \cite{Registro112CyL}. El segundo son las fuentes oficiales reutilizables, que aportan contexto territorial, meteorológico, demográfico y de riesgo. El tercero son los casos simulados controlados, necesarios para cubrir escenarios críticos, variables no presentes en el dataset original y situaciones de frontera. El cuarto es la guía de etiquetado, que permite asignar una prioridad P1--P4 de referencia a partir de criterios explícitos y trazables.
 
 Esta estrategia no pretende sustituir un dataset operativo del 112 Aragón ni presentar el prototipo como una solución lista para operación institucional. Su finalidad es más acotada y metodológicamente honesta: construir una base de trabajo suficiente para probar el pipeline de datos, alimentar parcialmente el motor, validar la coherencia del baseline interpretable y evaluar el comportamiento del sistema en escenarios simulados contextualizados en Aragón.
 
-La decisión de utilizar Castilla y León como fuente empírica no modifica el marco normativo del TFM. La normativa que justifica las variables, las reglas y la interpretación operativa del sistema sigue siendo el marco estatal español y el caso piloto aragonés. Castilla y León aporta datos reales de incidentes 112; Aragón aporta el marco operativo y normativo sobre el que se interpreta el prototipo.
+La decisión de utilizar Castilla y León como fuente empírica no modifica el marco normativo del TFM. La normativa que justifica las variables, las reglas y la interpretación operativa del sistema sigue siendo el marco estatal español y el caso piloto aragonés. Castilla y León aporta datos reales de incidentes 112 para probar ingesta, limpieza, extracción de señales y trazabilidad; Aragón aporta el marco operativo y normativo sobre el que se interpreta el prototipo.
 
 \section{Esquema de datos del sistema}
 
@@ -42,6 +42,8 @@ Estas señales no deben interpretarse como etiquetas oficiales. Son indicadores 
 El tercer bloque incorpora información contextual procedente de fuentes oficiales. En un sistema operativo completo, este enriquecimiento se realizaría mediante consultas dinámicas o integración con servicios externos. En el prototipo, se plantea como un enriquecimiento controlado y reproducible.
 
 Las fuentes previstas incluyen avisos meteorológicos de AEMET, cartografía de inundabilidad del SNCZI/MITECO, datos demográficos del INE, cartografía oficial aragonesa y registros de instalaciones de riesgo tecnológico. La función de estas fuentes no es sustituir al dato operativo del incidente, sino contextualizarlo para que el motor pueda valorar exposición, amenaza, vulnerabilidad y posible escalado.
+
+En los escenarios situados en Aragón, estas fuentes permiten que la prueba sea territorialmente coherente con el caso piloto. Esto no equivale a un despliegue real en el 112 Aragón, pero sí permite evaluar el comportamiento del baseline sobre situaciones construidas con referencias normativas, geográficas y contextuales compatibles con ese territorio.
 
 \subsection{Variables calculadas por el motor}
 
@@ -315,6 +317,37 @@ Estos casos no se generan de forma automática ni se producen mediante técnicas
 
 Para que un caso simulado se considere apto para formar parte del dataset, debe superar cinco controles de plausibilidad: coherencia geográfica, coherencia temporal, coherencia meteorológica, coherencia interna de variables y coherencia con el etiquetado. Es decir, el tipo de incidente debe ser compatible con el territorio asignado, con la época del año, con el aviso meteorológico correspondiente, con los valores del resto de variables y con la prioridad finalmente asignada.
 
+\subsection{Criterios de validez metodológica del dataset piloto}
+
+Dado que el dataset piloto combina registros reales, enriquecimiento contextual y casos simulados, su validez no debe entenderse en términos de representatividad estadística de todos los incidentes reales del 112 Aragón. El TFM no afirma disponer de una muestra probabilística del dominio operativo aragonés. Su validez se plantea en términos de cobertura funcional del motor, trazabilidad de las decisiones de etiquetado y control de plausibilidad de los escenarios utilizados para la evaluación.
+
+Esta distinción es importante. Un dataset pequeño de 120 a 150 casos no permite entrenar ni validar de forma robusta un modelo supervisado complejo. Sin embargo, sí puede ser suficiente para evaluar un baseline interpretable si se diseña de forma estratificada, cubriendo todos los niveles P1--P4, todas las reglas duras principales, distintas tipologías de incidente y casos de frontera. El objetivo no es inferir la distribución real de emergencias en Aragón, sino comprobar si el motor responde de forma coherente ante los escenarios que debe saber manejar.
+
+La Tabla~\ref{tab:criterios-validez-dataset-piloto} resume los controles metodológicos previstos para conferir valor al dataset piloto.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{|p{4.2cm}|p{5.2cm}|p{4.2cm}|}
+\hline
+\textbf{Criterio de control} & \textbf{Aplicación en el dataset piloto} & \textbf{Finalidad metodológica} \\ \hline
+Cobertura de prioridades & Inclusión deliberada de casos P1, P2, P3 y P4 & Evaluar el comportamiento del baseline en todo el rango de salida \\ \hline
+Cobertura de reglas duras & Inclusión de casos asociados a riesgo vital, atrapamiento, intoxicación, inundación, incendio y riesgo tecnológico & Verificar que las reglas críticas se activan correctamente \\ \hline
+Casos de frontera & Inclusión de escenarios ambiguos entre P1/P2, P2/P3 y P3/P4 & Comprobar la sensibilidad del scoring y de la confianza \\ \hline
+Plausibilidad territorial & Ubicación de escenarios simulados en municipios, zonas y contextos compatibles con Aragón & Mantener coherencia con el caso piloto \\ \hline
+Plausibilidad meteorológica & Asociación de fenómenos y avisos coherentes con la época y la localización del caso & Evitar combinaciones artificiales no justificables \\ \hline
+Separación entrada/salida & Exclusión de variables posteriores, como medios movilizados, como entrada principal del motor & Evitar fuga de información \\ \hline
+Trazabilidad del etiquetado & Registro de variables, reglas y criterios que justifican la prioridad asignada & Permitir revisión y auditoría del dataset \\ \hline
+Revisión cruzada & Comprobación interna de coherencia entre descripción, variables, prioridad y explicación & Reducir arbitrariedad en los casos simulados \\ \hline
+\end{tabular}
+\caption{Criterios de validez metodológica del dataset piloto.}
+\label{tab:criterios-validez-dataset-piloto}
+\end{table}
+
+\noindent \textit{Fuente: elaboración propia.}
+
+Estos controles no eliminan las limitaciones del dataset, pero sí evitan que la evaluación se base en casos arbitrarios. El valor metodológico del dataset piloto reside en que cada caso puede explicarse, trazarse y relacionarse con la lógica del motor.
+
 \subsection{Dimensión prevista del dataset piloto}
 
 El dataset piloto combinará una selección de registros reales limpios, casos enriquecidos y casos simulados controlados. La dimensión final dependerá del avance de implementación y evaluación, pero se plantea una horquilla inicial de 120 a 150 casos etiquetados para la evaluación del baseline.
@@ -361,6 +394,8 @@ La cuarta limitación es de temporalidad operativa. El dataset recoge registros 
 
 La quinta limitación es de validación independiente. El etiquetado se apoya en una guía cerrada y en revisión interna del equipo, pero no en un panel amplio de operadores expertos. Esta limitación deberá reflejarse también en el capítulo de evaluación y en las conclusiones.
 
+La sexta limitación es estadística. El dataset piloto no pretende representar la distribución real de incidentes de Aragón ni estimar frecuencias poblacionales. Su finalidad es evaluar el comportamiento del baseline sobre una muestra funcionalmente diseñada para cubrir prioridades, reglas duras y situaciones de frontera.
+
 \section{Calidad del dato y riesgos metodológicos}
 
 La calidad del dato constituye una condición crítica para cualquier sistema de apoyo a la decisión. En este TFM, los riesgos metodológicos no proceden únicamente de la posible inexactitud del valor observado, sino también de la naturaleza híbrida del dataset, del uso de proxies contextuales y de la combinación entre registros reales, enriquecimiento oficial y casos simulados.
@@ -384,5 +419,7 @@ La estrategia global de mitigación consiste en reconocer estos riesgos de forma
 El diseño de datos presentado en este capítulo permite conectar el motor de priorización del capítulo anterior con una base empírica y metodológica defendible. El uso del Registro de Emergencias del 112 de Castilla y León aporta realismo operativo, texto, coordenadas y trazabilidad, mientras que las fuentes oficiales y los casos simulados permiten completar las variables que el dataset no contiene.
 
 La estrategia adoptada evita dos extremos metodológicamente débiles: por un lado, una evaluación basada exclusivamente en datos simulados; por otro, la pretensión de entrenar un modelo supervisado con un dataset que no contiene prioridad oficial ni todas las variables necesarias. El resultado es un enfoque intermedio, adecuado al alcance del TFM: datos reales para estructurar y probar el pipeline, normativa estatal y aragonesa para justificar la lógica del motor, y escenarios simulados para evaluar el comportamiento del baseline.
+
+El valor del dataset piloto no reside en su representatividad estadística, sino en su cobertura funcional, en la trazabilidad de sus etiquetas y en los controles de plausibilidad aplicados. Esta precisión es necesaria para interpretar correctamente los resultados de evaluación que se presentarán en el Capítulo 9.
 
 El siguiente capítulo desarrolla la implementación del prototipo software que materializa este diseño de datos y permite ejecutar el motor de priorización de forma integrada.

@@ -4,7 +4,7 @@
 
 Este capítulo cumple una función de bisagra dentro del TFM: conecta el problema identificado en los capítulos anteriores ---la saturación informativa en puestos de mando de emergencias y la necesidad de un sistema de apoyo a la primera decisión--- con la estrategia concreta que el equipo ha seguido para abordarlo. Si los capítulos previos han respondido al qué (cuál es el problema) y al por qué (qué marco operativo y normativo lo sustenta), este capítulo responde al para qué (qué se pretende lograr) y al cómo (con qué enfoque, en qué fases y con qué organización).
 
-Se formulan en primer lugar el objetivo general y los objetivos específicos del trabajo, verificando su cumplimiento de los criterios SMART \cite{Doran1981}. A continuación se plantean las preguntas de investigación que guían el desarrollo. Seguidamente se concreta la contribución esperada del trabajo desde el punto de vista de la inteligencia artificial (IA). Después se describe el enfoque metodológico adoptado ---iterativo e incremental, adaptado a un equipo de tres personas--- y las fases en que se ha estructurado el trabajo. Finalmente, se presenta la estrategia de colaboración interdisciplinar del equipo y las consideraciones éticas relevantes, incluyendo la transparencia sobre el uso de herramientas de IA en la propia elaboración del TFM.
+Se formulan en primer lugar el objetivo general y los objetivos específicos del trabajo, verificando su cumplimiento de los criterios SMART \cite{Doran1981}. A continuación se plantean las preguntas de investigación que guían el desarrollo. Seguidamente se concreta la contribución esperada del trabajo desde el punto de vista de la inteligencia artificial (IA), así como la contribución específica de cada integrante dentro del enfoque grupal. Después se describe el enfoque metodológico adoptado ---iterativo e incremental, adaptado a un equipo de tres personas--- y las fases en que se ha estructurado el trabajo. Finalmente, se presenta la estrategia de colaboración interdisciplinar del equipo y las consideraciones éticas relevantes, incluyendo la transparencia sobre el uso de herramientas de IA en la propia elaboración del TFM.
 
 \section{Objetivo general (SMART)}
 
@@ -78,6 +78,37 @@ La elección de un baseline interpretable no debe entenderse como una renuncia a
 
 Por ello, el valor académico del TFM reside en el diseño analítico del motor, en la trazabilidad de sus decisiones, en la justificación de sus variables y en la evaluación de su aplicabilidad. El prototipo software permite demostrar esa contribución, pero no sustituye a la contribución central: el diseño de un sistema de priorización explicable para apoyar la primera decisión en puestos de mando de emergencias.
 
+\section{Contribuciones individuales desde la perspectiva de la inteligencia artificial}
+
+Al tratarse de un TFM grupal, resulta necesario concretar la contribución de cada integrante no solo como reparto funcional de tareas, sino como aportación diferenciada al componente de inteligencia artificial del sistema. Esta precisión es especialmente importante porque el valor académico del trabajo no reside únicamente en construir un prototipo, sino en justificar, implementar y evaluar un enfoque de priorización explicable.
+
+La contribución de Juan Carlos Albert Fillol se vincula con la formulación del problema de priorización como tarea de apoyo a la decisión bajo incertidumbre. Su aportación se centra en la definición de variables, reglas duras, scoring, criterios de confianza, guía de etiquetado y justificación del baseline interpretable frente a alternativas más complejas. El subproblema de IA asociado es cómo transformar información heterogénea e incompleta sobre incidentes en una recomendación P1--P4 trazable y revisable.
+
+La contribución de Brian Mathias Pesci Juliani se vincula con la implementación reproducible del razonamiento del motor. Su aportación se centra en el backend, el pipeline de ingesta y procesamiento, la limpieza del dataset, la extracción de señales operativas, el registro de reglas activadas y la persistencia de resultados. El subproblema de IA asociado es cómo convertir el diseño conceptual del baseline en una inferencia ejecutable, verificable y preparada para evaluación.
+
+La contribución de Ancor González Carballo se vincula con la explicabilidad visual y la supervisión humana. Su aportación se centra en la interfaz de usuario, la presentación de prioridad, confianza y explicación, y los mecanismos mediante los que el operador puede aceptar, corregir o rechazar la recomendación. El subproblema de IA asociado es cómo presentar una recomendación automatizada de forma comprensible y útil para el decisor humano.
+
+La Tabla~\ref{tab:contribuciones-ia-chap4} sintetiza esta relación entre integrante, subproblema de IA, alternativa considerada y evidencia prevista en la memoria.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|p{2.7cm}|p{3.8cm}|p{3.8cm}|p{3.8cm}|}
+\hline
+\textbf{Integrante} & \textbf{Subproblema de IA} & \textbf{Alternativas o decisiones analizadas} & \textbf{Evidencia prevista} \\ \hline
+Juan Carlos Albert Fillol & Priorización explicable bajo incertidumbre & Modelos supervisados, reglas puras, baseline interpretable, lógica difusa y modelos de caja negra & Variables, reglas, scoring, guía de etiquetado, análisis de alternativas y evaluación de coherencia \\ \hline
+Brian Mathias Pesci Juliani & Inferencia reproducible y trazabilidad del razonamiento & Implementación directa de reglas, pipeline modular, extracción textual de señales y persistencia de resultados & Backend, script de limpieza, dataset procesado, trazabilidad de reglas activadas y resultados del motor \\ \hline
+Ancor González Carballo & Explicabilidad visual y supervisión humana & Presentación de prioridad aislada frente a presentación con explicación, confianza y posibilidad de corrección & Interfaz, visualización de factores, validación/corrección por operador y evaluación de utilidad percibida \\ \hline
+\end{tabular}
+\caption{Contribuciones individuales vinculadas al componente de inteligencia artificial.}
+\label{tab:contribuciones-ia-chap4}
+\end{table}
+
+\noindent \textit{Fuente: elaboración propia.}
+
+Esta distribución permite que cada integrante participe en una parte diferenciada del componente inteligente del sistema, sin fragmentar el TFM en tres trabajos inconexos. El elemento común es el motor de priorización explicable: uno de los integrantes formula y justifica su lógica, otro la implementa de forma reproducible y otro la presenta al operador de manera comprensible y supervisable.
+
 \section{Enfoque metodológico: iterativo e incremental (Scrum adaptado)}
 
 El desarrollo de este TFM sigue un enfoque metodológico iterativo e incremental, inspirado en los principios de las metodologías ágiles y adaptado a las características específicas del proyecto: un equipo de tres personas, un alcance académico delimitado y un producto final que combina un componente analítico ---el diseño del motor--- con un componente software ---el prototipo funcional---.
@@ -85,6 +116,8 @@ El desarrollo de este TFM sigue un enfoque metodológico iterativo e incremental
 La elección de este enfoque responde a una razón práctica. El motor de priorización no puede diseñarse de una sola vez y validarse al final del proceso: las reglas, los pesos y los umbrales necesitan refinarse a medida que se construyen los primeros casos del dataset piloto y se observa el comportamiento del sistema ante escenarios concretos. Un enfoque puramente secuencial ---diseñar todo, implementar todo y evaluar al final--- habría expuesto al equipo al riesgo de descubrir problemas de diseño demasiado tarde para corregirlos dentro del plazo del TFM.
 
 Además, la metodología adoptada incorpora una fase explícita de exploración de alternativas antes de cerrar el enfoque definitivo del motor. Esta decisión responde a una exigencia propia de un trabajo académico: no se parte de una solución predeterminada, sino que se analizan distintas posibilidades ---modelos supervisados, modelos de caja negra, modelos de lenguaje de gran escala, sistemas basados únicamente en reglas y aproximaciones híbridas--- para justificar por qué el baseline interpretable resulta el enfoque más adecuado en el contexto del proyecto.
+
+Esta comparación de alternativas no se plantea como un benchmark experimental completo, ya que el dataset disponible no contiene una etiqueta oficial de prioridad P1--P4 sobre la que entrenar y comparar modelos supervisados de forma robusta. Se plantea como una evaluación metodológica y técnica, basada en criterios explícitos: disponibilidad de datos etiquetados, explicabilidad, trazabilidad normativa, capacidad de operar con información incompleta, riesgo de fuga de información y viabilidad dentro del alcance temporal del TFM. La prueba técnica empírica se centra en el pipeline de ingesta, limpieza, extracción de señales y evaluación del baseline interpretable sobre escenarios simulados.
 
 En la práctica, la adaptación se concreta en ciclos de trabajo de duración variable ---entre una y tres semanas--- en los que el equipo se concentra en una tarea o grupo de tareas bien delimitados, produce un entregable parcial y lo revisa antes de avanzar al siguiente ciclo. La gestión visual de tareas se ha apoyado en un tablero tipo Kanban, y las reuniones semanales del equipo han funcionado como punto de sincronización equivalente al sprint review de Scrum, aunque sin la rigidez ceremonial de un marco ágil ortodoxo.
 
@@ -104,7 +137,7 @@ La primera fase se ha dedicado a acotar con precisión el problema que aborda el
 
 La segunda fase ha consistido en analizar distintas aproximaciones posibles para el motor de priorización. Se han considerado modelos supervisados clásicos, modelos de aprendizaje profundo, modelos de lenguaje de gran escala, sistemas puramente basados en reglas, lógica difusa y enfoques híbridos. La comparación se ha realizado atendiendo a cinco criterios: disponibilidad de datos, explicabilidad, trazabilidad normativa, capacidad de operar con información incompleta y viabilidad dentro del alcance temporal del TFM.
 
-El resultado de esta fase ha sido la selección de un baseline interpretable como enfoque principal. Esta elección no implica que los modelos más complejos carezcan de interés, sino que no constituyen la opción más adecuada para la primera versión del sistema dadas las restricciones reales de datos, validación y explicabilidad.
+El resultado de esta fase ha sido la selección de un baseline interpretable como enfoque principal. Esta elección no implica que los modelos más complejos carezcan de interés, sino que no constituyen la opción más adecuada para la primera versión del sistema dadas las restricciones reales de datos, validación y explicabilidad. La comparación realizada es metodológica y técnica: no pretende demostrar empíricamente la superioridad universal del baseline, sino justificar por qué es la opción más defendible para este TFM.
 
 \subsection{Diseño de taxonomía, variables y escala de prioridad}
 
@@ -112,7 +145,9 @@ La tercera fase ha abordado las decisiones de diseño analítico que constituyen
 
 \subsection{Construcción del dataset piloto}
 
-La cuarta fase ha consistido en el diseño de la guía de etiquetado y la construcción del dataset piloto híbrido. Ante la ausencia de un dataset operativo detallado del 112 Aragón de acceso público, se ha optado por un dataset que combina el Registro de Emergencias del 112 de Castilla y León como fuente empírica real \cite{Registro112CyL}, variables contextuales procedentes de fuentes oficiales y casos simulados plausibles etiquetados conforme a la guía definida. El uso de datos de Castilla y León introduce una limitación de transferibilidad territorial, por lo que el dataset se emplea como base empírica para el desarrollo y prueba del pipeline de priorización, mientras que la interpretación operativa de la prioridad se realiza conforme al marco normativo estatal y aragonés. El detalle de esta estrategia se presenta en el Capítulo 7.
+La cuarta fase ha consistido en el diseño de la guía de etiquetado y la construcción del dataset piloto híbrido. Ante la ausencia de un dataset operativo detallado del 112 Aragón de acceso público, se ha optado por un dataset que combina el Registro de Emergencias del 112 de Castilla y León como fuente real para probar el pipeline de ingesta, limpieza, extracción de señales y trazabilidad \cite{Registro112CyL}, variables contextuales procedentes de fuentes oficiales y casos simulados plausibles etiquetados conforme a la guía definida.
+
+El uso de datos de Castilla y León introduce una limitación de transferibilidad territorial. Por ello, el dataset no se emplea como base de entrenamiento supervisado de prioridad ni como sustituto del caso piloto Aragón. Su función es aportar registros reales para comprobar que el sistema puede procesar información procedente de un servicio autonómico 112, mientras que la interpretación operativa de la prioridad se realiza conforme al marco normativo estatal y aragonés. El detalle de esta estrategia se presenta en el Capítulo 7.
 
 \subsection{Diseño e implementación del baseline interpretable}
 
@@ -126,7 +161,7 @@ La sexta fase ha materializado el motor en un prototipo funcional integrado. El 
 
 La séptima y última fase se ha dedicado a evaluar el sistema en escenarios simulados situados en Aragón. La evaluación ha cubierto la coherencia del baseline con el etiquetado humano, la distribución de prioridades generada, la tasa de falsos negativos graves, la explicabilidad de las recomendaciones, la usabilidad del prototipo y la estimación del impacto sobre el TTFD. Los resultados de esta evaluación se presentan en el Capítulo 9 y se discuten en las conclusiones del Capítulo 10.
 
-Esta evaluación no pretende demostrar una reducción real del TTFD en una sala 112 operativa ni validar institucionalmente el sistema. Su objetivo es valorar, dentro del alcance académico del TFM, si el baseline se comporta de forma coherente, explicable y útil sobre escenarios simulados construidos con criterios plausibles y fuentes oficiales.
+Esta evaluación no pretende demostrar una reducción real del TTFD en una sala 112 operativa ni validar institucionalmente el sistema. Su objetivo es valorar, dentro del alcance académico del TFM, si el baseline se comporta de forma coherente, explicable y útil sobre escenarios simulados construidos con criterios plausibles y fuentes oficiales del caso piloto Aragón.
 
 \section{Estrategia de trabajo interdisciplinar del equipo}
 
