@@ -1,0 +1,21 @@
+AUDITORÍA DATASET 112 CASTILLA Y LEÓN (2008-2022)
+
+Archivo: Emergencias2008-2022.csv
+Tamaño: 14.58 MB
+Registros: 9382
+Columnas: 14
+
+Columnas:
+Título, DescripcionBlob, FechaIncidente, Localidad, Localidad.1, Localidad.2, TipoIncidente, IncidenteCerrado, MediosMov, PacientesAten, Identificador, ultimaActualizacion, Enlace al contenido, Unnamed: 13
+
+Fecha mínima parseada: 2007-01-01 00:00:00
+Fecha máxima parseada: 2088-12-23 00:00:00
+
+Observaciones principales:
+- Se detectan 2 fechas anómalas fuera del rango esperado 2008-2022: 20070101 y 20881223.
+- La columna Localidad.1 contiene coordenadas en formato lat#lon#código.
+- Hay coordenadas válidas en 9311 de 9382 registros.
+- TipoIncidente contiene valores muy genéricos: {'Emergencia': 7814, nan: 835, 'Intervención': 733}.
+- PacientesAten solo tiene 115 registros no nulos.
+- No existe una columna de prioridad oficial P1-P4 ni una etiqueta explícita de gravedad.
+- MediosMov puede ser útil como proxy de complejidad o validación, pero no como entrada directa si representa información posterior a la decisión.

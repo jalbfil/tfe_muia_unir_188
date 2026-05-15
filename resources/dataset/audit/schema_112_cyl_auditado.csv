@@ -1,0 +1,24 @@
+﻿columna,tipo_pandas,registros_totales,nulos,porcentaje_nulos,valores_unicos,ejemplo_valor
+Título,object,9382,0,0.0,9052,"Fallece un motorista tras sufrir un accidente en la CL-605, en Villaescusa (Zamora)"
+DescripcionBlob,object,9382,11,0.12,9368,"<p>Se reciben varias llamadas en el Centro de Emergencias 1-1-2 de Castilla y León que informan de un accidente de moto que se ha producido en el kilómetro 124 de la CL-605, en el término municipal de Villaescusa (Zamora). El único ocupante, indican, se ha chocado contra una señal de tráfico y prese"
+FechaIncidente,int64,9382,0,0.0,4269,20221231
+Localidad,object,9382,0,0.0,2106,Villaescusa
+Localidad.1,object,9382,71,0.76,2226,41.2060230876#-5.46474555991#88
+Localidad.2,int64,9382,0,0.0,2296,1179469481503
+TipoIncidente,object,9382,835,8.9,2,Emergencia
+IncidenteCerrado,object,9382,116,1.24,1,Si
+MediosMov,object,9382,939,10.01,8149,"<ul>
+<li>Guardia Civil (Tráfico) de Zamora.</li>
+</ul>
+<img src='https://datosabiertos.jcyl.es/web/jcyl/binarios/501/584/17349654_1307213572695127_1280949976500201629_o.jpg' alt=''>
+<ul>
+<li>Emergencias Sanitarias - Sacyl.
+<ul>
+<li>Soporte vital básico.</li>
+<li>Punto de Atención Continuada de La Gu"
+PacientesAten,object,9382,9267,98.77,67,"<p></p>
+<p></p>"
+Identificador,int64,9382,0,0.0,9382,1285232241865
+ultimaActualizacion,int64,9382,0,0.0,3551,20221231
+Enlace al contenido,object,9382,0,0.0,9382,https://112.jcyl.es/web/jcyl/112/es/Plantilla100Detalle/1284178030391/Incidente/1285232241865/Emergencia
+Unnamed: 13,float64,9382,9382,100.0,0,
