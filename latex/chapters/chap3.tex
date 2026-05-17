@@ -1,22 +1,23 @@
 \chapter{Marco operativo y normativo del dominio de emergencias}
+\label{cap:3}
 
 \section{El sistema español de protección civil: estructura y principios}
 
-El sistema de apoyo a la decisión propuesto en este TFM se sitúa en un entorno institucional fuertemente reglado, multinivel y orientado a la coordinación. Por ello, antes de diseñar el motor de priorización resulta necesario delimitar el marco operativo en el que ese motor va a producir sus recomendaciones: quién decide, con qué información, bajo qué lógica de escalado y dentro de qué estructura de mando.
+El sistema de apoyo a la decisión propuesto en este Trabajo Fin de Máster (TFM) se sitúa en un entorno institucional fuertemente reglado, multinivel y orientado a la coordinación. Por ello, antes de diseñar el motor de priorización resulta necesario delimitar el marco operativo en el que ese motor va a producir sus recomendaciones: quién decide, con qué información, bajo qué lógica de escalado y dentro de qué estructura de mando.
 
-En España, la protección civil se configura como un sistema de seguridad pública orientado a la protección de las personas, los bienes y el medio ambiente ante situaciones de grave riesgo colectivo, catástrofe o calamidad pública. Su organización no responde a una competencia exclusiva de un único nivel administrativo, sino a una lógica de responsabilidad compartida entre la Administración General del Estado, las comunidades autónomas y las entidades locales. Esta característica tiene consecuencias directas para el diseño del sistema: la urgencia operativa de un incidente no depende únicamente de su gravedad intrínseca, sino también del nivel competencial afectado, de la capacidad disponible en ese nivel y de la necesidad de coordinar recursos adicionales.
+En España, la protección civil se configura como un sistema de seguridad pública orientado a la protección de las personas, los bienes y el medio ambiente ante situaciones de grave riesgo colectivo, catástrofe o calamidad pública \cite{Ley17_2015}. Su organización no responde a una competencia exclusiva de un único nivel administrativo, sino a una lógica de responsabilidad compartida entre la Administración General del Estado, las comunidades autónomas y las entidades locales. Esta característica tiene consecuencias directas para el diseño del sistema: la urgencia operativa de un incidente no depende únicamente de su gravedad intrínseca, sino también del nivel competencial afectado, de la capacidad disponible en ese nivel y de la necesidad de coordinar recursos adicionales.
 
 Desde una perspectiva funcional, tres principios resultan especialmente relevantes para este trabajo. El primero es la subsidiariedad, que sitúa la gestión inicial de la emergencia en el nivel más próximo al ciudadano afectado y solo justifica la intervención del nivel superior cuando la capacidad ordinaria se ve superada. El segundo es la complementariedad, conforme a la cual los recursos de distintos niveles pueden acumularse sin que ello implique automáticamente una sustitución del mando. El tercero es la coordinación, que garantiza que la respuesta se articule mediante una red de centros, procedimientos y órganos capaces de compartir información y sostener decisiones coherentes.
 
-Esta lógica se traduce operativamente en una arquitectura escalonada de centros de coordinación. En el nivel estatal, el Centro Nacional de Seguimiento y Coordinación de Emergencias de Protección Civil (CENEM) actúa como nodo de seguimiento y enlace. En el nivel autonómico, los centros de coordinación operativa (CECOP), y en su caso los CECOPI, concentran la dirección y seguimiento de la emergencia. En el plano táctico, el puesto de mando avanzado (PMA) coordina sobre el terreno la actuación de los grupos intervinientes. Esta estructura es importante porque el sistema propuesto no toma decisiones autónomas de despacho, sino que está pensado para asistir la primera valoración operativa de quienes trabajan en estos entornos.
+Esta lógica se traduce operativamente en una arquitectura escalonada de centros de coordinación. En el nivel estatal, el Centro Nacional de Seguimiento y Coordinación de Emergencias de Protección Civil (CENEM) actúa como nodo de seguimiento y enlace. En el nivel autonómico, los centros de coordinación operativa (CECOP), y en su caso los centros de coordinación operativa integrada (CECOPI), concentran la dirección y seguimiento de la emergencia. En el plano táctico, el puesto de mando avanzado (PMA) coordina sobre el terreno la actuación de los grupos intervinientes. Esta estructura es importante porque el sistema propuesto no toma decisiones autónomas de despacho, sino que está pensado para asistir la primera valoración operativa de quienes trabajan en estos entornos.
 
 \section{Marco normativo aplicable}
 
 El motor de priorización no puede fundamentarse en intuiciones genéricas sobre gravedad o urgencia. Para que sus recomendaciones sean defendibles, auditables y operativamente útiles, sus variables y reglas deben poder trazarse hasta normas o fuentes institucionales que justifiquen por qué un determinado incidente debe elevar su prioridad, activar más coordinación o sugerir un posible escalado. Por ello, este apartado no persigue una revisión jurídica exhaustiva, sino una extracción funcional de criterios normativos útiles para el modelado.
 
-La Tabla \ref{tab:normativa_diseno_motor} resume la utilidad directa de las principales normas del proyecto para el diseño del sistema.
+La Tabla~\ref{tab:normativa_diseno_motor} resume la utilidad directa de las principales normas del proyecto para el diseño del sistema.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{|p{3.1cm}|p{1.6cm}|p{4.3cm}|p{4.2cm}|}
@@ -67,7 +68,7 @@ PLATEAR \cite{PLATEAR} es la norma autonómica más importante para la traducci�
 
 El plan distingue niveles de emergencia según la gravedad, la extensión y la necesidad de recursos adicionales, lo que aporta al sistema una referencia autonómica muy concreta de escalado. En términos de modelado, esto respalda la inclusión de variables como tendencia del incidente, personas en riesgo estimadas o necesidad previsible de coordinación ampliada.
 
-Junto a PLATEAR, los planes especiales aportan reglas sectoriales directamente reutilizables. El PROCIFEMAR \cite{PROCIFEMAR} justifica la inclusión del nivel de aviso AEMET y del fenómeno meteorológico activo. El PROCINAR \cite{PROCINAR} respalda el uso de la peligrosidad por inundación como variable contextual. El PROCIMER \cite{PROCIMER} y el marco Seveso justifican la consideración específica del riesgo químico e industrial. El PROCINFO \cite{PROCINFO}, por su parte, aporta una lógica útil en relación con simultaneidad, progresión del incidente y amenaza a núcleos habitados o infraestructuras.
+Junto a PLATEAR, los planes especiales aportan reglas sectoriales directamente reutilizables. El Plan Especial de Protección Civil ante Fenómenos Meteorológicos Adversos en Aragón (PROCIFEMAR) \cite{PROCIFEMAR} justifica la inclusión del nivel de aviso AEMET y del fenómeno meteorológico activo. El Plan Especial de Protección Civil ante el Riesgo de Inundaciones en Aragón (PROCINAR) \cite{PROCINAR} respalda el uso de la peligrosidad por inundación como variable contextual. El Plan Especial de Protección Civil ante Emergencias por Accidentes en el Transporte de Mercancías Peligrosas por Carretera y Ferrocarril en Aragón (PROCIMER) \cite{PROCIMER} y el marco Seveso \cite{RD840_2015} justifican la consideración específica del riesgo químico e industrial. El Plan Especial de Protección Civil de Emergencias por Incendios Forestales en Aragón (PROCINFO) \cite{PROCINFO}, por su parte, aporta una lógica útil en relación con simultaneidad, progresión del incidente y amenaza a núcleos habitados o infraestructuras.
 
 La lectura conjunta de PLATEAR y de los planes especiales permite concluir que el sistema de protección civil aragonés ya contiene, de forma implícita, una lógica de priorización basada en gravedad, contexto, vulnerabilidad y escalado. La aportación del TFM consiste en convertir esa lógica dispersa en un mecanismo analítico coherente, explícito y explicable.
 
@@ -113,9 +114,11 @@ La relación entre taxonomía y priorización es estructural. El tipo de inciden
 
 El sistema no debe basarse exclusivamente en la descripción textual inicial del incidente. Esa información suele ser fragmentaria, incompleta o incierta en los primeros minutos. Por ello, el motor incorpora fuentes oficiales de contexto que permitan enriquecer la valoración sin depender de datos privados no accesibles o de integraciones institucionales cerradas que exceden el alcance del TFM.
 
-La Tabla \ref{tab:fuentes_datos} resume las fuentes principales consideradas en este trabajo.
+En este punto conviene separar dos planos. Las fuentes oficiales estatales y aragonesas justifican el marco normativo y operativo del sistema. El Registro de Emergencias del 112 de Castilla y León se incorpora únicamente como fuente empírica real para probar el pipeline de ingesta, limpieza, extracción de señales y trazabilidad. Su uso no modifica el caso piloto Aragón ni sustituye el marco normativo del sistema.
 
-\begin{table}[h]
+La Tabla~\ref{tab:fuentes_datos} resume las fuentes principales consideradas en este trabajo.
+
+\begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{|p{2.8cm}|p{3.1cm}|p{4.1cm}|p{3.6cm}|}
@@ -124,9 +127,10 @@ La Tabla \ref{tab:fuentes_datos} resume las fuentes principales consideradas en 
 AEMET OpenData & Contexto meteorológico oficial & Nivel de aviso AEMET, fenómeno meteorológico activo & Granularidad zonal y dependencia técnica de consulta \\ \hline
 SNCZI / MITECO & Contexto territorial de inundabilidad & Peligrosidad por inundación & No refleja por sí solo estado hidrológico en tiempo real \\ \hline
 INE & Contexto demográfico agregado & Apoyo a personas en riesgo estimadas y vulnerabilidad territorial & No identifica afectados concretos \\ \hline
-ICEARAGON & Contexto espacial y accesibilidad & Accesibilidad al punto, emplazamiento crítico & Requiere integración geoespacial \\ \hline
+IDEARAGON & Contexto espacial y accesibilidad & Accesibilidad al punto, emplazamiento crítico & Requiere integración geoespacial \\ \hline
 Registro público Seveso (MITECO) & Contexto industrial y químico & Presencia de instalación Seveso & No informa del estado operativo instantáneo de la instalación \\ \hline
 Memorias y estadísticas del 112 Aragón & Calibración y plausibilidad operativa & Distribución tipológica y carga global & Son datos agregados, no dataset de entrenamiento \\ \hline
+Registro de Emergencias del 112 de Castilla y León & Fuente empírica proxy para pipeline & Ingesta, limpieza, señales textuales, coordenadas y trazabilidad & No contiene prioridad P1--P4 ni sustituye al caso Aragón \\ \hline
 \end{tabular}
 \caption{Fuentes oficiales y función dentro del sistema.}
 \label{tab:fuentes_datos}
@@ -140,25 +144,29 @@ AEMET OpenData constituye la fuente oficial más importante para el contexto met
 
 \subsection{SNCZI / MITECO: cartografías de riesgo}
 
-El Sistema Nacional de Cartografía de Zonas Inundables aporta una capa territorial oficial de gran relevancia para el prototipo. Su papel consiste en determinar si la localización del incidente cae dentro de zonas de peligrosidad por inundación oficialmente cartografiadas. Esta fuente es especialmente valiosa cuando se combina con el contexto meteorológico: un aviso localizado en una zona inundable durante un episodio de precipitación adversa tiene un potencial de deterioro superior al mismo aviso fuera de una zona de riesgo.
+El Sistema Nacional de Cartografía de Zonas Inundables (SNCZI) del Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO) aporta una capa territorial oficial de gran relevancia para el prototipo. Su papel consiste en determinar si la localización del incidente cae dentro de zonas de peligrosidad por inundación oficialmente cartografiadas. Esta fuente es especialmente valiosa cuando se combina con el contexto meteorológico: un aviso localizado en una zona inundable durante un episodio de precipitación adversa tiene un potencial de deterioro superior al mismo aviso fuera de una zona de riesgo.
 
 \subsection{INE: datos demográficos y vulnerabilidad}
 
-Los datos demográficos del INE se incorporan como apoyo a la estimación de exposición y vulnerabilidad territorial. Su función no es identificar afectados concretos, sino aportar un marco razonable de contexto cuando todavía no se dispone de información completa sobre las personas implicadas. Su uso debe ser prudente: el sistema no puede convertir estadísticas municipales en certezas individuales.
+Los datos demográficos del Instituto Nacional de Estadística (INE) se incorporan como apoyo a la estimación de exposición y vulnerabilidad territorial. Su función no es identificar afectados concretos, sino aportar un marco razonable de contexto cuando todavía no se dispone de información completa sobre las personas implicadas. Su uso debe ser prudente: el sistema no puede convertir estadísticas municipales en certezas individuales.
 
-\subsection{ICEARAGON: cartografía oficial de Aragón}
+\subsection{IDEARAGON: cartografía oficial de Aragón}
 
-La infraestructura geográfica oficial de Aragón, actualmente denominada ICEARAGON (Infraestructura de Conocimiento Espacial de Aragón), aporta contexto territorial y de accesibilidad. Su interés para el sistema radica en que la prioridad operativa no depende solo del tipo de incidente o del riesgo directo, sino también de la facilidad o dificultad de llegar al punto, de la proximidad a equipamientos relevantes y de la localización dentro de un entorno territorial concreto.
+La Infraestructura de Datos Espaciales de Aragón (IDEARAGON) aporta contexto territorial y de accesibilidad. Su interés para el sistema radica en que la prioridad operativa no depende solo del tipo de incidente o del riesgo directo, sino también de la facilidad o dificultad de llegar al punto, de la proximidad a equipamientos relevantes y de la localización dentro de un entorno territorial concreto.
 
 \subsection{Registro Seveso}
 
-El registro público de instalaciones sujetas a la normativa Seveso permite identificar entornos industriales que exigen una lectura reforzada del incidente. Su principal utilidad para el motor consiste en elevar la sensibilidad del sistema ante eventos que, por localización, puedan tener un potencial de escalado químico o industrial superior al que se observa en la descripción inicial. El buscador público de establecimientos afectados por la normativa Seveso está disponible a través del Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO), en el apartado de prevención de accidentes graves del portal del ministerio.
-
-[NOTA PARA INTEGRACIÓN: Verificar y añadir la URL exacta del buscador Seveso del MITECO en la lista consolidada de referencias o como nota al pie en este apartado.]
+El registro público de instalaciones sujetas a la normativa Seveso permite identificar entornos industriales que exigen una lectura reforzada del incidente. Su principal utilidad para el motor consiste en elevar la sensibilidad del sistema ante eventos que, por localización, puedan tener un potencial de escalado químico o industrial superior al que se observa en la descripción inicial. Esta fuente se emplea como apoyo contextual, no como indicador suficiente por sí solo para declarar una prioridad crítica.
 
 \subsection{Memorias y estadísticas del 112 Aragón}
 
-Las memorias y estadísticas del 112 Aragón son relevantes para entender el perfil operativo real del servicio y para evitar diseñar un sistema desconectado de su carga habitual. Su uso en el TFM es de calibración y plausibilidad, no de entrenamiento supervisado. A falta de microdatos operativos públicos de Aragón, el dataset abierto del CAT112 se utiliza únicamente como referencia estructural para el diseño de categorías y del esquema de datos. El TFM no presupone disponer de un histórico detallado y accesible del 112 Aragón.
+Las memorias y estadísticas del 112 Aragón son relevantes para entender el perfil operativo real del servicio y para evitar diseñar un sistema desconectado de su carga habitual. Su uso en el TFM es de calibración y plausibilidad, no de entrenamiento supervisado. A falta de microdatos operativos públicos de Aragón, estas memorias permiten contrastar que las familias de incidentes seleccionadas y el caso piloto territorial son razonables desde el punto de vista operativo.
+
+\subsection{Registro de Emergencias del 112 de Castilla y León}
+
+El Registro de Emergencias del 112 de Castilla y León \cite{Registro112CyL} se incorpora como fuente empírica real de incidentes procedentes de un servicio autonómico 112. Su función dentro del TFM es probar el pipeline de ingesta, limpieza, normalización textual, extracción de señales, geolocalización y trazabilidad sobre registros reales.
+
+Este dataset no modifica el marco normativo del trabajo ni desplaza el caso piloto Aragón. Tampoco se utiliza como base de entrenamiento supervisado de prioridad, ya que no contiene una etiqueta oficial P1--P4 ni una escala equivalente. Su valor reside en aportar realismo textual y estructural al tratamiento de datos, mientras que la interpretación operativa de la prioridad se mantiene vinculada al marco estatal y aragonés.
 
 \section{Conclusiones: traducción del dominio a criterios de modelado}
 
@@ -170,6 +178,8 @@ La segunda es que la prioridad operativa no puede reducirse a una única dimensi
 
 La tercera es que la taxonomía operativa no es un elemento accesorio, sino el mecanismo que permite activar el contexto correcto, aplicar reglas específicas y generar explicaciones comprensibles. Sin esa taxonomía, la priorización quedaría reducida a un scoring ciego y poco defendible.
 
-La cuarta es que las fuentes oficiales disponibles permiten enriquecer el contexto del incidente, pero no eliminan las limitaciones de acceso a datos operativos reales. Por tanto, el TFM debe mantener un enfoque realista: baseline interpretable, variables justificadas, dataset piloto híbrido y validación humana obligatoria. Asimismo, la escala P1--P4 del sistema debe seguir tratándose como una abstracción operativa propia del prototipo, cuya inspiración en las situaciones operativas 0--3 es metodológicamente adecuada pero que no debe presentarse como equivalencia jurídica.
+La cuarta es que las fuentes oficiales disponibles permiten enriquecer el contexto del incidente, pero no eliminan las limitaciones de acceso a datos operativos reales del 112 Aragón. Por tanto, el TFM debe mantener un enfoque realista: baseline interpretable, variables justificadas, dataset piloto híbrido y validación humana obligatoria. El Registro de Emergencias del 112 de Castilla y León se emplea como fuente empírica proxy para el pipeline, no como sustituto normativo ni territorial del caso Aragón.
+
+La quinta es que la escala P1--P4 del sistema debe seguir tratándose como una abstracción operativa propia del prototipo, cuya inspiración en las situaciones operativas 0--3 es metodológicamente adecuada, pero que no debe presentarse como equivalencia jurídica.
 
 En consecuencia, este capítulo cumple una función decisiva dentro del TFM: cerrar el dominio, delimitar el marco normativo útil, fijar la taxonomía de trabajo y acotar las fuentes oficiales que alimentarán el diseño analítico del motor en los capítulos siguientes.
