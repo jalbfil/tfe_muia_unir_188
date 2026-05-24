@@ -1,0 +1,741 @@
+{
+  "$contractsVersion": "0.1.0",
+  "$defs": {
+    "Accesibilidad": {
+      "enum": [
+        "ALTA",
+        "MEDIA",
+        "BAJA",
+        "DESCONOCIDA"
+      ],
+      "title": "Accesibilidad",
+      "type": "string"
+    },
+    "ActivatedRule": {
+      "additionalProperties": false,
+      "properties": {
+        "human_text": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Human Text",
+          "type": "string"
+        },
+        "normative_anchors": {
+          "items": {
+            "$ref": "#/$defs/NormaID"
+          },
+          "title": "Normative Anchors",
+          "type": "array"
+        },
+        "rule_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "weight": {
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "rule_id",
+        "human_text",
+        "weight"
+      ],
+      "title": "ActivatedRule",
+      "type": "object"
+    },
+    "AvisoAEMET": {
+      "enum": [
+        "VERDE",
+        "AMARILLO",
+        "NARANJA",
+        "ROJO",
+        "NO_DISPONIBLE"
+      ],
+      "title": "AvisoAEMET",
+      "type": "string"
+    },
+    "BoolWithConfidence": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "value": {
+          "title": "Value",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "value",
+        "confidence"
+      ],
+      "title": "BoolWithConfidence",
+      "type": "object"
+    },
+    "CategoriaPreliminar": {
+      "enum": [
+        "ACCIDENTE_TRAFICO",
+        "INCENDIO_FORESTAL",
+        "INCENDIO_URBANO",
+        "INCIDENCIA_VIA",
+        "METEOROLOGIA",
+        "QUIMICO_NRBQ",
+        "RESCATE",
+        "SANITARIO",
+        "SEGURIDAD_CIUDADANA",
+        "SUMINISTROS",
+        "OTROS",
+        "DESCONOCIDA"
+      ],
+      "title": "CategoriaPreliminar",
+      "type": "string"
+    },
+    "ConfidenceLevel": {
+      "enum": [
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "UNKNOWN"
+      ],
+      "title": "ConfidenceLevel",
+      "type": "string"
+    },
+    "GravedadLesiones": {
+      "enum": [
+        "NINGUNA",
+        "LEVE",
+        "MODERADA",
+        "GRAVE",
+        "CRITICA",
+        "DESCONOCIDA"
+      ],
+      "title": "GravedadLesiones",
+      "type": "string"
+    },
+    "IncidentFeatures": {
+      "additionalProperties": false,
+      "properties": {
+        "accesibilidad_recursos": {
+          "$ref": "#/$defs/Accesibilidad"
+        },
+        "aviso_aemet_nivel": {
+          "$ref": "#/$defs/AvisoAEMET",
+          "default": "NO_DISPONIBLE"
+        },
+        "avisos_simultaneos_zona": {
+          "minimum": 0,
+          "title": "Avisos Simultaneos Zona",
+          "type": "integer"
+        },
+        "condicion_meteorologica_adversa": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BoolWithConfidence"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "emplazamiento_critico": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "en_zona_inundable_snczi": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "En Zona Inundable Snczi"
+        },
+        "extractor_warnings": {
+          "items": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "title": "Extractor Warnings",
+          "type": "array"
+        },
+        "gravedad_lesiones": {
+          "$ref": "#/$defs/GravedadLesiones"
+        },
+        "gravedad_lesiones_confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Gravedad Lesiones Confidence",
+          "type": "number"
+        },
+        "incident_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "inference_latency_ms": {
+          "minimum": 0.0,
+          "title": "Inference Latency Ms",
+          "type": "number"
+        },
+        "inference_timestamp": {
+          "format": "date-time",
+          "title": "Inference Timestamp",
+          "type": "string"
+        },
+        "model_version_capa1": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "title": "Model Version Capa1",
+          "type": "string"
+        },
+        "multirriesgo": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "numero_llamadas": {
+          "minimum": 1,
+          "title": "Numero Llamadas",
+          "type": "integer"
+        },
+        "numero_victimas_estimado": {
+          "$ref": "#/$defs/IntWithConfidence"
+        },
+        "poblacion_vulnerable": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "proximo_instalacion_seveso_km": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proximo Instalacion Seveso Km"
+        },
+        "riesgo_propagacion": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "riesgo_vital": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "riesgo_vital_textual": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_accidente_trafico": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_atrapado": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_fallecido": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_herido_grave": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_incendio": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_intoxicacion": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_meteo_inundacion": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_rescate": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "signal_varias_llamadas": {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        "tipo_incidente_normalizado": {
+          "$ref": "#/$defs/CategoriaPreliminar"
+        }
+      },
+      "required": [
+        "incident_id",
+        "riesgo_vital",
+        "numero_victimas_estimado",
+        "gravedad_lesiones",
+        "gravedad_lesiones_confidence",
+        "tipo_incidente_normalizado",
+        "poblacion_vulnerable",
+        "numero_llamadas",
+        "emplazamiento_critico",
+        "riesgo_propagacion",
+        "multirriesgo",
+        "avisos_simultaneos_zona",
+        "accesibilidad_recursos",
+        "signal_fallecido",
+        "signal_herido_grave",
+        "signal_atrapado",
+        "signal_intoxicacion",
+        "signal_varias_llamadas",
+        "signal_incendio",
+        "signal_accidente_trafico",
+        "signal_rescate",
+        "signal_meteo_inundacion",
+        "riesgo_vital_textual",
+        "model_version_capa1",
+        "inference_timestamp",
+        "inference_latency_ms"
+      ],
+      "title": "IncidentFeatures",
+      "type": "object"
+    },
+    "IntWithConfidence": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "value": {
+          "minimum": -1,
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "value",
+        "confidence"
+      ],
+      "title": "IntWithConfidence",
+      "type": "object"
+    },
+    "LLMMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "llm_model": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Llm Model",
+          "type": "string"
+        },
+        "temperature": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "tokens_input": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tokens Input"
+        },
+        "tokens_output": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tokens Output"
+        },
+        "tools_invoked": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tools Invoked",
+          "type": "array"
+        }
+      },
+      "required": [
+        "llm_model",
+        "temperature"
+      ],
+      "title": "LLMMetadata",
+      "type": "object"
+    },
+    "LegalCitation": {
+      "additionalProperties": false,
+      "properties": {
+        "articulo_o_seccion": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Articulo O Seccion"
+        },
+        "norma_id": {
+          "$ref": "#/$defs/NormaID"
+        },
+        "texto_relevante": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Texto Relevante",
+          "type": "string"
+        },
+        "url_oficial": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url Oficial"
+        }
+      },
+      "required": [
+        "norma_id",
+        "texto_relevante"
+      ],
+      "title": "LegalCitation",
+      "type": "object"
+    },
+    "ModelUsed": {
+      "enum": [
+        "RULEFIT",
+        "BASELINE_EXPERT",
+        "FALLBACK"
+      ],
+      "title": "ModelUsed",
+      "type": "string"
+    },
+    "NormaID": {
+      "enum": [
+        "LEY_17_2015",
+        "RD_524_2023",
+        "PLEGEM",
+        "LEY_4_2007_CYL",
+        "PLANCAL_DEC_4_2019",
+        "INFOCAL_DEC_6_2025",
+        "INUNCYL",
+        "MPCYL_ACUERDO_3_2008",
+        "LEY_11_2022",
+        "REGISTRO_112_CYL",
+        "RGPD",
+        "LOPDGDD",
+        "REG_UE_2024_1689",
+        "RD_840_2015_SEVESO"
+      ],
+      "title": "NormaID",
+      "type": "string"
+    },
+    "OperatorDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "incident_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "motivo_divergencia": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Motivo Divergencia"
+        },
+        "operador_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Operador Id",
+          "type": "string"
+        },
+        "priority_assigned_by_operator": {
+          "$ref": "#/$defs/Priority"
+        },
+        "priority_recommended_by_system": {
+          "$ref": "#/$defs/Priority"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "incident_id",
+        "priority_recommended_by_system",
+        "priority_assigned_by_operator",
+        "operador_id",
+        "timestamp"
+      ],
+      "title": "OperatorDecision",
+      "type": "object"
+    },
+    "OperatorRecommendation": {
+      "additionalProperties": false,
+      "properties": {
+        "activated_rules_summary": {
+          "items": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "title": "Activated Rules Summary",
+          "type": "array"
+        },
+        "actuation_hints": {
+          "items": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "title": "Actuation Hints",
+          "type": "array"
+        },
+        "confidence_disclaimer": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence Disclaimer"
+        },
+        "explanation_text": {
+          "maxLength": 1200,
+          "minLength": 20,
+          "title": "Explanation Text",
+          "type": "string"
+        },
+        "incident_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "legal_citations": {
+          "items": {
+            "$ref": "#/$defs/LegalCitation"
+          },
+          "title": "Legal Citations",
+          "type": "array"
+        },
+        "llm_metadata": {
+          "$ref": "#/$defs/LLMMetadata"
+        },
+        "model_version_capa3": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "title": "Model Version Capa3",
+          "type": "string"
+        },
+        "priority_recommended": {
+          "$ref": "#/$defs/Priority"
+        }
+      },
+      "required": [
+        "incident_id",
+        "priority_recommended",
+        "explanation_text",
+        "model_version_capa3",
+        "llm_metadata"
+      ],
+      "title": "OperatorRecommendation",
+      "type": "object"
+    },
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    },
+    "PriorityRecommendation": {
+      "additionalProperties": false,
+      "properties": {
+        "activated_rules": {
+          "items": {
+            "$ref": "#/$defs/ActivatedRule"
+          },
+          "title": "Activated Rules",
+          "type": "array"
+        },
+        "confidence_level": {
+          "$ref": "#/$defs/ConfidenceLevel"
+        },
+        "incident_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "model_used": {
+          "$ref": "#/$defs/ModelUsed"
+        },
+        "model_version_capa2": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "title": "Model Version Capa2",
+          "type": "string"
+        },
+        "priority_recommended": {
+          "$ref": "#/$defs/Priority"
+        },
+        "probabilities": {
+          "additionalProperties": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "type": "number"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Priority"
+          },
+          "title": "Probabilities",
+          "type": "object"
+        },
+        "requires_human_attention": {
+          "title": "Requires Human Attention",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "incident_id",
+        "priority_recommended",
+        "probabilities",
+        "confidence_level",
+        "model_used",
+        "model_version_capa2",
+        "requires_human_attention"
+      ],
+      "title": "PriorityRecommendation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "capa1_output": {
+      "$ref": "#/$defs/IncidentFeatures"
+    },
+    "capa2_output": {
+      "$ref": "#/$defs/PriorityRecommendation"
+    },
+    "capa3_output": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OperatorRecommendation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "incident_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "input_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Hash",
+      "type": "string"
+    },
+    "latencias_ms": {
+      "additionalProperties": {
+        "minimum": 0.0,
+        "type": "number"
+      },
+      "title": "Latencias Ms",
+      "type": "object"
+    },
+    "log_id": {
+      "maxLength": 26,
+      "minLength": 26,
+      "title": "Log Id",
+      "type": "string"
+    },
+    "model_versions": {
+      "additionalProperties": {
+        "pattern": "^\\d+\\.\\d+\\.\\d+$",
+        "type": "string"
+      },
+      "title": "Model Versions",
+      "type": "object"
+    },
+    "operator_decision": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OperatorDecision"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "timestamp_end": {
+      "format": "date-time",
+      "title": "Timestamp End",
+      "type": "string"
+    },
+    "timestamp_start": {
+      "format": "date-time",
+      "title": "Timestamp Start",
+      "type": "string"
+    },
+    "tools_invoked": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Tools Invoked",
+      "type": "array"
+    }
+  },
+  "required": [
+    "log_id",
+    "incident_id",
+    "input_hash",
+    "capa1_output",
+    "capa2_output",
+    "latencias_ms",
+    "model_versions",
+    "timestamp_start",
+    "timestamp_end"
+  ],
+  "title": "InferenceLog",
+  "type": "object"
+}

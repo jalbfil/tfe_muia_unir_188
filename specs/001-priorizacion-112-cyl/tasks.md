@@ -22,24 +22,24 @@
 
 ## Fase 1 — Contratos (gate para todo lo demás)
 
-- [ ] **T010** `[C]` Crear paquete `src/contracts/` con `pyproject.toml` instalable (`pip install -e ./src/contracts`).
-- [ ] **T011 [P]** `[C]` `src/contracts/contracts/enums.py`: `Priority`, `ConfidenceLevel`, `ModelUsed`, `VariableSource`, `ProvinciaCyL`, `CategoriaPreliminar`, `NormaID`.
-- [ ] **T012 [P]** `[C]` `src/contracts/contracts/incident_input.py` con tests `tests/test_incident_input.py` (validación lat/lon coherente, texto no vacío).
-- [ ] **T013 [P]** `[C]` `src/contracts/contracts/incident_features.py` (E-02) con `BoolWithConfidence`, `IntWithConfidence`, V01–V15, signals. Tests roundtrip + ejemplo golden.
-- [ ] **T014 [P]** `[C]` `src/contracts/contracts/priority_recommendation.py` (E-03) con `ActivatedRule`. Tests: sum probs == 1, argmax == recommended, ≤30 reglas si RULEFIT, P1/P2 requiere ≥1 regla.
-- [ ] **T015 [P]** `[C]` `src/contracts/contracts/operator_recommendation.py` (E-04) con `LegalCitation`. Tests: P1/P2 requiere ≥1 cita, explanation 20–1200 chars, temp 0.0 en producción.
-- [ ] **T016 [P]** `[C]` `src/contracts/contracts/rule.py` (E-06) y `weak_label.py` (E-07).
-- [ ] **T017 [P]** `[C]` `src/contracts/contracts/inference_log.py` (E-08) con hash SHA-256 input.
-- [ ] **T018 [P]** `[C]` `src/contracts/contracts/errors.py`: `LeakageFieldRejectedError`, `LowConfidenceWarning`, `SLABreachWarning`, etc.
-- [ ] **T019** `[C]` Script `scripts/export_schemas.py` que dump JSON Schema de cada modelo a `src/contracts/docs/schemas/`.
-- [ ] **T020** `[C]` Test CI `tests/test_schema_diff.py` que compara schemas commiteados con regenerados y falla si difieren sin bump de versión.
-- [ ] **T021** `[C]` Test CI `tests/test_leakage_gate.py` que escanea `src/capa1_nlp/` y `src/capa2_rulefit/` por referencias a columnas prohibidas (Principio V).
-- [ ] **T022 [P]** `[C]` ADR `src/contracts/docs/adr/0001-pydantic-as-contract.md`.
-- [ ] **T023 [P]** `[C]` ADR `0002-priority-scale-p1-p4-is-academic.md`.
-- [ ] **T024 [P]** `[C]` ADR `0003-versioning-strategy.md` (semver + schema diff CI).
-- [ ] **T025 [P]** `[C]` ADR `0004-no-leakage-policy.md`.
-- [ ] **T026 [P]** `[C]` ADR `0005-mcp-as-capa3-interface.md`.
-- [ ] **T027 [P]** `[C]` Factories en `src/contracts/tests/factories.py` con `polyfactory` para todos los modelos.
+- [x] **T010** `[C]` Crear paquete `src/contracts/` con `pyproject.toml` instalable (`pip install -e ./src/contracts`).
+- [x] **T011 [P]** `[C]` `src/contracts/contracts/enums.py`: `Priority`, `ConfidenceLevel`, `ModelUsed`, `VariableSource`, `ProvinciaCyL`, `CategoriaPreliminar`, `NormaID`.
+- [x] **T012 [P]** `[C]` `src/contracts/contracts/incident_input.py` con tests `tests/test_incident_input.py` (validación lat/lon coherente, texto no vacío).
+- [x] **T013 [P]** `[C]` `src/contracts/contracts/incident_features.py` (E-02) con `BoolWithConfidence`, `IntWithConfidence`, V01–V15, signals. Tests roundtrip + ejemplo golden.
+- [x] **T014 [P]** `[C]` `src/contracts/contracts/priority_recommendation.py` (E-03) con `ActivatedRule`. Tests: sum probs == 1, argmax == recommended, ≤30 reglas si RULEFIT, P1/P2 requiere ≥1 regla.
+- [x] **T015 [P]** `[C]` `src/contracts/contracts/operator_recommendation.py` (E-04) con `LegalCitation`. Tests: P1/P2 requiere ≥1 cita, explanation 20–1200 chars, temp 0.0 en producción.
+- [x] **T016 [P]** `[C]` `src/contracts/contracts/rule.py` (E-06) y `weak_label.py` (E-07).
+- [x] **T017 [P]** `[C]` `src/contracts/contracts/inference_log.py` (E-08) con hash SHA-256 input.
+- [x] **T018 [P]** `[C]` `src/contracts/contracts/errors.py`: `LeakageFieldRejectedError`, `LowConfidenceWarning`, `SLABreachWarning`, etc.
+- [x] **T019** `[C]` Script `scripts/export_schemas.py` que dump JSON Schema de cada modelo a `src/contracts/docs/schemas/`.
+- [x] **T020** `[C]` Test CI `tests/test_schema_diff.py` que compara schemas commiteados con regenerados y falla si difieren sin bump de versión.
+- [x] **T021** `[C]` Test CI `tests/test_leakage_gate.py` que escanea `src/capa1_nlp/` y `src/capa2_rulefit/` por referencias a columnas prohibidas (Principio V).
+- [x] **T022 [P]** `[C]` ADR `src/contracts/docs/adr/0001-pydantic-as-contract.md`.
+- [x] **T023 [P]** `[C]` ADR `0002-priority-scale-p1-p4-is-academic.md`.
+- [x] **T024 [P]** `[C]` ADR `0003-versioning-strategy.md` (semver + schema diff CI).
+- [x] **T025 [P]** `[C]` ADR `0004-no-leakage-policy.md`.
+- [x] **T026 [P]** `[C]` ADR `0005-mcp-as-capa3-interface.md`.
+- [x] **T027 [P]** `[C]` Factories en `src/contracts/tests/factories.py` con `polyfactory` para todos los modelos.
 
 ## Fase 2 — Dataset + weak supervision (Juan Carlos)
 

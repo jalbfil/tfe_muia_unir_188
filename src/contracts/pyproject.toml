@@ -1,0 +1,42 @@
+[project]
+name = "tfm188-contracts"
+version = "0.1.0"
+description = "Contratos Pydantic v2 vinculantes entre Capa 1 NLP, Capa 2 RuleFit y Capa 3 LLM/MCP del TFM 188 (Spec Kit Principio VIII)."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = { text = "MIT" }
+authors = [
+    { name = "Juan Carlos Albert Fillol" },
+    { name = "Brian Mathias Pesci Juliani" },
+    { name = "Ancor González Carballo" },
+]
+
+dependencies = [
+    "pydantic>=2.7,<3",
+    "python-ulid>=2.2",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8",
+    "polyfactory>=2.16",
+]
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "contracts/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["contracts"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "contracts/**",
+    "tests/**",
+    "docs/**",
+    "README.md",
+    "pyproject.toml",
+]
