@@ -25,6 +25,8 @@ classifiers = [
 dependencies = [
     "pydantic>=2.7,<3",
     "python-ulid>=2.2",
+    "fastapi[standard]>=0.111",
+    "httpx>=0.27",
 ]
 
 [project.optional-dependencies]
@@ -88,7 +90,7 @@ ignore_missing_imports = true
 # ─────────────────────────── Pytest ────────────────────────────────────────────
 [tool.pytest.ini_options]
 minversion = "8.0"
-testpaths = ["tests", "src/contracts/tests"]
+testpaths = ["tests", "src/contracts/tests", "src/capa3_llm_mcp/tests"]
 addopts = "-q --strict-markers --strict-config"
 markers = [
     "slow: tests lentos (entrenamiento, inferencia LLM)",

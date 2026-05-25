@@ -88,35 +88,35 @@
 - [x] **T061** `[B]` Pipeline ingesta: parser PDF → chunking (~400 tokens, overlap 50) → metadata `{norma_id, articulo, año, jerarquía}`. Implementado en `src/capa3_llm_mcp/rag/ingestion.py`.
 - [x] **T062** `[B]` `scripts/build_rag_index.py` con embeddings `paraphrase-multilingual-MiniLM-L12-v2` → ChromaDB persistente en `artifacts/rag/chroma/`. ✅ 1467 chunks de 10 normas indexados.
 - [x] **T063** `[B]` Test retrieval: query "atrapado herido grave" → top-1 cita Ley 17/2015 art. 1. ✅ PASS.
-- [~] **T064** `[B]` Test retrieval: query "fuga química camión cisterna" → top-1 cita MPCyL. SKIP hasta localizar url_pdf de MPCYL_ACUERDO_3_2008.
+- [~] **T064** `[B]` Test retrieval: query "fuga química camión cisterna" → top-1 cita MPCyL. **FAIL** — MPCYL indexado (3 chunks del decreto) pero el embedder recupera INFOCAL_DEC_6_2025 (score 0.46 vs MPCYL sin aparecer en top-5). El decreto no contiene vocabulario de mercancías peligrosas suficiente. Requiere localizar el PDF del plan técnico completo.
 - [ ] **T065** `[B]` Documentar corpus en `latex/chapters/anexo_j.tex`.
 
 ## Fase 6 — Capa 3 LLM + MCP (Brian)
 
-- [~] **T070** `[B]` Crear `src/capa3_llm_mcp/` con `rag/`, `llm/`, `prompts/`, `mcp_server/`, `tests/`. Esqueleto creado; pendiente T073-T079.
-- [ ] **T071 [P]** `[B]` Test contrato: dado `PriorityRecommendation`, `explain()` devuelve `OperatorRecommendation` válido.
-- [ ] **T072 [P]** `[B]` Test latencia: explicación ≤ 2 000 ms p95.
-- [ ] **T073** `[B]` Wrapper LLM `llm/qwen_wrapper.py` con `llama-cpp-python`, modelo `qwen2.5-7b-instruct-q4_k_m.gguf` en `artifacts/llm/`. Temperature 0.0.
-- [ ] **T074** `[B]` Prompts en `prompts/`: system prompt + few-shot (3 ejemplos: P1, P3, P4). Documentar en `anexo_k.tex`.
-- [ ] **T075 [P]** `[B]` Tool `mcp_server/tools/search_normative.py`.
-- [ ] **T076 [P]** `[B]` Tool `mcp_server/tools/get_rule_details.py`.
+- [x] **T070** `[B]` Crear `src/capa3_llm_mcp/` con `rag/`, `llm/`, `prompts/`, `mcp_server/`, `tests/`. ✅ estructura completa.
+- [x] **T071 [P]** `[B]` Test contrato: dado `PriorityRecommendation`, `explain()` devuelve `OperatorRecommendation` válido. ✅ 7 tests PASS (T071-A..G), incluyendo modo degradado.
+- [x] **T072 [P]** `[B]` Test latencia: explicación ≤ 2 000 ms p95. ✅ 2 PASS (degradado + mock LLM), 1 SKIP (modelo real ausente).
+- [x] **T073** `[B]` Wrapper LLM `llm/qwen_wrapper.py` con `llama-cpp-python`, modelo `qwen2.5-7b-instruct-q4_k_m.gguf` en `artifacts/llm/`. Temperature 0.0. ✅ `artifacts/llm/README.md` incluye instrucciones de descarga.
+- [x] **T074** `[B]` Prompts en `prompts/`: system prompt + few-shot (3 ejemplos: P1, P3, P4). ✅
+- [x] **T075 [P]** `[B]` Tool `mcp_server/tools/search_normative.py`. ✅
+- [x] **T076 [P]** `[B]` Tool `mcp_server/tools/get_rule_details.py`. ✅
 - [ ] **~~T077~~** `[B]` ~~Tool `mcp_server/tools/get_aemet_context.py`~~ — **DIFERIDA v0.2.0 (R-13)**.
-- [ ] **T078 [P]** `[B]` Tool `mcp_server/tools/cite_legal_basis.py`.
-- [ ] **T079** `[B]` Servidor MCP `mcp_server/server.py` con las **3 tools v0.1.0** (`search_normative`, `get_rule_details`, `cite_legal_basis`) registradas, escucha en `localhost:8765`. `get_aemet_context` reservada en contrato v0.2.0.
-- [ ] **T080** `[B]` Test integración MCP: cliente test invoca cada tool y valida schema.
-- [ ] **T081** `[B]` Wrapper `explainer.py` que orquesta LLM + tools + RAG y produce `OperatorRecommendation`.
-- [ ] **T082** `[B]` Modo degradado: si LLM no disponible, devolver explicación estática derivada de reglas activadas (Header `X-Degraded-Mode`).
+- [x] **T078 [P]** `[B]` Tool `mcp_server/tools/cite_legal_basis.py`. ✅
+- [x] **T079** `[B]` Servidor MCP `mcp_server/server.py` con las **3 tools v0.1.0** registradas, SSE `localhost:8765` + stdio mode. ✅
+- [x] **T080** `[B]` Test integración MCP: cliente test invoca cada tool y valida schema. ✅ 11 tests PASS.
+- [x] **T081** `[B]` Wrapper `explainer.py` que orquesta LLM + tools + RAG y produce `OperatorRecommendation`. ✅
+- [x] **T082** `[B]` Modo degradado: si LLM no disponible, devolver explicación estática derivada de reglas activadas. ✅ `degraded_explain()` + garantía P1/P2≥1 cita.
 - [ ] **T083** `[B]` Model card LLM + prompts → `anexo_l.tex` (sección LLM) y `anexo_k.tex`.
 
 ## Fase 7 — Backend + orquestador (Conjunto, líder Brian)
 
-- [ ] **T090** `[B]` `src/backend/api/` FastAPI con endpoints `/predict`, `/feedback`, `/healthz`, `/version`.
-- [ ] **T091** `[B]` `src/backend/orchestrator/pipeline.py` que encadena Capa 1 → 2 → 3 con timeouts y fallback degradado.
-- [ ] **T092** `[B]` `src/backend/logging/` con SQLite + JSONL rotado, persiste `InferenceLog`.
-- [ ] **T093** `[C]` Test integración endpoint `/predict` con Escenario 1 de quickstart.
-- [ ] **T094** `[C]` Test integración endpoint `/feedback` con Escenario 4.
-- [ ] **T095** `[C]` Test rechazo leakage Escenario 5.
-- [ ] **T096** `[C]` Test modo degradado Escenario 6.
+- [x] **T090** `[B]` `src/backend/api/` FastAPI con endpoints `/predict`, `/feedback`, `/healthz`, `/version`.
+- [x] **T091** `[B]` `src/backend/orchestrator/pipeline.py` que encadena Capa 1 → 2 → 3 con timeouts y fallback degradado.
+- [x] **T092** `[B]` `src/backend/logging/` con SQLite + JSONL rotado, persiste `InferenceLog`.
+- [x] **T093** `[C]` Test integración endpoint `/predict` con Escenario 1 de quickstart.
+- [x] **T094** `[C]` Test integración endpoint `/feedback` con Escenario 4.
+- [x] **T095** `[C]` Test rechazo leakage Escenario 5.
+- [x] **T096** `[C]` Test modo degradado Escenario 6.
 
 ## Fase 8 — UI mínima Streamlit (Conjunto, Q-01 cerrada)
 
