@@ -44,7 +44,7 @@
 ## Fase 2 — Dataset + weak supervision (Juan Carlos)
 
 - [ ] **T030** `[J]` Auditar dataset limpio `resources/dataset/processed/emergencias_112_cyl_2008_2022_clean.csv` y documentar nulos, duplicados, distribución por año/provincia.
-- [ ] **T031** `[J]` Definir guía de etiquetado P1–P4 anclada en PLANCAL (Decreto 4/2019). Guardar en `latex/chapters/anexo_c.tex` y `resources/labeling_guide_p1p4.md`.
+- [x] **T031** `[C]` Definir guía de etiquetado P1–P4 anclada en PLANCAL (Decreto 4/2019). Guardar en `latex/chapters/anexo_c.tex` y `resources/labeling_guide_p1p4.md`.
 - [ ] **T032** `[J]` Implementar `scripts/build_weak_labels.py`:
   - 4 anotadores independientes según R-03 (LLM-as-annotator, NER+intensificadores, clustering, reglas heurísticas con peso mínimo).
   - Label model con majority voting ponderado.
@@ -84,16 +84,16 @@
 
 ## Fase 5 — Corpus normativo + RAG (Brian)
 
-- [ ] **T060** `[B]` Recopilar PDFs/HTML oficiales de las 15 normas en `resources/corpus_normativo/` (BOE/BOCYL links).
-- [ ] **T061** `[B]` Pipeline ingesta: parser PDF → chunking (~400 tokens, overlap 50) → metadata `{norma_id, articulo, año, jerarquía}`.
-- [ ] **T062** `[B]` `scripts/build_rag_index.py` con embeddings `paraphrase-multilingual-MiniLM-L12-v2` → ChromaDB persistente en `artifacts/rag/chroma/`.
-- [ ] **T063** `[B]` Test retrieval: query "atrapado herido grave" → top-1 cita Ley 17/2015 art. 1.
-- [ ] **T064** `[B]` Test retrieval: query "fuga química camión cisterna" → top-1 cita MPCyL.
+- [~] **T060** `[C]` Recopilar PDFs/HTML oficiales de las 13 normas activas en `resources/corpus_normativo/`. **Progreso 12/13 PDFs** · `INUNCYL` ✅ `BOCYL-D-03032010-14` (3 chunks, decreto + plan corto) · `MPCYL_ACUERDO_3_2008` ⚠️ solo decreto de aprobación indexado (3 chunks); el PDF del plan completo no está localizado en BOCYL — buscar en web Protección Civil CyL · `REGISTRO_112_CYL` es ficha dataset (no PDF, no bloquea RAG). Total índice: 1473 chunks, 12 normas.
+- [x] **T061** `[B]` Pipeline ingesta: parser PDF → chunking (~400 tokens, overlap 50) → metadata `{norma_id, articulo, año, jerarquía}`. Implementado en `src/capa3_llm_mcp/rag/ingestion.py`.
+- [x] **T062** `[B]` `scripts/build_rag_index.py` con embeddings `paraphrase-multilingual-MiniLM-L12-v2` → ChromaDB persistente en `artifacts/rag/chroma/`. ✅ 1467 chunks de 10 normas indexados.
+- [x] **T063** `[B]` Test retrieval: query "atrapado herido grave" → top-1 cita Ley 17/2015 art. 1. ✅ PASS.
+- [~] **T064** `[B]` Test retrieval: query "fuga química camión cisterna" → top-1 cita MPCyL. SKIP hasta localizar url_pdf de MPCYL_ACUERDO_3_2008.
 - [ ] **T065** `[B]` Documentar corpus en `latex/chapters/anexo_j.tex`.
 
 ## Fase 6 — Capa 3 LLM + MCP (Brian)
 
-- [ ] **T070** `[B]` Crear `src/capa3_llm_mcp/` con `rag/`, `llm/`, `prompts/`, `mcp_server/`, `tests/`.
+- [~] **T070** `[B]` Crear `src/capa3_llm_mcp/` con `rag/`, `llm/`, `prompts/`, `mcp_server/`, `tests/`. Esqueleto creado; pendiente T073-T079.
 - [ ] **T071 [P]** `[B]` Test contrato: dado `PriorityRecommendation`, `explain()` devuelve `OperatorRecommendation` válido.
 - [ ] **T072 [P]** `[B]` Test latencia: explicación ≤ 2 000 ms p95.
 - [ ] **T073** `[B]` Wrapper LLM `llm/qwen_wrapper.py` con `llama-cpp-python`, modelo `qwen2.5-7b-instruct-q4_k_m.gguf` en `artifacts/llm/`. Temperature 0.0.

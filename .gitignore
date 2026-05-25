@@ -58,6 +58,7 @@ latex/build/
 # ─── Artefactos ML/LLM (modelos, índices, reportes generados) ────────────────
 artifacts/**
 !artifacts/README.md
+!artifacts/rag/README.md
 
 # ─── Pre-commit y caches herramientas Python ─────────────────────────────────
 .ruff_cache/

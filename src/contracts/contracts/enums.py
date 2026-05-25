@@ -82,7 +82,6 @@ class Accesibilidad(StrEnum):
     BAJA = "BAJA"
     DESCONOCIDA = "DESCONOCIDA"
 
-
 class NormaID(StrEnum):
     # 13 normas activas v0.1.0 + Seveso reservada para v0.2.0 (ver corpus_normativo/README.md).
     LEY_17_2015 = "LEY_17_2015"
