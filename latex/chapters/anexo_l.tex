@@ -1,0 +1,114 @@
+\chapter{Model cards de Capa 2}
+\label{cap:anexol}
+
+\section*{L.1. Alcance}
+
+Este anexo documenta la model card de la Capa 2 de priorizacion interpretable. La
+Capa 2 recibe las variables estructuradas y seniales textuales predecisionales
+producidas por la Capa 1, y devuelve una recomendacion P1--P4 junto con reglas
+activadas y probabilidades normalizadas. La version documentada corresponde a
+\texttt{v0.1.0}.
+
+\section*{L.2. Datos usados}
+
+El entrenamiento y la evaluacion usan el Registro 112 Castilla y Leon 2008--2022, con
+9.380 registros limpios. La etiqueta objetivo no existe de forma nativa en el dataset:
+se construye como etiqueta academica P1--P4 mediante weak supervision. La calidad de
+estas etiquetas se controla con acuerdo entre fuentes debiles; la ejecucion principal
+alcanza Krippendorff $\alpha = 0.858348$, por encima del umbral aceptable de 0.67.
+
+Los splits usados son versionados y reproducibles:
+
+\begin{itemize}
+    \item Train: 6.511 registros.
+    \item Validacion: 1.414 registros.
+    \item Test: 1.455 registros.
+\end{itemize}
+
+\section*{L.3. Features permitidas y anti-leakage}
+
+El modelo seleccionado emplea un conjunto compacto de seniales predecisionales:
+
+\begin{itemize}
+    \item \texttt{signal\_fallecido}
+    \item \texttt{signal\_herido\_grave}
+    \item \texttt{signal\_atrapado}
+    \item \texttt{signal\_intoxicacion}
+    \item \texttt{signal\_varias\_llamadas}
+    \item \texttt{signal\_incendio}
+    \item \texttt{signal\_accidente\_trafico}
+    \item \texttt{signal\_rescate}
+    \item \texttt{signal\_meteo\_inundacion}
+    \item \texttt{riesgo\_vital\_textual}
+    \item variables categoricas derivadas de la categoria preliminar:
+    \texttt{cat\_trafico}, \texttt{cat\_incendio}, \texttt{cat\_rescate},
+    \texttt{cat\_sanitario}, \texttt{cat\_meteorologico}, \texttt{cat\_seguridad}
+    y \texttt{cat\_otros}.
+\end{itemize}
+
+Quedan excluidas por leakage las columnas \texttt{MediosMov},
+\texttt{medios\_mov\_limpio}, \texttt{medios\_mov\_uso\_recomendado},
+\texttt{PacientesAten}, \texttt{pacientes\_aten\_limpio},
+\texttt{IncidenteCerrado}, \texttt{ultimaActualizacion},
+\texttt{Enlace al contenido} y \texttt{Unnamed: 13}. Estas variables se conocen
+despues de la decision operativa o son metadatos post-hoc, por lo que no pueden
+alimentar el entrenamiento ni la inferencia.
+
+\section*{L.4. Modelos comparados}
+
+Se comparan tres alternativas:
+
+\begin{enumerate}
+    \item \textbf{Baseline experto}: 16 reglas manuales trazables, documentadas en el
+    Anexo~\ref{cap:anexoe}.
+    \item \textbf{RuleFit-lite}: reglas de arbol poco profundo y capa logistica escasa.
+    Se adopta como aproximacion interpretable eficiente y reproducible.
+    \item \textbf{RuleFit imodels}: \texttt{imodels.RuleFitClassifier} en esquema
+    one-vs-rest para P1--P4. Se ejecuta en Python 3.12 aislado, con configuracion
+    diagnostica reducida por coste de computo local.
+\end{enumerate}
+
+\begin{table}[ht]
+\centering
+\caption{Comparativa de modelos de Capa 2 en test}
+\label{tab:model-card-capa2-comparativa}
+\small
+\begin{tabular}{|l|r|r|r|r|r|r|}
+\hline
+\textbf{Modelo} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} & \textbf{Reglas} & \textbf{Train s} & \textbf{ms/fila} \\ \hline
+Baseline experto & 0.727835 & 0.703932 & 0.998457 & 16 & -- & -- \\ \hline
+RuleFit-lite & 0.885911 & 0.884163 & 0.938272 & 30 & 6.504204 & 0.450127 \\ \hline
+RuleFit imodels & 0.768385 & 0.568239 & 0.902778 & 30 & 13.191647 & 7.496081 \\ \hline
+\end{tabular}
+\end{table}
+
+\section*{L.5. Modelo seleccionado}
+
+El modelo seleccionado para Capa 2 v0.1.0 es \textbf{RuleFit-lite}. La decision se
+justifica por cuatro razones:
+
+\begin{itemize}
+    \item obtiene la mejor macro-F1 en test: 0.884163;
+    \item mantiene recall P1 de 0.938272, por encima del objetivo minimo de 0.85;
+    \item respeta el limite de 30 reglas activas exportadas;
+    \item presenta menor latencia de inferencia que la ejecucion diagnostica con
+    \texttt{imodels}.
+\end{itemize}
+
+La eleccion no invalida \texttt{imodels}; al contrario, lo mantiene como referencia
+canonica para experimentos futuros con mayor presupuesto de computo. En esta version,
+sin embargo, RuleFit-lite ofrece mejor equilibrio entre rendimiento, interpretabilidad,
+coste y reproducibilidad.
+
+\section*{L.6. Limitaciones}
+
+\begin{itemize}
+    \item La variable objetivo es una etiqueta academica debil, no una prioridad
+    operativa oficial.
+    \item La evaluacion de \texttt{imodels} se ha realizado con una configuracion
+    diagnostica reducida, debido al coste temporal observado en el entorno local.
+    \item El objetivo ECE $\leq 0.10$ queda reservado para una pasada final de
+    calibracion cuando el modelo sea congelado.
+    \item El rendimiento debe interpretarse dentro del alcance v0.1.0, sin variables
+    externas diferidas como AEMET historico, SNCZI o Seveso.
+\end{itemize}

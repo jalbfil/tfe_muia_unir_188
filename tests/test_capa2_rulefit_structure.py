@@ -63,7 +63,7 @@ def test_t051_predict_returns_valid_priority_recommendation() -> None:
 
     assert isinstance(recommendation, PriorityRecommendation)
     assert recommendation.incident_id == "INC-T050-P1"
-    assert recommendation.model_used is ModelUsed.BASELINE_EXPERT
+    assert recommendation.model_used in {ModelUsed.BASELINE_EXPERT, ModelUsed.RULEFIT}
 
 
 def test_t052_probability_and_rule_invariants() -> None:

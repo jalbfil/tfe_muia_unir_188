@@ -6,6 +6,10 @@ complementaran este baseline con un modelo RuleFit entrenado.
 
 from __future__ import annotations
 
+from functools import lru_cache
+from pathlib import Path
+from typing import Any
+
 from contracts import (
     ActivatedRule,
     ConfidenceLevel,
@@ -16,8 +20,11 @@ from contracts import (
 )
 
 from capa2_rulefit.baseline_expert.rules import evaluate_baseline_rules
+from capa2_rulefit.rulefit import incident_features_to_row
 
 MODEL_VERSION_CAPA2 = "0.1.0"
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_RULEFIT_MODEL = PROJECT_ROOT / "artifacts" / "models" / "capa2" / "v0.1.0" / "rulefit.joblib"
 
 
 def _confidence_level(p_max: float) -> ConfidenceLevel:
@@ -84,8 +91,56 @@ def _activated_rules(features: IncidentFeatures) -> list[ActivatedRule]:
     ]
 
 
+@lru_cache(maxsize=1)
+def _load_rulefit_model() -> Any | None:
+    if not DEFAULT_RULEFIT_MODEL.exists():
+        return None
+    try:
+        import joblib
+    except ImportError:
+        return None
+    try:
+        return joblib.load(DEFAULT_RULEFIT_MODEL)
+    except Exception:
+        return None
+
+
+def _rulefit_recommendation(features: IncidentFeatures) -> PriorityRecommendation | None:
+    model = _load_rulefit_model()
+    if model is None:
+        return None
+    probabilities_raw = model.predict_proba_from_row(incident_features_to_row(features))
+    probabilities = {Priority(label): value for label, value in probabilities_raw.items()}
+    recommended = max(probabilities, key=probabilities.get)
+    p_max = probabilities[recommended]
+    top_rules = model.top_rules_for_label(recommended.value, limit=30)
+    activated_rules = [
+        ActivatedRule(
+            rule_id=str(rule["rule_id"]),
+            human_text=str(rule["rule"])[:200],
+            weight=float(rule["coef"]),
+            normative_anchors=[],
+        )
+        for rule in top_rules
+    ]
+    return PriorityRecommendation(
+        incident_id=features.incident_id,
+        priority_recommended=recommended,
+        probabilities=probabilities,
+        activated_rules=activated_rules,
+        confidence_level=_confidence_level(p_max),
+        model_used=ModelUsed.RULEFIT,
+        model_version_capa2=MODEL_VERSION_CAPA2,
+        requires_human_attention=recommended in (Priority.P1, Priority.P2) or p_max < 0.60,
+    )
+
+
 def predict(features: IncidentFeatures) -> PriorityRecommendation:
     """Predice prioridad P1-P4 cumpliendo el contrato de Capa 2."""
+
+    rulefit_prediction = _rulefit_recommendation(features)
+    if rulefit_prediction is not None:
+        return rulefit_prediction
 
     probabilities = _normalise(_priority_scores(features))
     recommended = max(probabilities, key=probabilities.get)

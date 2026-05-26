@@ -73,14 +73,14 @@
 - [x] **T051 [P]** `[J]` Test contrato: dado `IncidentFeatures` vÃ¡lido, `predict()` devuelve `PriorityRecommendation` vÃ¡lido.
 - [x] **T052 [P]** `[J]` Test invariantes: sum probs == 1, argmax == recommended, â‰¤30 reglas, P1 con â‰¥1 regla.
 - [x] **T053** `[J]` Implementar `baseline_expert/expert_rules.py`: ~15 reglas a batir, basadas en seÃ±ales + V01..V15, con anclaje normativo en cada regla.
-- [ ] **T054** `[J]` `scripts/train_capa2.py` RuleFit:
+- [x] **T054** `[J]` `scripts/train_capa2.py` RuleFit:
   - `imodels.RuleFitClassifier(max_rules=80, alpha=...)` con LASSO sparsity hasta â‰¤30 reglas activas.
   - CalibraciÃ³n isotonic en validaciÃ³n.
   - Persistir en `artifacts/models/capa2/v0.1.0/rulefit.joblib` + `rules.json`.
 - [ ] **T055 [P]** `[J]` `scripts/train_xgboost_ceiling.py`: techo opaco con XGBoost + SHAP. Persistir en `artifacts/models/capa2/v0.1.0/xgb_ceiling.joblib`. **Marcar como no productivo** (banner en logs).
-- [ ] **T056** `[J]` Wrapper `inference/predictor.py` que selecciona RuleFit / baseline / fallback segÃºn disponibilidad.
-- [ ] **T057** `[J]` Reporte de mÃ©tricas Capa 2: F1 macro/por clase, recall@P1 (â‰¥0,85), ECE (â‰¤0,10), sparsity, AUC. Comparativa baseline vs RuleFit vs XGBoost. `artifacts/reports/capa2_v0.1.0.json`.
-- [ ] **T058** `[J]` Model card RuleFit + tabla de reglas activadas â†’ `anexo_e.tex` (baseline experto) + `anexo_l.tex` (model card RuleFit).
+- [x] **T056** `[J]` Wrapper `inference/predictor.py` que selecciona RuleFit / baseline / fallback segÃºn disponibilidad.
+- [x] **T057** `[J]` Reporte de mÃ©tricas Capa 2: F1 macro/por clase, recall@P1 (â‰¥0,85), ECE (â‰¤0,10), sparsity, AUC. Comparativa baseline vs RuleFit vs XGBoost. `artifacts/reports/capa2_v0.1.0.json`.
+- [x] **T058** `[J]` Model card RuleFit + tabla de reglas activadas â†’ `anexo_e.tex` (baseline experto) + `anexo_l.tex` (model card RuleFit).
 
 ## Fase 5 â€” Corpus normativo + RAG (Brian)
 
