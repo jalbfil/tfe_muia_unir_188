@@ -142,3 +142,13 @@ Cada entrada sigue el formato Spec Kit: **Decision · Rationale · Alternatives 
 - **Alternatives considered**:
   - **Mantener alcance completo** — riesgo alto de no llegar a Cap. 9 con métricas sólidas.
   - **Cortar también RAG/LLM** — descartado: rompería el aporte principal (Capa 3 explicación normativa).
+
+## Apendice T036 - Ablacion anti-circularidad weak supervision
+
+- **Decision**: se ejecuta una ablacion sin la fuente `rules_heuristic` mediante `scripts/build_weak_labels.py --no-rules`.
+- **Rationale**: la fuente de reglas estabiliza P1--P4, pero no debe ser la unica razon por la que el label model reproduce la logica experta. Comparar la distribucion final con y sin reglas permite detectar circularidad.
+- **Artefactos**:
+  - `resources/dataset/audit/weak_labels_report.json` y `.md`: ejecucion completa.
+  - `resources/dataset/audit/weak_labels_ablation_no_rules.json` y `.md`: ejecucion sin reglas.
+  - `resources/dataset/processed/weak_labels_p1p4.csv` y `.jsonl`: etiquetas debiles principales.
+- **Criterio de aceptacion**: el acuerdo global debe mantener Krippendorff alpha >= 0.67 y la distribucion P1--P4 no debe colapsar a una sola clase. Si la ablacion cae por debajo del umbral, el Cap. 9 debe reportarlo como limite empirico.

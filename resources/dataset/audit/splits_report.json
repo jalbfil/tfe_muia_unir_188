@@ -1,0 +1,124 @@
+{
+  "generated_at": "2026-05-26T11:04:08.169065+00:00",
+  "input_csv": "resources\\dataset\\processed\\weak_labels_p1p4.csv",
+  "mode": "stratified",
+  "seed": 42,
+  "total_rows": 9380,
+  "split_sizes": {
+    "train": 6511,
+    "val": 1414,
+    "test": 1455
+  },
+  "label_distribution": {
+    "train": {
+      "P1": 2939,
+      "P2": 1477,
+      "P3": 1837,
+      "P4": 258
+    },
+    "val": {
+      "P1": 625,
+      "P2": 329,
+      "P3": 406,
+      "P4": 54
+    },
+    "test": {
+      "P1": 648,
+      "P2": 336,
+      "P3": 397,
+      "P4": 74
+    }
+  },
+  "year_distribution": {
+    "train": {
+      "2008": 60,
+      "2009": 271,
+      "2010": 235,
+      "2011": 280,
+      "2012": 475,
+      "2013": 466,
+      "2014": 466,
+      "2015": 519,
+      "2016": 607,
+      "2017": 625,
+      "2018": 527,
+      "2019": 538,
+      "2020": 441,
+      "2021": 492,
+      "2022": 509
+    },
+    "val": {
+      "2008": 13,
+      "2009": 61,
+      "2010": 51,
+      "2011": 61,
+      "2012": 102,
+      "2013": 101,
+      "2014": 100,
+      "2015": 110,
+      "2016": 128,
+      "2017": 136,
+      "2018": 114,
+      "2019": 119,
+      "2020": 97,
+      "2021": 108,
+      "2022": 113
+    },
+    "test": {
+      "2008": 19,
+      "2009": 66,
+      "2010": 58,
+      "2011": 63,
+      "2012": 108,
+      "2013": 102,
+      "2014": 109,
+      "2015": 116,
+      "2016": 139,
+      "2017": 136,
+      "2018": 112,
+      "2019": 111,
+      "2020": 93,
+      "2021": 110,
+      "2022": 113
+    }
+  },
+  "province_distribution": {
+    "train": {
+      "Avila": 610,
+      "Burgos": 1077,
+      "Leon": 2261,
+      "NO_INFERIDA": 10,
+      "Palencia": 309,
+      "Salamanca": 580,
+      "Segovia": 380,
+      "Soria": 245,
+      "Valladolid": 593,
+      "Zamora": 446
+    },
+    "val": {
+      "Avila": 128,
+      "Burgos": 235,
+      "Leon": 485,
+      "NO_INFERIDA": 1,
+      "Palencia": 68,
+      "Salamanca": 129,
+      "Segovia": 86,
+      "Soria": 58,
+      "Valladolid": 131,
+      "Zamora": 93
+    },
+    "test": {
+      "Avila": 137,
+      "Burgos": 237,
+      "Leon": 485,
+      "NO_INFERIDA": 3,
+      "Palencia": 76,
+      "Salamanca": 131,
+      "Segovia": 92,
+      "Soria": 61,
+      "Valladolid": 128,
+      "Zamora": 105
+    }
+  },
+  "output_format_note": "CSV generated without optional parquet dependencies."
+}
