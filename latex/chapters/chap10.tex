@@ -1,143 +1,135 @@
 \chapter{Conclusiones y trabajo futuro}
 \label{cap:10}
 
-\section{Respuesta al problema planteado}
+\section{Respuesta al objetivo del TFM}
 
-Este TFM partia de una pregunta concreta: si es posible dise\~nar un sistema inteligente
-de apoyo a la decision para incidentes 112 que priorice casos P1--P4, mantenga al
-operador humano como responsable final y ofrezca trazabilidad tecnica y normativa. La
-respuesta es afirmativa dentro del alcance de un prototipo academico v0.1.0.
+El objetivo de este TFM era dise\~nar, implementar y evaluar un sistema de apoyo a la
+decision para la priorizacion inicial de incidentes 112 en Castilla y Leon, manteniendo
+explicabilidad, trazabilidad, supervision humana y prudencia metodologica. La respuesta
+obtenida es positiva dentro del alcance de un prototipo academico: el sistema no
+sustituye al operador ni pretende certificar prioridad operativa oficial, pero demuestra
+que es viable construir una cadena reproducible que transforma registros reales en
+recomendaciones P1--P4 revisables.
 
-El sistema construido no pretende sustituir al operador ni activar recursos de forma
-autonoma. Su aportacion consiste en ordenar la informacion temprana, extraer se\~nales
-operativas, recomendar una prioridad interpretable y registrar las evidencias que
-permiten revisar la decision. Esta posicion es especialmente importante en emergencias:
-la IA puede apoyar, explicar y auditar, pero no debe convertirse en una caja negra que
-decide sobre incidentes criticos sin supervision humana.
+La aportacion central no reside en una unica metrica, sino en la coherencia del conjunto:
+Registro 112 CyL como fuente empirica, limpieza trazable, variables V01--V15,
+supervision debil, control anti-\textit{leakage}, Capa 2 interpretable, explicacion
+normativa local, contratos Pydantic y registro de feedback humano.
 
-\section{Principales aportaciones}
+\section{Principales contribuciones}
 
-Las aportaciones del trabajo se resumen en seis resultados.
+El trabajo realizado aporta seis contribuciones principales.
 
 \begin{enumerate}
-    \item \textbf{Arquitectura de tres capas.} Se ha definido una arquitectura con
-    Capa 1 NLP, Capa 2 RuleFit-lite y Capa 3 LLM+RAG+MCP, separando extraccion,
+    \item \textbf{Arquitectura en tres capas.} Se ha definido una arquitectura formada
+    por Capa 1 NLP, Capa 2 RuleFit-lite y Capa 3 LLM+RAG+MCP, separando extraccion,
     priorizacion y explicacion normativa.
-    \item \textbf{Uso empirico del Registro 112 CyL.} El proyecto se apoya en 9.380
-    registros reales del 112 de Castilla y Leon, auditados, limpiados y divididos en
-    splits reproducibles.
+    \item \textbf{Uso realista de datos abiertos.} El sistema se apoya en 9.380
+    registros limpios del Registro 112 Castilla y Leon 2008--2022, con auditoria de
+    calidad, cobertura temporal y control de campos ex post.
     \item \textbf{Etiqueta academica P1--P4 mediante supervision debil.} Ante la
-    ausencia de prioridad oficial, se ha construido una etiqueta academica con cuatro
-    fuentes debiles, alcanzando Krippendorff $\alpha = 0.858348$ y una ablacion
-    anti-circularidad de $\alpha = 0.834155$.
-    \item \textbf{Modelo interpretable de Capa 2.} RuleFit-lite supera al baseline
-    experto en macro-F1, mantiene recall P1 por encima del umbral critico y respeta el
-    limite de 30 reglas activas.
-    \item \textbf{Control anti-leakage.} Se han excluido columnas posteriores a la
-    decision, como recursos movilizados, pacientes atendidos o cierre del incidente, y
-    se ha incorporado un test automatico para proteger Capa 1 y Capa 2.
-    \item \textbf{Trazabilidad y validacion interna.} Se han definido contratos,
-    \texttt{InferenceLog}, \texttt{OperatorDecision}, protocolo de feedback y una
-    muestra de 111 casos reales para revision humana interna.
+    ausencia de prioridad oficial en el dataset, se construye una etiqueta academica
+    con cuatro fuentes debiles. El acuerdo alcanza Krippendorff
+    \(\alpha = 0{,}858348\), y la ablacion sin reglas heuristicas mantiene
+    \(\alpha = 0{,}834155\).
+    \item \textbf{Modelo interpretable seleccionado.} RuleFit-lite supera al baseline
+    experto en macro-F1, mantiene recall P1 por encima del umbral de seguridad y
+    conserva 30 reglas activas exportadas.
+    \item \textbf{Evaluacion reproducible y anti-leakage.} Los resultados se obtienen
+    sobre splits versionados, con test estratificado y test temporal, evitando columnas
+    posteriores a la decision.
+    \item \textbf{Trazabilidad y validacion interna.} Se documenta un procedimiento de
+    revision humana con 111 casos revisables, incluyendo los 51 falsos negativos P1
+    detectados en el test estratificado.
 \end{enumerate}
 
-\section{Resultados experimentales}
+\section{Resultados principales}
 
-La evaluacion confirma que la Capa 2 seleccionada aporta valor frente al baseline
-experto. En el conjunto de test estratificado, el baseline experto alcanza macro-F1
-0.703932 y recall P1 0.998457. RuleFit-lite alcanza accuracy 0.881100, macro-F1
-0.880750 y recall P1 0.921296. La mejora en macro-F1 es sustancial y el recall P1 se
-mantiene por encima del umbral minimo de 0.85 definido como criterio de seguridad.
+La evaluacion confirma que RuleFit-lite es la alternativa mas equilibrada para la Capa
+2 v0.1.0. En el conjunto de test estratificado alcanza accuracy 0.881100, macro-F1
+0.880750 y recall P1 0.921296. Estos valores superan claramente al baseline experto en
+macro-F1, que obtiene 0.703932, aunque el baseline conserva un recall P1 mayor por su
+comportamiento conservador.
 
-La comparativa con \texttt{imodels} permite justificar la eleccion final. Aunque
-\texttt{imodels.RuleFitClassifier} es la referencia canonica, la ejecucion diagnostica
-one-vs-rest obtiene macro-F1 0.568239 y recall P1 0.902778, con una latencia de
-inferencia superior. Por ello, RuleFit-lite se adopta como nucleo de Capa 2 v0.1.0:
-mantiene interpretabilidad, mejora rendimiento global y resulta mas reproducible en el
-entorno local.
+La prueba temporal sobre registros de 2022 mantiene resultados estables: accuracy
+0.884354, macro-F1 0.877594 y recall P1 0.928767. Esta estabilidad no demuestra validez
+prospectiva en produccion, pero reduce el riesgo de que el resultado dependa solo de un
+split estratificado favorable.
 
-El test temporal de 2022 refuerza la conclusion. Sobre 735 registros, RuleFit-lite
-alcanza accuracy 0.884354, macro-F1 0.877594 y recall P1 0.928767. La cercania entre
-test estratificado y test temporal sugiere estabilidad inicial, aunque no equivale a una
-validacion prospectiva en produccion.
+El analisis de errores identifica 51 falsos negativos P1: 32 clasificados como P2 y 19
+como P3. No se detectan errores P1 clasificados como P4. Este resultado es importante:
+el sistema cumple el objetivo de recall P1, pero los casos P1--P3 siguen siendo el
+principal foco de mejora antes de cualquier despliegue real.
 
-\section{Seguridad, errores y revision humana}
+\section{Cumplimiento de principios de dise\~no}
 
-El principal riesgo del sistema es infraestimar incidentes criticos. En el test
-estratificado se detectan 51 falsos negativos P1: 32 casos P1--P2, 19 casos P1--P3 y
-ningun caso P1--P4. Este resultado tiene una lectura doble. Por un lado, el sistema no
-degrada ningun P1 hasta P4 y mantiene buen recall critico. Por otro, los 19 casos P1--P3
-requieren revision prioritaria antes de congelar cualquier version demostrativa.
+El prototipo respeta la linea de trabajo definida desde los capitulos iniciales. La
+prioridad no la decide un LLM generativo, sino una Capa 2 interpretable. El LLM se
+reserva para explicar y citar normativa. La inferencia se concibe en local, sin enviar
+incidentes a APIs externas. La arquitectura mantiene contratos versionados y registra
+la decision humana mediante \texttt{OperatorDecision} e \texttt{InferenceLog}.
 
-Por este motivo, el TFM no se limita a presentar metricas. Se ha preparado una muestra
-de validacion interna con 111 casos reales: los 51 falsos negativos P1 y una muestra
-equilibrada adicional de 60 casos, con 15 por cada clase P1--P4. Esta muestra permite
-que los autores revisen de forma independiente el texto operativo, la etiqueta debil,
-la prediccion, las probabilidades, las se\~nales activadas y, cuando la Capa 3 este
-disponible, la explicacion normativa.
-
-La decision del revisor se registra como aceptar, modificar o rechazar. Las divergencias
-se documentan mediante \texttt{OperatorDecision} y se enlazan con el \texttt{InferenceLog}
-del caso. Este mecanismo convierte la supervision humana en parte del dise\~no, no en
-una declaracion generica.
+Tambien se cumple el principio anti-\textit{leakage}: columnas como
+\texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado} o
+\texttt{ultimaActualizacion} quedan excluidas del entrenamiento y de la inferencia. Esta
+decision es esencial para que el modelo represente el momento de primera decision, no
+informacion posterior al operativo.
 
 \section{Limitaciones}
 
-El trabajo presenta limitaciones relevantes que acotan la interpretacion de los
-resultados.
+Las limitaciones del trabajo son claras y no deben ocultarse.
 
 \begin{enumerate}
-    \item La etiqueta P1--P4 es academica y debil; no existe como prioridad oficial en
-    el Registro 112 CyL.
-    \item La validacion externa con personal operativo del 112 no se ha realizado en
-    v0.1.0 y debe considerarse trabajo futuro.
-    \item El test temporal aporta robustez inicial, pero no sustituye una evaluacion
-    prospectiva con datos nuevos y usuarios reales.
+    \item La etiqueta P1--P4 es academica y debil; no existe una prioridad oficial
+    equivalente en el Registro 112 CyL.
+    \item La validacion realizada es interna. No se ha contado todavia con un panel
+    externo de operadores o responsables del 112.
+    \item La ejecucion \texttt{imodels} se ha limitado a una configuracion diagnostica
+    por coste computacional local.
+    \item La calibracion ECE queda pendiente de una pasada final si el modelo se
+    congela para una demostracion cerrada.
     \item Las variables V08--V11, asociadas a AEMET historico, inundabilidad SNCZI y
-    proximidad Seveso, quedan diferidas a v0.2.0.
-    \item La calibracion ECE $\leq 0.10$ no se congela como resultado final y debe
-    abordarse si el modelo se prepara para demostracion estable.
-    \item La Capa 3 permite explicacion normativa, pero la evaluacion automatica de
-    fidelidad explicacion--reglas queda pendiente de completar en T113.
+    proximidad Seveso, permanecen diferidas para v0.2.0.
+    \item El prototipo no mide impacto operativo real sobre tiempos de decision,
+    coordinacion de recursos o carga cognitiva en sala.
 \end{enumerate}
 
 \section{Trabajo futuro}
 
-Las lineas de continuacion se ordenan por prioridad.
+La continuacion natural del proyecto se organiza en seis lineas.
 
 \begin{enumerate}
-    \item \textbf{Validacion externa con operadores del 112.} Es la extension mas
-    importante. Permitiria contrastar la etiqueta academica, revisar falsos negativos
-    P1 y medir utilidad real de las explicaciones.
-    \item \textbf{Cierre completo de T113.} La muestra de 111 casos permite evaluar
-    fidelidad de explicaciones mediante LLM-as-Judge o revision humana asistida,
-    comprobando que la Capa 3 explica las reglas sin inventar fundamentos.
-    \item \textbf{Calibracion y umbrales de seguridad.} Debe analizarse ECE,
-    calibracion por clase y posibles umbrales conservadores para reducir P1--P3.
-    \item \textbf{Incorporacion de V08--V11.} AEMET historico, SNCZI y Seveso pueden
-    mejorar incendios, meteorologia, inundaciones e incidentes industriales, siempre
-    manteniendo trazabilidad y disponibilidad predecisional.
-    \item \textbf{Analisis de sesgo ampliado.} Los resultados por provincia y categoria
-    deben revisarse con mayor detalle, especialmente incendio, sanitario y provincias
-    con menor macro-F1.
-    \item \textbf{Mejora de RuleFit e \texttt{imodels}.} Con mayor presupuesto de
-    computo podria repetirse la comparativa \texttt{imodels} con configuraciones mas
-    completas y contrastarla con RuleFit-lite.
-    \item \textbf{Prueba de uso con interfaz.} La revision de casos deberia integrarse
-    en una interfaz que muestre evidencias, reglas y citas legales de forma clara para
-    medir comprension, confianza y carga cognitiva.
+    \item \textbf{Validacion externa con personal del 112.} Revisar una muestra de
+    casos con operadores o responsables expertos, comparando etiqueta academica,
+    recomendacion del sistema y criterio profesional.
+    \item \textbf{Cierre de la validacion interna.} Completar la revision de los 111
+    casos generados en el Anexo~\ref{cap:anexod}, calcular acuerdo local entre autores
+    y documentar patrones de divergencia.
+    \item \textbf{Calibracion probabilistica.} Evaluar ECE y aplicar calibracion si el
+    modelo se congela como demostrador estable.
+    \item \textbf{Variables contextuales avanzadas.} Incorporar AEMET historico,
+    SNCZI/zonas inundables y Seveso como variables V08--V11, manteniendo el control
+    anti-\textit{leakage}.
+    \item \textbf{Evaluacion de explicaciones.} Ejecutar T113 con una muestra superior
+    a 100 casos, comprobando que las explicaciones de Capa 3 son fieles a reglas,
+    probabilidades y citas normativas.
+    \item \textbf{Piloto controlado.} Integrar el prototipo en un entorno de prueba
+    controlado para medir utilidad percibida, carga cognitiva, tiempo de revision y
+    aceptacion de recomendaciones.
 \end{enumerate}
 
 \section{Cierre}
 
-El TFM alcanza una contribucion coherente y defendible: transforma un registro real
-abierto del 112 en un sistema de priorizacion academica explicable, con control de
-leakage, evaluacion experimental, trazabilidad y supervision humana. La eleccion de
-RuleFit-lite no es solo una decision tecnica; es una decision metodologica alineada con
-el dominio: maximizar rendimiento sin renunciar a interpretabilidad.
+El TFM alcanza una conclusion equilibrada: es posible construir un sistema inteligente
+de apoyo a la priorizacion 112 que sea tecnicamente ambicioso y, al mismo tiempo,
+prudente en un dominio critico. RuleFit-lite aporta rendimiento superior al baseline
+experto sin renunciar a interpretabilidad; el test temporal aporta una primera evidencia
+de estabilidad; y la validacion interna prepara el camino para contrastar el sistema con
+criterio humano.
 
-La principal conclusion es que la excelencia en este caso no consiste en prometer un
-sistema automatico perfecto, sino en construir una propuesta ambiciosa y honesta:
-datos reales, limitaciones explicitas, modelo interpretable, errores revisables y un
-camino claro hacia validacion externa. Esa combinacion deja el proyecto en una posicion
-solida para defensa academica y para continuidad investigadora.
+La version v0.1.0 no es un producto operativo, pero si una base solida de investigacion
+aplicada. Su valor esta en haber unido datos reales, normativa, aprendizaje
+interpretable, explicacion local y supervision humana en una arquitectura reproducible y
+auditable. Esa combinacion permite defender el proyecto como un TFM excelente: no por
+prometer automatizacion total, sino por demostrar con rigor hasta donde puede llegar la
+IA responsable en una primera decision de emergencia.
