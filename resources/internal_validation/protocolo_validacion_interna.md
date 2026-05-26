@@ -20,6 +20,12 @@ La muestra interna debe contener al menos 30 casos:
 - casos frontera P1/P2 y P2/P3 con confianza baja o desacuerdo entre fuentes debiles;
 - representacion de varias provincias, anos y categorias operativas.
 
+En la version v0.1.0 se genera una muestra ampliada con
+`scripts/build_internal_validation_sample.py`: 111 casos totales, formados por los 51
+falsos negativos P1 del test estratificado y 60 casos equilibrados adicionales
+(15 por clase P1--P4). El fichero operativo es
+`resources/internal_validation/casos_revision_v0.1.0.csv`.
+
 ## Evidencias que debe ver cada revisor
 
 Cada ficha de revision debe mostrar:

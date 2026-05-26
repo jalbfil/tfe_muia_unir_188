@@ -1,102 +1,143 @@
 \chapter{Conclusiones y trabajo futuro}
 \label{cap:10}
 
-% Este capítulo cierra el TFM ofreciendo una valoración integrada de lo que se ha logrado, de cómo se responde al problema planteado al inicio del trabajo y de las vías de investigación y desarrollo que este trabajo deja abiertas.
+\section{Respuesta al problema planteado}
 
-% \section{Respuesta al problema planteado}
+Este TFM partia de una pregunta concreta: si es posible dise\~nar un sistema inteligente
+de apoyo a la decision para incidentes 112 que priorice casos P1--P4, mantenga al
+operador humano como responsable final y ofrezca trazabilidad tecnica y normativa. La
+respuesta es afirmativa dentro del alcance de un prototipo academico v0.1.0.
 
-% El TFM partió de una pregunta concreta: ¿es posible diseñar y construir un sistema inteligente que apoye la decisión de priorización de emergencias civiles en un puesto de mando, que sea interpretable, que gestione la incertidumbre, que se base en fuentes oficiales y que mantenga al operador humano como responsable final de la decisión?
+El sistema construido no pretende sustituir al operador ni activar recursos de forma
+autonoma. Su aportacion consiste en ordenar la informacion temprana, extraer se\~nales
+operativas, recomendar una prioridad interpretable y registrar las evidencias que
+permiten revisar la decision. Esta posicion es especialmente importante en emergencias:
+la IA puede apoyar, explicar y auditar, pero no debe convertirse en una caja negra que
+decide sobre incidentes criticos sin supervision humana.
 
-% La respuesta que ofrece este trabajo es afirmativa, con las matizaciones propias de un prototipo académico. Se ha demostrado que:
+\section{Principales aportaciones}
 
-% \begin{itemize}
-%     \item Es posible construir un motor de priorización interpretable y trazable basado en un baseline de reglas expertas y scoring ponderado, sin necesidad de técnicas de aprendizaje automático de caja negra.
-%     \item Es posible integrar información de fuentes oficiales (AEMET, SNCZI, registro Seveso, INE, cartografía) como señales contextuales que enriquecen la evaluación del incidente sin depender de datos propietarios.
-%     \item Es posible diseñar una capa de confianza y de explicación automática que comunique al operador no solo la recomendación, sino también el razonamiento que la sustenta y sus limitaciones.
-%     \item Es posible implementar todo lo anterior en un prototipo funcional que reproduzca el flujo operativo básico de un centro de coordinación de emergencias civiles, garantizando la supervisión humana en cada ciclo de decisión.
-% \end{itemize}
+Las aportaciones del trabajo se resumen en seis resultados.
 
-% El sistema construido no pretende reemplazar al operador ni automatizar la activación de planes. Su función es reducir la carga cognitiva en los primeros minutos de un incidente, proporcionar una recomendación fundamentada y documentar la decisión para su trazabilidad. En ese ámbito acotado, el TFM ha alcanzado su objetivo.
+\begin{enumerate}
+    \item \textbf{Arquitectura de tres capas.} Se ha definido una arquitectura con
+    Capa 1 NLP, Capa 2 RuleFit-lite y Capa 3 LLM+RAG+MCP, separando extraccion,
+    priorizacion y explicacion normativa.
+    \item \textbf{Uso empirico del Registro 112 CyL.} El proyecto se apoya en 9.380
+    registros reales del 112 de Castilla y Leon, auditados, limpiados y divididos en
+    splits reproducibles.
+    \item \textbf{Etiqueta academica P1--P4 mediante supervision debil.} Ante la
+    ausencia de prioridad oficial, se ha construido una etiqueta academica con cuatro
+    fuentes debiles, alcanzando Krippendorff $\alpha = 0.858348$ y una ablacion
+    anti-circularidad de $\alpha = 0.834155$.
+    \item \textbf{Modelo interpretable de Capa 2.} RuleFit-lite supera al baseline
+    experto en macro-F1, mantiene recall P1 por encima del umbral critico y respeta el
+    limite de 30 reglas activas.
+    \item \textbf{Control anti-leakage.} Se han excluido columnas posteriores a la
+    decision, como recursos movilizados, pacientes atendidos o cierre del incidente, y
+    se ha incorporado un test automatico para proteger Capa 1 y Capa 2.
+    \item \textbf{Trazabilidad y validacion interna.} Se han definido contratos,
+    \texttt{InferenceLog}, \texttt{OperatorDecision}, protocolo de feedback y una
+    muestra de 111 casos reales para revision humana interna.
+\end{enumerate}
 
-% \section{Principales aportaciones del TFM}
+\section{Resultados experimentales}
 
-% Las aportaciones de este trabajo se pueden sintetizar en siete contribuciones diferenciadas:
+La evaluacion confirma que la Capa 2 seleccionada aporta valor frente al baseline
+experto. En el conjunto de test estratificado, el baseline experto alcanza macro-F1
+0.703932 y recall P1 0.998457. RuleFit-lite alcanza accuracy 0.881100, macro-F1
+0.880750 y recall P1 0.921296. La mejora en macro-F1 es sustancial y el recall P1 se
+mantiene por encima del umbral minimo de 0.85 definido como criterio de seguridad.
 
-% \begin{enumerate}
-%     \item \textbf{Arquitectura de motor en tres capas}. El diseño del baseline interpretable (reglas duras, scoring ponderado y confianza/explicación) con lógica de precedencia explícita constituye una propuesta metodológica transferible a otros dominios de apoyo a la decisión en contextos de emergencia.
-%     \item \textbf{Fundamentación normativa y operativa}. La síntesis del marco jurídico y operativo aragonés (PROCIVIL, INFOAR, INUNCATA, FEROCCAT, METEOCAB, NCAE y Directriz CECOP-CECOPI) como base para el diseño del motor garantiza que el sistema no opera en un vacío conceptual, sino en coherencia con el marco institucional vigente.
-%     \item \textbf{Integración de fuentes oficiales abiertas}. El diseño del módulo de contexto oficial y su integración con la API AEMET, el SNCZI, el registro Seveso, el INE y ICEARAGON demuestra la viabilidad de un sistema de apoyo a la decisión basado exclusivamente en datos públicos y reutilizables.
-%     \item \textbf{Taxonomía operativa de incidentes}. La taxonomía de dos niveles (Anexo~A) organiza los tipos de incidentes en cuatro familias principales y sus subcategorías, con criterios de clasificación alineados con los planes de emergencia aragoneses. Constituye un recurso útil para el etiquetado del dataset y para la clasificación automática del tipo de incidente.
-%     \item \textbf{Guía de etiquetado y casos piloto}. El protocolo del Anexo~C y los ocho casos piloto del Anexo~D proporcionan una metodología reproducible para la construcción de datasets de emergencias civiles etiquetados, que puede ser reutilizada o adaptada en trabajos posteriores.
-%     \item \textbf{Prototipo funcional}. La implementación del prototipo en cinco módulos desacoplados (entrada, contexto, motor, backend y frontend) demuestra la viabilidad técnica del sistema y proporciona un artefacto concreto sobre el que basar la evaluación y la mejora iterativa.
-%     \item \textbf{Estrategia de evaluación multidimensional}. El diseño de la evaluación en siete dimensiones (coherencia, precisión, distribución, seguridad operativa, funcional, aplicabilidad y usabilidad) establece un marco de referencia para la evaluación de sistemas de apoyo a la decisión en emergencias civiles que va más allá de las métricas estándar de clasificación.
-% \end{enumerate}
+La comparativa con \texttt{imodels} permite justificar la eleccion final. Aunque
+\texttt{imodels.RuleFitClassifier} es la referencia canonica, la ejecucion diagnostica
+one-vs-rest obtiene macro-F1 0.568239 y recall P1 0.902778, con una latencia de
+inferencia superior. Por ello, RuleFit-lite se adopta como nucleo de Capa 2 v0.1.0:
+mantiene interpretabilidad, mejora rendimiento global y resulta mas reproducible en el
+entorno local.
 
-% \section{Cumplimiento de objetivos específicos y preguntas de investigación}
+El test temporal de 2022 refuerza la conclusion. Sobre 735 registros, RuleFit-lite
+alcanza accuracy 0.884354, macro-F1 0.877594 y recall P1 0.928767. La cercania entre
+test estratificado y test temporal sugiere estabilidad inicial, aunque no equivale a una
+validacion prospectiva en produccion.
 
-% \paragraph{OE1 --- Caracterizar el contexto normativo y operativo.}
-% Cumplido en el Capítulo~3, que sintetiza los planes de emergencia de Aragón relevantes y la estructura operativa del CECOP, y en el Capítulo~4, que analiza los factores de priorización derivados del marco normativo.
+\section{Seguridad, errores y revision humana}
 
-% \paragraph{OE2 --- Identificar las variables de priorización.}
-% Cumplido en el Capítulo~6 (diseño del motor) y en el Anexo~B (matriz detallada de las quince variables V01--V15 y las cuatro variables derivadas D01--D04), con justificación de cada variable y su papel en el baseline.
+El principal riesgo del sistema es infraestimar incidentes criticos. En el test
+estratificado se detectan 51 falsos negativos P1: 32 casos P1--P2, 19 casos P1--P3 y
+ningun caso P1--P4. Este resultado tiene una lectura doble. Por un lado, el sistema no
+degrada ningun P1 hasta P4 y mantiene buen recall critico. Por otro, los 19 casos P1--P3
+requieren revision prioritaria antes de congelar cualquier version demostrativa.
 
-% \paragraph{OE3 --- Diseñar el motor de priorización.}
-% Cumplido en el Capítulo~6, con diseño completo del baseline de tres capas, y en el Anexo~E, con especificación detallada de las reglas duras, los pesos del scoring, los umbrales y la lógica de integración.
+Por este motivo, el TFM no se limita a presentar metricas. Se ha preparado una muestra
+de validacion interna con 111 casos reales: los 51 falsos negativos P1 y una muestra
+equilibrada adicional de 60 casos, con 15 por cada clase P1--P4. Esta muestra permite
+que los autores revisen de forma independiente el texto operativo, la etiqueta debil,
+la prediccion, las probabilidades, las se\~nales activadas y, cuando la Capa 3 este
+disponible, la explicacion normativa.
 
-% \paragraph{OE4 --- Diseñar el esquema de datos y el dataset piloto.}
-% Cumplido en el Capítulo~7, con el esquema de cinco bloques, y en los Anexos~C y D, con el protocolo de etiquetado y los ocho casos piloto.
+La decision del revisor se registra como aceptar, modificar o rechazar. Las divergencias
+se documentan mediante \texttt{OperatorDecision} y se enlazan con el \texttt{InferenceLog}
+del caso. Este mecanismo convierte la supervision humana en parte del dise\~no, no en
+una declaracion generica.
 
-% \paragraph{OE5 --- Desarrollar el prototipo funcional.}
-% Cumplido en el Capítulo~8, con descripción completa de los cinco módulos y el flujo de funcionamiento del prototipo.
+\section{Limitaciones}
 
-% \paragraph{OE6 --- Evaluar el sistema.}
-% Cumplido en el Capítulo~9, con la estrategia de evaluación en siete dimensiones y los resultados obtenidos en la fase de evaluación.
+El trabajo presenta limitaciones relevantes que acotan la interpretacion de los
+resultados.
 
-% \paragraph{OE7 --- Documentar la taxonomía y los recursos metodológicos.}
-% Cumplido en los Anexos~A--F, que constituyen la documentación completa de los recursos metodológicos del sistema.
+\begin{enumerate}
+    \item La etiqueta P1--P4 es academica y debil; no existe como prioridad oficial en
+    el Registro 112 CyL.
+    \item La validacion externa con personal operativo del 112 no se ha realizado en
+    v0.1.0 y debe considerarse trabajo futuro.
+    \item El test temporal aporta robustez inicial, pero no sustituye una evaluacion
+    prospectiva con datos nuevos y usuarios reales.
+    \item Las variables V08--V11, asociadas a AEMET historico, inundabilidad SNCZI y
+    proximidad Seveso, quedan diferidas a v0.2.0.
+    \item La calibracion ECE $\leq 0.10$ no se congela como resultado final y debe
+    abordarse si el modelo se prepara para demostracion estable.
+    \item La Capa 3 permite explicacion normativa, pero la evaluacion automatica de
+    fidelidad explicacion--reglas queda pendiente de completar en T113.
+\end{enumerate}
 
-% \paragraph{OE8 --- Identificar líneas de trabajo futuro.}
-% Cumplido en el apartado~10.5.
+\section{Trabajo futuro}
 
-% \paragraph{PI1 --- ¿Qué información es suficiente para priorizar en los primeros minutos?}
-% El diseño del motor permite priorizar con tres variables mínimas (V01, V02, V04) aunque con baja confianza. La integración del contexto oficial (módulo 2) eleva sustancialmente la calidad de la recomendación incluso cuando la información textual inicial es fragmentaria.
+Las lineas de continuacion se ordenan por prioridad.
 
-% \paragraph{PI2 --- ¿Cómo gestionar la incertidumbre y la información incompleta?}
-% Mediante la capa de confianza del baseline (tercera capa), que distingue entre datos informados y ausentes, aplica valores por defecto conservadores (Anexo~B) y comunica al operador el nivel de certeza de la recomendación.
+\begin{enumerate}
+    \item \textbf{Validacion externa con operadores del 112.} Es la extension mas
+    importante. Permitiria contrastar la etiqueta academica, revisar falsos negativos
+    P1 y medir utilidad real de las explicaciones.
+    \item \textbf{Cierre completo de T113.} La muestra de 111 casos permite evaluar
+    fidelidad de explicaciones mediante LLM-as-Judge o revision humana asistida,
+    comprobando que la Capa 3 explica las reglas sin inventar fundamentos.
+    \item \textbf{Calibracion y umbrales de seguridad.} Debe analizarse ECE,
+    calibracion por clase y posibles umbrales conservadores para reducir P1--P3.
+    \item \textbf{Incorporacion de V08--V11.} AEMET historico, SNCZI y Seveso pueden
+    mejorar incendios, meteorologia, inundaciones e incidentes industriales, siempre
+    manteniendo trazabilidad y disponibilidad predecisional.
+    \item \textbf{Analisis de sesgo ampliado.} Los resultados por provincia y categoria
+    deben revisarse con mayor detalle, especialmente incendio, sanitario y provincias
+    con menor macro-F1.
+    \item \textbf{Mejora de RuleFit e \texttt{imodels}.} Con mayor presupuesto de
+    computo podria repetirse la comparativa \texttt{imodels} con configuraciones mas
+    completas y contrastarla con RuleFit-lite.
+    \item \textbf{Prueba de uso con interfaz.} La revision de casos deberia integrarse
+    en una interfaz que muestre evidencias, reglas y citas legales de forma clara para
+    medir comprension, confianza y carga cognitiva.
+\end{enumerate}
 
-% \paragraph{PI3 --- ¿Qué papel debe tener el operador?}
-% El sistema está diseñado para que el operador sea siempre el responsable de la decisión final. La prioridad que se aplica es la validada por el operador, no la recomendada por el motor. El sistema registra la diferencia cuando existe, permitiendo aprender de las discrepancias.
+\section{Cierre}
 
-% \paragraph{PI4 --- ¿Puede un baseline interpretable competir en utilidad con técnicas de ML de caja negra?}
-% En el contexto específico de un prototipo de investigación sobre emergencias civiles, el baseline interpretable ofrece ventajas evidentes en trazabilidad, explicabilidad y confianza institucional. Las métricas de evaluación del Capítulo~9 permitirán cuantificar hasta qué punto su precisión es suficiente para ser útil en el contexto operativo.
+El TFM alcanza una contribucion coherente y defendible: transforma un registro real
+abierto del 112 en un sistema de priorizacion academica explicable, con control de
+leakage, evaluacion experimental, trazabilidad y supervision humana. La eleccion de
+RuleFit-lite no es solo una decision tecnica; es una decision metodologica alineada con
+el dominio: maximizar rendimiento sin renunciar a interpretabilidad.
 
-% \section{Limitaciones del trabajo}
-
-% Siete limitaciones enmarcan el alcance de este TFM:
-
-% \begin{enumerate}
-%     \item \textbf{Prototipo académico, no sistema en producción.} El prototipo no ha sido desplegado ni evaluado en un centro de coordinación real, lo que limita la validez ecológica de los resultados de evaluación.
-%     \item \textbf{Dataset sintético.} La mayor parte del dataset piloto está compuesto por casos simulados, no por registros de incidentes reales con etiquetas operativas verificadas por expertos en servicio activo.
-%     \item \textbf{Contexto geográfico acotado.} El sistema ha sido diseñado específicamente para Aragón. La transferibilidad a otras comunidades autónomas requiere una fase de adaptación normativa y operativa.
-%     \item \textbf{Evaluación de usabilidad limitada.} La muestra de evaluación SUS es pequeña y puede no ser representativa de la diversidad de perfiles de los operadores de emergencias.
-%     \item \textbf{Integración parcial de fuentes externas.} La integración en tiempo real con fuentes como SNCZI o registros Seveso está implementada de forma simplificada para el prototipo.
-%     \item \textbf{Baseline no calibrado con datos reales.} Los pesos y umbrales del scoring son orientativos y no han sido calibrados con datos históricos de incidentes reales.
-%     \item \textbf{Alcance temporal del TFM.} El plazo académico ha limitado la profundidad de la evaluación y el tamaño del dataset piloto. Una validación más exhaustiva requeriría un proyecto de continuación.
-% \end{enumerate}
-
-% \section{Líneas de trabajo futuro}
-
-% El sistema construido en este TFM abre ocho líneas de investigación y desarrollo que podrían materializarse en trabajos futuros:
-
-% \begin{enumerate}
-%     \item \textbf{Calibración con datos históricos reales.} La colaboración con centros de coordinación de emergencias aragoneses para obtener datos históricos anonimizados permitiría calibrar los pesos del scoring y los umbrales con evidencia empírica, mejorando la precisión del baseline.
-%     \item \textbf{Ampliación del dataset con etiquetado experto.} La construcción de un dataset más amplio con etiquetas asignadas por múltiples expertos en servicio activo y protocolo de consenso estructurado reforzaría la validez de la evaluación y el entrenamiento de modelos de aprendizaje automático.
-%     \item \textbf{Extensión del motor con modelos de aprendizaje automático.} Una vez calibrado el baseline, podría añadirse una capa de ML que aprenda patrones no capturados por las reglas expertas, manteniendo el baseline como capa de referencia interpretable y usando el ML como complemento.
-%     \item \textbf{Integración en tiempo real con fuentes oficiales.} El desarrollo de conectores productivos con las API oficiales de AEMET, SNCZI, INE y registros Seveso elevaría la calidad del contexto disponible y permitiría evaluaciones en condiciones más cercanas al uso real.
-%     \item \textbf{Evaluación en entorno operativo real.} La colaboración con la Dirección General de Protección Civil de Aragón u otro organismo equivalente para una prueba piloto controlada del sistema en un entorno operativo real permitiría obtener retroalimentación de usuarios reales y medir el impacto sobre la toma de decisiones.
-%     \item \textbf{Extensión a otras comunidades autónomas.} La adaptación del marco normativo y de los planes de emergencia del sistema a otras regiones españolas permitiría evaluar la transferibilidad del diseño y ampliar el impacto del trabajo.
-%     \item \textbf{Mejora de la capa de explicabilidad.} El desarrollo de explicaciones más ricas ---incluyendo visualizaciones de los factores de contribución al scoring, comparación con casos históricos similares y justificación de la situación operativa sugerida--- podría aumentar la confianza del operador en la recomendación.
-%     \item \textbf{Integración con sistemas de gestión de emergencias.} La conexión del prototipo con plataformas de gestión de emergencias existentes (SIGEM, SiGES u otros) permitiría que el sistema operara como módulo de apoyo a la decisión dentro de un ecosistema tecnológico más amplio, sin requerir la adopción de una plataforma completamente nueva.
-% \end{enumerate}
-
-% El sistema inteligente de apoyo a la decisión desarrollado en este TFM es un primer paso en la dirección de una gestión de emergencias civiles más eficiente, más trazable y más fundamentada. Las limitaciones reconocidas no invalidan el valor del trabajo: delimitan el contexto en el que sus resultados son válidos y señalan el camino hacia un sistema más maduro. El trabajo futuro descripto en este capítulo ofrece un programa de investigación concreto para quien quiera continuar en esta línea.
+La principal conclusion es que la excelencia en este caso no consiste en prometer un
+sistema automatico perfecto, sino en construir una propuesta ambiciosa y honesta:
+datos reales, limitaciones explicitas, modelo interpretable, errores revisables y un
+camino claro hacia validacion externa. Esa combinacion deja el proyecto en una posicion
+solida para defensa academica y para continuidad investigadora.
