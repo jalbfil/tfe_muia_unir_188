@@ -1,185 +1,145 @@
 \chapter{Marco operativo y normativo del dominio de emergencias}
 \label{cap:3}
 
-\section{El sistema español de protección civil: estructura y principios}
+\section{Finalidad del capitulo}
 
-El sistema de apoyo a la decisión propuesto en este Trabajo Fin de Máster (TFM) se sitúa en un entorno institucional fuertemente reglado, multinivel y orientado a la coordinación. Por ello, antes de diseñar el motor de priorización resulta necesario delimitar el marco operativo en el que ese motor va a producir sus recomendaciones: quién decide, con qué información, bajo qué lógica de escalado y dentro de qué estructura de mando.
+El sistema de apoyo a la decision propuesto en este Trabajo Fin de Master se situa en un dominio especialmente regulado: la atencion de emergencias, la proteccion civil y la gestion de informacion sensible en los primeros minutos de un incidente. Por ello, antes de describir la arquitectura tecnica del prototipo resulta necesario fijar el marco operativo y normativo que justifica sus variables, sus reglas de prioridad y sus limites de uso.
 
-En España, la protección civil se configura como un sistema de seguridad pública orientado a la protección de las personas, los bienes y el medio ambiente ante situaciones de grave riesgo colectivo, catástrofe o calamidad pública \cite{Ley17_2015}. Su organización no responde a una competencia exclusiva de un único nivel administrativo, sino a una lógica de responsabilidad compartida entre la Administración General del Estado, las comunidades autónomas y las entidades locales. Esta característica tiene consecuencias directas para el diseño del sistema: la urgencia operativa de un incidente no depende únicamente de su gravedad intrínseca, sino también del nivel competencial afectado, de la capacidad disponible en ese nivel y de la necesidad de coordinar recursos adicionales.
+Este capitulo no pretende realizar un estudio juridico exhaustivo. Su funcion es mas concreta: extraer de la normativa estatal, autonomica y europea los criterios que pueden convertirse en decisiones de diseno. En particular, interesa identificar que elementos normativos respaldan la deteccion de riesgo vital, la valoracion de victimas, la vulnerabilidad, la progresion del incidente, la coordinacion entre recursos, la trazabilidad de las recomendaciones, la privacidad y la supervision humana.
 
-Desde una perspectiva funcional, tres principios resultan especialmente relevantes para este trabajo. El primero es la subsidiariedad, que sitúa la gestión inicial de la emergencia en el nivel más próximo al ciudadano afectado y solo justifica la intervención del nivel superior cuando la capacidad ordinaria se ve superada. El segundo es la complementariedad, conforme a la cual los recursos de distintos niveles pueden acumularse sin que ello implique automáticamente una sustitución del mando. El tercero es la coordinación, que garantiza que la respuesta se articule mediante una red de centros, procedimientos y órganos capaces de compartir información y sostener decisiones coherentes.
+La linea de trabajo adoptada tras el redise\~no del proyecto se centra en Castilla y Leon. El caso empirico se apoya en el Registro de Emergencias del 112 de Castilla y Leon, correspondiente al periodo 2008--2022, y el marco autonomico principal queda definido por la Ley 4/2007, de Proteccion Ciudadana de Castilla y Leon, el Plan Territorial de Proteccion Civil de Castilla y Leon (PLANCAL) y los planes especiales incorporados al corpus normativo del prototipo \cite{Ley4_2007_CYL,PLANCAL_DEC_4_2019,Registro112CyL}. Sobre esta base se construye una escala academica P1--P4, no oficial, orientada a priorizar incidentes de forma explicable y auditable.
 
-Esta lógica se traduce operativamente en una arquitectura escalonada de centros de coordinación. En el nivel estatal, el Centro Nacional de Seguimiento y Coordinación de Emergencias de Protección Civil (CENEM) actúa como nodo de seguimiento y enlace. En el nivel autonómico, los centros de coordinación operativa (CECOP), y en su caso los centros de coordinación operativa integrada (CECOPI), concentran la dirección y seguimiento de la emergencia. En el plano táctico, el puesto de mando avanzado (PMA) coordina sobre el terreno la actuación de los grupos intervinientes. Esta estructura es importante porque el sistema propuesto no toma decisiones autónomas de despacho, sino que está pensado para asistir la primera valoración operativa de quienes trabajan en estos entornos.
+\section{Sistema espa\~nol de proteccion civil}
 
-\section{Marco normativo aplicable}
+La proteccion civil en Espa\~na se configura como un sistema publico orientado a proteger a las personas, los bienes y el medio ambiente ante situaciones de grave riesgo, catastrofe o calamidad publica \cite{Ley17_2015}. Su organizacion combina competencias estatales, autonomicas y locales, de modo que la respuesta a una emergencia no depende de una unica autoridad ni de un unico centro operativo, sino de una red de estructuras de mando, coordinacion y apoyo tecnico.
 
-El motor de priorización no puede fundamentarse en intuiciones genéricas sobre gravedad o urgencia. Para que sus recomendaciones sean defendibles, auditables y operativamente útiles, sus variables y reglas deben poder trazarse hasta normas o fuentes institucionales que justifiquen por qué un determinado incidente debe elevar su prioridad, activar más coordinación o sugerir un posible escalado. Por ello, este apartado no persigue una revisión jurídica exhaustiva, sino una extracción funcional de criterios normativos útiles para el modelado.
+Desde la perspectiva del sistema propuesto, esta configuracion tiene tres consecuencias. En primer lugar, la prioridad de un incidente no puede deducirse solo de su categoria nominal: un accidente de trafico, un incendio o una incidencia sanitaria pueden exigir tratamientos muy distintos segun victimas, localizacion, propagacion, vulnerabilidad o simultaneidad con otros avisos. En segundo lugar, la respuesta se produce bajo incertidumbre: durante los primeros minutos el operador dispone de texto libre, categoria preliminar, localizacion aproximada y se\~nales parciales, no de una fotografia completa de la emergencia. En tercer lugar, cualquier recomendacion automatizada debe ser subordinada a la decision humana, porque el sistema no moviliza recursos ni declara situaciones operativas.
 
-La Tabla~\ref{tab:normativa_diseno_motor} resume la utilidad directa de las principales normas del proyecto para el diseño del sistema.
+La Ley 17/2015 aporta el marco conceptual general: riesgo, emergencia, afectacion a personas, proteccion de bienes, servicios esenciales, deberes de colaboracion y coordinacion entre administraciones \cite{Ley17_2015}. Estos conceptos justifican que el prototipo no se limite a detectar palabras graves en el texto, sino que estructure la informacion en variables operativas: riesgo vital, numero estimado de victimas, gravedad de lesiones, poblacion vulnerable, emplazamiento critico, multirriesgo o accesibilidad de recursos.
 
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{3.1cm}|p{1.6cm}|p{4.3cm}|p{4.2cm}|}
-\hline
-\textbf{Norma / documento} & \textbf{Nivel} & \textbf{Utilidad directa para el TFM} & \textbf{Traducción a diseño} \\ \hline
-Ley 17/2015, del Sistema Nacional de Protección Civil & Estatal & Define riesgo, vulnerabilidad, emergencia de protección civil, coordinación y escalado & Justificación de variables de gravedad, vulnerabilidad, exposición y complejidad de coordinación \\ \hline
-Real Decreto 524/2023, Norma Básica de Protección Civil & Estatal & Establece fases y situaciones operativas 0--3, catálogo de riesgos y contenido mínimo de los planes & Base conceptual para la lógica de escalado y para la relación no equivalente entre 0--3 y P1--P4 \\ \hline
-PLEGEM & Estatal & Desarrolla la coordinación estatal y la movilización supraautonómica & Referente de escalado y de coordinación multicapas \\ \hline
-Ley 4/2024, del Sistema de Protección Civil y Gestión de Emergencias de Aragón & Autonómico & Regula el 112 Aragón, el CECOP, la evaluación del incidente y la movilización & Justificación del flujo recibir--identificar--evaluar--movilizar \\ \hline
-PLATEAR & Autonómico & Define estructura de coordinación y niveles de emergencia en Aragón & Base para la lógica autonómica de escalado \\ \hline
-Planes especiales de Aragón & Autonómico & Aportan umbrales y criterios específicos por riesgo & Activación de reglas contextuales y variables específicas \\ \hline
-\end{tabular}
-\caption{Utilidad funcional del marco normativo para el diseño del motor.}
-\label{tab:normativa_diseno_motor}
-\end{table}
+La Norma Basica de Proteccion Civil, aprobada mediante el Real Decreto 524/2023, refuerza esta logica al ordenar la planificacion por riesgos, establecer criterios comunes para los planes y situar la gestion de emergencias dentro de una arquitectura graduada de respuesta \cite{RD524_2023}. Para este TFM, su utilidad no consiste en trasladar mecanicamente las situaciones operativas al modelo, sino en justificar que la prioridad debe entenderse como una gradacion: hay incidentes leves, incidentes relevantes, incidentes graves e incidentes criticos, y el sistema debe distinguirlos con criterios reproducibles.
 
-\noindent\textit{Fuente: elaboración propia a partir de la normativa analizada.}
+El Plan Estatal General de Emergencias de Proteccion Civil (PLEGEM) completa el marco estatal al describir la coordinacion ante emergencias de interes nacional o de dimension supraautonomica \cite{PLEGEM}. Aunque el prototipo no pretende activar mecanismos estatales, el PLEGEM resulta util para modelar se\~nales de complejidad: multirriesgo, avisos simultaneos, insuficiencia potencial de medios ordinarios o necesidad de coordinacion ampliada.
 
-\subsection{Ley 17/2015 del Sistema Nacional de Protección Civil}
+\section{Marco autonomico de Castilla y Leon}
 
-La Ley 17/2015 \cite{Ley17_2015} constituye el marco general del sistema español de protección civil y resulta clave para este TFM porque aporta los conceptos básicos que permiten formalizar el problema de priorización. En particular, la ley proporciona un lenguaje operativo que luego puede traducirse a diseño analítico: peligro, vulnerabilidad, riesgo, afectación colectiva, servicios esenciales y coordinación entre niveles administrativos.
+Castilla y Leon constituye el ambito territorial de referencia del prototipo por dos razones complementarias. La primera es empirica: existe un registro publico de emergencias del 112 que permite trabajar con incidentes reales y evitar una validacion basada exclusivamente en ejemplos simulados \cite{Registro112CyL}. La segunda es normativa: la comunidad autonoma dispone de una ley propia de proteccion ciudadana y de planes territoriales y especiales que permiten anclar la interpretacion operativa de las variables del sistema.
 
-Su principal utilidad para el motor radica en que desplaza la evaluación de la emergencia desde una lógica puramente reactiva hacia una lógica combinada de daño actual y potencial de afectación. Esto implica que la prioridad no puede definirse únicamente por lo ya confirmado, sino también por el contexto de vulnerabilidad, la exposición y la posibilidad de escalado. En términos de sistema, esta norma justifica que incidentes con daños aún limitados puedan recibir una prioridad elevada si concurren condiciones de riesgo relevante para población, servicios esenciales o coordinación operativa.
+\subsection{Ley 4/2007 de Proteccion Ciudadana de Castilla y Leon}
 
-\subsection{Real Decreto 524/2023: Norma Básica de Protección Civil}
+La Ley 4/2007, de Proteccion Ciudadana de Castilla y Leon, proporciona el marco autonomico general para la organizacion de la proteccion civil, la coordinacion de emergencias y la actuacion de los servicios publicos en la comunidad \cite{Ley4_2007_CYL}. Para el sistema propuesto, su interes principal es que situa la atencion de emergencias dentro de un esquema institucional donde la rapidez de respuesta, la coordinacion y la informacion al ciudadano son elementos centrales.
 
-La Norma Básica de Protección Civil \cite{RD524_2023} es la referencia más relevante para el diseño del motor desde el punto de vista operativo. Su valor no reside solo en el catálogo nacional de riesgos, sino sobre todo en la lógica de gradación que establece para la respuesta ante emergencias.
+Desde el punto de vista del modelado, esta ley respalda variables relacionadas con la inmediatez y la capacidad operativa, especialmente la accesibilidad de recursos (V15), la existencia de emplazamientos criticos (V07) y la necesidad de registrar la actuacion para auditoria posterior. Tambien refuerza una idea metodologica importante: el sistema recomienda prioridades, pero la decision final corresponde siempre a personal humano integrado en la organizacion competente.
 
-La norma fija las situaciones operativas 0--3 y exige que los planes definan procedimientos de transición entre ellas. Esto aporta una base conceptual muy útil para el prototipo: la respuesta no es dicotómica, sino progresiva, y depende de la combinación entre gravedad, extensión territorial, suficiencia de medios y necesidad de coordinación. Esa lógica es la que inspira la construcción de la escala P1--P4 del sistema, aunque sin reproducirla jurídicamente.
+\subsection{PLANCAL como ancla de la escala P1--P4}
 
-\subsection{PLEGEM: estructura y escalado estatal}
+El Decreto 4/2019 aprueba el Plan Territorial de Proteccion Civil de Castilla y Leon (PLANCAL), pieza central para conectar el marco normativo con la escala academica de prioridad utilizada en este TFM \cite{PLANCAL_DEC_4_2019}. PLANCAL no define una etiqueta P1--P4 para el dataset, ni el proyecto afirma que exista una equivalencia oficial. Su aportacion consiste en ofrecer una logica de fases, situaciones y coordinacion que permite construir una guia de etiquetado razonada.
 
-El Plan Estatal General de Emergencias de Protección Civil (PLEGEM) \cite{PLEGEM} se incorpora a este capítulo como referencia de contexto y de escalado. El prototipo no está diseñado para gestionar una emergencia de interés nacional, pero sí necesita contemplar la posibilidad de que determinados indicadores apunten hacia un escenario de coordinación supraautonómica o de necesidad de medios estatales.
+La escala P1--P4 del prototipo debe entenderse como una abstraccion funcional. P1 representa incidentes con riesgo vital, victimas graves, atrapamiento, intoxicacion peligrosa, propagacion severa o necesidad de atencion inmediata. P2 agrupa incidentes relevantes con potencial de deterioro o afectacion significativa, pero sin la criticidad inmediata de P1. P3 recoge situaciones que requieren gestion ordinaria o seguimiento, y P4 corresponde a incidentes de baja urgencia operativa o sin afectados. Esta escala se utiliza para entrenamiento, evaluacion y explicacion, pero no sustituye categorias oficiales de mando.
 
-El interés del PLEGEM para el TFM es metodológico. Confirma que el sistema español opera por capas y que la intervención del nivel superior no debe anticiparse de manera arbitraria, sino justificarse por la insuficiencia de medios ordinarios o por la dimensión del incidente. En el motor, esta lógica no se traduce en una activación automática de recursos estatales, sino en un aumento de prioridad y en la generación de una explicación que advierta de una posible complejidad de coordinación superior.
+\subsection{Planes especiales: INFOCAL, INUNCYL y MPCyL}
 
-\subsection{Ley 4/2024 de Protección Civil y Gestión de Emergencias de Aragón}
+Los planes especiales de Castilla y Leon aportan criterios sectoriales que enriquecen la interpretacion de incidentes concretos. INFOCAL, aprobado por el Decreto 6/2025, resulta relevante para incendios forestales, propagacion, amenaza a nucleos habitados, simultaneidad de focos y condiciones que pueden elevar la prioridad de una incidencia inicialmente limitada \cite{INFOCAL_DEC_6_2025}. En el prototipo, este marco se relaciona con V12 (\texttt{riesgo\_propagacion}) y con se\~nales textuales como \texttt{signal\_incendio}.
 
-La Ley 4/2024 \cite{Ley4_2024} es una de las piezas centrales del capítulo porque Aragón es el caso piloto del TFM. Su valor es alto porque aterriza en el ámbito autonómico la lógica general del sistema estatal y, además, regula directamente el funcionamiento del 112 Aragón y de los órganos de coordinación asociados.
+INUNCYL, plan de proteccion civil ante el riesgo de inundaciones en Castilla y Leon, aporta el marco conceptual para valorar episodios de inundacion, avenidas, desbordamientos y afectacion territorial \cite{INUNCYL}. En la version v0.1.0 del proyecto, las variables de enriquecimiento meteorologico e hidrologico asociadas a INUNCYL se difieren a v0.2.0, pero la norma permanece en el marco teorico y en el corpus RAG porque justifica una linea natural de extension.
 
-Desde la perspectiva del motor, la aportación más importante de esta ley es que define el flujo operativo básico del servicio 112: recepción, identificación, tratamiento, evaluación y seguimiento de las comunicaciones de emergencia, así como movilización de los servicios competentes. Ese flujo coincide con el punto exacto donde el prototipo pretende aportar valor: la fase de evaluación temprana, en la que todavía hay incertidumbre, pero ya es necesario decidir qué atender primero y con qué marco de coordinación.
+MPCyL, plan de proteccion civil ante el riesgo de transportes de mercancias peligrosas, es relevante para incidentes con sustancias quimicas, cisternas, fugas, intoxicaciones o riesgos tecnologicos en transporte \cite{MPCYL_ACUERDO_3_2008}. En v0.1.0 se utiliza principalmente como anclaje normativo de reglas asociadas a \texttt{signal\_intoxicacion} y a escenarios de mercancias peligrosas. La planificacion reconoce una limitacion practica: el corpus dispone del decreto de aprobacion y la localizacion del plan tecnico completo queda pendiente, por lo que esta fuente debe documentarse con cautela en la evaluacion del RAG.
 
-La ley también diferencia entre emergencia ordinaria, emergencia de protección civil y emergencia integral. Esta gradación no debe confundirse con la escala P1--P4 del sistema, pero sí refuerza la idea de que la prioridad operativa es función de la gravedad, la extensión, la vulnerabilidad y la necesidad de coordinación. Además, la referencia expresa a colectivos vulnerables refuerza la legitimidad de incorporar la variable de población vulnerable en el diseño del motor.
+\section{Normativa de datos, comunicaciones e inteligencia artificial}
 
-\subsection{PLATEAR y planes especiales de Aragón}
+El dominio no solo exige priorizar bien; exige hacerlo de forma trazable, privada y compatible con la supervision humana. Por este motivo, el marco normativo del proyecto incluye tambien normas sobre comunicaciones de emergencia, proteccion de datos e inteligencia artificial.
 
-PLATEAR \cite{PLATEAR} es la norma autonómica más importante para la traducción del dominio a criterios de modelado. Su relevancia se debe a que organiza la coordinación en Aragón, fija niveles de emergencia y proporciona un marco operativo realista para el caso piloto.
+La Ley 11/2022, General de Telecomunicaciones, resulta relevante por el papel de los servicios de emergencia, la localizacion de llamadas y el tratamiento de informacion asociada a comunicaciones \cite{Ley11_2022}. En el prototipo, esta norma no se traduce en una integracion tecnica con sistemas de telecomunicaciones, sino en una cautela de diseno: la localizacion se trata como dato operativo sensible y solo se conserva o transforma cuando aporta valor a la priorizacion y a la trazabilidad.
 
-El plan distingue niveles de emergencia según la gravedad, la extensión y la necesidad de recursos adicionales, lo que aporta al sistema una referencia autonómica muy concreta de escalado. En términos de modelado, esto respalda la inclusión de variables como tendencia del incidente, personas en riesgo estimadas o necesidad previsible de coordinación ampliada.
+El Reglamento General de Proteccion de Datos y la Ley Organica 3/2018 imponen principios de minimizacion, limitacion de finalidad, seguridad y responsabilidad proactiva \cite{RGPD,LOPDGDD}. Estos principios justifican el rechazo de variables innecesarias, el uso de hashes en los logs de inferencia, la separacion entre datos de entrada y resultados del sistema, y la exclusion de campos que puedan revelar decisiones posteriores o resultados clinicos. Esta restriccion conecta directamente con la politica anti-\textit{leakage}: el sistema no debe aprender a priorizar usando informacion que en la realidad solo estaria disponible despues de la decision inicial.
 
-Junto a PLATEAR, los planes especiales aportan reglas sectoriales directamente reutilizables. El Plan Especial de Protección Civil ante Fenómenos Meteorológicos Adversos en Aragón (PROCIFEMAR) \cite{PROCIFEMAR} justifica la inclusión del nivel de aviso AEMET y del fenómeno meteorológico activo. El Plan Especial de Protección Civil ante el Riesgo de Inundaciones en Aragón (PROCINAR) \cite{PROCINAR} respalda el uso de la peligrosidad por inundación como variable contextual. El Plan Especial de Protección Civil ante Emergencias por Accidentes en el Transporte de Mercancías Peligrosas por Carretera y Ferrocarril en Aragón (PROCIMER) \cite{PROCIMER} y el marco Seveso \cite{RD840_2015} justifican la consideración específica del riesgo químico e industrial. El Plan Especial de Protección Civil de Emergencias por Incendios Forestales en Aragón (PROCINFO) \cite{PROCINFO}, por su parte, aporta una lógica útil en relación con simultaneidad, progresión del incidente y amenaza a núcleos habitados o infraestructuras.
+El Reglamento (UE) 2024/1689 de Inteligencia Artificial introduce un marco de especial relevancia para sistemas aplicados a servicios esenciales, emergencias y apoyo a decisiones con posible impacto sobre personas \cite{EUAIAct2024}. El TFM no afirma que el prototipo sea un producto certificado ni listo para despliegue. Su posicion es mas prudente: el dise\~no se alinea con requisitos de alto nivel como supervision humana, trazabilidad, transparencia, gestion del riesgo, calidad de datos y robustez. Por ello, la arquitectura se formula como sistema de apoyo a la decision: recomienda, explica y registra, pero no decide ni moviliza recursos de forma autonoma.
 
-La lectura conjunta de PLATEAR y de los planes especiales permite concluir que el sistema de protección civil aragonés ya contiene, de forma implícita, una lógica de priorización basada en gravedad, contexto, vulnerabilidad y escalado. La aportación del TFM consiste en convertir esa lógica dispersa en un mecanismo analítico coherente, explícito y explicable.
+\section{Situaciones operativas y escala academica P1--P4}
 
-\section{Situaciones operativas (0--3): definición y criterios de activación}
+Las situaciones operativas de proteccion civil ordenan el mando, la coordinacion y la movilizacion de recursos ante emergencias. Su finalidad es institucional y organizativa. La prioridad P1--P4 del sistema, en cambio, es una escala academica dise\~nada para ordenar incidentes por urgencia relativa en el contexto del prototipo.
 
-Las situaciones operativas 0--3 constituyen un mecanismo normativo de gradación de la respuesta ante emergencias. Su función es ordenar el marco de mando, coordinación y movilización conforme cambian la gravedad del suceso, la extensión territorial y la suficiencia de los medios disponibles.
+Esta diferencia debe quedar clara para evitar una confusion metodologica. Una situacion operativa puede referirse al estado global de una emergencia en un territorio, mientras que P1--P4 se asigna a un incidente concreto. Un accidente con una persona atrapada puede ser P1 aunque no exista una situacion territorial de emergencia elevada. Del mismo modo, un escenario de prealerta territorial puede contener avisos individuales de baja prioridad. La relacion entre ambas escalas es, por tanto, inspiracional y funcional, no juridica ni uno a uno.
 
-La situación operativa 0 corresponde a la fase de alerta o preemergencia. Todavía no existe, necesariamente, una afectación grave confirmada, pero ya aparecen indicadores objetivos de deterioro posible: avisos meteorológicos, alertas hidrológicas, señales de evolución desfavorable o incremento de exposición. Desde la perspectiva del sistema, esta situación es importante porque legitima que la priorización incorpore señales tempranas y no se limite al daño ya consumado.
+La escala P1--P4 se construye con tres objetivos. Primero, permitir que los tres autores generen etiquetas debiles comparables sobre el dataset real. Segundo, entrenar y evaluar un motor interpretable, basado en RuleFit y comparado con un baseline experto. Tercero, generar explicaciones comprensibles para el operador, citando reglas activadas y normas de referencia. Esta formulacion mantiene el sistema dentro de la linea de trabajo del proyecto: nucleo explicable, supervision humana y trazabilidad normativa.
 
-La situación operativa 1 se produce cuando la emergencia requiere una intervención coordinada, pero puede ser gestionada con medios propios del nivel competente. Este es el escenario más próximo a la operativa ordinaria de un CECOP y, por tanto, el entorno más directamente alineado con el uso previsto del sistema.
+\section{Taxonomia operativa de incidentes}
 
-La situación operativa 2 aparece cuando la emergencia desborda los medios inicialmente asignados y exige recursos adicionales no previstos o una coordinación más compleja. Para el motor, esta transición es relevante porque marca el paso entre un incidente serio pero contenido y un incidente cuyo comportamiento comienza a comprometer la capacidad ordinaria de respuesta.
+El motor necesita una taxonomia de incidentes porque la prioridad no se interpreta igual en todos los dominios. Una llamada por incendio forestal requiere evaluar propagacion, simultaneidad y amenaza a poblacion o infraestructuras. Un accidente de trafico exige valorar atrapamiento, heridos, accesibilidad y numero de afectados. Una fuga quimica requiere identificar intoxicacion, transporte de mercancias peligrosas y potencial de escalado. Por tanto, la categoria preliminar no es una etiqueta decorativa, sino una entrada que ayuda a activar las reglas correctas.
 
-La situación operativa 3 se reserva para escenarios de interés nacional o de necesidad extraordinaria de coordinación estatal. El prototipo no pretende gestionar este nivel, pero sí debe ser capaz de señalar indicadores que apunten a un posible escalado de esa naturaleza.
+En v0.1.0, la taxonomia se deriva de dos fuentes: el catalogo de riesgos y categorias operativas recogido en la normativa, y los campos textuales del Registro 112 CyL. El campo estructurado de tipo de incidente resulta util como orientacion inicial, pero el sistema no debe depender exclusivamente de el. La descripcion textual y el titulo del incidente son necesarios para detectar se\~nales como \texttt{herido grave}, \texttt{atrapado}, \texttt{incendio}, \texttt{rescate}, \texttt{intoxicacion} o \texttt{varias llamadas}.
 
-Es esencial dejar constancia de que la escala P1--P4 del sistema no equivale jurídicamente a las situaciones operativas 0--3. Las situaciones operativas son categorías normativas de mando y coordinación. La escala P1--P4 es una abstracción funcional diseñada para ordenar incidentes por urgencia operativa relativa dentro de un mismo entorno de coordinación. Ambas comparten una lógica gradual, pero no mantienen una correspondencia mecánica ni uno a uno. Un incidente puede recibir prioridad P1 por riesgo vital inmediato sin que el territorio en su conjunto esté más allá de una situación 0 o 1.
+La taxonomia cumple tres funciones. Primero, reduce ambiguedad al normalizar incidentes heterogeneos. Segundo, conecta cada incidente con variables operativas V01--V15. Tercero, mejora la explicabilidad, porque permite justificar la prioridad con factores coherentes con la naturaleza del suceso. Esta taxonomia se desarrolla en el Anexo A y se utiliza de forma transversal en los capitulos de dise\~no, datos y evaluacion.
 
-Esta distinción no es una precisión menor, sino una condición metodológica necesaria para mantener la coherencia del TFM: el sistema se inspira en la normativa, pero no suplanta sus categorías.
+\section{Fuentes de datos y corpus normativo}
 
-\section{Taxonomía operativa de incidentes del sistema}
+El prototipo combina dos tipos de fuentes. Por un lado, el Registro de Emergencias del 112 de Castilla y Leon aporta incidentes reales, texto operativo, fechas, localizacion y campos utiles para probar la ingesta, limpieza y extraccion de se\~nales \cite{Registro112CyL}. Por otro, el corpus normativo CyL alimenta la capa RAG y las herramientas MCP encargadas de recuperar citas legales, explicar reglas y sostener normativamente las recomendaciones.
 
-El motor de priorización necesita clasificar cada incidente en una estructura tipológica que no sea solo descriptiva, sino funcional. La taxonomía no se introduce aquí como un catálogo cerrado con fines administrativos, sino como un mecanismo que permite decidir qué variables deben activarse, qué comprobaciones contextuales conviene realizar y qué reglas de priorización son aplicables.
-
-La necesidad de esta taxonomía se explica por una razón operativa: incidentes con gravedad comparable pueden requerir tratamientos analíticos distintos. Un incendio forestal y un accidente de tráfico con víctimas no comparten el mismo contexto operativo. El primero exige valorar meteorología, propagación y cercanía a núcleos. El segundo exige valorar víctimas, atrapamiento y accesibilidad. Sin una clasificación previa, el sistema no puede activar la lógica adecuada.
-
-La taxonomía adoptada se organiza en dos niveles. El primero cubre las familias de riesgo de protección civil con mayor relevancia para el caso piloto. El segundo recoge las emergencias operativas ordinarias que forman parte de la actividad habitual del 112.
-
-\subsection{Nivel 1: Emergencias de Protección Civil y principales familias de riesgo}
-
-El primer nivel agrupa incidentes con potencial de activar lógica de protección civil o de requerir un tratamiento reforzado de coordinación y contexto. Las familias principales son: riesgos naturales (inundaciones, fenómenos meteorológicos adversos, incendios forestales, eventos sísmicos o geológicos), riesgos tecnológicos e industriales (accidentes con mercancías peligrosas, incidentes en instalaciones industriales, situaciones vinculadas a infraestructuras energéticas o químicas), grandes accidentes y eventos antrópicos de alta complejidad (accidentes de transporte con múltiples afectados, derrumbes, incendios de gran entidad en entornos urbanos) y escenarios multirriesgo (situaciones en las que concurren simultáneamente varias amenazas o la complejidad del entorno convierte el incidente en un problema de coordinación superior). El detalle completo de la taxonomía, con códigos, descripciones y justificaciones, se documenta en el Anexo A.
-
-\subsection{Nivel 2: Emergencias operativas ordinarias (112)}
-
-El segundo nivel agrupa las emergencias que forman parte de la gestión ordinaria del 112 y que, aun sin activar necesariamente un plan de protección civil, deben ser priorizadas de forma relativa porque compiten por atención operativa. Las principales familias adoptadas son: emergencias sanitarias, tráfico y transporte, incendios urbanos o de vehículos, rescates y salvamentos, seguridad y personas, y asistencia técnica y servicios esenciales.
-
-La inclusión de este nivel es necesaria porque el sistema no puede reservar la priorización solo para grandes emergencias. Si lo hiciera, perdería utilidad precisamente en el entorno donde más necesita aportar valor: la gestión simultánea de incidentes heterogéneos bajo presión temporal.
-
-\subsection{Relación entre taxonomía y lógica de priorización}
-
-La relación entre taxonomía y priorización es estructural. El tipo de incidente no es una etiqueta decorativa, sino una variable central del sistema. Determina qué variables contextuales conviene activar, condiciona la activación de reglas específicas y mejora la explicabilidad de la recomendación. Un sistema que justifica la prioridad con factores coherentes con la naturaleza del incidente resulta más comprensible y más fácil de validar por el operador. Por tanto, la taxonomía cumple tres funciones simultáneas: reduce ambigüedad, activa el contexto correcto y mejora la calidad de la explicación final del motor.
-
-\section{Fuentes de datos oficiales disponibles y su rol en el sistema}
-
-El sistema no debe basarse exclusivamente en la descripción textual inicial del incidente. Esa información suele ser fragmentaria, incompleta o incierta en los primeros minutos. Por ello, el motor incorpora fuentes oficiales de contexto que permitan enriquecer la valoración sin depender de datos privados no accesibles o de integraciones institucionales cerradas que exceden el alcance del TFM.
-
-En este punto conviene separar dos planos. Las fuentes oficiales estatales y aragonesas justifican el marco normativo y operativo del sistema. El Registro de Emergencias del 112 de Castilla y León se incorpora únicamente como fuente empírica real para probar el pipeline de ingesta, limpieza, extracción de señales y trazabilidad. Su uso no modifica el caso piloto Aragón ni sustituye el marco normativo del sistema.
-
-La Tabla~\ref{tab:fuentes_datos} resume las fuentes principales consideradas en este trabajo.
+La Tabla~\ref{tab:cap3_fuentes} resume el rol de las fuentes principales en el sistema.
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{|p{2.8cm}|p{3.1cm}|p{4.1cm}|p{3.6cm}|}
+\begin{tabular}{|p{3.4cm}|p{4.1cm}|p{5.5cm}|}
 \hline
-\textbf{Fuente} & \textbf{Rol principal en el sistema} & \textbf{Variables o decisiones que apoya} & \textbf{Limitación principal} \\ \hline
-AEMET OpenData & Contexto meteorológico oficial & Nivel de aviso AEMET, fenómeno meteorológico activo & Granularidad zonal y dependencia técnica de consulta \\ \hline
-SNCZI / MITECO & Contexto territorial de inundabilidad & Peligrosidad por inundación & No refleja por sí solo estado hidrológico en tiempo real \\ \hline
-INE & Contexto demográfico agregado & Apoyo a personas en riesgo estimadas y vulnerabilidad territorial & No identifica afectados concretos \\ \hline
-IDEARAGON & Contexto espacial y accesibilidad & Accesibilidad al punto, emplazamiento crítico & Requiere integración geoespacial \\ \hline
-Registro público Seveso (MITECO) & Contexto industrial y químico & Presencia de instalación Seveso & No informa del estado operativo instantáneo de la instalación \\ \hline
-Memorias y estadísticas del 112 Aragón & Calibración y plausibilidad operativa & Distribución tipológica y carga global & Son datos agregados, no dataset de entrenamiento \\ \hline
-Registro de Emergencias del 112 de Castilla y León & Fuente empírica proxy para pipeline & Ingesta, limpieza, señales textuales, coordenadas y trazabilidad & No contiene prioridad P1--P4 ni sustituye al caso Aragón \\ \hline
+\textbf{Fuente} & \textbf{Rol en el TFM} & \textbf{Uso principal} \\ \hline
+Registro 112 CyL & Fuente empirica real & Ingesta, limpieza, texto libre, coordenadas, se\~nales operativas y validacion del pipeline \\ \hline
+Ley 17/2015 y RD 524/2023 & Marco estatal & Conceptos de riesgo, emergencia, planificacion, catalogo de riesgos y gradacion de respuesta \\ \hline
+Ley 4/2007 CyL y PLANCAL & Marco autonomico & Coordinacion, inmediatez, guia de etiquetado P1--P4 y trazabilidad territorial \\ \hline
+INFOCAL, INUNCYL, MPCyL & Riesgos especificos & Incendios forestales, inundaciones y mercancias peligrosas; reglas y citas normativas \\ \hline
+RGPD, LOPDGDD, Ley 11/2022 & Datos y comunicaciones & Minimizacion, localizacion, seguridad, logs y exclusion de variables sensibles o no necesarias \\ \hline
+Reglamento UE 2024/1689 & IA responsable & Supervision humana, transparencia, trazabilidad, gestion del riesgo y robustez \\ \hline
 \end{tabular}
-\caption{Fuentes oficiales y función dentro del sistema.}
-\label{tab:fuentes_datos}
+\caption{Fuentes principales y funcion dentro del sistema.}
+\label{tab:cap3_fuentes}
 \end{table}
 
-\noindent\textit{Fuente: elaboración propia.}
+El uso del Registro 112 CyL requiere una cautela esencial: el dataset no contiene una prioridad oficial P1--P4. Por ello, la etiqueta empleada en el proyecto es academica y se construye mediante supervision debil a partir de varios anotadores, reglas y criterios derivados de la guia de etiquetado. Esta decision evita presentar como verdad institucional una prioridad que no existe en la fuente original.
 
-\subsection{AEMET OpenData}
+El corpus normativo, por su parte, no se utiliza para entrenar directamente el motor de prioridad. Su funcion principal es sostener la capa de explicacion: buscar fragmentos relevantes, recuperar bases legales, citar normas y mostrar al operador por que una regla o una prioridad tienen respaldo documental. Esta separacion entre datos empiricos, reglas de priorizacion y fuentes normativas es clave para mantener la trazabilidad del sistema.
 
-AEMET OpenData constituye la fuente oficial más importante para el contexto meteorológico del sistema. Su aportación principal es doble: proporciona el nivel de aviso vigente y permite identificar el fenómeno meteorológico activo que puede estar modulando la evolución del incidente. Su valor para el motor es alto porque conecta directamente con la lógica normativa de los planes especiales: no se trata de una fuente contextual genérica, sino de una señal institucional que la propia planificación utiliza como criterio de activación y vigilancia.
+\section{Trazabilidad normativa de variables y reglas}
 
-\subsection{SNCZI / MITECO: cartografías de riesgo}
+La Tabla~\ref{tab:cap3_trazabilidad} sintetiza la traduccion del marco normativo a criterios de modelado. No debe leerse como una equivalencia juridica exacta, sino como una matriz de trazabilidad: indica que norma justifica cada grupo de variables o reglas dentro del prototipo.
 
-El Sistema Nacional de Cartografía de Zonas Inundables (SNCZI) del Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO) aporta una capa territorial oficial de gran relevancia para el prototipo. Su papel consiste en determinar si la localización del incidente cae dentro de zonas de peligrosidad por inundación oficialmente cartografiadas. Esta fuente es especialmente valiosa cuando se combina con el contexto meteorológico: un aviso localizado en una zona inundable durante un episodio de precipitación adversa tiene un potencial de deterioro superior al mismo aviso fuera de una zona de riesgo.
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabular}{|p{3.1cm}|p{3.2cm}|p{3.5cm}|p{3.2cm}|}
+\hline
+\textbf{Norma / fuente} & \textbf{Criterio operativo} & \textbf{Variable o se\~nal} & \textbf{Uso en el sistema} \\ \hline
+Ley 17/2015 & Proteccion de la vida, da\~nos personales, vulnerabilidad & V01, V02, V03, V05, \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado} & Reglas duras P1 y aumento de prioridad \\ \hline
+RD 524/2023 & Catalogo de riesgos y planificacion & V04 & Taxonomia y normalizacion de tipo de incidente \\ \hline
+PLEGEM & Coordinacion ampliada y multirriesgo & V13, V14 & Se\~nales de escalado y complejidad \\ \hline
+Ley 4/2007 CyL & Coordinacion, inmediatez y capacidad de respuesta & V07, V15 & Ajuste por emplazamiento critico y accesibilidad \\ \hline
+PLANCAL & Fases, situaciones y logica territorial de respuesta & Escala P1--P4 academica & Guia de etiquetado y explicacion \\ \hline
+INFOCAL & Incendio forestal y propagacion & V12, \texttt{signal\_incendio} & Reglas P2/P1 segun riesgo de propagacion \\ \hline
+INUNCYL & Inundacion y riesgo territorial & V09, V10, \texttt{signal\_meteo\_inundacion} & Anclaje v0.2.0; contexto RAG en v0.1.0 \\ \hline
+MPCyL & Mercancias peligrosas y riesgo quimico & \texttt{signal\_intoxicacion} & Regla de alta prioridad para fuga, intoxicacion o cisterna \\ \hline
+Registro 112 CyL & Incidentes reales y texto operativo & Titulo, descripcion, fecha, provincia, coordenadas & Fuente empirica; no contiene etiqueta P1--P4 \\ \hline
+RGPD y LOPDGDD & Minimizacion y proteccion de datos & Politica de exclusion & Logs, hashes, retencion y no reidentificacion \\ \hline
+Reglamento UE 2024/1689 & Supervision humana y trazabilidad & Arquitectura HITL, logs, explicaciones & Recomendacion no vinculante y auditoria \\ \hline
+\end{tabular}
+\caption{Trazabilidad normativa entre criterios, variables y uso previsto en el prototipo.}
+\label{tab:cap3_trazabilidad}
+\end{table}
 
-\subsection{INE: datos demográficos y vulnerabilidad}
+\section{Alcance v0.1.0 y elementos diferidos}
 
-Los datos demográficos del Instituto Nacional de Estadística (INE) se incorporan como apoyo a la estimación de exposición y vulnerabilidad territorial. Su función no es identificar afectados concretos, sino aportar un marco razonable de contexto cuando todavía no se dispone de información completa sobre las personas implicadas. Su uso debe ser prudente: el sistema no puede convertir estadísticas municipales en certezas individuales.
+La excelencia del proyecto depende tanto de lo que se incluye como de lo que se decide diferir. En v0.1.0 se prioriza un nucleo evaluable: variables textuales y operativas centrales, RuleFit como motor interpretable, explicacion con LLM local, RAG normativo, backend auditable y supervision humana. Esta version activa las variables V01--V07 y V12--V15, junto con las se\~nales textuales necesarias para detectar riesgo vital, heridos, atrapamiento, intoxicacion, incendio, rescate, accidente de trafico, varias llamadas y riesgo meteorologico textual.
 
-\subsection{IDEARAGON: cartografía oficial de Aragón}
+Quedan diferidas a v0.2.0 las variables que requieren integraciones contextuales mas costosas: avisos AEMET, condicion meteorologica adversa, zonas inundables SNCZI y proximidad a instalaciones Seveso. Estas variables mantienen su anclaje normativo en el capitulo y en el modelo de datos, pero no forman parte del nucleo entrenado y evaluado en v0.1.0. Esta decision es metodologicamente prudente: evita introducir fuentes geoespaciales o historicas que podrian debilitar la reproducibilidad del TFM, sin renunciar a una linea clara de evolucion futura.
 
-La Infraestructura de Datos Espaciales de Aragón (IDEARAGON) aporta contexto territorial y de accesibilidad. Su interés para el sistema radica en que la prioridad operativa no depende solo del tipo de incidente o del riesgo directo, sino también de la facilidad o dificultad de llegar al punto, de la proximidad a equipamientos relevantes y de la localización dentro de un entorno territorial concreto.
+\section{Conclusiones del capitulo}
 
-\subsection{Registro Seveso}
+El marco operativo y normativo analizado permite fijar cinco conclusiones para el resto del TFM.
 
-El registro público de instalaciones sujetas a la normativa Seveso permite identificar entornos industriales que exigen una lectura reforzada del incidente. Su principal utilidad para el motor consiste en elevar la sensibilidad del sistema ante eventos que, por localización, puedan tener un potencial de escalado químico o industrial superior al que se observa en la descripción inicial. Esta fuente se emplea como apoyo contextual, no como indicador suficiente por sí solo para declarar una prioridad crítica.
+En primer lugar, el sistema debe entenderse como apoyo a la decision, no como sustituto del operador. Esta conclusion deriva tanto de la naturaleza de la proteccion civil como del marco europeo de inteligencia artificial.
 
-\subsection{Memorias y estadísticas del 112 Aragón}
+En segundo lugar, la prioridad operativa no puede reducirse a una unica se\~nal. La gravedad actual, la vulnerabilidad, la exposicion, la propagacion, la simultaneidad, la accesibilidad y la incertidumbre informativa deben combinarse mediante contratos y reglas trazables.
 
-Las memorias y estadísticas del 112 Aragón son relevantes para entender el perfil operativo real del servicio y para evitar diseñar un sistema desconectado de su carga habitual. Su uso en el TFM es de calibración y plausibilidad, no de entrenamiento supervisado. A falta de microdatos operativos públicos de Aragón, estas memorias permiten contrastar que las familias de incidentes seleccionadas y el caso piloto territorial son razonables desde el punto de vista operativo.
+En tercer lugar, la escala P1--P4 es academica y funcional. Se inspira en la logica de gradacion de la normativa, especialmente PLANCAL, pero no equivale a situaciones operativas oficiales ni pretende reemplazarlas.
 
-\subsection{Registro de Emergencias del 112 de Castilla y León}
+En cuarto lugar, el Registro 112 CyL aporta realismo empirico, pero no una verdad supervisada de prioridad. Por eso el proyecto necesita supervision debil, validacion interna y comparacion explicita entre baseline experto, RuleFit y techo opaco.
 
-El Registro de Emergencias del 112 de Castilla y León \cite{Registro112CyL} se incorpora como fuente empírica real de incidentes procedentes de un servicio autonómico 112. Su función dentro del TFM es probar el pipeline de ingesta, limpieza, normalización textual, extracción de señales, geolocalización y trazabilidad sobre registros reales.
-
-Este dataset no modifica el marco normativo del trabajo ni desplaza el caso piloto Aragón. Tampoco se utiliza como base de entrenamiento supervisado de prioridad, ya que no contiene una etiqueta oficial P1--P4 ni una escala equivalente. Su valor reside en aportar realismo textual y estructural al tratamiento de datos, mientras que la interpretación operativa de la prioridad se mantiene vinculada al marco estatal y aragonés.
-
-\section{Conclusiones: traducción del dominio a criterios de modelado}
-
-El análisis desarrollado en este capítulo permite fijar varias conclusiones que son directamente operativas para el diseño del sistema.
-
-La primera es que el sistema de protección civil, tanto en el nivel estatal como en el autonómico aragonés, ya incorpora una lógica implícita de priorización basada en gravedad, vulnerabilidad, amenaza contextual, escalado y coordinación. El motor del TFM no inventa esa lógica desde cero, sino que la formaliza para hacerla más consistente, trazable y explicable.
-
-La segunda es que la prioridad operativa no puede reducirse a una única dimensión. La normativa y la estructura operativa obligan a considerar conjuntamente la gravedad actual del incidente, la exposición potencial, la vulnerabilidad de la población afectada, la amenaza contextual y la posibilidad de escalado, mientras que la calidad de la información disponible modula principalmente la confianza con la que esa prioridad se recomienda. Esa conclusión enlaza de forma natural con la fórmula conceptual del motor de priorización, que se presenta en el Capítulo 6.
-
-La tercera es que la taxonomía operativa no es un elemento accesorio, sino el mecanismo que permite activar el contexto correcto, aplicar reglas específicas y generar explicaciones comprensibles. Sin esa taxonomía, la priorización quedaría reducida a un scoring ciego y poco defendible.
-
-La cuarta es que las fuentes oficiales disponibles permiten enriquecer el contexto del incidente, pero no eliminan las limitaciones de acceso a datos operativos reales del 112 Aragón. Por tanto, el TFM debe mantener un enfoque realista: baseline interpretable, variables justificadas, dataset piloto híbrido y validación humana obligatoria. El Registro de Emergencias del 112 de Castilla y León se emplea como fuente empírica proxy para el pipeline, no como sustituto normativo ni territorial del caso Aragón.
-
-La quinta es que la escala P1--P4 del sistema debe seguir tratándose como una abstracción operativa propia del prototipo, cuya inspiración en las situaciones operativas 0--3 es metodológicamente adecuada, pero que no debe presentarse como equivalencia jurídica.
-
-En consecuencia, este capítulo cumple una función decisiva dentro del TFM: cerrar el dominio, delimitar el marco normativo útil, fijar la taxonomía de trabajo y acotar las fuentes oficiales que alimentarán el diseño analítico del motor en los capítulos siguientes.
+En quinto lugar, la trazabilidad normativa no es un adorno documental: es parte de la arquitectura. Cada recomendacion debe poder conectarse con variables, reglas, citas legales, version de modelo y decision humana final. Esta exigencia enlaza directamente con los capitulos siguientes, donde se desarrollan la metodologia, la arquitectura de tres capas, el dise\~no de datos y la evaluacion del prototipo.

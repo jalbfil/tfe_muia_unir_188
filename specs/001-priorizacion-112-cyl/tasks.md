@@ -136,10 +136,10 @@
 
 ## Fase 10 — Redacción capítulos (LaTeX Scribe + autores)
 
-- [ ] **T120 [P]** `[C]` Actualizar `chap0.tex` (reparto + métricas individuales).
-- [ ] **T121 [P]** `[C]` Reescribir `chap1.tex` (Aragón → CyL + frase-espina).
-- [ ] **T122 [P]** `[C]` Ampliar `chap2.tex` con nuevas secciones estado-arte (RuleFit, weak supervision, LLM locales, MCP, Reg. UE IA, ello incluye fix de `(?,?)` págs 19–22).
-- [ ] **T123** `[C]` Reescribir `chap3.tex` completo con marco normativo CyL + tabla de trazabilidad.
+- [x] **T120 [P]** `[C]` Actualizar `chap0.tex` (reparto + métricas individuales).
+- [x] **T121 [P]** `[C]` Reescribir `chap1.tex` (Aragón → CyL + frase-espina).
+- [x] **T122 [P]** `[C]` Ampliar `chap2.tex` con nuevas secciones estado-arte (RuleFit, weak supervision, LLM locales, MCP, Reg. UE IA, ello incluye fix de `(?,?)` págs 19–22).
+- [x] **T123** `[C]` Reescribir `chap3.tex` completo con marco normativo CyL + tabla de trazabilidad.
 - [ ] **T124 [P]** `[C]` Reformular `chap4.tex` con OG + OE1–OE4.
 - [ ] **T125 [P]** `[C]` Actualizar `chap5.tex` con RF/RNF nuevos.
 - [ ] **T126** `[C]` Reescribir `chap6.tex` (3 capas reales).

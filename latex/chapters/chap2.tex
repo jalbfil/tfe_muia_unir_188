@@ -1,188 +1,85 @@
 \chapter{Contexto del problema y estado del arte}
 \label{cap:2}
 
-\section{La gestión de emergencias: concepto, actores y flujos operativos}
+\section{Gestion de emergencias y primera decision}
 
-La gestión de emergencias comprende el conjunto de actividades organizativas, técnicas y operativas destinadas a prevenir, preparar, responder y recuperar la normalidad frente a sucesos que pueden poner en peligro la vida de las personas, el medio ambiente, los bienes materiales o el funcionamiento de servicios esenciales. A diferencia de la gestión ordinaria de riesgos, que suele operar en horizontes temporales más amplios y con información relativamente estable, la gestión de emergencias se caracteriza por la presión temporal, la incertidumbre informativa y la necesidad de coordinar múltiples actores con competencias distintas en plazos reducidos \cite{Quarantelli1988,Comfort2007}.
+La gestion de emergencias comprende el conjunto de actividades orientadas a prevenir, preparar, responder y recuperar la normalidad frente a sucesos que pueden comprometer la vida, los bienes, el medio ambiente o servicios esenciales. A diferencia de otros procesos de decision publica, las emergencias se caracterizan por presion temporal, informacion incompleta, incertidumbre, multiplicidad de actores y necesidad de coordinacion inmediata \cite{Quarantelli1988,Comfort2007}.
 
-En el contexto europeo y, particularmente, en el sistema español de protección civil, la respuesta a emergencias se articula en torno a varios niveles institucionales ---estatal, autonómico y local--- y a una red de centros de coordinación, servicios de intervención, organismos técnicos y autoridades competentes. Esta estructura hace que la primera decisión operativa no dependa únicamente de la gravedad aparente del incidente, sino también de su localización, su posible evolución, los recursos disponibles, la población afectada, los planes aplicables y el nivel de coordinación requerido.
+En este contexto, la primera decision operativa tiene un peso especial. No cierra la gestion del incidente, pero condiciona la atencion inicial, la movilizacion de recursos, el seguimiento y la posible escalada. El operador debe interpretar rapidamente se\~nales parciales, distinguir incidentes leves de incidentes criticos y mantener una trazabilidad minima que permita justificar la decision adoptada.
 
-La gestión de emergencias no puede entenderse como una cadena lineal simple. En la práctica, funciona como un proceso dinámico en el que la información entra por distintos canales, se valida parcialmente, se contrasta con fuentes externas, se comunica a distintos actores y se traduce en decisiones de movilización, seguimiento o escalado. En este proceso, la primera decisión es especialmente relevante porque condiciona el modo en que se estructura la respuesta posterior.
+El concepto de conciencia situacional ayuda a explicar esta necesidad. Endsley \cite{Endsley1995} la define como la percepcion de elementos del entorno, la comprension de su significado y la proyeccion de su evolucion. En un centro 112, esa conciencia situacional depende de transformar texto, categorias preliminares, coordenadas y contexto normativo en una representacion operativa util.
 
-Desde la perspectiva del presente TFM, el interés no se sitúa en todo el ciclo de la emergencia, sino en una fase concreta: los primeros minutos en los que el operador o responsable de coordinación debe valorar qué está ocurriendo, estimar la urgencia relativa de cada incidente y orientar su atención hacia aquellos sucesos que pueden requerir respuesta prioritaria. Esta fase inicial es el espacio donde un sistema de apoyo a la decisión puede aportar mayor valor, siempre que sus recomendaciones sean comprensibles, trazables y revisables.
+\section{Sistemas de apoyo a la decision en emergencias}
 
-\section{Puestos de mando y centros de coordinación}
+Los sistemas de apoyo a la decision (Decision Support Systems, DSS) buscan asistir a personas o equipos en decisiones complejas. En emergencias, pueden organizar informacion, visualizar incidentes, simular escenarios, priorizar recursos o facilitar coordinacion \cite{Turoff2004,Comes2011}. Sin embargo, muchos DSS se centran en cuadros de mando, mapas o gestion de recursos, sin abordar de forma especifica la priorizacion explicable de incidentes individuales en un servicio 112.
 
-Los centros de coordinación operativa (CECOP), los centros de coordinación operativa integrada (CECOPI) y los puestos de mando avanzado (PMA) son elementos fundamentales en la gestión de emergencias de protección civil. Su función es concentrar información relevante, facilitar la coordinación entre servicios y apoyar la toma de decisiones de las autoridades y responsables operativos.
+El prototipo de este TFM se situa en una franja mas acotada: apoyo a la primera decision mediante una recomendacion P1--P4, trazable y revisable. No pretende sustituir sistemas de despacho, mapas de riesgo o plataformas institucionales. Su aportacion consiste en conectar informacion inicial del incidente, variables operativas, modelo interpretable y explicacion normativa.
 
-El CECOP suele actuar como centro de dirección y coordinación en el ámbito territorial correspondiente. El CECOPI incorpora, cuando procede, la integración de varias administraciones en una misma estructura de coordinación. El PMA, por su parte, se sitúa más cerca del lugar de la emergencia y permite coordinar sobre el terreno a los grupos de acción. Aunque cada figura tiene una función distinta, todas comparten una necesidad común: transformar información heterogénea y cambiante en decisiones operativas coherentes.
+\section{Procesamiento del lenguaje natural en emergencias}
 
-En estos entornos, el operador no trabaja con información completa ni perfectamente estructurada. Recibe avisos iniciales, llamadas ciudadanas, partes de servicios, datos meteorológicos, mapas de riesgo, información de infraestructuras y comunicaciones institucionales. Parte de esta información puede ser redundante, parcial, contradictoria o llegar con retraso. Por ello, el principal problema no es solo disponer de información, sino estructurarla y priorizarla de forma útil.
+El procesamiento del lenguaje natural (NLP) se ha utilizado ampliamente para extraer informacion de mensajes de crisis, partes breves, redes sociales o comunicaciones ciudadanas. Trabajos clasicos de \textit{crisis informatics} mostraron que los textos no estructurados pueden contener localizaciones, peticiones de ayuda, da\~nos, necesidades y se\~nales de riesgo \cite{Vieweg2010,Caragea2011,Imran2015}.
 
-El concepto de conciencia situacional resulta especialmente relevante en este punto. Endsley \cite{Endsley1995} la define como la percepción de los elementos del entorno, la comprensión de su significado y la proyección de su evolución futura. En un puesto de mando, una mala conciencia situacional puede provocar retrasos, errores de priorización o asignación ineficiente de recursos. Esta referencia se utiliza aquí como base conceptual clásica, pero el enfoque actual de este TFM se sitúa en la integración de inteligencia artificial explicable, fuentes oficiales y supervisión humana.
+Los modelos recientes basados en transformers han mejorado la representacion semantica de textos de crisis. CrisisTransformers, por ejemplo, propone modelos preentrenados y codificadores especializados para clasificacion, busqueda semantica y agrupacion de textos relacionados con crisis \cite{Lamsal2024}. Para este TFM, esa linea es relevante porque confirma la utilidad del NLP, pero tambien marca una frontera: procesar texto no equivale a decidir prioridad operativa.
 
-Desde la óptica del TFM, el sistema propuesto no pretende sustituir la función del CECOP, del CECOPI o del PMA. Su finalidad es apoyar una tarea más concreta: ayudar a estructurar la información disponible de un incidente y generar una recomendación de prioridad operativa que facilite la primera decisión humana.
+En el sistema propuesto, el NLP es la Capa 1. Su funcion es extraer variables V01--V15 y se\~nales textuales como \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_incendio} o \texttt{signal\_rescate}. La prioridad no la decide el extractor textual, sino la Capa 2 interpretable, lo que reduce el riesgo de convertir un clasificador de texto en una caja negra de decision.
 
-\section{Saturación informativa y consecuencias operativas en emergencias}
+\section{Supervision debil y construccion de etiquetas P1--P4}
 
-La saturación informativa se produce cuando el volumen, la velocidad o la heterogeneidad de la información supera la capacidad del operador para procesarla de forma eficaz. En emergencias, este fenómeno se agrava porque la información relevante puede llegar simultáneamente desde llamadas al 112, partes de intervención, avisos meteorológicos, registros cartográficos, redes sociales, sensores y comunicaciones interadministrativas.
+Una dificultad central del proyecto es que el Registro de Emergencias del 112 de Castilla y Leon no contiene una prioridad oficial P1--P4. Esto impide entrenar directamente un modelo supervisado convencional sobre una verdad institucional. La solucion adoptada es construir una etiqueta academica mediante supervision debil.
 
-La literatura clásica sobre toma de decisiones en crisis ha descrito este problema desde distintos enfoques. Klein \cite{Klein1998} estudió la toma de decisiones en condiciones naturalistas, donde los profesionales experimentados no siempre comparan todas las alternativas posibles, sino que reconocen patrones y actúan bajo presión temporal. Comfort \cite{Comfort2007} analizó la importancia de la coordinación y el flujo de información en sistemas de respuesta complejos. Estas referencias siguen siendo útiles para comprender el problema operativo, aunque no deben interpretarse como estado actual de la inteligencia artificial aplicada al dominio.
+La supervision debil permite combinar varias fuentes imperfectas de etiquetado, como reglas heuristicas, anotadores automaticos, clustering, modelos auxiliares o criterios expertos, para generar una etiqueta probabilistica de entrenamiento. Snorkel es una referencia consolidada en esta linea, al formalizar el uso de funciones de etiquetado y modelos generativos para crear datos de entrenamiento a partir de supervision imperfecta \cite{Ratner2020Snorkel}.
 
-En términos prácticos, la saturación informativa puede provocar varios efectos negativos: retraso en la primera decisión, duplicación de esfuerzos, infravaloración de incidentes críticos, sobrepriorización de incidentes menores, pérdida de trazabilidad y dificultad para justificar por qué se actuó de una determinada manera. En escenarios con múltiples incidentes simultáneos, el problema se amplifica porque el operador no solo debe valorar cada incidente por separado, sino compararlos entre sí.
+En este TFM, la supervision debil no se presenta como sustituto de una validacion experta institucional. Es un mecanismo academico y reproducible para poder entrenar y evaluar el prototipo con datos reales abiertos. Por ello se exige medir acuerdo, documentar la guia de etiquetado, analizar discrepancias y realizar ablaciones que eviten circularidad entre reglas de etiquetado y reglas del modelo.
 
-El reto técnico consiste en construir sistemas que reduzcan esa carga informativa sin ocultar información relevante ni generar una falsa sensación de certeza. Un sistema de apoyo a la decisión debe filtrar, estructurar y priorizar, pero también debe reconocer sus límites. En un entorno crítico, una recomendación opaca o excesivamente segura puede ser más peligrosa que una recomendación prudente que explicita su nivel de confianza.
+\section{RuleFit, interpretabilidad y comparacion con modelos opacos}
 
-Por este motivo, la respuesta tecnológica no puede limitarse a aplicar un modelo predictivo. Debe integrar explicabilidad, trazabilidad, manejo de incertidumbre y supervisión humana. Esta orientación conecta directamente con el marco europeo actual sobre inteligencia artificial de alto riesgo y con la literatura reciente sobre inteligencia artificial explicable en gestión del riesgo de desastres \cite{EUAIAct2024,Ghaffarian2023,SAPEA2025}.
+La Capa 2 del sistema utiliza RuleFit como nucleo interpretable. RuleFit combina reglas derivadas de arboles con terminos lineales y seleccion regularizada, produciendo un conjunto de reglas con pesos que puede inspeccionarse y limitarse \cite{Friedman2008RuleFit}. Esta propiedad es especialmente adecuada para emergencias: el operador y el tribunal no solo necesitan saber que el sistema recomienda P1, sino que deben poder ver que reglas se han activado y por que.
 
-\section{Sistemas de apoyo a la decisión en emergencias}
+El proyecto mantiene tambien un baseline experto y un XGBoost ceiling. El baseline experto permite disponer de una referencia transparente, construida a partir de conocimiento normativo y se\~nales operativas. XGBoost funciona como techo opaco no productivo: sirve para comparar rendimiento potencial, pero no sustituye al nucleo interpretable. Esta separacion evita presentar un modelo de caja negra como decision operativa en un dominio de alto impacto.
 
-Los sistemas de apoyo a la decisión (Decision Support Systems, DSS) son herramientas diseñadas para asistir a una persona o equipo en la toma de decisiones complejas. En el ámbito de las emergencias, estos sistemas pueden ayudar a recopilar información, visualizar escenarios, simular evolución de riesgos, priorizar recursos, estimar daños o coordinar actores \cite{Turoff2004,Comes2011}.
+La literatura sobre interpretabilidad refuerza esta decision. Rudin \cite{Rudin2019} defiende que, en decisiones de alto riesgo, debe preferirse un modelo interpretable desde el dise\~no cuando sea viable, en lugar de explicar a posteriori una caja negra. Esta idea es coherente con la arquitectura del TFM: RuleFit decide la prioridad; el LLM explica y comunica, pero no decide de forma autonoma.
 
-Los DSS clásicos en emergencias suelen apoyarse en sistemas de información geográfica, bases de datos de recursos, cuadros de mando, modelos de simulación o reglas operativas. Su aportación principal es mejorar la disponibilidad y organización de la información, pero no siempre incorporan mecanismos de inteligencia artificial ni explicaciones detalladas de por qué una recomendación resulta prioritaria.
+\section{Explicabilidad, LLM local, RAG y MCP}
 
-La evolución reciente de la IA ha ampliado el potencial de estos sistemas. Actualmente es posible procesar grandes volúmenes de texto, imágenes satelitales, datos geoespaciales, series temporales meteorológicas y señales procedentes de sensores. Sin embargo, la literatura reciente insiste en una idea relevante para este TFM: la utilidad de la IA en emergencias depende de que el sistema sea interpretable, mantenga al humano en el ciclo de decisión y se aplique a tareas bien delimitadas \cite{Kuglitsch2022,SAPEA2025,JRC2025AI}.
+La explicabilidad en este TFM no se reduce a mostrar una probabilidad. La recomendacion debe acompa\~narse de reglas activadas, confianza, advertencias cuando proceda y citas normativas. Para ello, la Capa 3 utiliza un LLM local cuantizado, recuperacion aumentada sobre un corpus normativo de Castilla y Leon y herramientas MCP.
 
-En este sentido, el presente trabajo no plantea un DSS genérico para toda la gestión de emergencias. Propone un prototipo más acotado: un sistema de apoyo a la primera decisión que prioriza incidentes mediante un motor explicable. Esta delimitación es importante porque evita sobredimensionar el alcance y permite evaluar con mayor rigor una contribución concreta.
+El uso de un LLM local responde a dos necesidades: generar explicaciones comprensibles para el operador y preservar soberania del dato. La recuperacion aumentada (RAG) evita que la explicacion dependa solo de memoria generativa: el sistema consulta fragmentos del corpus normativo y los utiliza para sustentar citas legales. MCP aporta un mecanismo estandar para exponer herramientas como busqueda normativa, detalle de reglas y cita legal de prioridades; Anthropic lo presento en 2024 como un protocolo abierto para conectar asistentes de IA con fuentes de datos y herramientas externas \cite{Anthropic2024MCP}.
 
-\section{Inteligencia artificial aplicada a la gestión de incidentes}
+Esta capa debe entenderse con precision metodologica. El LLM no decide la prioridad ni debe inventar fundamento juridico. Su funcion es traducir una recomendacion ya calculada en una explicacion breve, trazable y revisable, con modo degradado si el modelo no esta disponible o supera el SLA.
 
-La inteligencia artificial aplicada a la gestión de emergencias se ha desarrollado en varias líneas: procesamiento de textos de crisis, clasificación de incidentes, análisis de imágenes, predicción de riesgos, detección temprana, evaluación de daños, simulación de escenarios y apoyo a la decisión \cite{Kuglitsch2022,SAPEA2025,JRC2025AI}. No todas estas líneas tienen la misma relación con el presente TFM. El interés principal se centra en aquellas que permiten transformar información operativa inicial en una recomendación de prioridad explicable.
+\section{Sistemas y referencias relacionadas}
 
-\subsection{Procesamiento del lenguaje natural en emergencias}
+Existen varias familias de trabajos y sistemas relacionados. AIDR demostro la utilidad de combinar aprendizaje automatico y participacion humana para clasificar mensajes de crisis en redes sociales \cite{Imran2014AIDR}. TREC Incident Streams proporciono benchmarks para clasificar mensajes de crisis y estimar criticidad \cite{TRECIS2021}. GDACS integra alertas globales multirriesgo e informacion para coordinacion internacional \cite{GDACS2025}. Copernicus Emergency Management Service aporta cartografia rapida y productos geoespaciales para apoyar la respuesta \cite{CopernicusEMS2025}. Las revisiones recientes del JRC y SAPEA subrayan el potencial de la IA en gestion de emergencias, pero tambien la necesidad de control humano, interpretabilidad y robustez \cite{JRC2025AI,SAPEA2025}.
 
-El procesamiento del lenguaje natural (Natural Language Processing, NLP) se ha utilizado ampliamente para extraer información relevante de textos generados durante crisis. Entre las fuentes habituales se encuentran mensajes en redes sociales, informes breves, llamadas transcritas, partes de intervención y comunicaciones ciudadanas.
-
-Los trabajos iniciales en este ámbito demostraron que las fuentes textuales no estructuradas podían contener información útil para la respuesta: localizaciones, peticiones de ayuda, daños observados, necesidades de recursos o señales de riesgo \cite{Vieweg2010,Caragea2011,Imran2015}. Estas referencias tienen valor como antecedentes históricos del área de crisis informatics, pero el estado actual ha avanzado hacia modelos basados en transformers y representaciones lingüísticas específicas del dominio.
-
-Una referencia reciente especialmente relevante es CrisisTransformers, propuesta por Lamsal et al. \cite{Lamsal2024}. Este trabajo introduce modelos preentrenados y codificadores de frases especializados en textos de crisis, entrenados con un corpus amplio de eventos críticos y evaluados sobre múltiples datasets públicos. Su aportación es clara para tareas de clasificación, búsqueda semántica y agrupación de textos de crisis.
-
-No obstante, existe una diferencia relevante entre ese tipo de trabajos y el presente TFM. CrisisTransformers y enfoques similares ayudan a procesar texto de crisis, pero no resuelven por sí solos la priorización operativa de incidentes en un puesto de mando. No incorporan normativa española de protección civil, no generan una escala P1--P4 vinculada a decisiones operativas locales y no explican la prioridad a partir de reglas normativas, contexto territorial y supervisión humana.
-
-Por ello, en este TFM el NLP se entiende como una capacidad auxiliar para estructurar señales textuales, no como el núcleo autónomo de decisión. El núcleo del sistema es el motor de priorización explicable.
-
-\subsection{Modelos de clasificación y priorización}
-
-Los modelos de clasificación permiten asignar una categoría a una entrada: tipo de incidente, nivel de urgencia, relevancia de un mensaje, presencia de daños o necesidad de ayuda. En el ámbito de crisis, se han utilizado árboles de decisión, máquinas de soporte vectorial, regresión logística, bosques aleatorios, modelos de gradient boosting y, más recientemente, modelos basados en transformers.
-
-Un caso especialmente relevante para este TFM es la línea de TREC Incident Streams (TREC-IS). Este benchmark se diseñó para investigar sistemas capaces de clasificar mensajes de crisis por tipo de información y estimar su criticidad para servicios de emergencia \cite{TRECIS2021}. Su interés radica en que introduce etiquetas de prioridad o criticidad, lo que lo aproxima parcialmente al problema de priorización.
-
-Sin embargo, TREC-IS trabaja principalmente sobre flujos de mensajes en redes sociales y no sobre incidentes operativos consolidados de un servicio 112. Además, su prioridad se refiere a la importancia de un mensaje para un oficial de respuesta, no a una prioridad operativa P1--P4 de un incidente dentro de un marco normativo concreto. Esta diferencia limita su transferencia directa al caso español y aragonés, aunque lo convierte en una referencia útil para justificar la necesidad de etiquetado, clasificación y evaluación de criticidad.
-
-Los modelos supervisados clásicos podrían ser útiles si se dispusiera de un histórico amplio de incidentes etiquetados con prioridad oficial. En el presente TFM, esa condición no se cumple. El Registro de Emergencias del 112 de Castilla y León aporta registros reales de incidentes, pero no contiene una etiqueta oficial de prioridad P1--P4. Por ello, el uso de modelos supervisados como núcleo principal sería metodológicamente débil: se entrenaría el modelo sobre etiquetas construidas por el propio equipo, no sobre una verdad operativa institucional.
-
-Esta limitación no elimina el interés de los modelos supervisados. Los sitúa como una línea futura razonable si se dispone de datos reales, anonimizados y etiquetados por expertos. Para el alcance actual, resulta más defendible establecer primero un baseline interpretable.
-
-\subsection{Sistemas híbridos: reglas y aprendizaje automático}
-
-Los sistemas híbridos combinan conocimiento explícito del dominio con técnicas de aprendizaje automático. En emergencias, esta aproximación resulta especialmente interesante porque permite integrar reglas normativas, criterios expertos, fuentes oficiales y datos observados.
-
-Un sistema puramente basado en reglas es transparente, pero puede ser demasiado rígido. Un modelo puramente aprendido puede captar patrones complejos, pero exige datos suficientes y puede resultar opaco. El enfoque híbrido intenta aprovechar las ventajas de ambos: reglas para las condiciones críticas, ponderación para graduar la prioridad y aprendizaje futuro para calibrar pesos o detectar patrones cuando existan datos suficientes.
-
-Este enfoque es coherente con la recomendación de utilizar modelos interpretables en dominios de alto impacto \cite{Rudin2019}. También se alinea con la revisión de Ghaffarian et al. \cite{Ghaffarian2023}, que destaca la necesidad creciente de transparencia e interpretabilidad en aplicaciones de IA para la gestión del riesgo de desastres.
-
-El baseline propuesto en este TFM se sitúa precisamente en esta lógica híbrida, aunque en su primera versión no entrena un modelo complejo. Combina reglas duras, scoring ponderado y capa de confianza y explicación. Esta arquitectura permite una priorización trazable y evaluable con pocos datos, dejando abierta la posibilidad de incorporar modelos supervisados en fases posteriores.
-
-\section{Explicabilidad y supervisión humana en sistemas críticos}
-
-La explicabilidad es una condición esencial para que un sistema de IA pueda utilizarse en dominios críticos. En contextos donde las recomendaciones pueden influir en la seguridad de las personas, no basta con que el sistema produzca una salida correcta de forma estadística: debe permitir comprender por qué se ha generado esa salida.
-
-La inteligencia artificial explicable (Explainable Artificial Intelligence, XAI) agrupa métodos y principios orientados a hacer comprensibles los modelos de IA y sus decisiones. Existen técnicas post-hoc, como LIME o SHAP, que tratan de explicar modelos ya entrenados \cite{Ribeiro2016,Lundberg2017}. Estas técnicas han sido importantes para popularizar la interpretabilidad, pero presentan una limitación relevante: explican a posteriori modelos que pueden seguir siendo opacos en su lógica interna.
-
-En dominios de alto riesgo, Rudin \cite{Rudin2019} defiende que, cuando sea posible, deben utilizarse modelos interpretables desde el diseño en lugar de modelos de caja negra explicados posteriormente. Esta idea resulta especialmente importante para el presente TFM. En un puesto de mando de emergencias, el operador debe poder entender de forma directa qué regla se ha activado, qué variable ha elevado la prioridad y por qué el sistema asigna una confianza determinada.
-
-La supervisión humana es el segundo pilar. El Reglamento Europeo de Inteligencia Artificial refuerza la importancia del control humano en sistemas de alto riesgo \cite{EUAIAct2024}. En el contexto del TFM, esto se traduce en una regla de diseño: el sistema recomienda, pero no decide. La prioridad generada por el motor debe ser revisable, corregible y rechazable por el operador.
-
-Por tanto, la explicabilidad no se plantea como una funcionalidad secundaria de interfaz. Es un requisito estructural del sistema. Condiciona la selección del baseline, el diseño de las variables, el registro de reglas activadas, el cálculo de confianza y la forma de presentar la recomendación al usuario.
-
-\section{Revisión de trabajos previos y soluciones relacionadas}
-
-La literatura y los sistemas existentes permiten identificar varias familias de soluciones relacionadas con este TFM. Algunas se centran en clasificar información textual de crisis; otras en generar mapas rápidos; otras en alertas globales; y otras en revisar el papel de la IA en la gestión del riesgo. Ninguna de ellas coincide por completo con el enfoque del presente trabajo, pero todas aportan elementos útiles para delimitar la contribución.
-
-AIDR (Artificial Intelligence for Disaster Response) es una plataforma histórica relevante porque combinó aprendizaje automático y participación humana para clasificar mensajes de redes sociales durante crisis \cite{Imran2014AIDR}. Su aportación principal fue demostrar que humanos y máquinas podían colaborar para clasificar grandes volúmenes de mensajes en tiempo real. Su limitación para este TFM es que se centra en microblogs y categorías informativas, no en priorización normativa de incidentes 112.
-
-TREC-IS constituye una referencia más cercana al problema de criticidad, porque sus datasets incluyen mensajes de crisis etiquetados por tipo de información y prioridad para la respuesta \cite{TRECIS2021}. Sin embargo, sigue trabajando con mensajes, no con incidentes operativos consolidados. Además, no incorpora la lógica de planes territoriales españoles ni fuentes oficiales como AEMET, SNCZI o normativa autonómica.
-
-CrisisTransformers representa el estado reciente del NLP específico para textos de crisis \cite{Lamsal2024}. Su fortaleza está en la representación lingüística especializada y en la mejora de tareas de clasificación y búsqueda semántica. Su limitación es que no constituye un sistema de apoyo a la decisión completo ni genera recomendaciones operativas explicables.
-
-GDACS (Global Disaster Alert and Coordination System) es un sistema operativo internacional de alerta y coordinación ante desastres. La documentación reciente del Joint Research Centre (JRC) describe el componente Multi-Hazard Early Warning System y el uso de puntuaciones basadas en magnitud del fenómeno, población expuesta y vulnerabilidad o capacidad de afrontamiento \cite{GDACS2025}. Su enfoque demuestra la utilidad de integrar amenaza, exposición y vulnerabilidad. No obstante, GDACS se orienta a grandes desastres y posible asistencia internacional, no a la priorización multiincidente en una sala 112 autonómica.
-
-Copernicus Emergency Management Service aporta productos de cartografía rápida, estimación de daños y reporte situacional en apoyo a la gestión de emergencias \cite{CopernicusEMS2025}. Su valor es muy alto para enriquecer el contexto geoespacial y situacional, pero no resuelve por sí mismo la decisión de prioridad operativa de incidentes locales ni la integración con reglas normativas autonómicas.
-
-Finalmente, los trabajos recientes del JRC sobre IA en gestión del riesgo de desastres subrayan el potencial de la IA para anticipación, preparación, procesamiento de información, evaluación de riesgos y apoyo científico a la decisión, insistiendo en la necesidad de interpretabilidad y enfoque human-in-the-loop \cite{JRC2025AI}. Esta orientación es plenamente coherente con el enfoque del TFM.
-
-\section{Comparación con enfoques y sistemas existentes}
-
-La Tabla~\ref{tab:comparacion-sistemas-existentes} resume la comparación entre los enfoques y sistemas revisados y la propuesta de este TFM. La finalidad de esta tabla no es afirmar que el prototipo desarrollado supere a sistemas consolidados, sino delimitar con precisión qué problema aborda cada uno y cuál es la brecha específica que justifica el trabajo.
+Ninguna de estas referencias resuelve exactamente el problema abordado aqui: priorizar incidentes 112 individuales en Castilla y Leon mediante una escala academica P1--P4, con variables trazables, RuleFit interpretable, explicacion normativa y supervision humana.
 
 \begin{table}[htbp]
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{|p{2.5cm}|p{3.2cm}|p{3.3cm}|p{3.3cm}|p{2.9cm}|}
+\begin{tabular}{|p{2.6cm}|p{3.3cm}|p{3.5cm}|p{3.5cm}|}
 \hline
-\textbf{Sistema o enfoque} & \textbf{Qué resuelve} & \textbf{Limitación frente al TFM} & \textbf{Qué aporta el TFM} & \textbf{Referencia} \\ \hline
-
-AIDR & Clasificación automática y colaborativa de mensajes de crisis en redes sociales & Se centra en microblogs, no en incidentes 112 consolidados ni en normativa española & Integra variables operativas, reglas normativas y prioridad P1--P4 revisable & \cite{Imran2014AIDR} \\ \hline
-
-TREC-IS & Benchmark para clasificar mensajes de crisis por tipo de información y criticidad & Prioriza mensajes, no incidentes operativos; no incorpora fuentes oficiales territoriales ni normativa autonómica & Traslada la idea de criticidad a un motor de priorización de incidentes con trazabilidad normativa & \cite{TRECIS2021} \\ \hline
-
-CrisisTransformers & Modelos NLP especializados para textos de crisis y tareas de clasificación semántica & No constituye un DSS completo ni decide prioridad operativa; requiere adaptación al dominio 112 & Usa el procesamiento textual como apoyo, pero sitúa el núcleo en un baseline explicable & \cite{Lamsal2024} \\ \hline
-
-GDACS & Alerta global multirriesgo basada en magnitud, exposición y vulnerabilidad & Orientado a grandes desastres e impacto internacional, no a concurrencia de incidentes locales & Adapta la lógica amenaza--exposición--vulnerabilidad a escala de incidente y caso piloto Aragón & \cite{GDACS2025} \\ \hline
-
-Copernicus EMS Rapid Mapping & Cartografía rápida, estimación de daño y reporte situacional tras eventos & Aporta contexto geoespacial, pero no prioriza incidentes ni genera explicación normativa & Incorpora fuentes contextuales como apoyo al motor, no como sustituto de la decisión & \cite{CopernicusEMS2025} \\ \hline
-
-XAI en gestión del riesgo de desastres & Revisión de métodos de explicabilidad aplicados a DRM & Marco de revisión, no motor específico para puestos de mando 112 & Implementa explicabilidad intrínseca mediante reglas, scoring y confianza & \cite{Ghaffarian2023} \\ \hline
-
-IA europea para gestión del riesgo & Identifica oportunidades de IA en anticipación, preparación y apoyo científico & Orientación estratégica, no prototipo local evaluado con escenarios & Materializa esos principios en un prototipo acotado, human-in-the-loop y trazable & \cite{JRC2025AI,SAPEA2025} \\ \hline
-
-Baseline interpretable del TFM & Priorización P1--P4 de incidentes con reglas, scoring, confianza y explicación & No validado en sala 112 real; depende de dataset piloto y escenarios simulados & Aporta una solución viable, explicable y alineada con normativa española y caso Aragón & Elaboración propia \\ \hline
-
+\textbf{Sistema o enfoque} & \textbf{Que aporta} & \textbf{Limitacion frente al TFM} & \textbf{Relacion con la propuesta} \\ \hline
+AIDR & Clasificacion colaborativa de mensajes de crisis & Mensajes de redes sociales, no incidentes 112 consolidados & Inspira colaboracion humano-maquina \\ \hline
+TREC-IS & Criticidad e informacion util en crisis & Prioriza mensajes, no incidentes con normativa local & Justifica tareas de criticidad y evaluacion \\ \hline
+CrisisTransformers & NLP especializado para textos de crisis & No incorpora prioridad P1--P4 ni reglas normativas & Referente para Capa 1 NLP \\ \hline
+GDACS & Alerta global multirriesgo & Escala internacional, no sala 112 autonoma & Inspira amenaza, exposicion y vulnerabilidad \\ \hline
+Copernicus EMS & Cartografia y productos geoespaciales & No decide prioridad ni explica normativa & Fuente futura de contexto geoespacial \\ \hline
+RuleFit & Modelo interpretable basado en reglas ponderadas & Requiere etiquetas y control de sparsity & Nucleo de Capa 2 \\ \hline
+LLM + RAG + MCP & Explicacion y acceso a corpus/herramientas & Riesgo de alucinacion si no se acota & Capa 3 explicativa, no decisoria \\ \hline
 \end{tabular}
-\caption{Comparación entre sistemas existentes y propuesta del TFM.}
+\caption{Comparacion sintetica entre enfoques relacionados y propuesta del TFM.}
 \label{tab:comparacion-sistemas-existentes}
 \end{table}
 
-\noindent \textit{Fuente: elaboración propia a partir de las referencias citadas.}
+\section{Brecha identificada}
 
-La comparación permite extraer tres conclusiones. En primer lugar, existe una línea consolidada de trabajo en clasificación de información de crisis, pero su unidad de análisis suele ser el mensaje, no el incidente operativo consolidado. En segundo lugar, existen sistemas geoespaciales y de alerta muy desarrollados, pero no se orientan a priorizar incidentes locales P1--P4 en un entorno 112. En tercer lugar, la literatura reciente insiste en la necesidad de IA explicable y supervisión humana, pero todavía existe margen para materializar estos principios en prototipos concretos y evaluables.
+A partir de la revision anterior, la brecha del TFM puede formularse asi: falta un prototipo academico, reproducible y explicable que combine incidentes reales 112, etiqueta P1--P4 academica, NLP en espa\~nol, supervision debil, RuleFit interpretable, explicacion normativa con LLM local, herramientas MCP y evaluacion orientada a seguridad del operador.
 
-\section{Brecha identificada y aportación específica del TFM}
-
-A partir de la revisión anterior, se identifica una brecha concreta: no se ha localizado un sistema académico o institucional que combine simultáneamente los siguientes elementos en el contexto español de protección civil:
-
-\begin{itemize}
-    \item priorización de incidentes operativos individuales, no solo clasificación de mensajes;
-    \item escala funcional P1--P4 orientada a la primera decisión;
-    \item variables justificadas por normativa estatal y autonómica;
-    \item integración de fuentes oficiales de contexto como AEMET, SNCZI, INE o cartografía territorial;
-    \item uso de datos reales de un servicio 112 como apoyo al pipeline de ingesta y extracción de señales;
-    \item baseline interpretable basado en reglas duras, scoring ponderado y capa de confianza;
-    \item explicación intrínseca de la recomendación;
-    \item supervisión humana obligatoria.
-\end{itemize}
-
-La aportación específica del TFM se sitúa en esa intersección. No pretende competir con sistemas globales como GDACS ni con servicios geoespaciales como Copernicus EMS. Tampoco pretende superar a modelos avanzados de NLP como CrisisTransformers en tareas de clasificación textual. Su contribución es distinta: diseñar, implementar y evaluar un motor de priorización explicable para apoyar la primera decisión en puestos de mando de emergencias, manteniendo el control humano y la trazabilidad normativa.
-
-Esta brecha justifica la elección del baseline interpretable. En ausencia de un dataset amplio y etiquetado con prioridad oficial, un modelo de caja negra sería difícil de defender. En cambio, un baseline basado en reglas y scoring permite hacer explícita la lógica de priorización, auditar cada recomendación y construir una base sobre la que podrían compararse modelos más complejos en el futuro.
+La propuesta cubre esa brecha con una arquitectura sobria. La Capa 1 estructura el incidente; la Capa 2 recomienda prioridad; la Capa 3 explica; el operador decide; y el sistema registra todo para auditoria. Esta cadena preserva el control humano y evita que la IA aparezca como autoridad autonoma.
 
 \section{Conclusiones del estado del arte}
 
-La revisión realizada permite extraer varias conclusiones relevantes para el diseño del sistema.
+La revision permite extraer cinco conclusiones. Primera, la gestion de emergencias exige sistemas que ayuden a priorizar bajo incertidumbre, no solo a acumular informacion. Segunda, el NLP es necesario para estructurar texto, pero no suficiente para decidir prioridad. Tercera, la ausencia de etiquetas oficiales P1--P4 obliga a construir una etiqueta academica mediante supervision debil y validacion explicita. Cuarta, RuleFit ofrece un equilibrio adecuado entre aprendizaje y explicabilidad para el nucleo de decision. Quinta, los LLM locales con RAG y MCP pueden mejorar la comunicacion de la recomendacion, siempre que se mantengan subordinados al modelo interpretable y a la supervision humana.
 
-Primera. La gestión de emergencias es un dominio caracterizado por presión temporal, incertidumbre, multiplicidad de actores y necesidad de coordinación. Estas condiciones hacen que la primera decisión operativa sea especialmente sensible a la calidad y estructura de la información disponible.
-
-Segunda. Los sistemas de apoyo a la decisión en emergencias han evolucionado desde herramientas de organización y visualización hacia sistemas que incorporan datos geoespaciales, modelos predictivos, análisis textual e IA. Sin embargo, la incorporación de IA debe realizarse con prudencia cuando el dominio es crítico.
-
-Tercera. Las referencias clásicas sobre toma de decisiones, coordinación y conciencia situacional siguen siendo útiles para explicar el problema operativo. No obstante, el estado actual de la IA aplicada a emergencias debe apoyarse en literatura reciente sobre NLP de crisis, XAI, sistemas human-in-the-loop y gestión del riesgo de desastres.
-
-Cuarta. Los trabajos recientes en NLP, como CrisisTransformers, muestran avances relevantes para procesar textos de crisis, pero no resuelven por sí solos la priorización operativa de incidentes en un marco 112. Del mismo modo, benchmarks como TREC-IS aportan una base útil sobre criticidad de mensajes, pero su unidad de análisis no coincide con la del presente TFM.
-
-Quinta. Los sistemas operativos como GDACS o Copernicus EMS evidencian la importancia de integrar amenaza, exposición, vulnerabilidad y contexto geoespacial. Sin embargo, están orientados a escalas y funciones distintas de la priorización multiincidente en un puesto de mando autonómico.
-
-Sexta. La explicabilidad intrínseca y la supervisión humana activa no deben ser funcionalidades añadidas a posteriori, sino principios de diseño que condicionen la arquitectura del sistema desde el inicio. Esta conclusión es coherente con el marco europeo de IA y con la literatura reciente sobre XAI en gestión del riesgo de desastres.
-
-Séptima. La comparación con enfoques existentes permite justificar que el baseline interpretable no es una solución improvisada por falta de datos, sino una elección metodológica coherente con el dominio. Permite razonar con información parcial, mantener la trazabilidad de las reglas y preservar la supervisión humana.
-
-Estas conclusiones preparan directamente el tránsito al Capítulo 3, donde se desarrolla el marco normativo que fundamenta las variables y reglas del motor, y al Capítulo 4, donde se formulan los objetivos y la metodología que articulan la respuesta a la brecha identificada.
+Estas conclusiones preparan el transito al Capitulo 3, donde se desarrolla el marco operativo y normativo de Castilla y Leon que fundamenta las variables, reglas y citas del sistema.
