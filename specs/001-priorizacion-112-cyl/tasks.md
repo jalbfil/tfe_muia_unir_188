@@ -126,9 +126,9 @@
 
 ## Fase 9 â€” EvaluaciÃ³n (Conjunto, lÃ­der Juan Carlos para ML; Brian para LLM)
 
-- [ ] **T110** `[J]` `scripts/run_evaluation.py` produce todas las mÃ©tricas obligatorias de Cap. 9 sobre test set y test temporal.
-- [ ] **T111** `[J]` AnÃ¡lisis de sesgo por provincia, aÃ±o y categorÃ­a â†’ tablas + figuras.
-- [ ] **T112** `[J]` Matriz de confusiÃ³n + anÃ¡lisis de errores en P1 (falsos negativos crÃ­ticos).
+- [x] **T110** `[J]` `scripts/run_evaluation.py` produce todas las mÃ©tricas obligatorias de Cap. 9 sobre test set y test temporal.
+- [x] **T111** `[J]` AnÃ¡lisis de sesgo por provincia, aÃ±o y categorÃ­a â†’ tablas + figuras.
+- [x] **T112** `[J]` Matriz de confusiÃ³n + anÃ¡lisis de errores en P1 (falsos negativos crÃ­ticos).
 - [ ] **T113** `[B]` EvaluaciÃ³n fidelidad explicaciones con **LLM-as-Judge** (Zheng et al., 2023): juez independiente puntÃºa coherencia explicaciÃ³nâ†”reglas sobre â‰¥100 casos.
 - [ ] **T114** `[C]` ValidaciÃ³n interna entre los 3 autores sobre â‰¥30 casos (Q-02 cerrada, R-13): cada autor etiqueta de forma independiente, se calcula Î± inter-anotador local y se documenta divergencia con el sistema. Plantilla en `anexo_d.tex`. **ValidaciÃ³n externa con personal del 112** queda como trabajo futuro documentado en Cap. 10.
 - [ ] **T115** `[C]` Conformidad UE-IA: checklist Anexo III evaluada â†’ `anexo_m.tex` (trazabilidad extendida).

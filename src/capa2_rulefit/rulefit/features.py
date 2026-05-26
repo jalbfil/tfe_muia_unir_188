@@ -59,6 +59,8 @@ def row_to_feature_dict(row: dict[str, Any]) -> dict[str, float]:
             "cat_otros": 1.0 if not category or "otros" in category else 0.0,
         }
     )
+    for feature in CATEGORY_FEATURES:
+        values[feature] = max(values[feature], _truthy(row.get(feature)))
     return values
 
 

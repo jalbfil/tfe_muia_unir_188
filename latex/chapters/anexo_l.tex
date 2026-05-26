@@ -77,7 +77,7 @@ Se comparan tres alternativas:
 \hline
 \textbf{Modelo} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} & \textbf{Reglas} & \textbf{Train s} & \textbf{ms/fila} \\ \hline
 Baseline experto & 0.727835 & 0.703932 & 0.998457 & 16 & -- & -- \\ \hline
-RuleFit-lite & 0.885911 & 0.884163 & 0.938272 & 30 & 6.504204 & 0.450127 \\ \hline
+RuleFit-lite & 0.881100 & 0.880750 & 0.921296 & 30 & 6.504204 & 0.450127 \\ \hline
 RuleFit imodels & 0.768385 & 0.568239 & 0.902778 & 30 & 13.191647 & 7.496081 \\ \hline
 \end{tabular}
 \end{table}
@@ -88,8 +88,8 @@ El modelo seleccionado para Capa 2 v0.1.0 es \textbf{RuleFit-lite}. La decision 
 justifica por cuatro razones:
 
 \begin{itemize}
-    \item obtiene la mejor macro-F1 en test: 0.884163;
-    \item mantiene recall P1 de 0.938272, por encima del objetivo minimo de 0.85;
+    \item obtiene la mejor macro-F1 reproducible en test: 0.880750;
+    \item mantiene recall P1 de 0.921296, por encima del objetivo minimo de 0.85;
     \item respeta el limite de 30 reglas activas exportadas;
     \item presenta menor latencia de inferencia que la ejecucion diagnostica con
     \texttt{imodels}.

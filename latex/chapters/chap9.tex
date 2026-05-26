@@ -114,19 +114,19 @@ La Tabla~\ref{tab:9-comparativa} muestra la comparativa sobre el conjunto de tes
 \hline
 \textbf{Modelo} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} & \textbf{Reglas} & \textbf{Train s} & \textbf{ms/fila} \\ \hline
 Baseline experto & 0.727835 & 0.703932 & 0.998457 & 16 & -- & -- \\ \hline
-RuleFit-lite & 0.885911 & 0.884163 & 0.938272 & 30 & 6.504204 & 0.450127 \\ \hline
+RuleFit-lite & 0.881100 & 0.880750 & 0.921296 & 30 & 6.504204 & 0.450127 \\ \hline
 RuleFit \texttt{imodels} & 0.768385 & 0.568239 & 0.902778 & 30 & 13.191647 & 7.496081 \\ \hline
 \end{tabular}
 \end{table}
 
 El baseline experto obtiene un recall P1 muy alto (0.998457), como cabia esperar por
 su diseno conservador, pero su macro-F1 queda en 0.703932. RuleFit-lite mejora
-claramente la macro-F1 hasta 0.884163, manteniendo un recall P1 de 0.938272, por
+claramente la macro-F1 hasta 0.880750, manteniendo un recall P1 de 0.921296, por
 encima del umbral minimo de 0.85. RuleFit \texttt{imodels}, en la ejecucion diagnostica
 disponible, no supera a RuleFit-lite y presenta mayor latencia de inferencia.
 
 La decision experimental es seleccionar \textbf{RuleFit-lite} como modelo Capa 2
-v0.1.0. La seleccion se basa en cuatro criterios: mejor macro-F1 en test, recall P1
+v0.1.0. La seleccion se basa en cuatro criterios: mejor macro-F1 reproducible en test, recall P1
 suficiente, cumplimiento del limite de 30 reglas activas y menor coste de inferencia.
 
 \section{Metricas por clase del modelo seleccionado}
@@ -142,10 +142,10 @@ en el conjunto de test.
 \begin{tabular}{|l|r|r|r|r|}
 \hline
 \textbf{Clase} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Soporte} \\ \hline
-P1 & 0.956044 & 0.938272 & 0.947075 & 648 \\ \hline
-P2 & 0.759615 & 0.824405 & 0.790685 & 336 \\ \hline
-P3 & 0.908163 & 0.894207 & 0.901131 & 397 \\ \hline
-P4 & 0.698113 & 1.000000 & 0.822222 & 74 \\ \hline
+P1 & 0.940157 & 0.921296 & 0.930631 & 648 \\ \hline
+P2 & 0.751351 & 0.827381 & 0.787535 & 336 \\ \hline
+P3 & 0.912329 & 0.838791 & 0.874016 & 397 \\ \hline
+P4 & 0.870588 & 1.000000 & 0.930818 & 74 \\ \hline
 \end{tabular}
 \end{table}
 
@@ -168,17 +168,34 @@ RuleFit-lite en test.
 \begin{tabular}{|l|r|r|r|r|}
 \hline
 \textbf{Referencia / Prediccion} & \textbf{P1} & \textbf{P2} & \textbf{P3} & \textbf{P4} \\ \hline
-P1 & 608 & 29 & 11 & 0 \\ \hline
-P2 & 23 & 277 & 8 & 28 \\ \hline
-P3 & 5 & 59 & 355 & 22 \\ \hline
+P1 & 597 & 32 & 19 & 0 \\ \hline
+P2 & 38 & 278 & 13 & 7 \\ \hline
+P3 & 0 & 60 & 333 & 4 \\ \hline
 P4 & 0 & 0 & 0 & 74 \\ \hline
 \end{tabular}
 \end{table}
 
 No aparecen errores P1 clasificados como P4. La mayoria de discrepancias criticas son
-desplazamientos a niveles adyacentes, especialmente P1--P2 y P2--P3/P4. Este patron
+desplazamientos a niveles adyacentes, especialmente P1--P2, aunque se detectan 19 casos
+P1--P3 que deben revisarse manualmente antes de congelar el modelo. Este patron
 es coherente con la naturaleza academica de la etiqueta y con la dificultad de separar
 casos frontera.
+
+\section{Robustez temporal y sesgo interno}
+
+Para comprobar que el rendimiento no depende exclusivamente del split estratificado, se
+evalua el mismo modelo sobre el test temporal de 2022. En este escenario se obtienen
+735 registros, accuracy 0.884354, macro-F1 0.877594 y recall P1 0.928767. La estabilidad
+entre ambos cortes sugiere que no hay una degradacion temporal relevante en la version
+v0.1.0, aunque no sustituye a una validacion prospectiva con datos nuevos.
+
+El analisis por subgrupos se realiza por provincia, ano y categoria operativa. La
+provincia con menor macro-F1 dentro de los grupos con soporte suficiente es Salamanca
+(0.769722), seguida de Palencia (0.843922) y Zamora (0.851736). Por categoria, incendio
+presenta el resultado mas debil, con macro-F1 0.740248 y recall P1 0.628571, mientras
+que trafico alcanza macro-F1 0.891502 y recall P1 0.948454. Estos resultados no
+permiten afirmar sesgo estructural, pero si identifican focos de revision prioritaria:
+incendios, casos sanitarios y provincias con menor soporte o peor macro-F1.
 
 \section{Interpretabilidad}
 
@@ -191,7 +208,34 @@ explicacion normativa y operacional.
 El baseline experto queda documentado en el Anexo~\ref{cap:anexoe}; la model card de
 Capa 2 y la comparativa completa se recogen en el Anexo~\ref{cap:anexol}. Los
 artefactos reproducibles principales son \texttt{artifacts/reports/capa2\_v0.1.0.json}
-y \texttt{artifacts/reports/capa2\_model\_selection\_v0.1.0.json}.
+y \texttt{artifacts/reports/evaluation\_v0.1.0.json}. Este ultimo consolida T110--T112:
+metricas finales, test temporal, tablas de sesgo y fichero de falsos negativos P1.
+
+\section{Validacion interna y trazabilidad}
+
+La evaluacion automatica se complementa con un procedimiento de validacion interna. El
+objetivo no es simular una certificacion externa del 112, sino comprobar que cada
+recomendacion puede revisarse con evidencias suficientes y que las discrepancias quedan
+registradas de forma auditable.
+
+En cada caso revisado se muestran el texto operativo minimizado, provincia, fecha,
+categoria preliminar, etiqueta academica, acuerdo de weak supervision, recomendacion
+P1--P4, confianza, probabilidades por clase, reglas activadas, features permitidas,
+columnas excluidas por anti-leakage, version de modelo y, cuando la Capa 3 esta
+disponible, la explicacion normativa asociada. Esta ficha permite que el revisor acepte
+la recomendacion, la modifique o la rechace.
+
+El registro del feedback se realiza mediante el contrato \texttt{OperatorDecision} y el
+endpoint \texttt{/feedback}. La decision humana queda enlazada con \texttt{InferenceLog},
+incluyendo \texttt{incident\_id}, prioridad recomendada, prioridad final asignada,
+motivo de divergencia, revisor, timestamp, hash de entrada y versiones de modelo. Las
+divergencias de dos o mas niveles se marcan como casos de auditoria especial.
+
+La muestra minima de revision interna debe incluir todos los falsos negativos P1 del
+test estratificado, o al menos 30 casos si se selecciona una muestra acotada para
+defensa, junto con casos frontera P1/P2 y P2/P3. En la ejecucion actual se detectan 51
+falsos negativos P1: 32 P1--P2, 19 P1--P3 y ningun P1--P4. La plantilla de revision y
+el protocolo quedan versionados en \texttt{resources/internal\_validation}.
 
 \section{Limitaciones}
 
