@@ -63,7 +63,7 @@ Test & 1.455 & 648 & 336 & 397 & 74 \\ \hline
 \end{table}
 
 Adicionalmente se ha generado un split temporal alternativo: entrenamiento hasta 2020,
-validacion en 2021 y test en 2022. Este split queda reservado para analisis de deriva
+validacion en 2021 y test en 2022. Este split se utiliza como prueba de robustez
 temporal, mientras que el experimento principal usa el split estratificado por su mayor
 equilibrio entre anos, provincias y etiquetas.
 
@@ -126,8 +126,9 @@ encima del umbral minimo de 0.85. RuleFit \texttt{imodels}, en la ejecucion diag
 disponible, no supera a RuleFit-lite y presenta mayor latencia de inferencia.
 
 La decision experimental es seleccionar \textbf{RuleFit-lite} como modelo Capa 2
-v0.1.0. La seleccion se basa en cuatro criterios: mejor macro-F1 reproducible en test, recall P1
-suficiente, cumplimiento del limite de 30 reglas activas y menor coste de inferencia.
+v0.1.0. La seleccion se basa en cuatro criterios: mejor macro-F1 reproducible en test,
+recall P1 suficiente, cumplimiento del limite de 30 reglas activas y menor coste de
+inferencia.
 
 \section{Metricas por clase del modelo seleccionado}
 

@@ -23,6 +23,7 @@ Los splits usados son versionados y reproducibles:
     \item Train: 6.511 registros.
     \item Validacion: 1.414 registros.
     \item Test: 1.455 registros.
+    \item Test temporal 2022: 735 registros.
 \end{itemize}
 
 \section*{L.3. Features permitidas y anti-leakage}
@@ -100,7 +101,21 @@ canonica para experimentos futuros con mayor presupuesto de computo. En esta ver
 sin embargo, RuleFit-lite ofrece mejor equilibrio entre rendimiento, interpretabilidad,
 coste y reproducibilidad.
 
-\section*{L.6. Limitaciones}
+\section*{L.6. Evaluacion temporal y trazabilidad}
+
+La evaluacion final se consolida mediante \texttt{scripts/run\_evaluation.py}. Este
+script genera \texttt{artifacts/reports/evaluation\_v0.1.0.json} y su version
+\texttt{.md}, junto con tablas por provincia, ano y categoria, figuras SVG y el listado
+de falsos negativos P1. Sobre el test temporal de 2022, RuleFit-lite alcanza accuracy
+0.884354, macro-F1 0.877594 y recall P1 0.928767. La estabilidad respecto al test
+estratificado apoya la seleccion del modelo, aunque no sustituye una validacion
+prospectiva con datos operativos nuevos.
+
+El mismo informe identifica 51 falsos negativos P1 en el test estratificado: 32 casos
+P1--P2, 19 casos P1--P3 y ningun caso P1--P4. Estos casos alimentan la plantilla de
+validacion interna documentada en \texttt{resources/internal\_validation}.
+
+\section*{L.7. Limitaciones}
 
 \begin{itemize}
     \item La variable objetivo es una etiqueta academica debil, no una prioridad

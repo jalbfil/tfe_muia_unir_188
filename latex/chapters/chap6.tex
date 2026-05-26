@@ -9,7 +9,7 @@ La version actual del TFM abandona el dise\~no inicial basado unicamente en regl
 
 \begin{itemize}
     \item \textbf{Capa 1: NLP operativo}. Extrae variables V01--V15 y se\~nales textuales desde el titulo, descripcion, categoria preliminar y contexto basico del incidente.
-    \item \textbf{Capa 2: priorizacion interpretable}. Produce una recomendacion P1--P4 mediante RuleFit, entrenado sobre etiquetas academicas generadas por supervision debil, y comparado contra un baseline experto y un techo XGBoost no productivo.
+    \item \textbf{Capa 2: priorizacion interpretable}. Produce una recomendacion P1--P4 mediante RuleFit-lite, entrenado sobre etiquetas academicas generadas por supervision debil, y comparado contra un baseline experto y una ejecucion diagnostica con \texttt{imodels}.
     \item \textbf{Capa 3: explicacion normativa}. Genera una explicacion breve para el operador mediante LLM local, recuperacion aumentada sobre corpus normativo de Castilla y Leon y herramientas MCP.
 \end{itemize}
 
@@ -135,7 +135,7 @@ La escala no equivale a situaciones operativas 0--3. Una situacion operativa es 
 
 \subsection{Supervision debil}
 
-Como el Registro 112 CyL no contiene prioridad oficial P1--P4, el entrenamiento de Capa 2 requiere construir una etiqueta academica. La estrategia es la supervision debil: varios anotadores imperfectos generan votos que se agregan en una etiqueta final con confianza. Entre las fuentes previstas se incluyen anotador LLM controlado, reglas heuristicas, extraccion NLP con intensificadores y agrupaciones de incidentes.
+Como el Registro 112 CyL no contiene prioridad oficial P1--P4, el entrenamiento de Capa 2 requiere construir una etiqueta academica. La estrategia es la supervision debil: varios anotadores imperfectos generan votos que se agregan en una etiqueta final con confianza. En la version v0.1.0 se emplean cuatro fuentes: reglas heuristicas, extraccion NLP con intensificadores, proxy semantico por agrupacion y LLM-as-annotator proxy controlado.
 
 La etiqueta debil no se presenta como verdad institucional. Es un artefacto de investigacion que permite entrenar y comparar modelos sobre datos reales abiertos. Por ello debe acompa\~narse de acuerdo inter-anotador, analisis de discrepancias y una ablacion anti-circularidad que compare el resultado sin la fuente de reglas heuristicas.
 
@@ -145,11 +145,13 @@ RuleFit se selecciona porque combina aprendizaje estadistico e interpretabilidad
 
 Esta restriccion es metodologica, no estetica. Un modelo con cientos de reglas seria dificil de defender ante un operador o un tribunal. En cambio, un conjunto reducido de reglas permite revisar por que P1 aumenta, que variables influyen y que anclajes normativos sostienen la recomendacion.
 
-\subsection{Baseline experto y XGBoost ceiling}
+\subsection{Baseline experto, RuleFit-lite e \texttt{imodels}}
 
 La Capa 2 no se evalua en aislamiento. Se compara con dos referencias. El baseline experto es un conjunto de reglas transparentes basadas en se\~nales y variables V01--V15, con anclaje normativo. Sirve como minimo defendible: RuleFit debe aportar mejora cuantitativa sin perder explicabilidad.
 
-XGBoost se utiliza como techo opaco no productivo. Su papel es estimar cuanto rendimiento podria obtenerse con un modelo de mayor capacidad, pero no se propone como motor principal por razones de explicabilidad, trazabilidad y coherencia con el dominio. Si XGBoost mejora a RuleFit, esa diferencia se interpreta como margen de investigacion futura, no como argumento para desplegar una caja negra.
+La segunda referencia es \texttt{imodels.RuleFitClassifier}, utilizada como implementacion canonica de RuleFit. Dado que la libreria trabaja en clasificacion binaria, se adopta un esquema one-vs-rest P1--P4. La version productiva del TFM selecciona RuleFit-lite porque mantiene la filosofia RuleFit, respeta el limite de reglas activas y ofrece mejor equilibrio entre rendimiento, latencia y reproducibilidad local.
+
+XGBoost queda como techo opaco no productivo y linea futura de contraste. Su posible utilidad seria estimar cuanto rendimiento podria obtenerse con un modelo de mayor capacidad, pero no se propone como motor principal por razones de explicabilidad, trazabilidad y coherencia con el dominio.
 
 \subsection{Probabilidad, confianza e invariantes}
 
@@ -216,9 +218,9 @@ Prioridad P1 por indicios de riesgo vital. La descripcion menciona herido grave 
 
 El operador puede aceptar la prioridad, modificarla o rechazarla. En cualquier caso, la divergencia queda registrada para evaluacion posterior.
 
-\section{Evaluacion prevista del dise\~no}
+\section{Evaluacion del dise\~no}
 
-El Capitulo 9 medira si el dise\~no cumple sus objetivos. Las metricas principales de Capa 2 son F1 macro, recall@P1, ECE, sparsity del modelo, AUC cuando proceda y matriz de confusion. El objetivo critico es recall@P1 igual o superior a 0,85, porque los falsos negativos graves son el riesgo mas importante. La calibracion debe alcanzar ECE igual o inferior a 0,10, y RuleFit debe respetar el limite de 30 reglas activas.
+El Capitulo 9 mide si el dise\~no cumple sus objetivos. Las metricas principales de Capa 2 son F1 macro, recall@P1, sparsity del modelo, latencia, rendimiento temporal, analisis por subgrupos y matriz de confusion. El objetivo critico es recall@P1 igual o superior a 0,85, porque los falsos negativos graves son el riesgo mas importante. La calibracion ECE queda identificada como mejora futura si el modelo se congela para demostracion, y RuleFit debe respetar el limite de 30 reglas activas.
 
 La Capa 3 se evaluara por validez contractual, latencia, presencia de citas en P1/P2 y fidelidad de explicacion respecto a reglas activadas. La validacion interna entre autores servira para comparar etiquetas humanas, etiqueta debil y recomendacion del sistema sobre un subconjunto de casos.
 

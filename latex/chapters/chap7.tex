@@ -58,7 +58,7 @@ La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del da
 
 \subsection{Auditoria inicial}
 
-La auditoria del dataset debe documentar volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la planificacion del proyecto esta tarea corresponde a T030. El informe final debe recoger, como minimo, los elementos de la Tabla~\ref{tab:auditoria-dataset-cap7}.
+La auditoria del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la version v0.1.0 esta tarea queda materializada en \texttt{scripts/audit\_dataset.py} y en los informes de \texttt{resources/dataset/audit}. El dataset limpio contiene 9.380 registros, 41 columnas, rango temporal valido entre 2008-07-28 y 2022-12-31, 0 fechas invalidas, 0 identificadores duplicados y una cobertura de coordenadas del 99,24\%.
 
 \begin{table}[htbp]
 \centering
@@ -80,11 +80,11 @@ Campos ex post & Identificar columnas prohibidas para evitar \textit{leakage} \\
 \label{tab:auditoria-dataset-cap7}
 \end{table}
 
-El capitulo de evaluacion no debe presentar metricas sobre el modelo sin antes haber cerrado esta auditoria. En un TFM excelente, la calidad del dato se expone antes que los resultados.
+El capitulo de evaluacion presenta metricas solo despues de esta auditoria. En un TFM excelente, la calidad del dato se expone antes que los resultados.
 
 \section{Limpieza y normalizacion}
 
-La limpieza transforma el fichero bruto en una representacion apta para contratos. Las operaciones previstas son: lectura robusta del CSV historico; eliminacion de columnas vacias o irrelevantes; normalizacion de nombres; limpieza de HTML; union de titulo y descripcion en un texto operativo; normalizacion para extraccion de patrones; parseo de fechas; separacion de coordenadas; derivacion de provincia; mapeo de \texttt{TipoIncidente} a categoria preliminar; e identificacion de columnas prohibidas.
+La limpieza transforma el fichero bruto en una representacion apta para contratos. Las operaciones implementadas son: lectura robusta del CSV historico; eliminacion de columnas vacias o irrelevantes; normalizacion de nombres; limpieza de HTML; union de titulo y descripcion en un texto operativo; normalizacion para extraccion de patrones; parseo de fechas; separacion de coordenadas; derivacion de provincia; mapeo de \texttt{TipoIncidente} a categoria preliminar; e identificacion de columnas prohibidas.
 
 El resultado debe conservar trazabilidad con el identificador original. Cada transformacion relevante debe ser reproducible mediante script y, cuando afecte al entrenamiento, quedar versionada.
 
@@ -134,26 +134,26 @@ La guia de etiquetado define cuatro niveles: P1 critica, P2 alta, P3 media y P4 
 
 \section{Supervision debil}
 
-La supervision debil permite construir etiquetas de entrenamiento a partir de varias fuentes imperfectas. En este proyecto se preven cuatro anotadores:
+La supervision debil permite construir etiquetas de entrenamiento a partir de varias fuentes imperfectas. En este proyecto se implementan cuatro fuentes de voto:
 
 \begin{enumerate}
-    \item \textbf{LLM-as-annotator controlado}: asigna prioridad siguiendo la guia P1--P4, sin usar campos prohibidos.
+    \item \textbf{Reglas heuristicas}: aplica criterios P1--P4 sobre se\~nales textuales y variables permitidas.
     \item \textbf{NER + intensificadores}: combina entidades/se\~nales con expresiones de gravedad, cantidad o urgencia.
-    \item \textbf{Clustering}: agrupa incidentes textualmente similares para detectar patrones de prioridad.
-    \item \textbf{Reglas heuristicas}: aplica reglas duras y criterios normativos con peso minimo, no como verdad unica.
+    \item \textbf{Proxy semantico por agrupacion}: aproxima familias de incidentes textualmente similares.
+    \item \textbf{LLM-as-annotator proxy}: simula un anotador guiado por la escala academica, sin usar campos prohibidos.
 \end{enumerate}
 
 Los votos se agregan mediante un modelo de etiquetas o majority voting ponderado. La salida se materializa en el contrato \texttt{WeakLabel}: votos por anotador, etiqueta final, confianza del label model, acuerdo local y bandera de uso en entrenamiento.
 
 \subsection{Acuerdo y control de calidad}
 
-El objetivo minimo es Krippendorff \(\alpha \geq 0{,}67\) sobre el conjunto etiquetado. Este umbral no convierte la etiqueta en oficial, pero aporta una evidencia de consistencia suficiente para un prototipo academico. Los casos de bajo acuerdo deben revisarse y documentarse, especialmente si afectan a P1/P2.
+El objetivo minimo es Krippendorff \(\alpha \geq 0{,}67\) sobre el conjunto etiquetado. La ejecucion principal alcanza \(\alpha = 0{,}858348\), por encima del umbral aceptable para un prototipo academico. Este valor no convierte la etiqueta en oficial, pero aporta evidencia de consistencia entre fuentes debiles. Los casos de bajo acuerdo deben revisarse y documentarse, especialmente si afectan a P1/P2.
 
 Ademas, se plantea una validacion interna entre los tres autores sobre al menos 30 casos. Esta validacion no sustituye a un panel experto externo del 112, pero permite detectar divergencias, mejorar la guia de etiquetado y documentar limites del sistema.
 
 \subsection{Ablacion anti-circularidad}
 
-La supervision debil introduce un riesgo: que el modelo aprenda simplemente a reproducir las reglas heuristicas usadas para etiquetar. Para controlarlo, T036 exige entrenar o comparar el label model sin la fuente de reglas heuristicas y analizar la variacion de distribucion y rendimiento. Si el sistema colapsa sin esa fuente, la etiqueta es demasiado circular; si se mantiene razonablemente estable, hay evidencia de que otras fuentes aportan informacion.
+La supervision debil introduce un riesgo: que el modelo aprenda simplemente a reproducir las reglas heuristicas usadas para etiquetar. Para controlarlo, T036 compara el label model sin la fuente de reglas heuristicas y analiza la variacion de acuerdo. La ablacion alcanza \(\alpha = 0{,}834155\), lo que indica que la etiqueta no colapsa al retirar esa fuente y reduce el riesgo de circularidad extrema.
 
 \section{Prevencion de leakage}
 
@@ -187,11 +187,11 @@ La division de datos debe impedir que el modelo vea en entrenamiento informacion
 
 \subsection{Split estratificado}
 
-El split principal divide el dataset en train, validation y test preservando la distribucion por prioridad, a\~no y provincia. Una propuesta razonable es 70\% train, 15\% validation y 15\% test, ajustable en funcion del volumen final de etiquetas de calidad. El split debe versionarse en \texttt{resources/dataset/splits/} para garantizar reproducibilidad.
+El split principal divide el dataset en train, validation y test preservando la distribucion por prioridad, a\~no y provincia, con semilla fija 42. La version ejecutada queda versionada en \texttt{resources/dataset/splits/}: 6.511 registros en train, 1.414 en validacion y 1.455 en test. La distribucion de etiquetas en test es P1=648, P2=336, P3=397 y P4=74.
 
 \subsection{Split temporal}
 
-El split temporal evalua robustez fuera del periodo de entrenamiento. La planificacion preve entrenar con registros hasta 2020 y evaluar con 2021--2022. Este enfoque simula una situacion realista: entrenar con historico pasado y aplicar sobre incidentes futuros.
+El split temporal evalua robustez fuera del periodo de entrenamiento. La version ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como test temporal. Los tamanos son 7.935 registros en train, 710 en validacion y 735 en test. Este enfoque simula una situacion realista: entrenar con historico pasado y aplicar sobre incidentes futuros.
 
 Ambos splits son necesarios. El estratificado mide rendimiento general controlando distribucion; el temporal mide estabilidad ante cambio de periodo.
 
@@ -209,4 +209,4 @@ El dise\~no de datos presentado en este capitulo conecta el Registro 112 CyL con
 
 La aportacion metodologica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, contratos, variables operativas, supervision debil, control de leakage y splits reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
 
-El siguiente capitulo debe documentar la implementacion del prototipo software que ejecuta este flujo: backend, orquestador, herramientas MCP, logging, modo degradado e interfaz minima.
+El siguiente capitulo documenta la implementacion del prototipo software que ejecuta este flujo: backend, orquestador, herramientas MCP, logging, modo degradado e interfaz minima.
