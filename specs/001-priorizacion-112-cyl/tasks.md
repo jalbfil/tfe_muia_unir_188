@@ -142,7 +142,7 @@
 - [x] **T123** `[C]` Reescribir `chap3.tex` completo con marco normativo CyL + tabla de trazabilidad.
 - [ ] **T124 [P]** `[C]` Reformular `chap4.tex` con OG + OE1–OE4.
 - [ ] **T125 [P]** `[C]` Actualizar `chap5.tex` con RF/RNF nuevos.
-- [ ] **T126** `[C]` Reescribir `chap6.tex` (3 capas reales).
+- [x] **T126** `[C]` Reescribir `chap6.tex` (3 capas reales).
 - [ ] **T127** `[J]` Reescribir `chap7.tex` (CyL + weak supervision + sección anti-leakage).
 - [ ] **T128** `[C]` Escribir `chap8.tex` (prototipo: contratos, módulos, MCP, despliegue).
 - [ ] **T129** `[C]` Escribir `chap9.tex` (evaluación con resultados reales).
