@@ -1,5 +1,5 @@
-"""Capa 2 - priorizacion interpretable con baseline experto y RuleFit."""
+"""Capa 2 - priorizacion interpretable con baseline experto y RuleFit.
 
-from .inference.predictor import predict
-
-__all__ = ["predict"]
+Los submodulos se importan de forma explicita para no forzar dependencias de
+contratos Pydantic en scripts CSV ligeros.
+"""

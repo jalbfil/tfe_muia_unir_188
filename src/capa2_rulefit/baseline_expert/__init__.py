@@ -1,5 +1,10 @@
 """Baseline experto trazable para Capa 2."""
 
-from .rules import evaluate_baseline_rules
+from .expert_rules import EXPERT_RULES, apply_expert_rules, export_rules_metadata, predict_expert
 
-__all__ = ["evaluate_baseline_rules"]
+__all__ = [
+    "EXPERT_RULES",
+    "apply_expert_rules",
+    "export_rules_metadata",
+    "predict_expert",
+]

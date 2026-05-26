@@ -72,7 +72,7 @@
 - [x] **T050** `[J]` Crear `src/capa2_rulefit/` con `weak_supervision/`, `baseline_expert/`, `rulefit/`, `xgboost_ceiling/`, `inference/`, `tests/`.
 - [x] **T051 [P]** `[J]` Test contrato: dado `IncidentFeatures` vÃ¡lido, `predict()` devuelve `PriorityRecommendation` vÃ¡lido.
 - [x] **T052 [P]** `[J]` Test invariantes: sum probs == 1, argmax == recommended, â‰¤30 reglas, P1 con â‰¥1 regla.
-- [ ] **T053** `[J]` Implementar `baseline_expert/expert_rules.py`: ~15 reglas a batir, basadas en seÃ±ales + V01..V15, con anclaje normativo en cada regla.
+- [x] **T053** `[J]` Implementar `baseline_expert/expert_rules.py`: ~15 reglas a batir, basadas en seÃ±ales + V01..V15, con anclaje normativo en cada regla.
 - [ ] **T054** `[J]` `scripts/train_capa2.py` RuleFit:
   - `imodels.RuleFitClassifier(max_rules=80, alpha=...)` con LASSO sparsity hasta â‰¤30 reglas activas.
   - CalibraciÃ³n isotonic en validaciÃ³n.

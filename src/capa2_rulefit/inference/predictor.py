@@ -15,7 +15,7 @@ from contracts import (
     PriorityRecommendation,
 )
 
-from capa2_rulefit.baseline_expert import evaluate_baseline_rules
+from capa2_rulefit.baseline_expert.rules import evaluate_baseline_rules
 
 MODEL_VERSION_CAPA2 = "0.1.0"
 
@@ -40,6 +40,11 @@ def _priority_scores(features: IncidentFeatures) -> dict[Priority, float]:
     hits = evaluate_baseline_rules(features)
     for hit in hits:
         scores[hit.rule.target_priority] += hit.contribution
+    active_priorities = {hit.rule.target_priority for hit in hits}
+    if Priority.P1 in active_priorities:
+        scores[Priority.P1] = max(scores.values()) + 0.75
+    elif Priority.P2 in active_priorities:
+        scores[Priority.P2] = max(scores.values()) + 0.35
     has_urgent_rule = any(
         hit.rule.target_priority in (Priority.P1, Priority.P2)
         for hit in hits
