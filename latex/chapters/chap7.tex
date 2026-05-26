@@ -1,425 +1,212 @@
-\chapter{Diseño de datos y construcción del dataset}
+\chapter{Datos, dataset y supervisi\'on d\'ebil}
 \label{cap:7}
 
-\section*{Introducción al capítulo}
+\section{Finalidad del capitulo}
 
-El diseño analítico del motor de priorización presentado en el capítulo anterior define qué variables considera el sistema, qué reglas aplica y qué salidas produce. Sin embargo, un motor sin datos carece de utilidad operativa y de posibilidad de evaluación: necesita un esquema que estructure la información y un dataset que permita probar, ajustar y valorar su comportamiento.
+El capitulo anterior ha definido la arquitectura del sistema: Capa 1 NLP, Capa 2 RuleFit y Capa 3 LLM+RAG+MCP. Este capitulo desarrolla la base de datos que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y Leon, la representacion de variables V01--V15, la construccion de la etiqueta academica P1--P4, la estrategia de supervision debil, la prevencion de \textit{leakage}, la division train/validation/test y las limitaciones metodologicas del conjunto de datos.
 
-Este capítulo aborda precisamente esas dos cuestiones. En primer lugar, se expone la estrategia general de datos del TFM y se justifica la elección de un enfoque híbrido. En segundo lugar, se define el esquema de datos del sistema, entendido como la estructura formal con la que el prototipo representa cada incidente, su contexto y la decisión humana asociada. En tercer lugar, se describe el uso del Registro de Emergencias del 112 de Castilla y León como fuente empírica real de apoyo, el proceso de auditoría y limpieza aplicado, y su relación con las variables del motor. Finalmente, se analizan las limitaciones del dataset y los principales riesgos metodológicos asociados a su uso.
-
-La finalidad de este capítulo no es presentar un histórico operativo real del 112 Aragón, ya que no se dispone de un conjunto abierto de microdatos equivalente con granularidad suficiente. El objetivo es fijar una base de trabajo metodológicamente defendible, apoyada en datos reales de un servicio autonómico 112, fuentes oficiales de contexto y criterios de etiquetado alineados con el caso piloto Aragón.
+La idea central es sencilla: el proyecto trabaja con registros reales, pero no con una prioridad oficial. Por ello, el dataset no puede tratarse como una fuente supervisada tradicional. El valor del TFM reside en construir una cadena honesta y reproducible: datos reales abiertos, limpieza trazable, variables operativas justificadas, etiqueta academica documentada, modelos interpretables y evaluacion prudente.
 
 \section{Estrategia general de datos}
 
-La estrategia de datos del TFM parte de una premisa metodológica explícita: no se asume disponibilidad garantizada de microdatos operativos completos del 112 Aragón. Esta decisión no es coyuntural, sino estructural. En el dominio de las emergencias, la publicación de datos a nivel de incidente individual se ve limitada por razones de privacidad, protección de datos, seguridad, heterogeneidad de formatos y ausencia de una política homogénea de datos abiertos entre comunidades autónomas.
+La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y Leon como fuente empirica principal \cite{Registro112CyL}. Esta decision aporta coherencia territorial y normativa: el dataset procede de un servicio autonomico 112 real, y el marco de interpretacion se apoya en normativa estatal y de Castilla y Leon, especialmente Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL.
 
-Ante esta realidad, el TFM adopta una estrategia híbrida compuesta por cuatro elementos complementarios. El primero es el Registro de Emergencias del 112 de Castilla y León, utilizado como fuente real de incidentes gestionados por un servicio autonómico 112 \cite{Registro112CyL}. El segundo son las fuentes oficiales reutilizables, que aportan contexto territorial, meteorológico, demográfico y de riesgo. El tercero son los casos simulados controlados, necesarios para cubrir escenarios críticos, variables no presentes en el dataset original y situaciones de frontera. El cuarto es la guía de etiquetado, que permite asignar una prioridad P1--P4 de referencia a partir de criterios explícitos y trazables.
+El dataset abierto permite trabajar con texto operativo, fecha, localidad, provincia, coordenadas aproximadas, identificador y categoria preliminar. Sin embargo, no contiene una prioridad oficial P1--P4, ni una escala equivalente de gravedad, ni todas las variables estructuradas que requiere el sistema. Por tanto, el objetivo no es aprender una prioridad institucional inexistente, sino construir una prioridad academica mediante supervision debil y validacion interna.
 
-Esta estrategia no pretende sustituir un dataset operativo del 112 Aragón ni presentar el prototipo como una solución lista para operación institucional. Su finalidad es más acotada y metodológicamente honesta: construir una base de trabajo suficiente para probar el pipeline de datos, alimentar parcialmente el motor, validar la coherencia del baseline interpretable y evaluar el comportamiento del sistema en escenarios simulados contextualizados en Aragón.
+El flujo de datos se organiza en seis pasos:
 
-La decisión de utilizar Castilla y León como fuente empírica no modifica el marco normativo del TFM. La normativa que justifica las variables, las reglas y la interpretación operativa del sistema sigue siendo el marco estatal español y el caso piloto aragonés. Castilla y León aporta datos reales de incidentes 112 para probar ingesta, limpieza, extracción de señales y trazabilidad; Aragón aporta el marco operativo y normativo sobre el que se interpreta el prototipo.
+\begin{enumerate}
+    \item Ingesta y limpieza del Registro 112 CyL.
+    \item Normalizacion de texto, fechas, coordenadas y categorias.
+    \item Extraccion de se\~nales textuales y variables V01--V15.
+    \item Construccion de etiquetas P1--P4 mediante supervision debil.
+    \item Generacion de splits train/validation/test, incluyendo split temporal.
+    \item Evaluacion de Capa 2 y analisis de sesgos, errores y \textit{leakage}.
+\end{enumerate}
 
-\section{Esquema de datos del sistema}
+\section{Registro de Emergencias del 112 de Castilla y Leon}
 
-Antes de construir el dataset piloto o implementar el backend, es necesario definir con precisión la estructura de datos del sistema: qué representa un incidente, qué evidencias se asocian a él, qué contexto externo se incorpora, qué variables calcula el motor y cómo se registra la decisión humana. Sin esta especificación, el diseño analítico del capítulo 6 y la implementación técnica posterior quedarían desacoplados.
+El Registro de Emergencias del 112 de Castilla y Leon es un conjunto de datos publico publicado por la Junta de Castilla y Leon bajo licencia Creative Commons Reconocimiento 4.0 \cite{Registro112CyL}. En este TFM se utiliza el fichero historico 2008--2022 como fuente real de incidentes para probar el pipeline de datos y alimentar la construccion de etiquetas academicas.
 
-El esquema se organiza en cinco bloques funcionales: estructura del incidente, evidencias y señales asociadas, contexto territorial y meteorológico, variables calculadas por el motor y decisión humana con trazabilidad. Esta organización refleja la arquitectura lógica del prototipo y responde a la necesidad de mantener separadas las entradas observadas, las evidencias adicionales, el contexto oficial, las salidas calculadas y la intervención del operador.
+Su valor principal es el realismo. Los registros no son ejemplos artificiales creados para el TFM, sino incidentes gestionados por un servicio autonomico 112. Esto permite trabajar con lenguaje operativo, categorias heterogeneas, coordenadas, localidades, duplicidades potenciales, ruido textual y limitaciones propias de datos administrativos reales.
 
-\subsection{Estructura del incidente}
+\subsection{Campos de entrada}
 
-La unidad de análisis del sistema es el incidente operativo consolidado, no la llamada individual. Esta distinción es relevante porque, en un centro de coordinación, un mismo suceso puede generar varias llamadas ciudadanas, partes de servicios y avisos institucionales. Si el sistema trabajara sobre llamadas aisladas en lugar de sobre incidentes consolidados, correría el riesgo de duplicar artificialmente eventos y de distorsionar la priorización.
-
-Los campos básicos de este bloque son: identificador único del incidente, fecha de recepción o registro, localización geográfica, municipio o localidad, descripción textual inicial, clasificación tipológica preliminar y enlace o referencia de trazabilidad. Estos campos permiten representar el incidente de forma mínima y conectarlo posteriormente con fuentes externas.
-
-\subsection{Evidencias y señales asociadas}
-
-El segundo bloque recoge evidencias derivadas del texto del incidente y de la información asociada al registro. En el caso del dataset de Castilla y León, los campos \texttt{Título} y \texttt{DescripcionBlob} permiten extraer señales textuales relacionadas con riesgo vital, fallecidos, heridos graves, atrapamiento, intoxicación, incendio, accidente de tráfico, rescate o fenómenos meteorológicos.
-
-Estas señales no deben interpretarse como etiquetas oficiales. Son indicadores preliminares generados mediante reglas textuales simples, cuya función es apoyar el mapeo hacia la taxonomía operativa y facilitar la construcción de casos de prueba. La prioridad final no procede directamente de estas señales, sino de la lógica del motor definida en el capítulo anterior.
-
-\subsection{Contexto territorial y meteorológico}
-
-El tercer bloque incorpora información contextual procedente de fuentes oficiales. En un sistema operativo completo, este enriquecimiento se realizaría mediante consultas dinámicas o integración con servicios externos. En el prototipo, se plantea como un enriquecimiento controlado y reproducible.
-
-Las fuentes previstas incluyen avisos meteorológicos de AEMET, cartografía de inundabilidad del SNCZI/MITECO, datos demográficos del INE, cartografía oficial aragonesa y registros de instalaciones de riesgo tecnológico. La función de estas fuentes no es sustituir al dato operativo del incidente, sino contextualizarlo para que el motor pueda valorar exposición, amenaza, vulnerabilidad y posible escalado.
-
-En los escenarios situados en Aragón, estas fuentes permiten que la prueba sea territorialmente coherente con el caso piloto. Esto no equivale a un despliegue real en el 112 Aragón, pero sí permite evaluar el comportamiento del baseline sobre situaciones construidas con referencias normativas, geográficas y contextuales compatibles con ese territorio.
-
-\subsection{Variables calculadas por el motor}
-
-El cuarto bloque recoge las variables calculadas por el motor de priorización. Incluye la prioridad recomendada P1--P4, el scoring total, las reglas duras activadas, el nivel de confianza y la explicación generada. Estos campos son salidas del sistema, no datos observados.
-
-Esta separación es importante para evitar confundir datos de entrada con resultados del motor. Por ejemplo, el dataset de Castilla y León no contiene una prioridad oficial P1--P4. Esa prioridad se obtiene aplicando la guía de etiquetado y el baseline interpretable, no leyendo un campo ya existente.
-
-\subsection{Decisión humana y trazabilidad}
-
-El quinto bloque registra la interacción del operador humano con la recomendación. En el prototipo, esta información permite distinguir entre prioridad recomendada por el sistema, prioridad aceptada o corregida por el usuario, motivo de la corrección y observaciones asociadas.
-
-Este bloque es esencial para mantener el principio de supervisión humana. El sistema recomienda, pero no decide. La decisión final corresponde al operador, y el diseño de datos debe permitir registrar esa intervención para futuras revisiones, análisis de errores o recalibraciones.
-
-\section{Dataset empírico de referencia: Registro de Emergencias del 112 de Castilla y León}
-
-El dataset empírico de referencia utilizado en este TFM es el Registro de Emergencias del 112 de Castilla y León, concretamente el fichero correspondiente al periodo 2008--2022 \cite{Registro112CyL}. Se trata de un conjunto de datos público, bajo licencia Creative Commons Reconocimiento 4.0, publicado por la Junta de Castilla y León.
-
-Su incorporación al TFM responde a una necesidad metodológica concreta: disponer de registros reales de incidentes gestionados por un servicio autonómico 112. Dado que no se ha identificado un dataset abierto equivalente del 112 Aragón con granularidad operativa suficiente, el dataset de Castilla y León se utiliza como fuente empírica proxy. Esta decisión permite trabajar con incidentes reales sin alterar el caso piloto ni la normativa principal del trabajo.
-
-El dataset no se utiliza como marco normativo ni como validación operativa del caso Aragón. Su función es permitir el diseño y prueba del pipeline de datos, la limpieza textual, la extracción de señales operativas, el análisis preliminar de tipologías y el ensayo de mapeo hacia las variables del motor.
-
-\subsection{Auditoría inicial del dataset}
-
-Antes de incorporar el dataset al flujo de trabajo, se realizó una auditoría técnica para identificar su estructura, campos disponibles, valores nulos, cobertura geográfica y posibles limitaciones. El fichero bruto contenía 9.382 registros y 14 columnas. Tras el proceso de limpieza se conservaron 9.380 registros válidos, eliminando dos registros con fechas anómalas.
-
-Las columnas originales identificadas fueron las siguientes: \texttt{Título}, \texttt{DescripcionBlob}, \texttt{FechaIncidente}, \texttt{Localidad}, \texttt{Localidad.1}, \texttt{Localidad.2}, \texttt{TipoIncidente}, \texttt{IncidenteCerrado}, \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{Identificador}, \texttt{ultimaActualizacion}, \texttt{Enlace al contenido} y una columna vacía denominada \texttt{Unnamed: 13}.
-
-La Tabla~\ref{tab:auditoria-cyl} resume los principales resultados de la auditoría.
+La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del dataset y su relacion con los contratos del sistema.
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{|p{5.5cm}|p{7.5cm}|}
+\begin{tabular}{|p{3.2cm}|p{4.6cm}|p{5.4cm}|}
 \hline
-\textbf{Elemento auditado} & \textbf{Resultado} \\ \hline
-Fichero utilizado & Registro de Emergencias del 112 de Castilla y León, periodo 2008--2022 \\ \hline
-Registros originales & 9.382 \\ \hline
-Registros válidos tras limpieza & 9.380 \\ \hline
-Registros eliminados & 2 registros con fecha anómala \\ \hline
-Columnas originales & 14 \\ \hline
-Cobertura de coordenadas & 9.309 registros con coordenadas válidas \\ \hline
-Porcentaje de registros con coordenadas & 99,24\% \\ \hline
-Etiqueta oficial de prioridad & No disponible \\ \hline
-Etiqueta P1--P4 & No disponible; debe construirse mediante guía de etiquetado \\ \hline
+\textbf{Campo original} & \textbf{Uso en el sistema} & \textbf{Observacion metodologica} \\ \hline
+\texttt{Titulo} & \texttt{texto\_titulo} en \texttt{IncidentInput} & Fuente textual breve para se\~nales operativas \\ \hline
+\texttt{DescripcionBlob} & \texttt{texto\_descripcion} & Requiere limpieza de HTML y normalizacion \\ \hline
+\texttt{FechaIncidente} & \texttt{fecha\_incidente} & Permite analisis temporal y split por a\~no \\ \hline
+\texttt{Localidad} & \texttt{localidad} & Contexto territorial no siempre equivalente a coordenada exacta \\ \hline
+\texttt{Localidad.1} & \texttt{latitud}, \texttt{longitud} & Permite disponibilidad de coordenadas cuando el campo es valido \\ \hline
+\texttt{TipoIncidente} & \texttt{categoria\_preliminar} & Campo orientativo; no basta para priorizar \\ \hline
+\texttt{Identificador} & Trazabilidad interna & No se usa como feature predictiva \\ \hline
+\texttt{MediosMov} & Solo evaluacion ex post si procede & Variable prohibida como entrada por \textit{leakage} \\ \hline
+\texttt{PacientesAten} & Solo evaluacion ex post si procede & Resultado posterior, no disponible en primera decision \\ \hline
+\texttt{IncidenteCerrado} & Exclusion & Estado final del incidente \\ \hline
+\texttt{ultimaActualizacion} & Exclusion & Informacion posterior al inicio \\ \hline
 \end{tabular}
-\caption{Resumen de auditoría del dataset 112 Castilla y León.}
-\label{tab:auditoria-cyl}
+\caption{Campos principales del Registro 112 CyL y uso previsto en el sistema.}
+\label{tab:campos-registro-cyl-cap7}
 \end{table}
 
-\noindent \textit{Fuente: elaboración propia a partir del Registro de Emergencias del 112 de Castilla y León.}
+\subsection{Auditoria inicial}
 
-Los dos registros eliminados correspondían a una fecha anterior al rango del dataset y a una fecha futura claramente anómala. Esta limpieza no altera sustancialmente el volumen del conjunto, pero evita introducir inconsistencias temporales en el análisis.
-
-\subsection{Campos aprovechables para el TFM}
-
-El dataset contiene varios campos útiles para el diseño del sistema. En particular, el identificador permite mantener trazabilidad; la fecha permite analizar el contexto temporal; la localidad y las coordenadas permiten realizar enriquecimiento geoespacial; el título y la descripción permiten extraer señales textuales; y el enlace al contenido original permite verificar el registro.
-
-La Tabla~\ref{tab:mapeo-dataset-cyl} resume la relación entre los principales campos del dataset y su uso previsto en el TFM.
+La auditoria del dataset debe documentar volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la planificacion del proyecto esta tarea corresponde a T030. El informe final debe recoger, como minimo, los elementos de la Tabla~\ref{tab:auditoria-dataset-cap7}.
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{|p{3.2cm}|p{3.2cm}|p{4.2cm}|p{4.2cm}|}
+\begin{tabular}{|p{4.4cm}|p{8.4cm}|}
 \hline
-\textbf{Campo del dataset} & \textbf{Uso en el TFM} & \textbf{Variable o función asociada} & \textbf{Limitación} \\ \hline
-
-\texttt{Identificador} & Trazabilidad del registro & Identificación interna del incidente & No aporta gravedad ni prioridad \\ \hline
-
-\texttt{FechaIncidente} & Contexto temporal & Año, mes, día y análisis temporal & No contiene hora exacta de llamada \\ \hline
-
-\texttt{Título} & Extracción textual de señales & Tipo preliminar de incidente, riesgo vital textual & Requiere limpieza y reglas de extracción \\ \hline
-
-\texttt{DescripcionBlob} & Descripción narrativa del incidente & Extracción de señales operativas mediante reglas o NLP ligero & Contiene HTML y requiere limpieza previa \\ \hline
-
-\texttt{Localidad} & Contexto territorial & Municipio o localidad del incidente & No equivale necesariamente a coordenada exacta \\ \hline
-
-\texttt{Localidad.1} & Geolocalización aproximada & Latitud, longitud y cruce con fuentes oficiales & 71 registros carecen de coordenadas válidas \\ \hline
-
-\texttt{TipoIncidente} & Clasificación genérica & Apoyo descriptivo & Solo distingue valores muy generales \\ \hline
-
-\texttt{MediosMov} & Validación auxiliar & Complejidad operativa posterior & No se usa como entrada principal para evitar fuga de información \\ \hline
-
-\texttt{PacientesAten} & Apoyo puntual & Posible señal sanitaria & Muy baja cobertura \\ \hline
-
-\texttt{Enlace al contenido} & Verificación y trazabilidad & Consulta del registro original & No aporta variable predictiva \\ \hline
-
+\textbf{Elemento auditado} & \textbf{Finalidad} \\ \hline
+Numero de registros & Confirmar volumen util para entrenamiento y evaluacion \\ \hline
+Rango temporal & Verificar coherencia 2008--2022 y detectar fechas anomalas \\ \hline
+Distribucion por a\~no & Identificar cambios de registro o sesgos temporales \\ \hline
+Distribucion por provincia & Evitar que la evaluacion quede dominada por una provincia \\ \hline
+Distribucion por \texttt{TipoIncidente} & Conocer la heterogeneidad operativa del dataset \\ \hline
+Nulos por columna & Separar campos explotables de campos incompletos \\ \hline
+Duplicados o registros equivalentes & Evitar fuga entre train/test por incidentes repetidos \\ \hline
+Cobertura de coordenadas & Medir disponibilidad de localizacion para variables contextuales \\ \hline
+Campos ex post & Identificar columnas prohibidas para evitar \textit{leakage} \\ \hline
 \end{tabular}
-\caption{Mapeo entre campos del dataset 112 Castilla y León y uso previsto en el TFM.}
-\label{tab:mapeo-dataset-cyl}
+\caption{Elementos obligatorios de la auditoria del dataset.}
+\label{tab:auditoria-dataset-cap7}
 \end{table}
 
-\noindent \textit{Fuente: elaboración propia a partir del Registro de Emergencias del 112 de Castilla y León.}
+El capitulo de evaluacion no debe presentar metricas sobre el modelo sin antes haber cerrado esta auditoria. En un TFM excelente, la calidad del dato se expone antes que los resultados.
 
-El campo \texttt{TipoIncidente} no resulta suficiente para alimentar directamente la taxonomía del motor, porque solo ofrece una clasificación muy genérica. Por este motivo, la categorización operativa preliminar se obtiene principalmente a partir del título y la descripción textual.
+\section{Limpieza y normalizacion}
 
-\section{Proceso de limpieza y transformación}
+La limpieza transforma el fichero bruto en una representacion apta para contratos. Las operaciones previstas son: lectura robusta del CSV historico; eliminacion de columnas vacias o irrelevantes; normalizacion de nombres; limpieza de HTML; union de titulo y descripcion en un texto operativo; normalizacion para extraccion de patrones; parseo de fechas; separacion de coordenadas; derivacion de provincia; mapeo de \texttt{TipoIncidente} a categoria preliminar; e identificacion de columnas prohibidas.
 
-El proceso de limpieza se ha implementado mediante un script reproducible, ubicado en el repositorio del proyecto. El objetivo de este script no es generar un dataset definitivo de entrenamiento, sino transformar el fichero bruto en una versión limpia, trazable y apta para pruebas del pipeline.
+El resultado debe conservar trazabilidad con el identificador original. Cada transformacion relevante debe ser reproducible mediante script y, cuando afecte al entrenamiento, quedar versionada.
 
-El proceso aplicado comprende las siguientes operaciones:
+\section{Variables V01--V15}
 
-\begin{itemize}
-    \item lectura robusta del CSV con detección de separador y codificación;
-    \item eliminación de la columna vacía \texttt{Unnamed: 13};
-    \item conversión de \texttt{FechaIncidente} a formato fecha;
-    \item filtrado de fechas fuera del rango 2008--2022;
-    \item limpieza de HTML en \texttt{DescripcionBlob}, \texttt{MediosMov} y \texttt{PacientesAten};
-    \item normalización textual para extracción de señales;
-    \item separación de \texttt{Localidad.1} en latitud, longitud y código;
-    \item generación de señales operativas booleanas;
-    \item asignación de una categoría operativa preliminar mediante reglas textuales;
-    \item generación de una muestra limpia y un reporte de limpieza.
-\end{itemize}
+El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 transforma la entrada en \texttt{IncidentFeatures}, un contrato que contiene variables V01--V15 y se\~nales textuales. La Tabla~\ref{tab:variables-cap7} resume el origen esperado de cada variable.
 
-La limpieza textual resulta especialmente relevante porque varios campos contienen etiquetas HTML o texto procedente de páginas oficiales. Sin esta limpieza, la extracción de señales operativas mediante reglas sería menos fiable y más difícil de interpretar.
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabular}{|p{1.0cm}|p{4.0cm}|p{3.9cm}|p{4.0cm}|}
+\hline
+\textbf{Var.} & \textbf{Variable} & \textbf{Origen principal} & \textbf{Estado v0.1.0} \\ \hline
+V01 & Riesgo vital & Texto + se\~nales + etiquetado & Activa \\ \hline
+V02 & Numero de victimas estimado & Texto + etiquetado & Activa \\ \hline
+V03 & Gravedad de lesiones & Texto + etiquetado & Activa \\ \hline
+V04 & Tipo de incidente normalizado & Titulo, descripcion y categoria preliminar & Activa \\ \hline
+V05 & Poblacion vulnerable & Texto + reglas + revision & Activa \\ \hline
+V06 & Numero de llamadas & Texto, agrupacion o indicios de varios avisos & Activa \\ \hline
+V07 & Emplazamiento critico & Texto/localidad + reglas & Activa \\ \hline
+V08 & Aviso AEMET & Fuente externa & Diferida v0.2.0 \\ \hline
+V09 & Condicion meteorologica adversa & Texto/fuente externa & Diferida v0.2.0 \\ \hline
+V10 & Zona inundable & Cruce geoespacial & Diferida v0.2.0 \\ \hline
+V11 & Proximidad Seveso & Registro externo & Diferida v0.2.0 \\ \hline
+V12 & Riesgo de propagacion & Texto + INFOCAL & Activa \\ \hline
+V13 & Multirriesgo & Texto + concurrencia de se\~nales & Activa \\ \hline
+V14 & Avisos simultaneos en zona & Texto/agrupacion temporal-geografica & Activa \\ \hline
+V15 & Accesibilidad de recursos & Localizacion + reglas aproximadas & Activa \\ \hline
+\end{tabular}
+\caption{Variables V01--V15 y estado dentro del alcance v0.1.0.}
+\label{tab:variables-cap7}
+\end{table}
 
-\subsection{Campos generados tras la limpieza}
+Las variables V08--V11 se mantienen en el contrato para preservar la direccion futura del sistema, pero no deben condicionar los resultados principales de v0.1.0.
 
-Tras la limpieza, el dataset incorpora nuevas columnas derivadas. Entre ellas destacan \texttt{titulo\_limpio}, \texttt{descripcion\_limpia}, \texttt{texto\_operativo}, \texttt{texto\_operativo\_norm}, \texttt{latitud}, \texttt{longitud}, \texttt{tiene\_coordenadas}, \texttt{categoria\_operativa\_preliminar} y diversas señales operativas textuales.
+\section{Se\~nales operativas textuales}
 
-La Tabla~\ref{tab:campos-generados-limpieza} recoge los principales campos generados.
+Las se\~nales textuales son indicadores derivados del titulo y la descripcion. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores debiles de Capa 2. Las principales se\~nales son \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_meteo\_inundacion} y \texttt{riesgo\_vital\_textual}.
+
+Estas se\~nales deben tratarse como indicios. La palabra ``herido'', por ejemplo, no equivale siempre a P1; la expresion ``herido grave atrapado'' si tiene un peso operativo mucho mayor. Por eso la extraccion textual debe combinar patrones, intensificadores y validacion posterior, evitando que una busqueda literal determine por si sola la prioridad.
+
+\section{Etiqueta academica P1--P4}
+
+La etiqueta P1--P4 es una construccion academica del TFM. No existe como campo oficial en el Registro 112 CyL y no debe presentarse como prioridad institucional. Su funcion es permitir entrenamiento, comparacion y evaluacion del sistema.
+
+La guia de etiquetado define cuatro niveles: P1 critica, P2 alta, P3 media y P4 baja. La etiqueta se asigna en el momento teorico de la primera decision. Por tanto, no puede utilizar informacion posterior como medios movilizados, pacientes atendidos o cierre del incidente. La incertidumbre se refleja en la confianza, no rebajando automaticamente la prioridad.
+
+\section{Supervision debil}
+
+La supervision debil permite construir etiquetas de entrenamiento a partir de varias fuentes imperfectas. En este proyecto se preven cuatro anotadores:
+
+\begin{enumerate}
+    \item \textbf{LLM-as-annotator controlado}: asigna prioridad siguiendo la guia P1--P4, sin usar campos prohibidos.
+    \item \textbf{NER + intensificadores}: combina entidades/se\~nales con expresiones de gravedad, cantidad o urgencia.
+    \item \textbf{Clustering}: agrupa incidentes textualmente similares para detectar patrones de prioridad.
+    \item \textbf{Reglas heuristicas}: aplica reglas duras y criterios normativos con peso minimo, no como verdad unica.
+\end{enumerate}
+
+Los votos se agregan mediante un modelo de etiquetas o majority voting ponderado. La salida se materializa en el contrato \texttt{WeakLabel}: votos por anotador, etiqueta final, confianza del label model, acuerdo local y bandera de uso en entrenamiento.
+
+\subsection{Acuerdo y control de calidad}
+
+El objetivo minimo es Krippendorff \(\alpha \geq 0{,}67\) sobre el conjunto etiquetado. Este umbral no convierte la etiqueta en oficial, pero aporta una evidencia de consistencia suficiente para un prototipo academico. Los casos de bajo acuerdo deben revisarse y documentarse, especialmente si afectan a P1/P2.
+
+Ademas, se plantea una validacion interna entre los tres autores sobre al menos 30 casos. Esta validacion no sustituye a un panel experto externo del 112, pero permite detectar divergencias, mejorar la guia de etiquetado y documentar limites del sistema.
+
+\subsection{Ablacion anti-circularidad}
+
+La supervision debil introduce un riesgo: que el modelo aprenda simplemente a reproducir las reglas heuristicas usadas para etiquetar. Para controlarlo, T036 exige entrenar o comparar el label model sin la fuente de reglas heuristicas y analizar la variacion de distribucion y rendimiento. Si el sistema colapsa sin esa fuente, la etiqueta es demasiado circular; si se mantiene razonablemente estable, hay evidencia de que otras fuentes aportan informacion.
+
+\section{Prevencion de leakage}
+
+El \textit{leakage} es uno de los riesgos metodologicos mas graves del proyecto. Se produce cuando el modelo utiliza informacion que no estaria disponible en el momento de la primera decision. En el Registro 112 CyL existen campos que pueden reflejar actuaciones posteriores o resultados finales. La Tabla~\ref{tab:leakage-cap7} resume las columnas prohibidas.
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{|p{4.2cm}|p{5.4cm}|p{4.2cm}|}
+\begin{tabular}{|p{4.2cm}|p{8.2cm}|}
 \hline
-\textbf{Campo generado} & \textbf{Descripción} & \textbf{Uso previsto} \\ \hline
-\texttt{titulo\_limpio} & Título sin HTML ni caracteres problemáticos & Extracción textual y revisión manual \\ \hline
-\texttt{descripcion\_limpia} & Descripción sin etiquetas HTML & Extracción de señales operativas \\ \hline
-\texttt{texto\_operativo} & Unión de título y descripción limpios & Base para reglas textuales \\ \hline
-\texttt{texto\_operativo\_norm} & Texto normalizado en minúsculas y sin tildes & Clasificación preliminar y búsqueda de patrones \\ \hline
-\texttt{latitud} y \texttt{longitud} & Coordenadas separadas desde \texttt{Localidad.1} & Enriquecimiento geoespacial \\ \hline
-\texttt{tiene\_coordenadas} & Indicador de disponibilidad de coordenadas & Control de calidad geográfica \\ \hline
-\texttt{categoria\_operativa\_preliminar} & Categoría inferida por reglas textuales simples & Mapeo inicial a taxonomía \\ \hline
-\texttt{riesgo\_vital\_textual} & Señal textual amplia de posible riesgo vital & Apoyo al etiquetado, no prioridad oficial \\ \hline
+\textbf{Columna} & \textbf{Razon de exclusion como feature} \\ \hline
+\texttt{MediosMov} & Refleja recursos movilizados, es decir, una consecuencia de la decision operativa \\ \hline
+\texttt{medios\_mov\_limpio} & Derivado de \texttt{MediosMov}; mantiene la misma fuga \\ \hline
+\texttt{medios\_mov\_uso\_recomendado} & Codificacion auxiliar ex post; no disponible en primera decision \\ \hline
+\texttt{PacientesAten} & Resultado clinico o asistencia posterior \\ \hline
+\texttt{pacientes\_aten\_limpio} & Derivado de \texttt{PacientesAten}; conserva informacion posterior \\ \hline
+\texttt{IncidenteCerrado} & Estado final del incidente \\ \hline
+\texttt{ultimaActualizacion} & Actualizacion posterior al registro inicial \\ \hline
+\texttt{Enlace al contenido} & Identificador externo; util para trazabilidad, no como predictor \\ \hline
+\texttt{Unnamed: 13} & Columna vacia o no informativa \\ \hline
 \end{tabular}
-\caption{Principales campos generados en el proceso de limpieza.}
-\label{tab:campos-generados-limpieza}
+\caption{Columnas prohibidas como entrada del motor por riesgo de \textit{leakage}.}
+\label{tab:leakage-cap7}
 \end{table}
 
-\noindent \textit{Fuente: elaboración propia.}
+Estas columnas pueden conservarse en zonas controladas de auditoria o evaluacion ex post, siempre separadas del entrenamiento e inferencia. El repositorio incluye un test de leakage que escanea los modulos de Capa 1 y Capa 2 para impedir referencias no permitidas.
 
-\subsection{Señales operativas extraídas}
+\section{Splits train, validation y test}
 
-El script genera señales booleanas a partir del texto operativo normalizado. Estas señales permiten identificar patrones relevantes para el motor, como fallecidos, heridos graves, atrapamientos, intoxicaciones, incendios, accidentes de tráfico, rescates o fenómenos meteorológicos.
+La division de datos debe impedir que el modelo vea en entrenamiento informacion demasiado parecida a la de test. Se plantean dos estrategias complementarias.
 
-La Tabla~\ref{tab:senales-operativas} resume las señales extraídas y el número de registros en los que aparecen.
+\subsection{Split estratificado}
 
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{5.5cm}|p{3cm}|p{5cm}|}
-\hline
-\textbf{Señal extraída} & \textbf{Registros} & \textbf{Interpretación} \\ \hline
-\texttt{riesgo\_vital\_textual} & 5.417 & Señal amplia de posible riesgo vital; requiere revisión y no equivale a prioridad P1 \\ \hline
-\texttt{signal\_fallecido} & 1.397 & Presencia de términos asociados a fallecimiento \\ \hline
-\texttt{signal\_herido\_grave} & 1.585 & Presencia de términos asociados a gravedad sanitaria \\ \hline
-\texttt{signal\_atrapado} & 2.810 & Presencia de términos asociados a atrapamiento o rescate \\ \hline
-\texttt{signal\_intoxicacion} & 1.178 & Presencia de términos asociados a intoxicación, gas o humo \\ \hline
-\texttt{signal\_varias\_llamadas} & 1.712 & Señal de múltiples avisos o llamadas \\ \hline
-\texttt{signal\_incendio} & 1.115 & Señal textual de incendio, humo, fuego o llamas \\ \hline
-\texttt{signal\_accidente\_trafico} & 6.471 & Señal textual de accidente, carretera, vehículo o tráfico \\ \hline
-\texttt{signal\_rescate} & 3.524 & Señal textual relacionada con rescate, desaparecidos o atrapamiento \\ \hline
-\texttt{signal\_meteo\_inundacion} & 710 & Señal textual relacionada con inundación, lluvia, nieve, viento o tormenta \\ \hline
-\end{tabular}
-\caption{Señales operativas extraídas del dataset limpio.}
-\label{tab:senales-operativas}
-\end{table}
+El split principal divide el dataset en train, validation y test preservando la distribucion por prioridad, a\~no y provincia. Una propuesta razonable es 70\% train, 15\% validation y 15\% test, ajustable en funcion del volumen final de etiquetas de calidad. El split debe versionarse en \texttt{resources/dataset/splits/} para garantizar reproducibilidad.
 
-\noindent \textit{Fuente: elaboración propia.}
+\subsection{Split temporal}
 
-Estas señales se utilizan como apoyo al análisis y al etiquetado, pero no constituyen etiquetas oficiales. En particular, la variable \texttt{riesgo\_vital\_textual} debe interpretarse con prudencia: su elevada frecuencia indica que la regla textual es deliberadamente sensible, pero no específica. Por tanto, resulta útil para no perder casos potencialmente graves, aunque requiere revisión posterior.
+El split temporal evalua robustez fuera del periodo de entrenamiento. La planificacion preve entrenar con registros hasta 2020 y evaluar con 2021--2022. Este enfoque simula una situacion realista: entrenar con historico pasado y aplicar sobre incidentes futuros.
 
-\section{Categoría operativa preliminar}
+Ambos splits son necesarios. El estratificado mide rendimiento general controlando distribucion; el temporal mide estabilidad ante cambio de periodo.
 
-A partir del texto normalizado se genera una categoría operativa preliminar. Esta clasificación permite ordenar inicialmente el dataset y comprobar si las reglas textuales capturan familias de incidentes coherentes con la taxonomía del motor.
+\section{Uso en entrenamiento y evaluacion}
 
-La distribución obtenida se muestra en la Tabla~\ref{tab:categoria-preliminar-cyl}.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{6cm}|p{3cm}|p{5cm}|}
-\hline
-\textbf{Categoría preliminar} & \textbf{Registros} & \textbf{Comentario} \\ \hline
-\texttt{trafico} & 6.782 & Categoría dominante; refleja la elevada presencia de accidentes y sucesos en vía pública \\ \hline
-\texttt{sanitario} & 1.710 & Incidentes con señales sanitarias relevantes \\ \hline
-\texttt{incendio} & 798 & Incidentes con términos asociados a fuego, humo o incendio \\ \hline
-\texttt{rescate\_salvamento} & 69 & Casos específicos de rescate o salvamento detectados como categoría principal \\ \hline
-\texttt{meteorologico\_inundacion} & 15 & Casos detectados directamente como meteorológicos o hidrológicos \\ \hline
-\texttt{otros\_no\_clasificado} & 6 & Casos no capturados por las reglas preliminares \\ \hline
-\end{tabular}
-\caption{Distribución de la categoría operativa preliminar tras la limpieza.}
-\label{tab:categoria-preliminar-cyl}
-\end{table}
-
-\noindent \textit{Fuente: elaboración propia.}
-
-Esta distribución no debe interpretarse como una distribución oficial de incidentes del 112 Castilla y León. Es el resultado de reglas textuales simples aplicadas sobre título y descripción, y su finalidad es estrictamente instrumental: facilitar el mapeo del dataset hacia la taxonomía operativa del TFM. La categoría preliminar no sustituye el etiquetado P1--P4 ni determina por sí sola la prioridad final.
-
-\section{Mapeo del dataset hacia las variables del motor}
-
-El dataset limpio permite alimentar directamente algunas variables del motor, derivar parcialmente otras y dejar identificadas aquellas que requieren fuentes externas o etiquetado. Esta separación evita atribuir al dataset más información de la que contiene.
-
-La Tabla~\ref{tab:variables-origen-dataset} resume el origen previsto de las principales variables del motor.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{1.1cm}|p{4cm}|p{3.2cm}|p{3.8cm}|p{2.8cm}|}
-\hline
-\textbf{ID} & \textbf{Variable} & \textbf{Dataset CyL} & \textbf{Fuente complementaria} & \textbf{Observación} \\ \hline
-V01 & Riesgo vital inmediato & Derivable parcialmente por texto & Etiquetado y reglas & No existe etiqueta oficial \\ \hline
-V02 & Víctimas confirmadas o probables & Derivable parcialmente por texto & Etiquetado & \texttt{PacientesAten} tiene baja cobertura \\ \hline
-V03 & Tipo de daño principal & Derivable por texto & Taxonomía del TFM & Requiere mapeo \\ \hline
-V04 & Tipo de incidente & Derivable por título y descripción & Taxonomía del TFM & \texttt{TipoIncidente} es demasiado genérico \\ \hline
-V05 & Población vulnerable & No directamente & INE/contexto/etiquetado & Requiere enriquecimiento \\ \hline
-V06 & Personas en riesgo estimadas & Parcial por texto & Etiquetado & No hay campo estructurado completo \\ \hline
-V07 & Emplazamiento crítico & Parcial por texto/localización & Cartografía/registros oficiales & Requiere cruce externo \\ \hline
-V08 & Nivel de aviso AEMET & No & AEMET OpenData & Fuente externa \\ \hline
-V09 & Fenómeno meteorológico activo & Parcial por texto & AEMET OpenData & Fuente externa preferente \\ \hline
-V10 & Peligrosidad por inundación & No directamente & SNCZI/MITECO & Requiere cruce geoespacial \\ \hline
-V11 & Instalación Seveso o riesgo tecnológico & Parcial por texto & Registro oficial & Requiere fuente externa \\ \hline
-V12 & Tendencia del incidente & Parcial por texto & Etiquetado/contexto & No está estructurada \\ \hline
-V13 & Fiabilidad de la información & No directamente & Metadatos/etiquetado & Se estima en el sistema \\ \hline
-V14 & Avisos simultáneos & Parcial por texto & Agrupación/etiquetado & Señal textual disponible \\ \hline
-V15 & Accesibilidad o complejidad operativa & Parcial por localización & Cartografía/contexto & No se calcula de forma completa \\ \hline
-\end{tabular}
-\caption{Origen previsto de las variables del motor a partir del dataset y fuentes complementarias.}
-\label{tab:variables-origen-dataset}
-\end{table}
-
-\noindent \textit{Fuente: elaboración propia.}
-
-La tabla muestra que el dataset real es útil, pero no suficiente por sí solo. Aporta registros reales, texto, localización y trazabilidad, pero no contiene todos los atributos necesarios para priorizar incidentes con garantías. Por ello, el TFM combina el dataset con fuentes oficiales, reglas de extracción, guía de etiquetado y casos simulados controlados.
-
-\section{Uso de medios movilizados y prevención de fuga de información}
-
-El campo \texttt{MediosMov} contiene información sobre recursos movilizados en la gestión del incidente. Desde el punto de vista operativo, esta información puede ser muy valiosa para interpretar la complejidad del suceso. Sin embargo, desde el punto de vista metodológico, no debe utilizarse como entrada principal del motor de primera decisión.
-
-La razón es que los medios movilizados pueden reflejar una decisión ya tomada. Si el sistema utilizara como entrada los recursos movilizados para decidir la prioridad, estaría incorporando indirectamente una consecuencia de la propia decisión que pretende apoyar. Esto generaría fuga de información y debilitaría la validez de la evaluación.
-
-Por ello, en este TFM el campo \texttt{MediosMov} se conserva únicamente como información auxiliar para validación de coherencia, análisis de complejidad y posible apoyo al etiquetado. No forma parte de las variables principales de entrada del motor en la fase de primera decisión.
-
-\section{Construcción del dataset piloto}
-
-El dataset piloto del TFM se construye a partir de la combinación de registros reales, fuentes oficiales y casos simulados controlados. Esta combinación permite disponer de una base más sólida que un dataset puramente sintético, sin incurrir en la afirmación metodológicamente incorrecta de que se dispone de un histórico completo y etiquetado del 112 Aragón.
-
-\subsection{Registros reales procedentes del 112 Castilla y León}
-
-Los registros reales procedentes de Castilla y León se utilizan para probar la ingesta, la limpieza, la normalización textual, la extracción de señales, la geolocalización y el mapeo preliminar hacia la taxonomía del sistema. Estos registros aportan realismo lingüístico y operativo, ya que proceden de incidentes realmente gestionados por un servicio autonómico 112.
-
-No obstante, su uso introduce una limitación de transferibilidad territorial. Castilla y León no sustituye a Aragón como caso piloto. El dataset se emplea como aproximación estructural y empírica, mientras que la interpretación de prioridad se realiza conforme al marco estatal y aragonés.
-
-\subsection{Fuentes oficiales reutilizables}
-
-Las fuentes oficiales reutilizables cumplen tres funciones dentro del dataset piloto: aportar estructura de referencia, proporcionar contexto territorial y meteorológico verificable, y enriquecer los registros con variables que no aparecen directamente en el dataset.
-
-AEMET OpenData aporta contexto meteorológico oficial. Su valor para el dataset radica en que permite asignar o verificar niveles de aviso y fenómenos meteorológicos de forma coherente con la realidad institucional, y no mediante supuestos arbitrarios.
-
-El SNCZI/MITECO proporciona el contexto oficial de inundabilidad territorial, con visor cartográfico y descargas oficiales. Esta fuente resulta adecuada para alimentar la variable de peligrosidad por inundación o para verificar la plausibilidad de casos hidrológicos.
-
-Los datos del INE, el registro Seveso y la cartografía oficial aragonesa permiten enriquecer exposición, vulnerabilidad territorial, criticidad de emplazamiento y accesibilidad del punto. En el marco del TFM, su función es contextual, no de sustitución del dato operativo.
-
-\subsection{Casos simulados controlados}
-
-Los casos simulados controlados siguen siendo necesarios porque el dataset real no contiene todas las variables requeridas por el motor. No incluye prioridad oficial P1--P4, no contiene una evaluación completa de gravedad, no incorpora sistemáticamente víctimas en formato estructurado y no representa necesariamente todos los escenarios críticos que el motor debe cubrir.
-
-Estos casos no se generan de forma automática ni se producen mediante técnicas generativas. Se construyen manualmente a partir del conocimiento del dominio, la taxonomía operativa, la matriz de variables y la guía de etiquetado. Esta decisión se toma para asegurar que cada caso sea individualmente justificable y pueda explicarse ante tribunal sin recurrir a una caja negra adicional.
-
-Para que un caso simulado se considere apto para formar parte del dataset, debe superar cinco controles de plausibilidad: coherencia geográfica, coherencia temporal, coherencia meteorológica, coherencia interna de variables y coherencia con el etiquetado. Es decir, el tipo de incidente debe ser compatible con el territorio asignado, con la época del año, con el aviso meteorológico correspondiente, con los valores del resto de variables y con la prioridad finalmente asignada.
-
-\subsection{Criterios de validez metodológica del dataset piloto}
-
-Dado que el dataset piloto combina registros reales, enriquecimiento contextual y casos simulados, su validez no debe entenderse en términos de representatividad estadística de todos los incidentes reales del 112 Aragón. El TFM no afirma disponer de una muestra probabilística del dominio operativo aragonés. Su validez se plantea en términos de cobertura funcional del motor, trazabilidad de las decisiones de etiquetado y control de plausibilidad de los escenarios utilizados para la evaluación.
-
-Esta distinción es importante. Un dataset pequeño de 120 a 150 casos no permite entrenar ni validar de forma robusta un modelo supervisado complejo. Sin embargo, sí puede ser suficiente para evaluar un baseline interpretable si se diseña de forma estratificada, cubriendo todos los niveles P1--P4, todas las reglas duras principales, distintas tipologías de incidente y casos de frontera. El objetivo no es inferir la distribución real de emergencias en Aragón, sino comprobar si el motor responde de forma coherente ante los escenarios que debe saber manejar.
-
-La Tabla~\ref{tab:criterios-validez-dataset-piloto} resume los controles metodológicos previstos para conferir valor al dataset piloto.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{4.2cm}|p{5.2cm}|p{4.2cm}|}
-\hline
-\textbf{Criterio de control} & \textbf{Aplicación en el dataset piloto} & \textbf{Finalidad metodológica} \\ \hline
-Cobertura de prioridades & Inclusión deliberada de casos P1, P2, P3 y P4 & Evaluar el comportamiento del baseline en todo el rango de salida \\ \hline
-Cobertura de reglas duras & Inclusión de casos asociados a riesgo vital, atrapamiento, intoxicación, inundación, incendio y riesgo tecnológico & Verificar que las reglas críticas se activan correctamente \\ \hline
-Casos de frontera & Inclusión de escenarios ambiguos entre P1/P2, P2/P3 y P3/P4 & Comprobar la sensibilidad del scoring y de la confianza \\ \hline
-Plausibilidad territorial & Ubicación de escenarios simulados en municipios, zonas y contextos compatibles con Aragón & Mantener coherencia con el caso piloto \\ \hline
-Plausibilidad meteorológica & Asociación de fenómenos y avisos coherentes con la época y la localización del caso & Evitar combinaciones artificiales no justificables \\ \hline
-Separación entrada/salida & Exclusión de variables posteriores, como medios movilizados, como entrada principal del motor & Evitar fuga de información \\ \hline
-Trazabilidad del etiquetado & Registro de variables, reglas y criterios que justifican la prioridad asignada & Permitir revisión y auditoría del dataset \\ \hline
-Revisión cruzada & Comprobación interna de coherencia entre descripción, variables, prioridad y explicación & Reducir arbitrariedad en los casos simulados \\ \hline
-\end{tabular}
-\caption{Criterios de validez metodológica del dataset piloto.}
-\label{tab:criterios-validez-dataset-piloto}
-\end{table}
-
-\noindent \textit{Fuente: elaboración propia.}
-
-Estos controles no eliminan las limitaciones del dataset, pero sí evitan que la evaluación se base en casos arbitrarios. El valor metodológico del dataset piloto reside en que cada caso puede explicarse, trazarse y relacionarse con la lógica del motor.
-
-\subsection{Dimensión prevista del dataset piloto}
-
-El dataset piloto combinará una selección de registros reales limpios, casos enriquecidos y casos simulados controlados. La dimensión final dependerá del avance de implementación y evaluación, pero se plantea una horquilla inicial de 120 a 150 casos etiquetados para la evaluación del baseline.
-
-Esta cifra no pretende ser suficiente para entrenar un modelo supervisado complejo. Su finalidad es permitir una evaluación razonable del comportamiento del baseline interpretable, cubriendo todos los niveles P1--P4 y asegurando la presencia de escenarios críticos asociados a reglas duras.
-
-La Tabla~\ref{tab:distribucion-prioridades-piloto} recoge una distribución orientativa.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{2.3cm}|p{3cm}|p{3cm}|p{6cm}|}
-\hline
-\textbf{Prioridad} & \textbf{Porcentaje orientativo} & \textbf{N.º aprox.} & \textbf{Finalidad} \\ \hline
-P1 & 15--20\% & 18--30 & Cubrir escenarios críticos y falsos negativos graves \\ \hline
-P2 & 25--30\% & 30--45 & Evaluar alta urgencia y potencial de escalado \\ \hline
-P3 & 35--40\% & 42--60 & Representar el volumen principal de gestión activa \\ \hline
-P4 & 20--25\% & 24--37 & Incluir incidentes menores y baja urgencia relativa \\ \hline
-Total & 100\% & 120--150 & Cobertura suficiente del espectro P1--P4 \\ \hline
-\end{tabular}
-\caption{Distribución orientativa del dataset piloto por prioridad.}
-\label{tab:distribucion-prioridades-piloto}
-\end{table}
-
-\noindent \textit{Fuente: elaboración propia.}
-
-\subsection{Cobertura de reglas duras}
-
-El dataset se diseñará de forma que todas las reglas duras definidas en el capítulo 6 estén representadas por al menos un subconjunto de casos. Esto incluye escenarios con riesgo vital inmediato, personas atrapadas, fallecidos o heridos graves, intoxicaciones, incendios en vivienda, incidentes tecnológicos, inundaciones con personas en riesgo e incendios forestales próximos a población.
-
-La cobertura explícita de cada regla permite que la evaluación valore no solo el comportamiento global del baseline, sino también su sensibilidad frente a los escenarios de máxima criticidad. En particular, el análisis de falsos negativos graves se apoyará en esta cobertura.
+El dataset resultante alimenta tres usos distintos: pruebas de extraccion de Capa 1, entrenamiento y evaluacion de Capa 2, y evaluacion transversal de sesgo, falsos negativos P1, calibracion y matriz de confusion. La Capa 3 no se entrena con el dataset operativo; utiliza las salidas de Capa 2 y el corpus normativo para generar explicaciones.
 
 \section{Limitaciones del dataset}
 
-Las limitaciones del dataset deben quedar explicitadas con claridad.
+Las limitaciones deben quedar explicitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. La segunda es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del nucleo v0.1.0. La quinta es que la validacion externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoria.
 
-La primera limitación es territorial. El dataset empírico procede de Castilla y León, mientras que el caso piloto operativo del TFM se sitúa en Aragón. Esta diferencia no invalida su uso, pero obliga a interpretarlo como fuente proxy y no como representación directa del 112 Aragón.
+\section{Conclusiones}
 
-La segunda limitación es funcional. El dataset no contiene una prioridad oficial P1--P4 ni una gravedad estructurada equivalente. Por tanto, no permite entrenar directamente un modelo supervisado de prioridad ni validar el sistema contra una verdad oficial de priorización.
+El dise\~no de datos presentado en este capitulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un dataset totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
 
-La tercera limitación es de cobertura de variables. Algunas variables críticas del motor, como población vulnerable, accesibilidad, exposición a riesgo específico, tendencia del incidente o fiabilidad de la información, no aparecen de forma estructurada en el dataset y requieren enriquecimiento externo o etiquetado.
+La aportacion metodologica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, contratos, variables operativas, supervision debil, control de leakage y splits reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
 
-La cuarta limitación es de temporalidad operativa. El dataset recoge registros de incidentes, pero no reproduce necesariamente la secuencia temporal completa de llegada de información en los primeros minutos de la emergencia. Por tanto, la evaluación del TTFD debe interpretarse como estimación en escenarios simulados, no como medición real en sala 112.
-
-La quinta limitación es de validación independiente. El etiquetado se apoya en una guía cerrada y en revisión interna del equipo, pero no en un panel amplio de operadores expertos. Esta limitación deberá reflejarse también en el capítulo de evaluación y en las conclusiones.
-
-La sexta limitación es estadística. El dataset piloto no pretende representar la distribución real de incidentes de Aragón ni estimar frecuencias poblacionales. Su finalidad es evaluar el comportamiento del baseline sobre una muestra funcionalmente diseñada para cubrir prioridades, reglas duras y situaciones de frontera.
-
-\section{Calidad del dato y riesgos metodológicos}
-
-La calidad del dato constituye una condición crítica para cualquier sistema de apoyo a la decisión. En este TFM, los riesgos metodológicos no proceden únicamente de la posible inexactitud del valor observado, sino también de la naturaleza híbrida del dataset, del uso de proxies contextuales y de la combinación entre registros reales, enriquecimiento oficial y casos simulados.
-
-El primer riesgo es la subjetividad del etiquetado. Aunque la guía de etiquetado y las reglas duras reducen la arbitrariedad, sigue existiendo un margen interpretativo en los casos de frontera. Para mitigarlo, el equipo utiliza criterios explícitos de resolución de conflictos y revisión cruzada.
-
-El segundo riesgo es el uso de proxies. Variables como la proporción de población mayor, la presencia de una zona inundable o la cercanía a una instalación sensible no describen directamente a los afectados concretos del incidente, sino su contexto potencial. El sistema debe tratar estos valores como indicadores complementarios y no como sustitutos de la observación operativa directa.
-
-El tercer riesgo es la sobreinterpretación de señales textuales. La detección de palabras asociadas a fallecidos, heridos, atrapamientos o incendios mejora la estructuración del dataset, pero no equivale a una clasificación experta completa. Las señales textuales deben interpretarse como indicios, no como verdad operativa.
-
-El cuarto riesgo es la dependencia parcial de datos simulados. Un motor evaluado con escenarios construidos manualmente solo puede considerarse validado en simulación. Esta limitación se asume de forma explícita desde la estrategia general de datos.
-
-El quinto riesgo es la integración incompleta de contexto en tiempo real. En una solución operativa real, AEMET, SNCZI u otras fuentes se consultarían dinámicamente. En el prototipo, la evaluación se realiza con datos históricos, verificables o plausiblemente asignados. Por tanto, se está evaluando la lógica de uso del contexto, no una integración productiva completa.
-
-El sexto riesgo es el sesgo de distribución. Si el dataset piloto sobrerrepresenta incidentes graves, el sistema tenderá a sobrepriorizar; si infrarrepresenta los casos críticos, puede degradar la sensibilidad ante falsos negativos graves. Por eso el dimensionamiento del dataset incorpora una distribución objetivo explícita y deliberadamente no uniforme.
-
-La estrategia global de mitigación consiste en reconocer estos riesgos de forma transparente, documentar las decisiones adoptadas y acompañar toda evaluación de la explicación metodológica necesaria para no sobredimensionar el alcance del sistema.
-
-\section{Conclusiones del capítulo}
-
-El diseño de datos presentado en este capítulo permite conectar el motor de priorización del capítulo anterior con una base empírica y metodológica defendible. El uso del Registro de Emergencias del 112 de Castilla y León aporta realismo operativo, texto, coordenadas y trazabilidad, mientras que las fuentes oficiales y los casos simulados permiten completar las variables que el dataset no contiene.
-
-La estrategia adoptada evita dos extremos metodológicamente débiles: por un lado, una evaluación basada exclusivamente en datos simulados; por otro, la pretensión de entrenar un modelo supervisado con un dataset que no contiene prioridad oficial ni todas las variables necesarias. El resultado es un enfoque intermedio, adecuado al alcance del TFM: datos reales para estructurar y probar el pipeline, normativa estatal y aragonesa para justificar la lógica del motor, y escenarios simulados para evaluar el comportamiento del baseline.
-
-El valor del dataset piloto no reside en su representatividad estadística, sino en su cobertura funcional, en la trazabilidad de sus etiquetas y en los controles de plausibilidad aplicados. Esta precisión es necesaria para interpretar correctamente los resultados de evaluación que se presentarán en el Capítulo 9.
-
-El siguiente capítulo desarrolla la implementación del prototipo software que materializa este diseño de datos y permite ejecutar el motor de priorización de forma integrada.
+El siguiente capitulo debe documentar la implementacion del prototipo software que ejecuta este flujo: backend, orquestador, herramientas MCP, logging, modo degradado e interfaz minima.
