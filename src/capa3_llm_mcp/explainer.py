@@ -13,11 +13,13 @@ Flujo degradado (LLM no disponible):
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import re
 import sys
 import time
+from typing import Generator
 from pathlib import Path
 
 # ── imports de contratos ──────────────────────────────────────────────────────
@@ -45,6 +47,9 @@ logger = logging.getLogger(__name__)
 _SLA_MS = 2_000.0  # NFR-009: p95 ≤ 2000 ms
 _MODEL_VERSION = "0.1.0"
 _LLM_MODEL_NAME = "Qwen2.5-7B-Instruct-Q4_K_M"
+
+# Caché de explicaciones por sesión. Clave: SHA-256(texto_incidente + prioridad).
+_EXPLAIN_CACHE: dict[str, OperatorRecommendation] = {}
 
 # Regex para extraer JSON del output del LLM (puede incluir texto antes/después)
 _JSON_RE = re.compile(r"\{.*\}", re.DOTALL)
@@ -145,6 +150,41 @@ def _parse_llm_output(raw: str) -> dict:
         return {}
 
 
+def _cache_key(incident_text: str, priority: str) -> str:
+    """Genera clave SHA-256 para el caché de explicaciones."""
+    return hashlib.sha256(f"{incident_text}||{priority}".encode()).hexdigest()
+
+
+def _build_operator_result(
+    rec: PriorityRecommendation,
+    parsed: dict,
+    citations: list[LegalCitation],
+    rag_chunks: list[dict],
+) -> OperatorRecommendation:
+    """Construye OperatorRecommendation a partir del JSON parseado del LLM."""
+    explanation_text = parsed["explanation_text"][:1200]
+    actuation_hints = [str(h)[:200] for h in parsed.get("actuation_hints", [])[:6]]
+    disclaimer = parsed.get("confidence_disclaimer")
+    if disclaimer:
+        disclaimer = str(disclaimer)[:300]
+    tools_used = ["search_normative", "cite_legal_basis"] if rag_chunks or citations else []
+    return OperatorRecommendation(
+        incident_id=rec.incident_id,
+        priority_recommended=rec.priority_recommended,
+        explanation_text=explanation_text,
+        legal_citations=citations,
+        actuation_hints=actuation_hints,
+        activated_rules_summary=[r.human_text[:200] for r in rec.activated_rules[:5]],
+        confidence_disclaimer=disclaimer,
+        model_version_capa3=_MODEL_VERSION,
+        llm_metadata=LLMMetadata(
+            llm_model=_LLM_MODEL_NAME,
+            temperature=0.0,
+            tools_invoked=tools_used,
+        ),
+    )
+
+
 # ── API pública ───────────────────────────────────────────────────────────────
 
 def explain(
@@ -180,6 +220,13 @@ def explain(
         _check_sla(rec.incident_id, t0)
         return result
 
+    # Caché de sesión: evita invocar el LLM para textos ya procesados
+    _ckey = _cache_key(incident_text, rec.priority_recommended.value)
+    if _ckey in _EXPLAIN_CACHE:
+        logger.info("Cache hit (incident_id=%s)", rec.incident_id)
+        _check_sla(rec.incident_id, t0)
+        return _EXPLAIN_CACHE[_ckey]
+
     # Contexto RAG
     rag_chunks = search_normative(incident_text, n=3)
 
@@ -206,32 +253,70 @@ def explain(
         _check_sla(rec.incident_id, t0)
         return result
 
-    # Construir OperatorRecommendation
-    explanation_text = parsed["explanation_text"][:1200]
-    actuation_hints = [str(h)[:200] for h in parsed.get("actuation_hints", [])[:6]]
-    disclaimer = parsed.get("confidence_disclaimer")
-    if disclaimer:
-        disclaimer = str(disclaimer)[:300]
-
-    tools_used = ["search_normative", "cite_legal_basis"] if rag_chunks or citations else []
-
-    result = OperatorRecommendation(
-        incident_id=rec.incident_id,
-        priority_recommended=rec.priority_recommended,
-        explanation_text=explanation_text,
-        legal_citations=citations,
-        actuation_hints=actuation_hints,
-        activated_rules_summary=[r.human_text[:200] for r in rec.activated_rules[:5]],
-        confidence_disclaimer=disclaimer,
-        model_version_capa3=_MODEL_VERSION,
-        llm_metadata=LLMMetadata(
-            llm_model=_LLM_MODEL_NAME,
-            temperature=0.0,
-            tools_invoked=tools_used,
-        ),
-    )
+    result = _build_operator_result(rec, parsed, citations, rag_chunks)
+    _EXPLAIN_CACHE[_ckey] = result
     _check_sla(rec.incident_id, t0)
     return result
+
+
+def explain_stream(
+    rec: PriorityRecommendation,
+    incident_text: str,
+    *,
+    llm: QwenWrapper | None = None,
+    chroma_dir: Path | None = None,
+) -> Generator[dict, None, None]:
+    """Variante streaming de explain(): yields tokens del LLM y el resultado final.
+
+    Yields dicts con estructura:
+        {"type": "token",  "content": str}                  — token generado por LLM
+        {"type": "cached", "content": ""}                   — cache hit
+        {"type": "result", "content": OperatorRecommendation} — resultado final
+
+    Si el LLM no está disponible, emite directamente el resultado degradado.
+    Ideal para endpoints SSE donde se quiere mostrar progreso al usuario.
+    """
+    t0 = time.perf_counter()
+
+    if llm is None:
+        llm = QwenWrapper()
+
+    if not llm.is_available():
+        yield {"type": "result", "content": degraded_explain(rec)}
+        return
+
+    _ckey = _cache_key(incident_text, rec.priority_recommended.value)
+    if _ckey in _EXPLAIN_CACHE:
+        logger.info("Cache hit stream (incident_id=%s)", rec.incident_id)
+        yield {"type": "cached", "content": ""}
+        yield {"type": "result", "content": _EXPLAIN_CACHE[_ckey]}
+        return
+
+    rag_chunks = search_normative(incident_text, n=3)
+    citations = _collect_citations(rec)
+    messages = _build_messages(rec, incident_text, rag_chunks)
+
+    collected: list[str] = []
+    try:
+        for token in llm.chat_stream(messages, max_tokens=600, temperature=0.0):
+            collected.append(token)
+            yield {"type": "token", "content": token}
+    except Exception as exc:
+        logger.error("Error en streaming LLM: %s → modo degradado", exc)
+        yield {"type": "result", "content": degraded_explain(rec)}
+        _check_sla(rec.incident_id, t0)
+        return
+
+    raw_output = "".join(collected)
+    parsed = _parse_llm_output(raw_output)
+    if not parsed:
+        result = degraded_explain(rec)
+    else:
+        result = _build_operator_result(rec, parsed, citations, rag_chunks)
+        _EXPLAIN_CACHE[_ckey] = result
+
+    yield {"type": "result", "content": result}
+    _check_sla(rec.incident_id, t0)
 
 
 def _check_sla(incident_id: str, t0: float) -> None:
