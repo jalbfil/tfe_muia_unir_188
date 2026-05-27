@@ -1,0 +1,13 @@
+{
+  "norma_id": "INUNCYL",
+  "titulo": "Acuerdo 19/2010, de 25 de febrero, Plan de Protección Civil ante el Riesgo de Inundaciones en Castilla y León (INUNCYL)",
+  "jerarquia": "autonomica_acuerdo",
+  "ambito": "castilla_y_leon",
+  "ano": 2010,
+  "fuente": "BOCYL",
+  "identificador": "BOCYL-D-03032010-14",
+  "url_pdf": "https://bocyl.jcyl.es/boletines/2010/03/03/pdf/BOCYL-D-03032010-14.pdf",
+  "url_html": "https://bocyl.jcyl.es/boletin.do?fechaBoletin=03/03/2010",
+  "verified": true,
+  "notes": "BOCYL núm. 42, 03/03/2010. Consejería de Interior y Justicia. Sufijo -14 confirmado vía Perplexity 2026-05-25. V08-V11 diferidas a v0.2.0 (R-13); en v0.1.0 se indexa si se obtiene PDF."
+}

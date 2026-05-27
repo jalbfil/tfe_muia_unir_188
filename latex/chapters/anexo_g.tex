@@ -1,0 +1,39 @@
+\chapter{Capturas de pantalla del prototipo}
+\label{cap:anexog}
+
+\section*{G.1. Finalidad del anexo}
+
+Este anexo recopila las capturas de pantalla representativas de la interfaz gráfica de usuario del prototipo, desarrollada en Streamlit e integrada con los servicios FastAPI de priorización y auditoría. Estas figuras ilustran la experiencia de usuario del operador del 112 Castilla y León durante la recepción de incidentes, la interpretación de las recomendaciones del sistema y la toma de decisiones asistida.
+
+\section*{G.2. Consola operativa: Entrada de incidentes}
+
+La Figura~\ref{fig:g1} muestra el panel izquierdo de la consola del prototipo, encargado de la captura de los datos de entrada del incidente. El operador puede seleccionar una plantilla de demostración rápida para precargar datos de accidentes viales graves o registrar manualmente el título, descripción en texto libre, provincia, localidad y coordenadas geográficas.
+
+\begin{figure}[ht]
+    \centering
+    % \includegraphics[width=0.9\textwidth]{figures/g1_entrada_incidente.png}
+    \caption{Consola de entrada de datos de incidentes (Panel Izquierdo)}
+    \label{fig:g1}
+\end{figure}
+
+\section*{G.3. Cuadro de mando: Priorización y justificación legal}
+
+La Figura~\ref{fig:g2} ilustra el resultado del análisis de un incidente crítico de tráfico con víctimas (P1). Se observa el badge rojo vibrante con el nivel de prioridad, las probabilidades asignadas a cada una de las cuatro prioridades por el motor de inferencia, y el bloque de explicación textual redactada por el LLM local citando las bases de la Ley 17/2015 del Sistema Nacional de Protección Civil.
+
+\begin{figure}[ht]
+    \centering
+    % \includegraphics[width=0.9\textwidth]{figures/g2_priorizacion_explicacion.png}
+    \caption{Priorización recomendada, explicación del LLM y citas legales}
+    \label{fig:g2}
+\end{figure}
+
+\section*{G.4. Reglas RuleFit activas e intervención humana (HITL)}
+
+La Figura~\ref{fig:g3} muestra el panel inferior de justificación operativa y el componente de interacción humana (\textit{Human-in-the-Loop}). El expandible dinámico expone las reglas operativas específicas aprendidas por RuleFit que justifican matemáticamente la decisión. A continuación, se presenta el formulario reactivo donde el operador registra la prioridad final, motivando de forma obligatoria cualquier discrepancia relevante antes de enviar los datos al log.
+
+\begin{figure}[ht]
+    \centering
+    % \includegraphics[width=0.9\textwidth]{figures/g3_reglas_hitl.png}
+    \caption{Reglas de inferencia RuleFit activas e intervención HITL del operador}
+    \label{fig:g3}
+\end{figure}

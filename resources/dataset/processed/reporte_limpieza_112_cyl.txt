@@ -1,0 +1,46 @@
+REPORTE DE LIMPIEZA DATASET 112 CASTILLA Y LEÓN
+============================================================
+
+Directorio de ejecución: C:\Users\juanc\Desktop\UNIR\TFE\tfe_muia_unir_188
+Archivo origen: C:\Users\juanc\Desktop\UNIR\TFE\tfe_muia_unir_188\resources\dataset\raw\Emergencias2008-2022.csv
+Archivo limpio generado: C:\Users\juanc\Desktop\UNIR\TFE\tfe_muia_unir_188\resources\dataset\processed\emergencias_112_cyl_2008_2022_clean.csv
+Muestra generada: C:\Users\juanc\Desktop\UNIR\TFE\tfe_muia_unir_188\resources\dataset\processed\emergencias_112_cyl_2008_2022_clean_sample.csv
+
+Registros originales: 9382
+Registros tras limpieza de fechas: 9380
+Registros eliminados por fecha anómala: 2
+Columnas originales: ['Título', 'DescripcionBlob', 'FechaIncidente', 'Localidad', 'Localidad.1', 'Localidad.2', 'TipoIncidente', 'IncidenteCerrado', 'MediosMov', 'PacientesAten', 'Identificador', 'ultimaActualizacion', 'Enlace al contenido', 'Unnamed: 13']
+Columnas finales: ['Identificador', 'FechaIncidente', 'anio', 'mes', 'dia', 'dia_semana', 'Título', 'titulo_limpio', 'DescripcionBlob', 'descripcion_limpia', 'texto_operativo', 'texto_operativo_norm', 'Localidad', 'Localidad.1', 'latitud', 'longitud', 'codigo_localidad_coord', 'tiene_coordenadas', 'TipoIncidente', 'categoria_operativa_preliminar', 'riesgo_vital_textual', 'signal_fallecido', 'signal_herido_grave', 'signal_atrapado', 'signal_intoxicacion', 'signal_varias_llamadas', 'signal_incendio', 'signal_accidente_trafico', 'signal_rescate', 'signal_meteo_inundacion', 'MediosMov', 'medios_mov_limpio', 'medios_mov_uso_recomendado', 'PacientesAten', 'pacientes_aten_limpio', 'IncidenteCerrado', 'Enlace al contenido', 'ultimaActualizacion', 'FechaIncidente_raw', 'fecha_valida_2008_2022', 'Localidad.2']
+
+Fechas anómalas eliminadas:
+- Identificador=1261041515414, FechaIncidente_raw=20070101, Título=asdfas
+- Identificador=1229078310641, FechaIncidente_raw=20881223, Título=Dos intoxicadas por monóxido de carbono
+
+Cobertura de coordenadas:
+- Registros con coordenadas: 9309
+- Registros sin coordenadas: 71
+- Porcentaje con coordenadas: 99.24 %
+
+Distribución de categoría operativa preliminar:
+categoria_operativa_preliminar
+trafico                     6782
+sanitario                   1710
+incendio                     798
+rescate_salvamento            69
+meteorologico_inundacion      15
+otros_no_clasificado           6
+
+Señales operativas extraídas:
+- riesgo_vital_textual: 5417
+- signal_fallecido: 1397
+- signal_herido_grave: 1585
+- signal_atrapado: 2810
+- signal_intoxicacion: 1178
+- signal_varias_llamadas: 1712
+- signal_incendio: 1115
+- signal_accidente_trafico: 6471
+- signal_rescate: 3524
+- signal_meteo_inundacion: 710
+
+Nota metodológica:
+El campo MediosMov se conserva para validación auxiliar y análisis de complejidad, pero no se recomienda emplearlo como entrada principal del motor de primera decisión, ya que puede reflejar actuaciones posteriores a la valoración inicial y generar fuga de información.

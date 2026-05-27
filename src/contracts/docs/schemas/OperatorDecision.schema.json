@@ -1,0 +1,64 @@
+{
+  "$contractsVersion": "0.1.0",
+  "$defs": {
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "incident_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "motivo_divergencia": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Motivo Divergencia"
+    },
+    "operador_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Operador Id",
+      "type": "string"
+    },
+    "priority_assigned_by_operator": {
+      "$ref": "#/$defs/Priority"
+    },
+    "priority_recommended_by_system": {
+      "$ref": "#/$defs/Priority"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "incident_id",
+    "priority_recommended_by_system",
+    "priority_assigned_by_operator",
+    "operador_id",
+    "timestamp"
+  ],
+  "title": "OperatorDecision",
+  "type": "object"
+}

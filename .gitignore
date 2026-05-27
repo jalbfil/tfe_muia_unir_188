@@ -22,6 +22,7 @@ build/
 *.so
 .env
 .venv/
+.venv*/
 venv/
 env/
 ENV/
@@ -54,6 +55,19 @@ out/
 
 # ─── LaTeX build (gestionado en latex/.gitignore) ─────────────────────────────
 latex/build/
+
+# ─── Artefactos ML/LLM (modelos, índices, reportes generados) ────────────────
+artifacts/**
+!artifacts/README.md
+!artifacts/rag/README.md
+
+# ─── Pre-commit y caches herramientas Python ─────────────────────────────────
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
 
 # ─── Archivos temporales varios ───────────────────────────────────────────────
 *.tmp

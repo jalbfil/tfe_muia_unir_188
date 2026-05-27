@@ -1,0 +1,74 @@
+# Spec Kit Phase 0 / T004 — CI principal del TFM 188
+# Gates: ruff + mypy(contratos) + pytest + coverage ≥80% (sobre src/contracts).
+# Los tests test_schema_diff y test_leakage_gate (T020, T021) se ejecutan
+# automáticamente cuando existan, gracias al recolector pytest.
+
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-type-test:
+    name: Lint · Type · Test · Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install project (dev extras)
+        run: |
+          uv pip install --system -e ".[dev]"
+
+      - name: Ruff (lint)
+        run: ruff check src scripts tests
+
+      - name: Ruff (format check)
+        run: ruff format --check src scripts tests
+
+      - name: Mypy (strict en src/contracts)
+        run: |
+          if [ -d "src/contracts/contracts" ]; then
+            mypy src/contracts
+          else
+            echo "src/contracts/contracts aún no creado (Fase 1 pendiente, T010+). Skipping."
+          fi
+
+      - name: Pytest + Coverage
+        run: |
+          if compgen -G "tests/test_*.py" > /dev/null || compgen -G "src/contracts/tests/test_*.py" > /dev/null; then
+            pytest --cov --cov-report=term-missing --cov-report=xml
+          else
+            echo "No tests yet (Fase 1 pendiente). Skipping pytest."
+          fi
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: ignore

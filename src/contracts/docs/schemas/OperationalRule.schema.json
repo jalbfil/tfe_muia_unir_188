@@ -1,0 +1,137 @@
+{
+  "$contractsVersion": "0.1.0",
+  "$defs": {
+    "NormaID": {
+      "enum": [
+        "LEY_17_2015",
+        "RD_524_2023",
+        "PLEGEM",
+        "LEY_4_2007_CYL",
+        "PLANCAL_DEC_4_2019",
+        "INFOCAL_DEC_6_2025",
+        "INUNCYL",
+        "MPCYL_ACUERDO_3_2008",
+        "LEY_11_2022",
+        "REGISTRO_112_CYL",
+        "RGPD",
+        "LOPDGDD",
+        "REG_UE_2024_1689",
+        "RD_840_2015_SEVESO"
+      ],
+      "title": "NormaID",
+      "type": "string"
+    },
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    },
+    "VariableSource": {
+      "enum": [
+        "EXPERT_BASELINE",
+        "RULEFIT_LEARNED"
+      ],
+      "title": "VariableSource",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "condition_expression": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Condition Expression",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "human_text": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Human Text",
+      "type": "string"
+    },
+    "normative_anchors": {
+      "items": {
+        "$ref": "#/$defs/NormaID"
+      },
+      "title": "Normative Anchors",
+      "type": "array"
+    },
+    "precision_observed": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Precision Observed"
+    },
+    "recall_observed": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Recall Observed"
+    },
+    "rule_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Rule Id",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/VariableSource"
+    },
+    "target_priority": {
+      "$ref": "#/$defs/Priority"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+    },
+    "usage_count": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Usage Count",
+      "type": "integer"
+    },
+    "weight": {
+      "title": "Weight",
+      "type": "number"
+    }
+  },
+  "required": [
+    "rule_id",
+    "source",
+    "condition_expression",
+    "human_text",
+    "target_priority",
+    "weight",
+    "created_at",
+    "updated_at"
+  ],
+  "title": "OperationalRule",
+  "type": "object"
+}

@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-05-26T11:04:01.034252+00:00",
+  "input_csv": "resources\\dataset\\processed\\emergencias_112_cyl_2008_2022_clean.csv",
+  "rows": 9380,
+  "active_annotators": [
+    "rules_heuristic",
+    "ner_intensifiers",
+    "semantic_cluster_proxy",
+    "llm_as_annotator_proxy"
+  ],
+  "excluded_annotators": [],
+  "krippendorff_alpha_nominal": 0.858348,
+  "alpha_threshold": 0.67,
+  "alpha_pass": true,
+  "final_label_distribution": {
+    "P1": 4212,
+    "P3": 2640,
+    "P2": 2142,
+    "P4": 386
+  },
+  "annotator_distributions": {
+    "rules_heuristic": {
+      "P1": 4433,
+      "P3": 2271,
+      "P2": 2312,
+      "P4": 364
+    },
+    "ner_intensifiers": {
+      "P1": 4031,
+      "P4": 408,
+      "P3": 3195,
+      "P2": 1746
+    },
+    "semantic_cluster_proxy": {
+      "P1": 4433,
+      "P3": 2271,
+      "P2": 2312,
+      "P4": 364
+    },
+    "llm_as_annotator_proxy": {
+      "P1": 4255,
+      "P3": 2579,
+      "P2": 2164,
+      "P4": 382
+    }
+  },
+  "mean_confidence": 0.943597,
+  "mean_agreement_score": 0.941844,
+  "prohibited_columns_present_in_input": [
+    "Enlace al contenido",
+    "IncidenteCerrado",
+    "MediosMov",
+    "PacientesAten",
+    "medios_mov_limpio",
+    "medios_mov_uso_recomendado",
+    "pacientes_aten_limpio",
+    "ultimaActualizacion"
+  ],
+  "prohibited_columns_policy": "Ignored by annotators and never exported as features.",
+  "output_format_note": "CSV and JSONL generated without optional parquet dependencies."
+}
