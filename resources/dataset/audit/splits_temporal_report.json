@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-05-26T11:04:15.660597+00:00",
+  "input_csv": "resources\\dataset\\processed\\weak_labels_p1p4.csv",
+  "mode": "temporal",
+  "seed": null,
+  "total_rows": 9380,
+  "split_sizes": {
+    "train": 7935,
+    "val": 710,
+    "test": 735
+  },
+  "label_distribution": {
+    "train": {
+      "P1": 3562,
+      "P2": 1819,
+      "P3": 2238,
+      "P4": 316
+    },
+    "val": {
+      "P1": 285,
+      "P2": 165,
+      "P3": 223,
+      "P4": 37
+    },
+    "test": {
+      "P1": 365,
+      "P2": 158,
+      "P3": 179,
+      "P4": 33
+    }
+  },
+  "year_distribution": {
+    "train": {
+      "2008": 92,
+      "2009": 398,
+      "2010": 344,
+      "2011": 404,
+      "2012": 685,
+      "2013": 669,
+      "2014": 675,
+      "2015": 745,
+      "2016": 874,
+      "2017": 897,
+      "2018": 753,
+      "2019": 768,
+      "2020": 631
+    },
+    "val": {
+      "2021": 710
+    },
+    "test": {
+      "2022": 735
+    }
+  },
+  "province_distribution": {
+    "train": {
+      "Avila": 744,
+      "Burgos": 1339,
+      "Leon": 2745,
+      "NO_INFERIDA": 14,
+      "Palencia": 389,
+      "Salamanca": 708,
+      "Segovia": 467,
+      "Soria": 308,
+      "Valladolid": 690,
+      "Zamora": 531
+    },
+    "val": {
+      "Avila": 65,
+      "Burgos": 105,
+      "Leon": 254,
+      "Palencia": 32,
+      "Salamanca": 57,
+      "Segovia": 44,
+      "Soria": 28,
+      "Valladolid": 78,
+      "Zamora": 47
+    },
+    "test": {
+      "Avila": 66,
+      "Burgos": 105,
+      "Leon": 232,
+      "Palencia": 32,
+      "Salamanca": 75,
+      "Segovia": 47,
+      "Soria": 28,
+      "Valladolid": 84,
+      "Zamora": 66
+    }
+  },
+  "output_format_note": "CSV generated without optional parquet dependencies."
+}

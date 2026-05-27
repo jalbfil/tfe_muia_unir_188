@@ -1,511 +1,233 @@
-\chapter{Diseño del motor de priorización}
+\chapter{Arquitectura y dise\~no del sistema inteligente}
 \label{cap:6}
 
-Este capítulo presenta el núcleo analítico del TFM: el diseño del motor de priorización, que constituye la aportación principal del trabajo desde el punto de vista de la inteligencia artificial aplicada. Todo lo desarrollado en los capítulos anteriores converge aquí en una especificación funcional que define qué información entra en el motor, cómo se procesa, qué salida produce y por qué esa salida puede considerarse explicable y revisable por un operador humano.
+\section{Finalidad del capitulo}
 
-El capítulo se organiza de forma progresiva. En primer lugar, se presenta el motor como sistema de apoyo a la decisión y se delimita su función dentro del prototipo. A continuación, se desarrolla la escala de prioridad operativa P1--P4, se definen las variables de entrada y las variables derivadas, se introduce la guía de etiquetado y se describe la arquitectura del baseline interpretable de tres capas.
+Este capitulo presenta el dise\~no tecnico y analitico del sistema propuesto. Tras haber fijado el problema, el estado del arte y el marco normativo, aqui se describe como se transforma un incidente 112 en una recomendacion de prioridad P1--P4 explicable, auditable y revisable por un operador humano.
 
-Después, se formulan las reglas duras del sistema, se establecen pesos orientativos y umbrales iniciales del scoring, se justifica la elección metodológica del baseline frente a modelos más complejos y se muestra un ejemplo de funcionamiento paso a paso. Por último, se sintetiza la lógica del sistema mediante una fórmula conceptual de prioridad.
+La version actual del TFM abandona el dise\~no inicial basado unicamente en reglas duras y \textit{scoring}. La arquitectura final se organiza en tres capas de inteligencia artificial, coordinadas mediante contratos de datos versionados:
 
-La finalidad de este capítulo no es describir una implementación cerrada y ya validada empíricamente, sino fijar con precisión el diseño analítico y funcional del motor. La calibración definitiva de pesos y umbrales, así como la evaluación cuantitativa del comportamiento del sistema, se desarrollan en el capítulo de evaluación. La comparación con alternativas de inteligencia artificial se plantea como una evaluación metodológica y técnica de adecuación al dominio, no como un benchmark experimental completo, ya que el dataset disponible no contiene una etiqueta oficial de prioridad operativa contra la que entrenar y comparar modelos supervisados.
+\begin{itemize}
+    \item \textbf{Capa 1: NLP operativo}. Extrae variables V01--V15 y se\~nales textuales desde el titulo, descripcion, categoria preliminar y contexto basico del incidente.
+    \item \textbf{Capa 2: priorizacion interpretable}. Produce una recomendacion P1--P4 mediante RuleFit-lite, entrenado sobre etiquetas academicas generadas por supervision debil, y comparado contra un baseline experto y una ejecucion diagnostica con \texttt{imodels}.
+    \item \textbf{Capa 3: explicacion normativa}. Genera una explicacion breve para el operador mediante LLM local, recuperacion aumentada sobre corpus normativo de Castilla y Leon y herramientas MCP.
+\end{itemize}
 
-\section{Planteamiento general: el «cerebro» del sistema}
+El resultado no es un sistema autonomo de despacho, sino un sistema de apoyo a la decision. La prioridad recomendada no sustituye el criterio profesional; se ofrece como una propuesta estructurada, con reglas activadas, probabilidad, confianza, citas legales y registro auditable.
 
-El motor de priorización es el componente que transforma la información disponible sobre un incidente en una recomendación estructurada de urgencia operativa. Si el prototipo completo funciona como un sistema de apoyo a la decisión, el motor constituye su núcleo lógico: recibe datos del incidente, integra contexto oficial, aplica reglas y una lógica de ponderación explicable, y devuelve una salida que el operador puede utilizar como apoyo para la primera decisión.
+\section{Principios de dise\~no}
 
-La aportación de inteligencia artificial del sistema no se limita a aplicar un modelo de aprendizaje automático sobre un conjunto de datos. En este TFM, la contribución se concreta en el diseño de un sistema de razonamiento automatizado, interpretable y trazable, capaz de operar con información incompleta y de explicar al operador por qué recomienda una determinada prioridad. Este planteamiento es coherente con la inteligencia artificial explicable (XAI, del inglés \textit{Explainable Artificial Intelligence}) y con la necesidad de mantener supervisión humana en dominios críticos \cite{Arrieta2020,Rudin2019,EUAIAct2024}.
+El dise\~no se apoya en seis principios que conectan los capitulos previos con la implementacion.
 
-La entrada del motor está delimitada a un conjunto cerrado de quince variables operativas. Esta restricción es deliberada y responde a una decisión metodológica del proyecto: priorizar un diseño robusto, trazable y viable frente a un modelo excesivamente amplio y difícil de justificar. Las entradas del motor se organizan en seis grupos: gravedad inmediata, vulnerabilidad y exposición, amenaza contextual, escalado y evolución, calidad de la información y contexto operativo.
+\textbf{Primero, supervision humana.} El operador acepta, modifica o rechaza la recomendacion. El sistema nunca moviliza recursos por si mismo ni declara situaciones operativas oficiales.
 
-La salida del motor está compuesta por cuatro elementos funcionales: prioridad operativa recomendada en escala P1--P4, nivel de confianza de la recomendación, situación operativa sugerida y explicación resumida de los factores determinantes. Estas salidas no constituyen una decisión automática ni un despacho de recursos, sino una recomendación revisable por el operador humano. El sistema no sustituye al decisor; reduce el tiempo necesario para alcanzar una primera valoración razonada y trazable.
+\textbf{Segundo, explicabilidad desde el nucleo.} La prioridad se calcula mediante un modelo interpretable, no mediante un LLM generativo. El LLM explica una decision ya producida por Capa 2; no decide la prioridad.
 
-La explicabilidad no se incorpora como una capa estética posterior, sino como un requisito de diseño desde el origen. En un dominio donde las recomendaciones afectan a la protección de personas y a la activación de respuestas coordinadas, una prioridad que no pueda entenderse, discutirse o corregirse carece de valor operativo. Por esa razón, el motor se construye sobre un baseline interpretable, basado en reglas duras, scoring explicable y cálculo explícito de confianza.
+\textbf{Tercero, contratos antes que integracion.} Cada capa intercambia objetos Pydantic versionados. Esto reduce ambiguedad, facilita pruebas y permite que los tres bloques de trabajo avancen en paralelo.
 
-\subsection{Relación entre el dataset y el motor}
+\textbf{Cuarto, soberania del dato.} La inferencia se plantea en local. No se envian incidentes a APIs externas en produccion, y la Capa 3 usa un LLM cuantizado ejecutado en hardware propio.
 
-El diseño del motor no depende exclusivamente del dataset utilizado como fuente empírica, sino de la combinación de tres elementos: normativa oficial, fuentes de datos contextuales y registros reales de incidentes. La normativa estatal y aragonesa justifica la lógica de prioridad, escalado y coordinación; las fuentes oficiales como AEMET, SNCZI/MITECO, INE o cartografía territorial aportan contexto; y el Registro de Emergencias del 112 de Castilla y León aporta una base real de incidentes para probar el pipeline de ingesta, limpieza, extracción de señales y trazabilidad \cite{Registro112CyL}.
+\textbf{Quinto, trazabilidad normativa.} Las variables, reglas y explicaciones se vinculan con normas del corpus CyL: Ley 17/2015, RD 524/2023, Ley 4/2007 CyL, PLANCAL, INFOCAL, INUNCYL, MPCyL, RGPD, LOPDGDD y Reglamento UE 2024/1689.
 
-La auditoría realizada sobre el dataset de Castilla y León confirma que dispone de campos útiles como título, descripción, fecha, localidad, coordenadas, identificador y enlace al contenido original. Tras la limpieza se conservan 9.380 registros válidos y una cobertura de coordenadas del 99,24\%, lo que permite probar el pipeline de ingesta, normalización, extracción de señales y trazabilidad sobre registros reales. Sin embargo, el dataset no contiene una etiqueta oficial de prioridad operativa ni una escala equivalente a P1--P4. Por tanto, no puede emplearse directamente para entrenar un modelo supervisado de priorización.
+\textbf{Sexto, prevencion de \textit{leakage}.} El sistema no utiliza columnas posteriores a la decision, como medios movilizados, pacientes atendidos o cierre del incidente. Estas variables pueden analizarse solo como informacion ex post de evaluacion, nunca como entrada de Capa 1 o Capa 2.
 
-Esta limitación refuerza la elección metodológica del baseline interpretable. El motor no aprende una prioridad oficial inexistente en el dataset, sino que aplica una lógica de priorización diseñada a partir de criterios normativos, variables operativas, reglas de etiquetado y fuentes oficiales de contexto. El dataset real se utiliza para estructurar incidentes, extraer señales textuales y validar la viabilidad del pipeline, mientras que la prioridad recomendada se obtiene mediante la lógica propia del sistema.
+\section{Vista general de la arquitectura}
 
-Asimismo, el campo de medios movilizados se considera información posterior a la valoración inicial del incidente. Por ello, no se emplea como entrada principal del motor de primera decisión, sino como información auxiliar para validación de coherencia y análisis de complejidad. Esta decisión evita introducir fuga de información, ya que los medios movilizados pueden ser consecuencia de una decisión operativa ya adoptada.
+La arquitectura se representa como una cadena de transformaciones controladas. La entrada inicial es un \texttt{IncidentInput}; la Capa 1 produce \texttt{IncidentFeatures}; la Capa 2 produce \texttt{PriorityRecommendation}; la Capa 3 produce \texttt{OperatorRecommendation}; y la decision final del operador se registra como \texttt{OperatorDecision}. Todo el proceso queda recogido en un \texttt{InferenceLog}.
 
-\section{Escala de prioridad operativa del sistema}
+\begin{figure}[htbp]
+\centering
+\small
+\begin{tabular}{c}
+\texttt{IncidentInput} \\
+\(\downarrow\) \\
+\texttt{Capa 1 NLP -> IncidentFeatures} \\
+\(\downarrow\) \\
+\texttt{Capa 2 RuleFit -> PriorityRecommendation} \\
+\(\downarrow\) \\
+\texttt{Capa 3 LLM+RAG+MCP -> OperatorRecommendation} \\
+\(\downarrow\) \\
+\texttt{OperatorDecision + InferenceLog}
+\end{tabular}
+\caption{Flujo logico de inferencia del sistema.}
+\label{fig:flujo-logico-sistema}
+\end{figure}
 
-El motor necesita una escala con capacidad discriminante suficiente para ordenar incidentes en condiciones de información incompleta. Se ha optado por una escala de cuatro niveles ---P1, P2, P3 y P4--- porque permite distinguir con claridad entre incidentes críticos, altos, medios y bajos sin introducir una granularidad artificial difícil de sostener en la práctica operativa.
+Esta separacion evita mezclar responsabilidades. La Capa 1 no decide prioridad; estructura el incidente. La Capa 2 no redacta explicaciones normativas extensas; recomienda prioridad y devuelve reglas activadas. La Capa 3 no recalcula el resultado; explica lo recibido, cita normas y advierte de incertidumbres.
 
-La escala P1--P4 es una abstracción operativa propia del prototipo. Se inspira en la lógica gradual de las situaciones operativas de protección civil y en los criterios de activación de planes, pero no constituye una categoría jurídica oficial ni una reproducción literal del marco normativo. Su función es ordenar incidentes individuales por urgencia operativa relativa dentro de un entorno de coordinación, no declarar formalmente una situación operativa ni activar jurídicamente un plan.
+\section{Contratos de datos}
 
-\subsection{P1: prioridad crítica}
-
-La prioridad P1 se asigna a incidentes que requieren atención inmediata porque existe riesgo vital confirmado o altamente probable, o porque concurren condiciones que hacen previsible una escalada extremadamente rápida con afectación grave a personas. Se trata de incidentes en los que el sistema debe evitar cualquier infraestimación.
-
-Ejemplos de situaciones P1 serían una persona atrapada en un incendio de vivienda, un accidente de tráfico con heridos graves o atrapados, una intoxicación por monóxido de carbono con personas inconscientes, una inundación con personas en riesgo inmediato o un incidente químico con nube tóxica en zona habitada.
-
-\subsection{P2: prioridad alta}
-
-La prioridad P2 corresponde a incidentes relevantes que requieren una respuesta rápida, pero en los que no se ha confirmado todavía una amenaza vital inmediata o esta se encuentra parcialmente controlada. También se asigna a incidentes con potencial elevado de escalado por contexto meteorológico, territorial o de vulnerabilidad.
-
-Ejemplos de situaciones P2 serían un incendio forestal próximo a interfaz urbano-forestal, una inundación en zona con población vulnerable, un accidente con varios vehículos sin víctimas graves confirmadas, un aviso meteorológico severo con incidentes asociados o un incendio industrial sin afectación directa a personas pero con riesgo de propagación.
-
-\subsection{P3: prioridad media}
-
-La prioridad P3 se asigna a incidentes que requieren intervención, seguimiento o coordinación, pero cuya urgencia operativa relativa es menor que la de P1 o P2. Suelen ser incidentes con afectación limitada, sin riesgo vital confirmado y con baja probabilidad de escalado inmediato.
-
-Ejemplos de situaciones P3 serían asistencias técnicas, incidentes de tráfico sin heridos graves, pequeños incendios controlables, incidencias localizadas por meteorología adversa o avisos que requieren comprobación pero no activación inmediata de recursos extraordinarios.
-
-\subsection{P4: prioridad baja}
-
-La prioridad P4 corresponde a incidentes de baja urgencia relativa, con información suficiente para descartar riesgo vital, baja afectación y escasa probabilidad de escalado. No significa que el incidente carezca de importancia, sino que, en un contexto de concurrencia de avisos, puede atenderse con menor prioridad relativa.
-
-Ejemplos de situaciones P4 serían avisos informativos, incidencias menores sin afectación a personas, obstáculos no críticos en vía pública o comunicaciones que requieren registro y seguimiento pero no movilización inmediata.
-
-\subsection{Relación entre P1--P4 y situaciones operativas 0--3}
-
-La escala P1--P4 no equivale a las situaciones operativas 0--3 definidas en la normativa de protección civil. Las situaciones operativas se refieren al nivel de activación, dirección y coordinación de una emergencia en el marco institucional, mientras que P1--P4 ordena incidentes individuales por urgencia operativa relativa dentro del prototipo.
-
-La relación entre ambas escalas es indirecta. Un incidente P1 puede contribuir a elevar una situación operativa si supera determinados umbrales de gravedad, extensión o necesidad de coordinación, pero P1 no implica por sí mismo una declaración formal de situación operativa 1, 2 o 3. Del mismo modo, una situación operativa elevada puede contener múltiples incidentes de prioridad P1, P2, P3 o P4.
-
-Esta distinción es importante para evitar confundir una abstracción funcional del TFM con una categoría jurídica oficial. La Tabla~\ref{tab:relacion-p-pso} resume esta relación.
+Los contratos son la pieza que convierte la arquitectura en un sistema verificable. Cada contrato define campos, restricciones e invariantes. La Tabla~\ref{tab:contratos-cap6} resume los objetos principales.
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{|p{2.5cm}|p{4.4cm}|p{4.4cm}|p{3cm}|}
+\begin{tabular}{|p{3.4cm}|p{4.1cm}|p{6.2cm}|}
 \hline
-\textbf{Nivel} & \textbf{Uso en el TFM} & \textbf{Relación con situaciones operativas} & \textbf{Naturaleza} \\ \hline
-P1 & Incidente crítico con riesgo vital o escalado grave inmediato & Puede contribuir a activar o elevar situaciones operativas, pero no equivale jurídicamente a ellas & Prioridad funcional \\ \hline
-P2 & Incidente de alta urgencia o con potencial de escalado & Puede requerir seguimiento reforzado o coordinación específica & Prioridad funcional \\ \hline
-P3 & Incidente de urgencia media, con afectación limitada & Normalmente gestionable con recursos ordinarios & Prioridad funcional \\ \hline
-P4 & Incidente de baja urgencia relativa & Seguimiento o resolución ordinaria & Prioridad funcional \\ \hline
-Situaciones 0--3 & Marco de activación, dirección y coordinación de planes & Categorías oficiales del sistema de protección civil & Categoría normativa \\ \hline
+\textbf{Contrato} & \textbf{Momento de uso} & \textbf{Funcion principal} \\ \hline
+\texttt{IncidentInput} & Entrada cruda & Representa texto, categoria, localizacion, fecha, provincia y operador antes de cualquier inferencia \\ \hline
+\texttt{IncidentFeatures} & Salida Capa 1 & Contiene variables V01--V15, se\~nales textuales, confianza y metadatos de extraccion \\ \hline
+\texttt{PriorityRecommendation} & Salida Capa 2 & Contiene prioridad P1--P4, probabilidades, reglas activadas, nivel de confianza y modelo usado \\ \hline
+\texttt{OperatorRecommendation} & Salida Capa 3 & Contiene explicacion textual, citas legales, recomendaciones no vinculantes y resumen de reglas \\ \hline
+\texttt{OperatorDecision} & Feedback humano & Registra prioridad final asignada por el operador y posible divergencia \\ \hline
+\texttt{InferenceLog} & Auditoria & Conserva snapshots, latencias, versiones de modelo, herramientas invocadas y hash de entrada \\ \hline
 \end{tabular}
-\caption{Relación conceptual entre la escala P1--P4 y las situaciones operativas de protección civil.}
-\label{tab:relacion-p-pso}
+\caption{Contratos principales del flujo de inferencia.}
+\label{tab:contratos-cap6}
 \end{table}
 
-\noindent \textit{Fuente: elaboración propia.}
+El uso de contratos tiene una consecuencia metodologica importante: la memoria puede justificar el sistema sin depender de detalles accidentales de implementacion. Lo relevante no es solo que exista codigo, sino que cada capa tenga entradas, salidas e invariantes comprobables.
 
-\section{Variables de entrada del motor}
+\section{Entrada del sistema: IncidentInput}
 
-El motor utiliza quince variables de entrada. La selección de estas variables responde a tres criterios: relevancia operativa, trazabilidad normativa o institucional y viabilidad técnica dentro del alcance del TFM. No se incluyen variables que no puedan justificarse o que introduzcan una complejidad difícil de defender en esta fase del proyecto.
+La entrada representa lo que el operador o un cliente externo proporciona en los primeros minutos del incidente. Incluye titulo, descripcion, categoria preliminar, localizacion opcional, provincia, fecha y operador. En el caso del dataset de Castilla y Leon, estos campos se derivan de columnas como \texttt{Titulo}, \texttt{DescripcionBlob}, \texttt{FechaIncidente}, \texttt{Localidad} y coordenadas.
 
-Las variables no tienen todas el mismo origen. Algunas pueden extraerse de registros reales de incidentes, como el título, la descripción, la fecha, la localidad o las coordenadas. Otras requieren enriquecimiento con fuentes oficiales externas, como avisos meteorológicos, zonas inundables o datos demográficos. Y otras se obtienen mediante etiquetado o inferencia a partir de reglas, porque no aparecen de forma explícita en el dataset.
+El contrato exige dos invariantes basicos. Primero, si existe latitud debe existir longitud, y viceversa. Segundo, el titulo o la descripcion deben contener informacion textual minima. Esta restriccion evita ejecutar una cadena de inferencia sobre entradas vacias o inutiles.
 
-\subsection{Gravedad inmediata}
+La entrada tambien es el primer punto de defensa contra \textit{leakage}. Si el cliente incluye campos como medios movilizados o pacientes atendidos, el backend debe rechazarlos con error explicito. Esta decision protege la validez del sistema: un motor de primera decision no puede aprender de informacion que solo aparece despues de decidir.
 
-El primer grupo agrupa las variables relacionadas con la amenaza directa para la vida o la integridad de las personas.
+\section{Capa 1: extraccion NLP de variables operativas}
 
-\begin{itemize}
-    \item \textbf{V01. Riesgo vital inmediato.} Indica si existe una amenaza directa, confirmada o altamente probable, para la vida de una o varias personas.
-    \item \textbf{V02. Víctimas confirmadas o probables.} Recoge la existencia de personas heridas, fallecidas, desaparecidas, inconscientes, atrapadas o afectadas por intoxicación.
-    \item \textbf{V03. Tipo de daño principal.} Identifica si el incidente afecta principalmente a personas, bienes, medio ambiente, infraestructuras o servicios esenciales.
-\end{itemize}
+La Capa 1 transforma texto libre y metadatos basicos en una representacion estructurada del incidente. Su salida, \texttt{IncidentFeatures}, contiene las variables operativas V01--V15, las se\~nales textuales y metadatos de inferencia.
 
-Estas variables tienen prioridad lógica sobre el resto. El sistema no debe permitir que un incidente con riesgo vital quede rebajado por un promedio ponderado de factores secundarios. Por ello, se incorporan reglas duras que fijan prioridades mínimas cuando se activan determinados criterios.
+\subsection{Variables activas y diferidas}
 
-\subsection{Tipología del incidente}
-
-\begin{itemize}
-    \item \textbf{V04. Tipo de incidente.} Clasifica el suceso conforme a la taxonomía operativa del sistema: tráfico, incendio, sanitario, rescate, meteorológico-inundación, tecnológico o seguridad, entre otras categorías.
-\end{itemize}
-
-En el dataset de Castilla y León, el campo \texttt{TipoIncidente} resulta demasiado genérico para alimentar directamente la taxonomía del motor. Por ello, la tipología operativa se deriva principalmente del título y de la descripción textual del incidente, mediante reglas de extracción y mapeo a la taxonomía definida en el TFM. Esta clasificación preliminar no se considera una verdad oficial, sino un mecanismo de apoyo para estructurar el dataset y facilitar el etiquetado posterior.
-
-\subsection{Vulnerabilidad y exposición}
-
-El segundo grupo recoge variables asociadas a la fragilidad del entorno afectado y al número potencial de personas expuestas.
-
-\begin{itemize}
-    \item \textbf{V05. Población vulnerable.} Indica si el incidente afecta o puede afectar a personas especialmente vulnerables, como menores, personas mayores, personas con discapacidad o población dependiente.
-    \item \textbf{V06. Personas en riesgo estimadas.} Aproxima la magnitud humana potencial del incidente.
-    \item \textbf{V07. Emplazamiento crítico.} Señala si el incidente se produce en un lugar cuya afectación puede incrementar la gravedad operativa, como hospitales, centros educativos, residencias, infraestructuras esenciales, vías principales o instalaciones sensibles.
-\end{itemize}
-
-Estas variables no siempre aparecen explícitamente en el dataset de incidentes. Su cálculo requiere combinar la información textual y geográfica del incidente con fuentes oficiales externas, como datos demográficos, cartografía territorial, registros de infraestructuras o capas de exposición.
-
-\subsection{Amenaza contextual}
-
-El tercer grupo recoge variables que no proceden necesariamente del incidente en sí, sino del contexto en el que se produce.
-
-\begin{itemize}
-    \item \textbf{V08. Nivel de aviso AEMET.} Representa el nivel de aviso meteorológico activo en la zona: sin aviso, amarillo, naranja o rojo.
-    \item \textbf{V09. Fenómeno meteorológico activo.} Identifica el fenómeno relevante: lluvia, nieve, viento, tormenta, temperaturas extremas u otros.
-    \item \textbf{V10. Peligrosidad por inundación.} Indica si la localización del incidente se encuentra en zona inundable o en un área de riesgo potencial significativo.
-    \item \textbf{V11. Presencia de instalación Seveso o riesgo tecnológico.} Recoge la proximidad o afectación de instalaciones industriales de riesgo.
-\end{itemize}
-
-La utilidad de estas variables reside en que permiten diferenciar incidentes aparentemente similares pero con contexto operativo muy distinto. Por ejemplo, una incidencia por lluvia en una zona sin riesgo hidráulico no tiene la misma prioridad que la misma incidencia en una zona inundable con aviso meteorológico naranja o rojo.
-
-\subsection{Escalado y evolución del incidente}
-
-\begin{itemize}
-    \item \textbf{V12. Tendencia del incidente.} Indica si el incidente se encuentra estable, en aumento, en propagación o con evolución desconocida.
-\end{itemize}
-
-La tendencia es especialmente relevante en incendios, inundaciones, fenómenos meteorológicos adversos, accidentes industriales o incidentes con múltiples llamadas. En muchos casos no está disponible como dato estructurado, por lo que debe inferirse de señales textuales, contexto meteorológico, simultaneidad de avisos o criterio de etiquetado.
-
-\subsection{Calidad de la información}
-
-\begin{itemize}
-    \item \textbf{V13. Fiabilidad de la información.} Estima la calidad de la información disponible sobre el incidente.
-    \item \textbf{V14. Número de avisos simultáneos.} Indica si existen múltiples comunicaciones relativas al mismo incidente o señales de confirmación externa.
-\end{itemize}
-
-Estas variables no deben rebajar automáticamente la urgencia de un incidente grave. Su función principal es modular la confianza de la recomendación. Por ejemplo, un incidente con riesgo vital comunicado por una única fuente poco precisa puede seguir siendo P1, pero con confianza media o baja, lo que obliga al operador a confirmar información sin demorar la respuesta.
-
-\subsection{Contexto operativo}
-
-\begin{itemize}
-    \item \textbf{V15. Accesibilidad al punto o complejidad operativa.} Representa la dificultad de acceso o intervención en el lugar del incidente.
-\end{itemize}
-
-Esta variable puede depender de la localización, la red viaria, el tipo de terreno, la meteorología o la existencia de recursos próximos. En esta versión del TFM se trata como variable de diseño, no como cálculo operativo completo, ya que una estimación precisa de accesibilidad exigiría integrar sistemas de rutas, disponibilidad real de recursos y condiciones dinámicas de tráfico.
-
-\section{Matriz resumida de variables de priorización}
-
-La Tabla~\ref{tab:variables-motor-priorizacion} resume las variables de entrada del motor, su grupo funcional, su posible origen y su función dentro de la priorización.
+El alcance v0.1.0 activa V01--V07 y V12--V15. Las variables V08--V11 permanecen en el contrato como extension futura, pero no se entrenan ni se exigen para la evaluacion principal. Esta decision mantiene el sistema reproducible y evita depender de integraciones geoespaciales o meteorologicas todavia no consolidadas.
 
 \begin{table}[htbp]
 \centering
-\small
-\begin{tabular}{|p{1.1cm}|p{3.4cm}|p{3.2cm}|p{3.7cm}|p{3cm}|}
+\scriptsize
+\begin{tabular}{|p{1.1cm}|p{4.4cm}|p{4.1cm}|p{3.5cm}|}
 \hline
-\textbf{ID} & \textbf{Variable} & \textbf{Grupo funcional} & \textbf{Origen previsto} & \textbf{Función en el motor} \\ \hline
-V01 & Riesgo vital inmediato & Gravedad inmediata & Texto, etiquetado, reglas & Activador crítico \\ \hline
-V02 & Víctimas confirmadas o probables & Gravedad inmediata & Texto, etiquetado & Activador crítico \\ \hline
-V03 & Tipo de daño principal & Gravedad inmediata & Texto, taxonomía & Modulación de prioridad \\ \hline
-V04 & Tipo de incidente & Tipología & Título, descripción, mapeo & Base taxonómica \\ \hline
-V05 & Población vulnerable & Vulnerabilidad & INE, contexto, etiquetado & Incremento de prioridad \\ \hline
-V06 & Personas en riesgo estimadas & Exposición & Texto, contexto, etiquetado & Incremento de prioridad \\ \hline
-V07 & Emplazamiento crítico & Exposición & Cartografía, registros oficiales & Incremento de prioridad \\ \hline
-V08 & Nivel de aviso AEMET & Amenaza contextual & AEMET OpenData & Incremento contextual \\ \hline
-V09 & Fenómeno meteorológico activo & Amenaza contextual & AEMET OpenData & Interpretación del riesgo \\ \hline
-V10 & Peligrosidad por inundación & Amenaza contextual & SNCZI/MITECO & Incremento contextual \\ \hline
-V11 & Instalación Seveso o riesgo tecnológico & Amenaza contextual & Registro oficial & Activador o incremento \\ \hline
-V12 & Tendencia del incidente & Escalado & Texto, reglas, etiquetado & Anticipación de escalado \\ \hline
-V13 & Fiabilidad de la información & Calidad de información & Etiquetado, metadatos & Modula confianza \\ \hline
-V14 & Avisos simultáneos & Calidad de información & Texto, agrupación de registros & Modula confianza/prioridad \\ \hline
-V15 & Accesibilidad o complejidad operativa & Contexto operativo & Cartografía, criterio operativo & Ajuste de prioridad \\ \hline
+\textbf{Var.} & \textbf{Nombre operativo} & \textbf{Funcion en el sistema} & \textbf{Estado v0.1.0} \\ \hline
+V01 & Riesgo vital & Detectar amenaza directa a la vida & Activa \\ \hline
+V02 & Numero de victimas estimado & Aproximar magnitud humana & Activa \\ \hline
+V03 & Gravedad de lesiones & Distinguir leve, grave o critica & Activa \\ \hline
+V04 & Tipo de incidente normalizado & Conectar texto con taxonomia & Activa \\ \hline
+V05 & Poblacion vulnerable & Elevar sensibilidad por colectivos vulnerables & Activa \\ \hline
+V06 & Numero de llamadas & Captar confirmacion o simultaneidad & Activa \\ \hline
+V07 & Emplazamiento critico & Identificar hospitales, colegios, residencias u otros puntos sensibles & Activa \\ \hline
+V08--V11 & AEMET, inundabilidad, Seveso & Enriquecimiento contextual avanzado & Diferidas v0.2.0 \\ \hline
+V12 & Riesgo de propagacion & Captar incendios u otros incidentes expansivos & Activa \\ \hline
+V13 & Multirriesgo & Detectar concurrencia de amenazas & Activa \\ \hline
+V14 & Avisos simultaneos en zona & Aproximar presion operativa y confirmacion externa & Activa \\ \hline
+V15 & Accesibilidad de recursos & Modular complejidad de intervencion & Activa \\ \hline
 \end{tabular}
-\caption{Variables de entrada del motor de priorización.}
-\label{tab:variables-motor-priorizacion}
+\caption{Variables operativas del sistema y alcance en v0.1.0.}
+\label{tab:variables-cap6}
 \end{table}
 
-\noindent \textit{Fuente: elaboración propia.}
+\subsection{Se\~nales textuales}
 
-La matriz muestra que el motor no depende de una única fuente de información. Algunas variables pueden obtenerse del dataset real de Castilla y León, otras se enriquecen mediante fuentes oficiales y otras requieren etiquetado o inferencia. Esta separación es necesaria para mantener rigor metodológico y evitar atribuir al dataset información que realmente no contiene.
+Ademas de variables estructuradas, la Capa 1 extrae se\~nales textuales booleanas con confianza asociada. Algunas son criticas para no infraestimar incidentes graves: \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_fallecido} o \texttt{riesgo\_vital\_textual}. Otras ayudan a contextualizar: \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_varias\_llamadas} y \texttt{signal\_meteo\_inundacion}.
 
-\section{Variables derivadas y salidas intermedias}
+La Capa 1 combina dos aproximaciones. Por un lado, reglas deterministas y diccionarios lexicos detectan se\~nales robustas de alto impacto. Por otro, un modelo transformer en espa\~nol puede aprender patrones mas flexibles para variables menos triviales. Esta combinacion evita depender exclusivamente de un modelo opaco y permite tests de contrato sobre casos golden.
 
-Además de las variables de entrada, el motor calcula variables derivadas que facilitan la explicación y la interpretación de la recomendación. Estas variables no se introducen manualmente, sino que se obtienen a partir de combinaciones de entradas.
+\section{Capa 2: priorizacion interpretable con RuleFit}
 
-Las principales variables derivadas son:
+La Capa 2 consume \texttt{IncidentFeatures} y produce \texttt{PriorityRecommendation}. Es el nucleo decisorio del sistema. Su responsabilidad es asignar una prioridad P1--P4, generar probabilidades por clase, devolver reglas activadas y comunicar nivel de confianza.
 
-\begin{itemize}
-    \item \textbf{Índice de gravedad inmediata.} Agrega señales de riesgo vital, víctimas, atrapamiento, intoxicación o daño directo a personas.
-    \item \textbf{Índice de exposición.} Resume población afectada, presencia de colectivos vulnerables y emplazamientos críticos.
-    \item \textbf{Índice de amenaza contextual.} Integra avisos meteorológicos, peligrosidad por inundación y riesgo tecnológico.
-    \item \textbf{Índice de escalado.} Estima la probabilidad de que el incidente aumente en gravedad o extensión.
-    \item \textbf{Índice de confianza.} Resume la calidad de la información disponible y el grado de completitud de las variables.
-\end{itemize}
+\subsection{Escala P1--P4}
 
-Estas variables derivadas permiten que la explicación generada por el sistema sea más comprensible. En lugar de mostrar únicamente una puntuación total, el motor puede indicar que la prioridad se debe principalmente a gravedad inmediata, amenaza contextual o vulnerabilidad del entorno.
+La escala P1--P4 es academica y funcional, no oficial. P1 representa incidentes criticos con riesgo vital, lesiones graves, atrapamiento, intoxicacion, fallecimiento, propagacion grave o amenaza inmediata. P2 representa alta prioridad, potencial de deterioro o afectacion significativa. P3 recoge incidentes que requieren gestion o seguimiento sin criticidad inmediata. P4 se reserva para baja urgencia relativa.
 
-\section{Guía de etiquetado}
+La escala no equivale a situaciones operativas 0--3. Una situacion operativa es una categoria institucional de mando y coordinacion; P1--P4 ordena incidentes individuales dentro del prototipo. Esta distincion evita confundir una herramienta academica de priorizacion con una declaracion juridica de emergencia.
 
-La guía de etiquetado define cómo se asigna una prioridad de referencia a los incidentes del dataset piloto. Su objetivo no es reproducir una clasificación oficial, sino crear una referencia coherente para evaluar el comportamiento del baseline.
+\subsection{Supervision debil}
 
-La guía se basa en cuatro principios:
+Como el Registro 112 CyL no contiene prioridad oficial P1--P4, el entrenamiento de Capa 2 requiere construir una etiqueta academica. La estrategia es la supervision debil: varios anotadores imperfectos generan votos que se agregan en una etiqueta final con confianza. En la version v0.1.0 se emplean cuatro fuentes: reglas heuristicas, extraccion NLP con intensificadores, proxy semantico por agrupacion y LLM-as-annotator proxy controlado.
 
-\begin{enumerate}
-    \item La protección de la vida humana prevalece sobre cualquier otro criterio.
-    \item La incertidumbre no debe rebajar automáticamente la prioridad de un incidente potencialmente grave.
-    \item El contexto puede elevar la prioridad cuando aumenta la exposición, la vulnerabilidad o el potencial de escalado.
-    \item La explicación debe ser consistente con la prioridad asignada.
-\end{enumerate}
+La etiqueta debil no se presenta como verdad institucional. Es un artefacto de investigacion que permite entrenar y comparar modelos sobre datos reales abiertos. Por ello debe acompa\~narse de acuerdo inter-anotador, analisis de discrepancias y una ablacion anti-circularidad que compare el resultado sin la fuente de reglas heuristicas.
 
-\subsection{Reglas maestras}
+\subsection{RuleFit como modelo principal}
 
-Las reglas maestras establecen criterios generales que deben respetarse en todo etiquetado:
+RuleFit se selecciona porque combina aprendizaje estadistico e interpretabilidad. El modelo genera o utiliza reglas derivadas de arboles y las pondera mediante regularizacion, produciendo un conjunto de reglas con coeficientes inspeccionables \cite{Friedman2008RuleFit}. En este TFM se impone una restriccion de sparsity: el modelo productivo debe mantener como maximo 30 reglas activas con peso distinto de cero.
 
-\begin{itemize}
-    \item Si existe riesgo vital confirmado, la prioridad mínima será P1.
-    \item Si existe riesgo vital probable pero no confirmado, la prioridad mínima será P2.
-    \item Si el incidente afecta a población vulnerable o emplazamientos críticos, la prioridad podrá elevarse un nivel.
-    \item Si el contexto meteorológico o territorial aumenta significativamente el riesgo, la prioridad podrá elevarse un nivel.
-    \item Si la información es insuficiente, la confianza disminuirá, pero la prioridad no se reducirá automáticamente.
-\end{itemize}
+Esta restriccion es metodologica, no estetica. Un modelo con cientos de reglas seria dificil de defender ante un operador o un tribunal. En cambio, un conjunto reducido de reglas permite revisar por que P1 aumenta, que variables influyen y que anclajes normativos sostienen la recomendacion.
 
-\subsection{Reglas duras del baseline}
+\subsection{Baseline experto, RuleFit-lite e \texttt{imodels}}
 
-Las reglas duras son condiciones deterministas que fijan una prioridad mínima cuando se cumplen determinados criterios. Su función es actuar como red de seguridad para evitar que incidentes críticos sean infraestimados por el scoring ponderado.
+La Capa 2 no se evalua en aislamiento. Se compara con dos referencias. El baseline experto es un conjunto de reglas transparentes basadas en se\~nales y variables V01--V15, con anclaje normativo. Sirve como minimo defendible: RuleFit debe aportar mejora cuantitativa sin perder explicabilidad.
 
-La Tabla~\ref{tab:reglas-duras} recoge las reglas duras iniciales del baseline.
+La segunda referencia es \texttt{imodels.RuleFitClassifier}, utilizada como implementacion canonica de RuleFit. Dado que la libreria trabaja en clasificacion binaria, se adopta un esquema one-vs-rest P1--P4. La version productiva del TFM selecciona RuleFit-lite porque mantiene la filosofia RuleFit, respeta el limite de reglas activas y ofrece mejor equilibrio entre rendimiento, latencia y reproducibilidad local.
 
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{1.2cm}|p{7.5cm}|p{2.2cm}|p{3cm}|}
-\hline
-\textbf{ID} & \textbf{Condición} & \textbf{Prioridad mínima} & \textbf{Justificación} \\ \hline
-RD1 & Riesgo vital inmediato confirmado & P1 & Protección de la vida \\ \hline
-RD2 & Persona atrapada, inconsciente o desaparecida en contexto de peligro & P1 & Riesgo vital probable \\ \hline
-RD3 & Fallecido o herido grave confirmado & P1 & Gravedad máxima \\ \hline
-RD4 & Incendio en vivienda o edificio con personas en el interior & P1 & Riesgo vital y propagación \\ \hline
-RD5 & Intoxicación por monóxido, gas o humo con personas afectadas & P1 & Riesgo vital no visible \\ \hline
-RD6 & Incidente químico o tecnológico con afectación a población o nube tóxica & P1 & Riesgo tecnológico grave \\ \hline
-RD7 & Inundación con personas en riesgo o atrapadas & P1 & Riesgo vital y escalado \\ \hline
-RD8 & Incendio forestal próximo a población, infraestructura crítica o con aviso meteorológico relevante & P2 & Potencial de escalado \\ \hline
-RD9 & Incidente en emplazamiento crítico sin riesgo vital confirmado & P2 & Vulnerabilidad del entorno \\ \hline
-RD10 & Avisos múltiples sobre un mismo incidente con indicios de gravedad & P2 & Confirmación y magnitud \\ \hline
-\end{tabular}
-\caption{Reglas duras iniciales del baseline interpretable.}
-\label{tab:reglas-duras}
-\end{table}
+La ejecucion diagnostica con \texttt{imodels} queda como contraste externo de la familia RuleFit. Su utilidad es comprobar si una implementacion canonica aporta ventaja frente al nucleo reproducible seleccionado. En v0.1.0, RuleFit-lite se mantiene como motor principal por su equilibrio entre rendimiento, interpretabilidad, coste local y trazabilidad.
 
-\noindent \textit{Fuente: elaboración propia.}
+\subsection{Probabilidad, confianza e invariantes}
 
-Estas reglas no sustituyen al scoring, sino que actúan antes de él. Si una regla dura fija una prioridad mínima P1 o P2, el scoring puede confirmar o reforzar esa prioridad, pero no rebajarla por debajo del umbral fijado.
+La salida de Capa 2 incluye una distribucion de probabilidad sobre P1--P4. El contrato exige que las probabilidades sumen 1, que la prioridad recomendada coincida con el argmax y que los incidentes P1/P2 incluyan al menos una regla activada cuando el modelo usado sea RuleFit o baseline experto.
 
-\subsection{Criterios de resolución de conflictos}
+El nivel de confianza se deriva de la probabilidad maxima: alta si \(p_{max} \geq 0{,}80\), media entre 0,60 y 0,80, baja entre 0,40 y 0,60, y desconocida por debajo de 0,40. Esta confianza no sustituye la prioridad. Un incidente puede ser P1 con confianza media si hay indicios graves pero informacion incompleta.
 
-En algunos casos pueden activarse varias reglas o existir señales contradictorias. Para resolver estos casos se aplican los siguientes criterios:
+\section{Capa 3: explicacion normativa con LLM, RAG y MCP}
+
+La Capa 3 convierte la recomendacion de Capa 2 en una salida util para el operador. Produce \texttt{OperatorRecommendation}, que incluye prioridad, explicacion textual, citas legales, resumen de reglas activadas, sugerencias no vinculantes y metadatos del LLM.
+
+\subsection{LLM local}
+
+El LLM local se utiliza para redactar explicaciones breves y consistentes. La inferencia se plantea con temperatura 0 para reducir variabilidad y mejorar reproducibilidad. El modelo no recibe el mandato de decidir prioridad; recibe la prioridad ya calculada, las reglas activadas y el contexto normativo recuperado.
+
+Esta separacion es clave para la seguridad del dise\~no. Un LLM puede redactar bien, pero no debe ser la autoridad decisoria en un dominio critico. Si el LLM falla, la recomendacion P1--P4 de Capa 2 sigue siendo valida y el sistema puede operar en modo degradado.
+
+\subsection{RAG sobre corpus normativo CyL}
+
+La recuperacion aumentada conecta la explicacion con documentos oficiales. El corpus incluye normativa estatal, autonomica, europea y fuentes de datos: Ley 17/2015, RD 524/2023, PLEGEM, Ley 4/2007 CyL, PLANCAL, INFOCAL, INUNCYL, MPCyL, Ley 11/2022, Registro 112 CyL, RGPD, LOPDGDD y Reglamento UE 2024/1689.
+
+La funcion del RAG no es entrenar el modelo de prioridad. Su papel es proporcionar fragmentos normativos para que la explicacion cite fundamentos relevantes. Esto reduce el riesgo de explicaciones genericas y refuerza la trazabilidad del sistema.
+
+\subsection{Herramientas MCP}
+
+La Capa 3 expone tres herramientas MCP en v0.1.0: \texttt{search\_normative}, \texttt{get\_rule\_details} y \texttt{cite\_legal\_basis}. La herramienta meteorologica \texttt{get\_aemet\_context} queda diferida a v0.2.0, de acuerdo con el alcance R-13.
+
+Estas herramientas permiten consultar corpus, recuperar detalle de reglas y construir citas legales. El uso de MCP separa la capacidad del LLM de las funciones verificables del sistema: buscar, citar y explicar reglas son operaciones con entradas y salidas controladas.
+
+\section{Orquestador, fallback y latencia}
+
+El backend actua como orquestador. Recibe la entrada, valida el contrato, ejecuta Capa 1, invoca Capa 2, llama a Capa 3 si procede, registra latencias y devuelve la recomendacion al cliente. Tambien gestiona errores, timeouts y modo degradado.
+
+El dise\~no contempla varios fallback:
 
 \begin{itemize}
-    \item La regla de mayor prioridad prevalece sobre reglas de menor prioridad.
-    \item Si una regla crítica se activa con baja confianza, se mantiene la prioridad y se reduce el nivel de confianza.
-    \item Si el scoring sugiere una prioridad superior a la fijada por reglas, se adopta la prioridad superior.
-    \item Si el scoring sugiere una prioridad inferior a la fijada por reglas, se mantiene la prioridad mínima establecida por la regla dura.
-    \item Si la información es ambigua, el sistema debe explicitar la causa de la incertidumbre.
+    \item Si Capa 1 produce baja confianza, Capa 2 puede apoyarse en baseline experto o fallback conservador.
+    \item Si RuleFit no esta disponible, se puede usar baseline experto.
+    \item Si Capa 3 supera el SLA o el LLM no esta disponible, se devuelve una explicacion estatica basada en reglas activadas.
+    \item Si la entrada contiene campos prohibidos, el sistema rechaza la solicitud en lugar de degradar silenciosamente.
 \end{itemize}
 
-\subsection{Etiquetado de confianza}
+Los objetivos de latencia son exigentes: Capa 1 + Capa 2 deben responder en p95 igual o inferior a 500 ms, y la pipeline completa con Capa 3 debe mantenerse por debajo de 2 s p95. Estos valores son objetivos de evaluacion, no garantias certificadas de despliegue productivo.
 
-La confianza no indica la gravedad del incidente, sino la fiabilidad de la recomendación. Un incidente puede ser P1 con confianza baja si existen indicios de riesgo vital pero la información es incompleta.
+\section{Trazabilidad y auditoria}
 
-Se definen tres niveles de confianza:
+Cada inferencia genera un \texttt{InferenceLog}. El log incluye hash de entrada, snapshots de las salidas por capa, versiones de modelo, latencias, herramientas invocadas, timestamp y decision del operador si existe. Esta informacion permite reconstruir por que el sistema recomendo una prioridad y que hizo finalmente la persona responsable.
 
-\begin{itemize}
-    \item \textbf{Confianza alta.} Las variables principales están informadas y no existen contradicciones relevantes.
-    \item \textbf{Confianza media.} Faltan algunas variables o existen señales parciales, pero la recomendación es razonable.
-    \item \textbf{Confianza baja.} La información es escasa, contradictoria o depende de inferencias débiles.
-\end{itemize}
+La trazabilidad sirve para tres fines. Primero, auditoria tecnica: comprobar que el sistema uso los modelos y contratos esperados. Segundo, evaluacion academica: medir errores, falsos negativos P1, calibracion y divergencias operador-sistema. Tercero, conformidad responsable: demostrar supervision humana, registro de decisiones y control de cambios.
 
-\section{Arquitectura del baseline interpretable}
+\section{Ejemplo de funcionamiento}
 
-El baseline se estructura en tres capas: reglas duras, scoring explicable y capa de confianza y explicación. Esta arquitectura permite combinar seguridad operativa, graduación cuantitativa y comprensibilidad para el operador.
-
-\subsection{Capa 1: reglas duras}
-
-La primera capa aplica las reglas duras definidas en la guía de etiquetado. Su objetivo es detectar condiciones críticas que no deben depender de un promedio ponderado. Esta capa actúa como filtro de seguridad.
-
-Formalmente, si una regla dura se activa, el sistema fija una prioridad mínima:
-
-\[
-P_{\min} = \max(RD_i)
-\]
-
-donde \(RD_i\) representa la prioridad mínima asociada a cada regla dura activada. La prioridad final no podrá ser inferior a \(P_{\min}\).
-
-\subsection{Capa 2: scoring explicable}
-
-La segunda capa calcula una puntuación ponderada a partir de las variables normalizadas del motor. Su finalidad es graduar la prioridad cuando no existe una regla dura crítica o cuando varias variables contextuales elevan el riesgo.
-
-La fórmula general del scoring es:
-
-\[
-S = \sum_{i=1}^{15} w_i \cdot x_i
-\]
-
-donde \(x_i\) representa el valor normalizado de cada variable y \(w_i\) representa su peso relativo dentro del motor.
-
-Los pesos iniciales no se presentan como valores definitivamente calibrados, sino como pesos de diseño. Su función es establecer una línea base interpretable que pueda ser ajustada posteriormente mediante evaluación, revisión experta o disponibilidad de datos históricos más completos.
-
-La Tabla~\ref{tab:pesos-iniciales} muestra una propuesta inicial de agrupación de pesos por bloque funcional.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{4.3cm}|p{3cm}|p{6.2cm}|}
-\hline
-\textbf{Grupo funcional} & \textbf{Peso orientativo} & \textbf{Justificación} \\ \hline
-Gravedad inmediata & 35\% & La protección de la vida humana es el criterio principal de priorización \\ \hline
-Vulnerabilidad y exposición & 20\% & La presencia de población vulnerable o emplazamientos críticos incrementa la urgencia \\ \hline
-Amenaza contextual & 20\% & El contexto meteorológico, hidráulico o tecnológico puede modificar la gravedad real \\ \hline
-Escalado y evolución & 10\% & La tendencia permite anticipar deterioro de la situación \\ \hline
-Calidad de la información & 10\% & Afecta principalmente a la confianza, pero también a la urgencia de verificación \\ \hline
-Contexto operativo & 5\% & Ajusta la prioridad según accesibilidad o complejidad de intervención \\ \hline
-\end{tabular}
-\caption{Pesos orientativos iniciales por grupo funcional.}
-\label{tab:pesos-iniciales}
-\end{table}
-
-\noindent \textit{Fuente: elaboración propia.}
-
-\subsection{Conversión del scoring a prioridad}
-
-Una vez calculado el scoring, el sistema lo transforma en una prioridad P1--P4 mediante umbrales iniciales. Estos umbrales son orientativos y deberán revisarse en la evaluación.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{3cm}|p{4cm}|p{7cm}|}
-\hline
-\textbf{Prioridad} & \textbf{Rango de scoring} & \textbf{Interpretación} \\ \hline
-P1 & \(S \geq 80\) & Urgencia crítica o riesgo vital claro \\ \hline
-P2 & \(60 \leq S < 80\) & Alta urgencia o potencial significativo de escalado \\ \hline
-P3 & \(35 \leq S < 60\) & Urgencia media, requiere intervención o seguimiento \\ \hline
-P4 & \(S < 35\) & Baja urgencia relativa \\ \hline
-\end{tabular}
-\caption{Conversión inicial del scoring a prioridad operativa.}
-\label{tab:umbrales-scoring}
-\end{table}
-
-\noindent \textit{Fuente: elaboración propia.}
-
-La prioridad derivada del scoring se combina con la prioridad mínima fijada por reglas duras. La prioridad final será la más restrictiva entre ambas.
-
-\subsection{Capa 3: confianza y explicación}
-
-La tercera capa genera el nivel de confianza y la explicación textual. La confianza se basa en la calidad y completitud de las variables informadas, así como en la existencia de contradicciones o inferencias débiles. La explicación resume las reglas activadas, las variables de mayor impacto y las señales contextuales que han contribuido a la prioridad final.
-
-La explicación debe cumplir tres condiciones:
-
-\begin{itemize}
-    \item Ser comprensible para un operador no especializado en IA.
-    \item Identificar los factores principales que han determinado la prioridad.
-    \item Indicar las incertidumbres relevantes cuando existan.
-\end{itemize}
-
-Un ejemplo de explicación sería:
+Considerese el incidente:
 
 \begin{quote}
-Prioridad P1 por riesgo vital probable. Se detectan señales de persona atrapada y herida grave en la descripción del incidente. La localización dispone de coordenadas válidas y el incidente se clasifica preliminarmente como tráfico. La confianza es media porque no se dispone de confirmación estructurada de víctimas, pero las señales textuales activan una regla dura de prioridad crítica.
+Varon inconsciente tras choque frontal en N-122, herido grave atrapado en el habitaculo. Han llamado varios testigos.
 \end{quote}
 
-Esta explicación no pretende sustituir el criterio del operador, sino permitirle comprender rápidamente por qué el sistema recomienda esa prioridad.
-
-\section{Exploración de alternativas y justificación del baseline interpretable}
-
-La selección del baseline interpretable no se ha realizado de forma apriorística. Antes de cerrar el diseño se han considerado varias alternativas: modelos supervisados clásicos, redes neuronales profundas, modelos de lenguaje de gran escala, lógica difusa, redes bayesianas y sistemas puramente basados en reglas. Esta exploración no se presenta como una competición empírica entre modelos ya entrenados, sino como una comparación metodológica basada en los criterios que condicionan el problema: disponibilidad de datos etiquetados, explicabilidad, trazabilidad normativa, capacidad para operar con información incompleta, riesgo de fuga de información y viabilidad dentro del alcance temporal del TFM.
-
-\subsection{Modelos supervisados clásicos}
-
-Los modelos supervisados clásicos, como árboles de decisión, Random Forest o XGBoost, son adecuados cuando existe un dataset amplio, representativo y etiquetado con la variable objetivo. En este TFM, sin embargo, el dataset real disponible no incluye una etiqueta oficial de prioridad operativa ni una escala equivalente a P1--P4.
-
-Por tanto, utilizar estos modelos como núcleo principal obligaría a crear una etiqueta propia y entrenar sobre ella, con el riesgo de presentar como aprendizaje empírico lo que en realidad sería una reproducción de la guía de etiquetado diseñada por el equipo. Estos modelos se consideran adecuados como línea futura, pero no como punto de partida principal en esta fase.
-
-\subsection{Redes neuronales y modelos de aprendizaje profundo}
-
-Las redes neuronales profundas y los modelos basados en transformers son especialmente útiles para tareas de clasificación textual cuando existen grandes volúmenes de datos etiquetados. En emergencias, han demostrado utilidad para clasificar mensajes de crisis y extraer información de texto no estructurado \cite{Lamsal2024}.
-
-No obstante, su uso directo como motor de prioridad presenta tres problemas en este TFM: requieren más datos etiquetados de los disponibles, son menos interpretables que el baseline propuesto y no garantizan trazabilidad normativa. En un dominio crítico, un modelo que acierta pero no explica suficientemente su decisión tiene un valor limitado.
-
-\subsection{Modelos de lenguaje de gran escala}
-
-Los modelos de lenguaje de gran escala pueden ser útiles para resumir información, extraer entidades o verbalizar explicaciones. Sin embargo, no se consideran adecuados como motor principal de priorización, porque sus respuestas pueden ser no deterministas, su razonamiento interno no es directamente auditable y existe riesgo de generar explicaciones aparentemente convincentes pero no fundamentadas.
-
-En el contexto de este TFM, su uso se considera razonable únicamente como apoyo auxiliar y siempre que la decisión de prioridad haya sido producida previamente por una lógica determinista o interpretable. Es decir, un modelo generativo podría ayudar a redactar una explicación, pero no debería decidir por sí mismo si un incidente es P1 o P3.
-
-\subsection{Lógica difusa y redes bayesianas}
-
-La lógica difusa y las redes bayesianas son alternativas interesantes para modelar incertidumbre. La lógica difusa permitiría representar grados intermedios de pertenencia a categorías como ``gravedad alta'' o ``vulnerabilidad media''. Las redes bayesianas permitirían razonar probabilísticamente sobre relaciones entre variables.
-
-Sin embargo, ambas aproximaciones requieren una fase de calibración que excede el alcance actual del TFM. La lógica difusa exige definir funciones de pertenencia para cada variable, y las redes bayesianas requieren probabilidades condicionales que no pueden estimarse de forma robusta con los datos disponibles. Su uso podría plantearse como evolución futura, pero no como solución principal en esta versión.
-
-\subsection{Sistemas puramente basados en reglas}
-
-Un sistema exclusivamente basado en reglas sería muy explicable, pero demasiado rígido. Las reglas son adecuadas para detectar condiciones críticas, pero no capturan bien la graduación entre incidentes que comparten características similares con distintos niveles de contexto, exposición o incertidumbre.
-
-Por este motivo, el TFM no adopta un sistema de reglas puro, sino un baseline híbrido. Las reglas duras actúan como red de seguridad, mientras que el scoring permite graduar la prioridad y la capa de confianza permite comunicar incertidumbre.
-
-\subsection{Selección final del baseline}
-
-El baseline interpretable se selecciona porque satisface simultáneamente cinco condiciones necesarias para este TFM:
-
-\begin{enumerate}
-    \item Puede operar con el volumen y tipo de datos disponibles.
-    \item Es explicable de forma intrínseca.
-    \item Permite trazabilidad entre variables, reglas y prioridad.
-    \item Maneja información incompleta mediante nivel de confianza.
-    \item Sirve como línea base para comparar futuros modelos más complejos.
-\end{enumerate}
-
-La Tabla~\ref{tab:comparativa-modelos-motor} resume la comparación entre alternativas.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{|p{3.4cm}|p{2.7cm}|p{3cm}|p{3cm}|p{2.8cm}|}
-\hline
-\textbf{Enfoque} & \textbf{Explicabilidad} & \textbf{Datos necesarios} & \textbf{Trazabilidad normativa} & \textbf{Decisión} \\ \hline
-Árboles / Random Forest / XGBoost & Media o baja según modelo & Dataset etiquetado amplio & Limitada & Futuro \\ \hline
-Redes neuronales / transformers & Baja & Alto volumen etiquetado & Baja & No seleccionado \\ \hline
-LLM como motor principal & Aparente, no garantizada & No requiere entrenamiento local & No garantizada & No seleccionado \\ \hline
-Lógica difusa & Alta & Elicitación experta & Parcial & Futuro \\ \hline
-Redes bayesianas & Media-alta & Probabilidades condicionales & Parcial & Futuro \\ \hline
-Reglas puras & Alta & Bajo & Alta & Insuficiente por rigidez \\ \hline
-Baseline interpretable & Alta & Compatible con dataset piloto & Alta & Seleccionado \\ \hline
-\end{tabular}
-\caption{Comparación de enfoques considerados para el motor de priorización.}
-\label{tab:comparativa-modelos-motor}
-\end{table}
-
-\noindent \textit{Fuente: elaboración propia.}
-
-Esta elección no implica que el baseline sea la solución definitiva al problema de priorización de incidentes. Implica que es la solución más defendible para una primera versión académica del sistema, dadas las restricciones de datos, tiempo, explicabilidad y validación institucional. Si en el futuro se dispusiera de un histórico amplio de incidentes con prioridad oficial validada por expertos, esta línea base permitiría comparar de forma más rigurosa modelos supervisados o híbridos frente al comportamiento del baseline.
-
-\section{Ejemplo de funcionamiento del motor}
-
-Para ilustrar el funcionamiento del motor, se presenta un caso simplificado.
-
-Supóngase un accidente de tráfico en una carretera autonómica, con una persona atrapada en el vehículo y varias llamadas al 112 comunicando el mismo incidente. El registro contiene título y descripción textual, localidad, coordenadas y enlace de trazabilidad. No dispone de prioridad oficial ni de etiqueta P1--P4.
-
-En la primera capa, el sistema detecta señales textuales asociadas a atrapamiento y posible riesgo vital. Se activa la regla dura RD2, que fija una prioridad mínima P1.
-
-En la segunda capa, el scoring ponderado suma factores adicionales: tipo de incidente tráfico, posible afectación a personas, simultaneidad de avisos y localización válida. Aunque el scoring por sí solo pudiera situarse en rango P1 o P2, la prioridad mínima fijada por la regla dura impide rebajar el incidente por debajo de P1.
-
-En la tercera capa, el sistema calcula la confianza. La confianza podría ser media si el texto indica atrapamiento pero no existe confirmación estructurada de número de víctimas. La explicación generada sería similar a la siguiente:
+La Capa 1 extrae \texttt{signal\_atrapado=true}, \texttt{signal\_herido\_grave=true}, \texttt{signal\_varias\_llamadas=true}, riesgo vital probable, gravedad grave y tipo de incidente trafico. La Capa 2 recomienda P1, con probabilidad alta si RuleFit activa reglas asociadas a atrapamiento y lesion grave. La Capa 3 recupera normativa relacionada con proteccion de personas y PLANCAL, y redacta una explicacion breve:
 
 \begin{quote}
-Prioridad P1. Se detectan señales de persona atrapada en accidente de tráfico, lo que activa una regla dura de riesgo vital probable. Existen varios avisos relacionados con el incidente y la localización dispone de coordenadas válidas. La confianza es media porque no se dispone de una etiqueta estructurada de víctimas, aunque la descripción textual contiene indicios suficientes para recomendar atención inmediata.
+Prioridad P1 por indicios de riesgo vital. La descripcion menciona herido grave y persona atrapada tras choque frontal, con varios avisos de testigos. La recomendacion se basa en reglas de afectacion a personas y requiere supervision inmediata del operador.
 \end{quote}
 
-Este ejemplo muestra la lógica central del motor: las reglas duras evitan infraestimar incidentes críticos, el scoring permite modular la prioridad con factores contextuales y la capa de confianza comunica al operador el grado de seguridad de la recomendación.
+El operador puede aceptar la prioridad, modificarla o rechazarla. En cualquier caso, la divergencia queda registrada para evaluacion posterior.
 
-\section{Fórmula conceptual del motor de priorización}
+\section{Evaluacion del dise\~no}
 
-La lógica general del motor puede sintetizarse mediante la siguiente expresión:
+El Capitulo 9 mide si el dise\~no cumple sus objetivos. Las metricas principales de Capa 2 son F1 macro, recall@P1, sparsity del modelo, latencia, rendimiento temporal, analisis por subgrupos y matriz de confusion. El objetivo critico es recall@P1 igual o superior a 0,85, porque los falsos negativos graves son el riesgo mas importante. La calibracion ECE queda identificada como mejora futura si el modelo se congela para demostracion, y RuleFit debe respetar el limite de 30 reglas activas.
 
-\[
-\text{Prioridad} =
-f(\text{gravedad}, \text{vulnerabilidad}, \text{exposición}, \text{amenaza contextual}, \text{escalado}, \text{calidad de información}, \text{contexto operativo})
-\]
+La Capa 3 se evaluara por validez contractual, latencia, presencia de citas en P1/P2 y fidelidad de explicacion respecto a reglas activadas. La validacion interna entre autores servira para comparar etiquetas humanas, etiqueta debil y recomendacion del sistema sobre un subconjunto de casos.
 
-De forma operativa, la prioridad final se obtiene combinando la prioridad mínima establecida por reglas duras con la prioridad derivada del scoring:
+\section{Conclusiones}
 
-\[
-P_{\text{final}} = \max(P_{\text{reglas}}, P_{\text{scoring}})
-\]
+La arquitectura definida en este capitulo materializa la idea central del TFM: un sistema de apoyo a la decision para incidentes 112 en Castilla y Leon que combina datos reales, normativa, aprendizaje interpretable, explicacion local y supervision humana.
 
-donde \(P_{\text{reglas}}\) representa la prioridad mínima impuesta por las reglas duras y \(P_{\text{scoring}}\) representa la prioridad obtenida mediante la puntuación ponderada.
+El dise\~no evita dos extremos poco defendibles. Por un lado, no se queda en reglas manuales rigidas: incorpora supervision debil, RuleFit y evaluacion cuantitativa. Por otro lado, no entrega la decision a una caja negra ni a un LLM generativo: mantiene la prioridad en un nucleo interpretable y reserva el LLM para explicar y citar. Esta posicion intermedia es la que permite aspirar a un TFM excelente: una propuesta ambiciosa, pero acotada; tecnica, pero auditable; innovadora, pero prudente en un dominio critico.
 
-La confianza se calcula de forma separada:
-
-\[
-C = g(\text{completitud}, \text{fiabilidad}, \text{coherencia}, \text{confirmación})
-\]
-
-Esta separación es relevante. La calidad de la información modula la confianza, pero no debe rebajar automáticamente la urgencia cuando existen indicios de riesgo vital. En otras palabras, un incidente potencialmente crítico con información incompleta puede seguir siendo P1, aunque con confianza baja o media.
-
-\section{Conclusiones del diseño del motor}
-
-El motor de priorización diseñado en este capítulo constituye el núcleo inteligente del sistema propuesto. Su aportación no reside en sustituir al operador humano ni en automatizar la respuesta, sino en estructurar información heterogénea, aplicar criterios trazables y generar una recomendación explicable de prioridad.
-
-La arquitectura de tres capas permite equilibrar seguridad operativa, graduación de prioridad y explicabilidad. Las reglas duras protegen frente a falsos negativos graves; el scoring ponderado permite comparar incidentes con distintos factores de contexto; y la capa de confianza y explicación facilita que el operador entienda y revise la recomendación.
-
-La integración del dataset real de Castilla y León aporta una base empírica para probar el pipeline de datos y extraer señales textuales, pero no sustituye la lógica normativa ni convierte el sistema en un modelo supervisado entrenado con prioridades oficiales. Precisamente por esa limitación, el baseline interpretable resulta una elección metodológica adecuada: permite diseñar, implementar y evaluar un sistema defendible sin depender de datos que no están disponibles.
-
-El siguiente capítulo desarrolla el diseño de datos y la construcción del dataset, detallando el proceso de limpieza, mapeo, enriquecimiento y etiquetado que permite alimentar el motor descrito en este capítulo.
+El siguiente capitulo desarrolla el dise\~no de datos, la auditoria del Registro 112 CyL, la construccion de etiquetas academicas y las garantias anti-\textit{leakage} que alimentan la arquitectura aqui descrita.

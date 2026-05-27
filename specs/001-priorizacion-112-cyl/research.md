@@ -142,3 +142,28 @@ Cada entrada sigue el formato Spec Kit: **Decision · Rationale · Alternatives 
 - **Alternatives considered**:
   - **Mantener alcance completo** — riesgo alto de no llegar a Cap. 9 con métricas sólidas.
   - **Cortar también RAG/LLM** — descartado: rompería el aporte principal (Capa 3 explicación normativa).
+
+## Apendice T036 - Ablacion anti-circularidad weak supervision
+
+- **Decision**: se ejecuta una ablacion sin la fuente `rules_heuristic` mediante `scripts/build_weak_labels.py --no-rules`.
+- **Rationale**: la fuente de reglas estabiliza P1--P4, pero no debe ser la unica razon por la que el label model reproduce la logica experta. Comparar la distribucion final con y sin reglas permite detectar circularidad.
+- **Artefactos**:
+  - `resources/dataset/audit/weak_labels_report.json` y `.md`: ejecucion completa.
+  - `resources/dataset/audit/weak_labels_ablation_no_rules.json` y `.md`: ejecucion sin reglas.
+  - `resources/dataset/processed/weak_labels_p1p4.csv` y `.jsonl`: etiquetas debiles principales.
+- **Criterio de aceptacion**: el acuerdo global debe mantener Krippendorff alpha >= 0.67 y la distribucion P1--P4 no debe colapsar a una sola clase. Si la ablacion cae por debajo del umbral, el Cap. 9 debe reportarlo como limite empirico.
+
+## Apendice Capa 2 - Estudio comparativo RuleFit
+
+- **Decision provisional**: seleccionar `rulefit_lite` como modelo Capa 2 v0.1.0 por equilibrio entre macro-F1, recall P1, velocidad e interpretabilidad.
+- **Modelos comparados**:
+  - `baseline_expert`: reglas expertas trazables.
+  - `rulefit_lite`: reglas de arbol poco profundo + capa logistica escasa.
+  - `rulefit_imodels`: `imodels.RuleFitClassifier` en one-vs-rest P1--P4.
+- **Hallazgo**: en el entorno Python 3.12 aislado, `imodels` funciona pero resulta lento para el dataset completo; con ejecucion diagnostica reducida no supera a `rulefit_lite`.
+- **Artefactos**:
+  - `artifacts/reports/capa2_model_selection_v0.1.0.json` y `.md`.
+  - `artifacts/reports/rulefit_lite_v0.1.0.json`.
+  - `artifacts/reports/rulefit_imodels_v0.1.0.json`.
+- **Criterio**: maximizar macro-F1 en test, mantener recall P1 alto y limitar reglas activas a 30 para cumplir NFR-004.
+- **Trabajo futuro inmediato**: repetir `--engine imodels` con mas filas/arboles si se dispone de tiempo de computo suficiente, manteniendo los mismos splits para comparabilidad.

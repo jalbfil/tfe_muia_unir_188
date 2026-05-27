@@ -1,63 +1,145 @@
-\chapter{Fichas técnicas de los modelos (Model Cards)}
+\chapter{Model cards de Capa 2}
 \label{cap:anexol}
 
-\section*{L.1. Ficha técnica del Transformer de Capa 1 (NLP)}
+\section*{L.1. Alcance}
 
-Este apartado contiene la ficha técnica (\textit{Model Card}) del modelo de Procesamiento del Lenguaje Natural (NLP) empleado en la Capa 1 del prototipo, conforme al estándar propuesto por Mitchell et al. (2019) y alineado con los requisitos de transparencia del Reglamento (UE) 2024/1689 (Ley de IA).
+Este anexo documenta la model card de la Capa 2 de priorizacion interpretable. La
+Capa 2 recibe las variables estructuradas y senales textuales predecisionales
+producidas por la Capa 1, y devuelve una recomendacion P1--P4 junto con reglas
+activadas y probabilidades normalizadas. La version documentada corresponde a
+\texttt{v0.1.0}.
 
-\subsection*{L.1.1. Detalles del Modelo}
+\section*{L.2. Datos usados}
+
+El entrenamiento y la evaluacion usan el Registro 112 Castilla y Leon 2008--2022, con
+9.380 registros limpios. La etiqueta objetivo no existe de forma nativa en el dataset:
+se construye como etiqueta academica P1--P4 mediante weak supervision. La calidad de
+estas etiquetas se controla con acuerdo entre fuentes debiles; la ejecucion principal
+alcanza Krippendorff $\alpha = 0.858348$, por encima del umbral aceptable de 0.67.
+
+Los splits usados son versionados y reproducibles:
+
 \begin{itemize}
-    \item \textbf{Nombre y versión:} Capa 1 NLP Multitask Classifier --- v0.1.0.
-    \item \textbf{Tipo de modelo:} Red neuronal profunda basada en arquitectura Transformer, con codificador bidireccional (tipo RoBERTa) y múltiples cabezas lineales de clasificación sobre el token \texttt{[CLS]}.
-    \item \textbf{Modelo base:} \texttt{PlanTL-GOB-ES/roberta-base-bne} (MarIA), entrenado por la Biblioteca Nacional de España y el Barcelona Supercomputing Center (BSC) sobre un corpus masivo en español.
-    \item \textbf{Fecha de publicación:} 2026-05-24.
-    \item \textbf{Desarrollador:} Ancor González Carballo \texttt{[A]}.
-    \item \textbf{Licencia:} MIT.
+    \item Train: 6.511 registros.
+    \item Validacion: 1.414 registros.
+    \item Test: 1.455 registros.
+    \item Test temporal 2022: 735 registros.
 \end{itemize}
 
-\subsection*{L.1.2. Propósito y Ámbito de Aplicación}
+\section*{L.3. Features permitidas y anti-leakage}
+
+El modelo seleccionado emplea un conjunto compacto de senales predecisionales:
+
 \begin{itemize}
-    \item \textbf{Uso previsto:} Extracción automatizada de variables operativas del incidente ($V01-V07, V12-V15$) y 10 señales léxicas de alta prioridad a partir de la descripción textual anotada en español por los operadores del 112 CyL.
-    \item \textbf{Uso no previsto:} Clasificación automatizada directa sin supervisión humana. Este modelo actúa exclusivamente como apoyo al diagnóstico de prioridad dentro de una arquitectura \textit{Human-in-the-Loop} (HITL).
+    \item \texttt{signal\_fallecido}
+    \item \texttt{signal\_herido\_grave}
+    \item \texttt{signal\_atrapado}
+    \item \texttt{signal\_intoxicacion}
+    \item \texttt{signal\_varias\_llamadas}
+    \item \texttt{signal\_incendio}
+    \item \texttt{signal\_accidente\_trafico}
+    \item \texttt{signal\_rescate}
+    \item \texttt{signal\_meteo\_inundacion}
+    \item \texttt{riesgo\_vital\_textual}
+    \item variables categoricas derivadas de la categoria preliminar:
+    \texttt{cat\_trafico}, \texttt{cat\_incendio}, \texttt{cat\_rescate},
+    \texttt{cat\_sanitario}, \texttt{cat\_meteorologico}, \texttt{cat\_seguridad}
+    y \texttt{cat\_otros}.
 \end{itemize}
 
-\subsection*{L.1.3. Datos de Entrenamiento y Ajuste Fino}
-El modelo ha sido entrenado y evaluado sobre el corpus histórico del Registro 112 CyL (2008--2022, $n=9\,380$ incidentes), empleando un split estratificado por año, provincia y categoría preliminar ($80\%$ entrenamiento, $10\%$ validación, $10\%$ test):
-\begin{itemize}
-    \item \textbf{Estrategia de etiquetado:} Supervisión débil combinada (Snorkel + LLM-as-annotator) para las variables latentes y etiquetado manual de control ($n=200$ ejemplos gold por variable crítica).
-    \item \textbf{Preprocesamiento:} Unificación de los campos \texttt{Título} y \texttt{DescripcionBlob}, remoción de metadatos del sistema y tokenización mediante el vocabulario nativo de MarIA ($50\,265$ tokens, tamaño máximo de secuencia de $256$ tokens).
-\end{itemize}
+Quedan excluidas por leakage las columnas \texttt{MediosMov},
+\texttt{medios\_mov\_limpio}, \texttt{medios\_mov\_uso\_recomendado},
+\texttt{PacientesAten}, \texttt{pacientes\_aten\_limpio},
+\texttt{IncidenteCerrado}, \texttt{ultimaActualizacion},
+\texttt{Enlace al contenido} y \texttt{Unnamed: 13}. Estas variables se conocen
+despues de la decision operativa o son metadatos post-hoc, por lo que no pueden
+alimentar el entrenamiento ni la inferencia.
 
-\subsection*{L.1.4. Métricas de Evaluación Cuantitativa}
-La evaluación del modelo multitarea de la Capa 1 en el conjunto de test independiente muestra los siguientes resultados globales:
+\section*{L.4. Modelos comparados}
+
+Se comparan tres alternativas:
+
+\begin{enumerate}
+    \item \textbf{Baseline experto}: 16 reglas manuales trazables, documentadas en el
+    Anexo~\ref{cap:anexoe}.
+    \item \textbf{RuleFit-lite}: reglas de arbol poco profundo y capa logistica escasa.
+    Se adopta como aproximacion interpretable eficiente y reproducible.
+    \item \textbf{RuleFit imodels}: \texttt{imodels.RuleFitClassifier} en esquema
+    one-vs-rest para P1--P4. Se ejecuta en Python 3.12 aislado, con configuracion
+    diagnostica reducida por coste de computo local.
+\end{enumerate}
 
 \begin{table}[ht]
 \centering
-\caption{Métricas de evaluación del clasificador multitarrea de Capa 1}
-\label{tab:l1_metricas}
+\caption{Comparativa de modelos de Capa 2 en test}
+\label{tab:model-card-capa2-comparativa}
 \small
-\begin{tabular}{|l|c|c|c|}
+\begin{tabular}{|l|r|r|r|r|r|r|}
 \hline
-\textbf{Variable / Señal} & \textbf{F1-Score Macro} & \textbf{Recall} & \textbf{Precisión} \\ \hline
-\texttt{signal\_fallecido} & $0,941$ & $0,952$ & $0,930$ \\ \hline
-\texttt{signal\_herido\_grave} & $0,915$ & $0,924$ & $0,906$ \\ \hline
-\texttt{signal\_atrapado} & $0,968$ & $0,971$ & $0,965$ \\ \hline
-\texttt{signal\_incendio} & $0,932$ & $0,928$ & $0,937$ \\ \hline
-\texttt{riesgo\_vital\_textual} & $0,901$ & $0,895$ & $0,908$ \\ \hline
+\textbf{Modelo} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} & \textbf{Reglas} & \textbf{Train s} & \textbf{ms/fila} \\ \hline
+Baseline experto & 0.727835 & 0.703932 & 0.998457 & 16 & -- & -- \\ \hline
+RuleFit-lite & 0.881100 & 0.880750 & 0.921296 & 30 & 6.504204 & 0.450127 \\ \hline
+RuleFit imodels & 0.768385 & 0.568239 & 0.902778 & 30 & 13.191647 & 7.496081 \\ \hline
 \end{tabular}
 \end{table}
 
-\subsection*{L.1.5. Consideraciones Éticas, Privacidad y Limitaciones}
+\section*{L.5. Modelo seleccionado}
+
+El modelo seleccionado para Capa 2 v0.1.0 es \textbf{RuleFit-lite}. La decision se
+justifica por cuatro razones:
+
 \begin{itemize}
-    \item \textbf{Privacidad y RGPD:} En cumplimiento con el Principio V y VI, el modelo procesa los datos localmente sin realizar llamadas a APIs en la nube. Toda la información personal (nombres propios, matrículas o números de teléfono) ha sido enmascarada durante el preprocesamiento del dataset piloto.
-    \item \textbf{Análisis de sesgos:} Se ha verificado que las diferencias en la tasa de error por provincias de Castilla y León y por años de registro se mantienen dentro de márgenes estadísticamente insignificantes ($p > 0,05$), evitando discriminación geográfica o temporal.
-    \item \textbf{Limitaciones conocidas:} El rendimiento puede degradarse ante descripciones excesivamente breves (menos de 5 palabras) o redactadas en lenguas cooficiales no contempladas en el modelo base de MarIA.
+    \item obtiene la mejor macro-F1 reproducible en test: 0.880750;
+    \item mantiene recall P1 de 0.921296, por encima del objetivo minimo de 0.85;
+    \item respeta el limite de 30 reglas activas exportadas;
+    \item presenta menor latencia de inferencia que la ejecucion diagnostica con
+    \texttt{imodels}.
 \end{itemize}
 
-\subsection*{L.1.6. Sostenibilidad y Huella de Carbono}
-El proceso de entrenamiento se ejecutó de forma local en la estación de trabajo asignada (NVIDIA GeForce RTX 5070 8GB, potencia máxima de 220W):
+La eleccion no invalida \texttt{imodels}; al contrario, lo mantiene como referencia
+canonica para experimentos futuros con mayor presupuesto de computo. En esta version,
+sin embargo, RuleFit-lite ofrece mejor equilibrio entre rendimiento, interpretabilidad,
+coste y reproducibilidad.
+
+\section*{L.6. Evaluacion temporal y trazabilidad}
+
+La evaluacion final se consolida mediante \texttt{scripts/run\_evaluation.py}. Este
+script genera \texttt{artifacts/reports/evaluation\_v0.1.0.json} y su version
+\texttt{.md}, junto con tablas por provincia, ano y categoria, figuras SVG y el listado
+de falsos negativos P1. Sobre el test temporal de 2022, RuleFit-lite alcanza accuracy
+0.884354, macro-F1 0.877594 y recall P1 0.928767. La estabilidad respecto al test
+estratificado apoya la seleccion del modelo, aunque no sustituye una validacion
+prospectiva con datos operativos nuevos.
+
+El mismo informe identifica 51 falsos negativos P1 en el test estratificado: 32 casos
+P1--P2, 19 casos P1--P3 y ningun caso P1--P4. Estos casos alimentan la plantilla de
+validacion interna documentada en \texttt{resources/internal\_validation}.
+
+\section*{L.7. Fidelidad de explicaciones}
+
+La Capa 3 se evalua sobre los 111 casos de validacion interna mediante
+\texttt{scripts/evaluate\_explanation\_fidelity.py}. La ejecucion v0.1.0 usa un juez
+determinista offline sobre explicaciones en modo degradado, con seis criterios:
+prioridad mencionada, reglas trazables, cobertura de senales, citas legales en P1/P2,
+ausencia de contradiccion y disclaimer. El resultado global es pass rate 1.000000,
+fidelidad media 0.958747 y fidelidad minima 0.925000. En falsos negativos P1, la
+fidelidad media es 0.951176. La evaluacion LLM-as-Judge independiente queda como
+extension futura sobre la misma muestra.
+
+El cierre de la evaluacion queda indexado en
+\texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.json}, que vincula
+este anexo con el Capitulo~\ref{cap:9}, el Anexo~\ref{cap:anexod}, el Capitulo~\ref{cap:10}
+y los artefactos principales de metricas, sesgo, validacion interna y fidelidad.
+
+\section*{L.8. Limitaciones}
+
 \begin{itemize}
-    \item \textbf{Tiempo total de cómputo:} $2,4$ horas.
-    \item \textbf{Consumo estimado:} $0,53$ kWh de energía eléctrica.
-    \item \textbf{Emisiones estimadas:} $0,14$ kg de $\text{CO}_2$ (calculado con un factor de emisión medio del mix eléctrico nacional de $0,26$ kg $\text{CO}_2$/kWh).
+    \item La variable objetivo es una etiqueta academica debil, no una prioridad
+    operativa oficial.
+    \item La evaluacion de \texttt{imodels} se ha realizado con una configuracion
+    diagnostica reducida, debido al coste temporal observado en el entorno local.
+    \item El objetivo ECE $\leq 0.10$ queda reservado para una pasada final de
+    calibracion cuando el modelo sea congelado.
+    \item El rendimiento debe interpretarse dentro del alcance v0.1.0, sin variables
+    externas diferidas como AEMET historico, SNCZI o Seveso.
 \end{itemize}

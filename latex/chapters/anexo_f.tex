@@ -1,117 +1,79 @@
-\chapter{Esquema de datos del sistema}
+\chapter{Esquema de datos y contratos}
 \label{cap:anexof}
 
 \section*{F.1. Finalidad del anexo}
 
-% Este anexo expande la Tabla~7.1 del Capítulo~7 con el nivel de detalle necesario para comprender la implementación del prototipo y defender el diseño del modelo de datos. No describe la estructura física de base de datos ni la implementación técnica concreta, sino el esquema lógico de información que el sistema maneja.
+Este anexo resume el esquema de datos que conecta las tres capas del prototipo. Su
+funcion es garantizar que la entrada del incidente, las variables extraidas, la
+recomendacion de Capa 2, la explicacion de Capa 3 y el feedback humano se intercambian
+mediante contratos estables y auditables.
 
-\section*{F.2. Principios de diseño del esquema}
+La especificacion tecnica completa se concreta en los contratos Pydantic ubicados en
+\texttt{src/contracts/contracts/} y en los esquemas JSON exportados en
+\texttt{src/contracts/docs/schemas/}.
 
-% El esquema lógico responde a cinco principios:
+\section*{F.2. Objetos principales}
 
-% \begin{enumerate}
-%     \item \textbf{Separación funcional.} Los datos de entrada del incidente, el contexto territorial, los datos calculados y la decisión humana se tratan como bloques lógicos diferenciados.
-%     \item \textbf{Incidente consolidado.} Todas las evidencias de un mismo evento físico se asocian a un único registro de incidente mediante un identificador.
-%     \item \textbf{Distinción entre datos informados y datos ausentes.} El valor «ausente» es información, no un vacío. Las variables no informadas deben registrarse como ausentes y tratarse con el valor por defecto del Anexo~B.
-%     \item \textbf{Trazabilidad completa.} El esquema permite reconstruir qué información tenía el sistema en el momento de generar la prioridad recomendada y qué decisión tomó el operador.
-%     \item \textbf{Diseño estructural, no de implementación.} Los tipos de datos y restricciones se expresan lógicamente (Texto, Datetime, Float, Categoría, Lista). La implementación física puede usar cualquier gestor compatible.
-% \end{enumerate}
+\begin{table}[ht]
+\centering
+\caption{Contratos principales del prototipo}
+\label{tab:anexof-contratos}
+\small
+\begin{tabularx}{\textwidth}{|p{3.0cm}|X|p{3.5cm}|}
+\hline
+\textbf{Contrato} & \textbf{Funcion} & \textbf{Evidencia} \\ \hline
+\texttt{IncidentInput} & Entrada normalizada del incidente: identificador, texto, fecha, provincia, municipio, coordenadas y categoria preliminar. & \texttt{IncidentInput.schema.json} \\ \hline
+\texttt{IncidentFeatures} & Variables V01--V15 y senales textuales extraidas por Capa 1 o derivadas del dataset. & \texttt{IncidentFeatures.schema.json} \\ \hline
+\texttt{WeakLabel} & Etiqueta academica P1--P4, fuentes debiles, acuerdo y metadatos de trazabilidad. & \texttt{WeakLabel.schema.json} \\ \hline
+\texttt{PriorityRecommendation} & Salida de Capa 2: prioridad recomendada, probabilidades, reglas activadas y version del modelo. & \texttt{PriorityRecommendation.schema.json} \\ \hline
+\texttt{OperatorRecommendation} & Explicacion entregada al operador, citas legales, advertencias y modo degradado si aplica. & \texttt{OperatorRecommendation.schema.json} \\ \hline
+\texttt{OperatorDecision} & Decision humana: aceptar, modificar o rechazar, prioridad final y justificacion. & \texttt{OperatorDecision.schema.json} \\ \hline
+\texttt{InferenceLog} & Registro auditable de entrada, salida, hashes, versiones, tiempos y advertencias. & \texttt{InferenceLog.schema.json} \\ \hline
+\end{tabularx}
+\end{table}
 
-\section*{F.3. Esquema lógico de bloques}
+\section*{F.3. Flujo de datos}
 
-% \begin{table}[ht]
-% \centering
-% \caption{Esquema lógico por bloques del sistema de datos}
-% \label{tab:f1}
-% \small
-% \begin{tabularx}{\textwidth}{|l|l|X|}
-% \hline
-% \textbf{Bloque} & \textbf{Denominación} & \textbf{Contenido} \\ \hline
-% 1 & Estructura del incidente & Identificación, localización, descripción textual, tipo de incidente y variables de entrada V01--V15 \\ \hline
-% 2 & Evidencias y señales & Comunicaciones, avisos y señales adicionales asociados al mismo evento \\ \hline
-% 3 & Contexto territorial oficial & Datos de AEMET, SNCZI, catálogo Seveso y datos socioeconómicos externos \\ \hline
-% 4 & Variables calculadas y decisión del motor & Prioridad recomendada, puntuación de scoring, confianza, reglas duras activadas y explicación \\ \hline
-% 5 & Decisión del operador & Prioridad final validada, acción del operador y trazabilidad de la revisión \\ \hline
-% \end{tabularx}
-% \end{table}
+El flujo de datos del prototipo sigue una secuencia deliberadamente simple:
 
-% \noindent\textit{Fuente: elaboración propia. Ampliación de la Tabla~7.1 del Capítulo~7.}
+\begin{enumerate}
+    \item \texttt{IncidentInput} recibe el incidente desde dataset o entrada controlada.
+    \item \texttt{IncidentFeatures} representa variables V01--V15 y senales permitidas.
+    \item La Capa 2 consume solo features predecisionales y genera
+    \texttt{PriorityRecommendation}.
+    \item La Capa 3 transforma la recomendacion en \texttt{OperatorRecommendation}.
+    \item El operador registra, si procede, una \texttt{OperatorDecision}.
+    \item \texttt{InferenceLog} conserva la trazabilidad completa de la inferencia.
+\end{enumerate}
 
-\section*{F.4. Diccionario de datos}
+Esta separacion evita que una explicacion generativa modifique la prioridad y permite
+auditar cada paso de forma independiente.
 
-\subsection*{F.4.1. Bloque 1: Estructura del incidente}
+\section*{F.4. Politica anti-\textit{leakage}}
 
-% Los campos del Bloque~1 incluyen: \textbf{id\_incidente} (UUID, obligatorio) identificador único del registro; \textbf{fecha\_hora\_recepcion} (Datetime, obligatorio) con zona horaria Europa/Madrid; \textbf{latitud} (Float, obligatorio si municipio ausente) y \textbf{longitud} (Float, obligatorio si municipio ausente); \textbf{municipio}, \textbf{comarca} y \textbf{provincia} (Texto, obligatorio si coordenadas ausentes), todos de Aragón; \textbf{descripcion\_textual} (Texto, obligatorio) con el relato del primer aviso; \textbf{tipo\_incidente\_n1} (Categoría, obligatorio) y \textbf{tipo\_incidente\_n2} (Categoría, recomendado) conforme a la taxonomía del Anexo~A; \textbf{fuente\_primer\_aviso} (Categoría, obligatorio) con valores: ciudadano/testigo/agente/servicio/institucional; \textbf{V01--V15} (tipos según Anexo~B, todos obligatorios o «Ausente»).
+Los contratos y el pipeline rechazan columnas posteriores a la primera decision. En
+particular, no se admiten como entrada de Capa 2 campos como \texttt{MediosMov},
+\texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} ni
+derivados directos. Estos campos pueden emplearse, como maximo, en analisis auxiliar o
+validacion posterior, pero no en entrenamiento ni inferencia.
 
-\subsection*{F.4.2. Bloque 2: Evidencias y señales}
+La politica queda documentada en \texttt{src/contracts/contracts/leakage\_columns.py} y
+se verifica mediante tests de puerta anti-\textit{leakage}.
 
-% \begin{itemize}
-%     \item \textbf{id\_evidencia} (UUID, obligatorio): identificador único de la evidencia.
-%     \item \textbf{id\_incidente\_ref} (UUID, obligatorio): clave foránea hacia Bloque~1.
-%     \item \textbf{fuente\_senal} (Categoría): origen de la señal adicional (llamada, alarma automática, aviso servicio, comunicación red social).
-%     \item \textbf{tipo\_senal} (Categoría): naturaleza de la señal (confirmación, información adicional, contradicción, ausencia de señal).
-%     \item \textbf{contenido\_relevante} (Texto): extracto o resumen pertinente.
-%     \item \textbf{marca\_temporal} (Datetime): momento de recepción de la señal.
-%     \item \textbf{relacion\_info\_previa} (Categoría): coherente / contradictoria / complementaria.
-% \end{itemize}
+\section*{F.5. Trazabilidad}
 
-\subsection*{F.4.3. Bloque 3: Contexto territorial oficial}
+Cada inferencia debe poder reconstruirse con:
 
-% \begin{itemize}
-%     \item \textbf{nivel\_aviso\_aemet} (Categoría): Verde / Amarillo / Naranja / Rojo, tomado de AEMET en tiempo real.
-%     \item \textbf{fenomeno\_meteo\_activo} (Categoría): tipo de fenómeno coherente con V09.
-%     \item \textbf{peligrosidad\_inundacion} (Categoría): nivel SNCZI para la localización (ninguna / frecuente / ocasional / rara).
-%     \item \textbf{proximidad\_seveso} (Booleano): resultado de intersección espacial con el catálogo Seveso~III.
-%     \item \textbf{poblacion\_municipio} (Entero, opcional): fuente INE, para enriquecer V06 si no fue proporcionado.
-%     \item \textbf{pct\_mayor\_65} (Float, opcional): porcentaje de población $\geq$ 65~años, fuente INE.
-%     \item \textbf{accesibilidad\_punto} (Categoría): fácil / difícil / muy difícil, derivado de cartografía de red viaria.
-% \end{itemize}
+\begin{itemize}
+    \item version del dataset y split utilizado;
+    \item version del modelo de Capa 2;
+    \item features permitidas presentes en la entrada;
+    \item prioridad, probabilidades y reglas activadas;
+    \item explicacion generada y citas normativas;
+    \item decision humana, si existe;
+    \item hash de entrada y marca temporal.
+\end{itemize}
 
-\subsection*{F.4.4. Bloque 4: Variables calculadas y salida del motor}
-
-% \begin{itemize}
-%     \item \textbf{D01. Reglas duras activas} (Lista de códigos, obligatorio): lista de IDs de reglas activadas (e.g., [RD1, RD7]) o lista vacía.
-%     \item \textbf{D02. Puntuación de scoring} (Float [0--100], obligatorio): resultado de la fórmula del Anexo~E, sección~E.3.4.
-%     \item \textbf{D03. Nivel de confianza} (Float [0--1], obligatorio): valor numérico traducido a Alto / Medio / Bajo según Tabla~E.4.
-%     \item \textbf{D04. Prioridad scoring} (Categoría, obligatorio): P1--P4 según Tabla~E.3.
-%     \item \textbf{prioridad\_recomendada} (Categoría, obligatorio): P1--P4 resultante del flujo del Anexo~E, sección~E.5.
-%     \item \textbf{explicacion\_textual} (Texto, obligatorio): texto generado por el módulo de explicación (RF7).
-%     \item \textbf{marca\_temporal\_calculo} (Datetime, obligatorio): momento de generación de la recomendación.
-% \end{itemize}
-
-\subsection*{F.4.5. Bloque 5: Decisión del operador}
-
-% \begin{itemize}
-%     \item \textbf{prioridad\_final\_operador} (Categoría, obligatorio): P1--P4 validada por el operador.
-%     \item \textbf{marca\_temporal\_validacion} (Datetime, obligatorio): momento de la validación humana.
-%     \item \textbf{accion\_operador} (Categoría, obligatorio): acepta / modifica / rechaza.
-%     \item \textbf{justificacion\_cambio} (Texto, condicional): obligatorio si accion\_operador $\neq$ acepta.
-%     \item \textbf{id\_operador} (Texto, obligatorio): identificador anonimizado del operador validador.
-% \end{itemize}
-
-\section*{F.5. Reglas de integridad}
-
-% \begin{description}
-%     \item[\textbf{RI-1. Unicidad.}] Cada id\_incidente identifica un único registro en el Bloque~1. Las evidencias del Bloque~2 pueden ser múltiples por incidente.
-%     \item[\textbf{RI-2. Integridad referencial.}] Todo id\_incidente\_ref del Bloque~2 debe existir en el Bloque~1.
-%     \item[\textbf{RI-3. Obligatoriedad de campos mínimos.}] Un registro es procesable si contiene como mínimo: id\_incidente, fecha\_hora\_recepcion, localización (municipio o coordenadas), descripcion\_textual, V01, V02 y V04.
-%     \item[\textbf{RI-4. No circularidad.}] La prioridad\_recomendada (Bloque~4) no puede depender de la prioridad\_final\_operador (Bloque~5). El motor se ejecuta antes de la validación humana.
-%     \item[\textbf{RI-5. Precedencia temporal.}] marca\_temporal\_calculo debe ser posterior a fecha\_hora\_recepcion y anterior a marca\_temporal\_validacion.
-%     \item[\textbf{RI-6. Consistencia acción--justificación.}] Si accion\_operador $\neq$ acepta, justificacion\_cambio no puede estar vacía.
-%     \item[\textbf{RI-7. Coherencia prioridad--reglas.}] Si D01 contiene RD1 o RD7 (reglas fijas), prioridad\_recomendada debe ser P1.
-%     \item[\textbf{RI-8. Valores válidos.}] Todos los campos categóricos deben contener únicamente valores del dominio definido. Los valores fuera del dominio se rechazan antes de la evaluación del motor.
-% \end{description}
-
-\section*{F.6. Observaciones metodológicas}
-
-% \paragraph{F.6.1. Esquema lógico vs. esquema físico.}
-% El diseño presentado es lógico. La implementación del prototipo (Capítulo~8) concreta la representación física en los modelos de datos del backend. Las reglas de integridad RI-1 a RI-8 deben preservarse en cualquier implementación física.
-
-% \paragraph{F.6.2. Simplificación para el dataset piloto.}
-% En la fase de construcción del dataset piloto, los Bloques~2 y~3 se representan de forma simplificada mediante los valores de V08, V09, V10, V11 y V14 en el Bloque~1, sin registrar evidencias individuales ni consultar APIs externas en tiempo real.
-
-% \paragraph{F.6.3. Doble naturaleza de V08--V11 y V15.}
-% Estas variables son a la vez variables de entrada (informadas por el operador o derivadas de contexto externo) y variables del Bloque~3. El motor las consume del Bloque~1; el Bloque~3 guarda el detalle de la fuente oficial que las respalda.
-
-% \paragraph{F.6.4. Extensibilidad.}
-% El esquema admite ampliaciones sin alterar la lógica del motor: añadir nuevas variables al Bloque~1, nuevos tipos de evidencias al Bloque~2 o nuevas fuentes de contexto al Bloque~3. Cualquier nueva variable que afecte al scoring requiere actualizar el Anexo~E y registrar el cambio en el historial de calibración.
+Este esquema sostiene la evaluacion de los Capitulos~\ref{cap:7}, \ref{cap:8} y
+\ref{cap:9}, y permite conectar los resultados con la model card del
+Anexo~\ref{cap:anexol}.
