@@ -26,10 +26,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 
-from backend.orchestrator.stubs import (  # type: ignore[import]
-    stub_extract_features,
-    stub_predict_priority,
-)
+from capa1_nlp.inference.feature_extractor import FeatureExtractor
+from capa2_rulefit.inference.predictor import predict
+
+# Instancia global única de extracción de variables operativas de la Capa 1
+_FEATURE_EXTRACTOR = FeatureExtractor()
 from contracts import IncidentInput  # type: ignore[import]
 
 try:
@@ -65,11 +66,11 @@ async def predict_stream(incident: IncidentInput, request: Request) -> Streaming
     async def event_generator():
         # ── Capa 1 ─────────────────────────────────────────────────────────
         yield _sse("status", "Capa 1: extracción de características")
-        features = await asyncio.to_thread(stub_extract_features, incident)
+        features = await asyncio.to_thread(_FEATURE_EXTRACTOR.extract_features, incident)
 
         # ── Capa 2 ─────────────────────────────────────────────────────────
         yield _sse("status", "Capa 2: cálculo de prioridad")
-        rec = await asyncio.to_thread(stub_predict_priority, features)
+        rec = await asyncio.to_thread(predict, features)
         yield _sse("priority", rec.priority_recommended.value)
 
         # ── Capa 3 ─────────────────────────────────────────────────────────

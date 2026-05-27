@@ -1,7 +1,7 @@
 """T091 — Pipeline orquestador: encadena Capa 1 → Capa 2 → Capa 3 + logging.
 
-En v0.1.0 las Capas 1 y 2 se ejecutan vía stubs deterministas. La Capa 3 usa
-el explainer real con fallback a modo degradado cuando el LLM no está disponible.
+Las Capas 1, 2 y 3 se ejecutan utilizando las implementaciones reales y
+modelos entrenados y validados del monorepo.
 """
 from __future__ import annotations
 
@@ -21,7 +21,11 @@ from contracts import (  # type: ignore[import]
     compute_input_hash,
 )
 
-from .stubs import stub_extract_features, stub_predict_priority
+from capa1_nlp.inference.feature_extractor import FeatureExtractor
+from capa2_rulefit.inference.predictor import predict
+
+# Instancia global única de extracción de variables operativas de la Capa 1
+_FEATURE_EXTRACTOR = FeatureExtractor()
 
 # Capa 3 explainer (puede estar ausente en entornos sin LLM)
 try:
@@ -55,12 +59,12 @@ def run_pipeline(
 
     # ── Capa 1: extracción de características ─────────────────────────────
     t0_c1 = time.perf_counter()
-    features = stub_extract_features(incident)
+    features = _FEATURE_EXTRACTOR.extract_features(incident)
     latency_c1 = (time.perf_counter() - t0_c1) * 1000
 
     # ── Capa 2: recomendación de prioridad ────────────────────────────────
     t0_c2 = time.perf_counter()
-    recommendation = stub_predict_priority(features)
+    recommendation = predict(features)
     latency_c2 = (time.perf_counter() - t0_c2) * 1000
 
     # ── Capa 3: explicación LLM + MCP (con fallback degradado) ────────────
