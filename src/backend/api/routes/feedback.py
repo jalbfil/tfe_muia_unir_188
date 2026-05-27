@@ -34,7 +34,7 @@ def feedback(decision: OperatorDecision, request: Request) -> FeedbackResponse:
             if existing is not None:
                 updated = existing.model_copy(update={"operator_decision": decision})
                 logger.update_operator_decision(log_id, updated)
-        except Exception:  # noqa: BLE001
+        except Exception:
             pass
 
     return FeedbackResponse(ok=True, log_id=log_id)

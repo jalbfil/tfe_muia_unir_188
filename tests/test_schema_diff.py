@@ -14,7 +14,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-import export_schemas  # noqa: E402
+import export_schemas
 
 
 def test_committed_schemas_match_regenerated() -> None:

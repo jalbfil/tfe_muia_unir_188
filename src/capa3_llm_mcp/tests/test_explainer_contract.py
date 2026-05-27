@@ -15,24 +15,22 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import pytest
-
 # ── path setup ────────────────────────────────────────────────────────────────
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from capa3_llm_mcp.explainer import explain  # type: ignore[import]
+from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper  # type: ignore[import]
 from contracts import (  # type: ignore[import]
+    MCP_TOOLS_V0_1,
     ActivatedRule,
     ConfidenceLevel,
-    MCP_TOOLS_V0_1,
     ModelUsed,
     NormaID,
     OperatorRecommendation,
     Priority,
     PriorityRecommendation,
 )
-from capa3_llm_mcp.explainer import explain  # type: ignore[import]
-from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper  # type: ignore[import]
 
 # ── fixtures ──────────────────────────────────────────────────────────────────
 

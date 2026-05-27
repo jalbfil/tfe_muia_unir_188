@@ -17,6 +17,8 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from capa3_llm_mcp.explainer import _SLA_MS, explain  # type: ignore[import]
+from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper  # type: ignore[import]
 from contracts import (  # type: ignore[import]
     ActivatedRule,
     ConfidenceLevel,
@@ -25,8 +27,6 @@ from contracts import (  # type: ignore[import]
     Priority,
     PriorityRecommendation,
 )
-from capa3_llm_mcp.explainer import _SLA_MS, explain  # type: ignore[import]
-from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper  # type: ignore[import]
 
 _N_SAMPLES = 10
 _P95_INDEX = int(_N_SAMPLES * 0.95) - 1  # índice p95 sobre 10 muestras

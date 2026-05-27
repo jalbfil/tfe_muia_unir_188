@@ -26,15 +26,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 
-from contracts import IncidentInput  # type: ignore[import]
 from backend.orchestrator.stubs import (  # type: ignore[import]
     stub_extract_features,
     stub_predict_priority,
 )
+from contracts import IncidentInput  # type: ignore[import]
 
 try:
-    from capa3_llm_mcp.explainer import explain_stream as _explain_stream  # type: ignore[import]
     from capa3_llm_mcp.degraded import degraded_explain as _degraded  # type: ignore[import]
+    from capa3_llm_mcp.explainer import explain_stream as _explain_stream  # type: ignore[import]
 
     _CAPA3_AVAILABLE = True
 except ImportError:  # pragma: no cover

@@ -19,7 +19,7 @@ import logging
 import re
 import sys
 import time
-from typing import Generator
+from collections.abc import Generator
 from pathlib import Path
 
 # ── imports de contratos ──────────────────────────────────────────────────────
@@ -32,7 +32,6 @@ from contracts import (  # type: ignore[import]
     OperatorRecommendation,
     Priority,
     PriorityRecommendation,
-    SLABreachWarning,
 )
 
 from .degraded import degraded_explain

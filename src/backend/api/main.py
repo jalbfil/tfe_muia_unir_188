@@ -9,9 +9,9 @@ Endpoints:
 from __future__ import annotations
 
 import sys
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import AsyncIterator
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 

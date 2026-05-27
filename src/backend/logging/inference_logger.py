@@ -5,11 +5,9 @@ JSONL:  registro append-only del JSON completo (base de auditoría reproducible)
 """
 from __future__ import annotations
 
-import json
 import sqlite3
-from pathlib import Path
-
 import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 

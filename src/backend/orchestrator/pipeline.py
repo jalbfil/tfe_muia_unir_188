@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
@@ -25,8 +25,8 @@ from .stubs import stub_extract_features, stub_predict_priority
 
 # Capa 3 explainer (puede estar ausente en entornos sin LLM)
 try:
-    from capa3_llm_mcp.explainer import explain as _explain  # type: ignore[import]
     from capa3_llm_mcp.degraded import degraded_explain as _degraded  # type: ignore[import]
+    from capa3_llm_mcp.explainer import explain as _explain  # type: ignore[import]
 
     _CAPA3_AVAILABLE = True
 except ImportError:  # pragma: no cover
@@ -50,7 +50,7 @@ def run_pipeline(
     Returns:
         Tupla (OperatorRecommendation, InferenceLog) totalmente validados.
     """
-    t_start = datetime.now(tz=timezone.utc)
+    t_start = datetime.now(tz=UTC)
     t0_total = time.perf_counter()
 
     # ── Capa 1: extracción de características ─────────────────────────────
@@ -65,7 +65,7 @@ def run_pipeline(
 
     # ── Capa 3: explicación LLM + MCP (con fallback degradado) ────────────
     capa3_output: OperatorRecommendation | None = None
-    capa3_degraded = False
+
     latency_c3: float = 0.0
 
     t0_c3 = time.perf_counter()
@@ -78,20 +78,18 @@ def run_pipeline(
                 llm=llm,
                 chroma_dir=_CHROMA_DIR,
             )
-        except Exception:  # noqa: BLE001 — fallback a degradado
+        except Exception:
             capa3_output = None
 
     if capa3_output is None and _CAPA3_AVAILABLE:
         capa3_output = _degraded(recommendation)
-        capa3_degraded = True
     elif capa3_output is None:
         # Capa 3 no importable: modo degradado manual mínimo
         capa3_output = _build_minimal_recommendation(recommendation, incident.incident_id)
-        capa3_degraded = True
 
     latency_c3 = (time.perf_counter() - t0_c3) * 1000
     latency_total = (time.perf_counter() - t0_total) * 1000
-    t_end = datetime.now(tz=timezone.utc)
+    t_end = datetime.now(tz=UTC)
 
     # ── InferenceLog ──────────────────────────────────────────────────────
     log_id = str(ULID())

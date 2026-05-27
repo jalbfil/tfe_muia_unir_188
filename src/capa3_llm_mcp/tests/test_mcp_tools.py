@@ -18,7 +18,6 @@ from capa3_llm_mcp.mcp_server.tools import (  # type: ignore[import]
     search_normative,
 )
 
-
 # ── T080-A: search_normative ──────────────────────────────────────────────────
 
 def test_t080_search_normative_returns_list():

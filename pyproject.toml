@@ -53,6 +53,22 @@ build-backend = "hatchling.build"
 # El paquete real vive en src/contracts. Los demás módulos se instalan como subpaquetes propios.
 packages = ["src/contracts/contracts"]
 
+# ─────────────────────────── uv ────────────────────────────────────────────────
+[tool.uv]
+# Asegura que el grupo dev se instala por defecto con `uv sync`.
+default-groups = ["dev"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.5",
+    "black>=24.4",
+    "mypy>=1.10",
+    "pytest>=8",
+    "pytest-cov>=5",
+    "polyfactory>=2.16",
+    "pre-commit>=3.7",
+]
+
 # ─────────────────────────── Ruff ──────────────────────────────────────────────
 [tool.ruff]
 line-length = 100
@@ -63,6 +79,39 @@ extend-exclude = ["build", "artifacts", "latex/build"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "N", "RUF", "SIM", "PL"]
 ignore = ["PLR0913"]  # too many args; los contratos Pydantic los tienen por diseño
+
+[tool.ruff.lint.per-file-ignores]
+# Capa de presentación (Streamlit): tipografía rica en español, HTML inline largo,
+# imports tardíos y dependencias opcionales (pandas) son intencionales.
+"src/ui/*.py" = [
+    "E501",    # líneas largas en HTML/CSS inline
+    "E402",    # st.set_page_config debe ir antes de algunos imports
+    "RUF001",  # caracteres tipográficos ambiguos en strings UI español (—, –, ·)
+    "RUF002",  # idem en docstrings
+    "RUF003",  # idem en comentarios
+    "RUF005",  # concatenación de listas vs unpacking (Streamlit idiom)
+    "PLC0415", # imports diferidos (pandas) para arranque rápido
+    "F541",    # f-strings sin placeholders (plantillas HTML)
+]
+# Tests raíz y tests de cada módulo: literales numéricos (códigos HTTP, umbrales),
+# imports condicionales por disponibilidad de dependencias opcionales,
+# y tipografía española en docstrings son correctos en tests.
+"tests/*.py" = ["PLR2004", "RUF001", "RUF002", "RUF003", "E402", "PLC0415", "E501"]
+"src/contracts/tests/*.py" = ["PLR2004", "RUF001", "RUF002", "RUF003", "E402", "PLC0415", "E501"]
+"src/capa3_llm_mcp/tests/*.py" = ["PLR2004", "RUF001", "RUF002", "RUF003", "E402", "PLC0415", "E501"]
+# Contratos: tipografía española (–, α) en docstrings y comentarios es intencional
+# para alinearse con la terminología normativa. PLR2004 para umbrales de validación.
+"src/contracts/contracts/*.py" = ["RUF001", "RUF002", "RUF003", "PLR2004"]
+# Scripts de datos: E402 permitido (imports condicionales por disponibilidad del entorno);
+# PLR2004 para constantes de limpieza (columnas, índices) y PLR0915 en main() de scripts.
+"scripts/*.py" = ["E402", "PLR2004", "E501", "PLC0415", "PLR0915"]
+# Capa 3 MCP/LLM: líneas largas en prompts y cadenas SQL normativas son inevitables;
+# imports diferidos y condicionales (chromadb, openai) son el patrón de la capa;
+# tipografía española en prompts es intencional.
+"src/capa3_llm_mcp/**/*.py" = ["E501", "PLR2004", "RUF001", "RUF002", "RUF003", "E402", "PLC0415"]
+# Backend: E501 en rutas y mensajes de error; PLR0915 para pipeline monolítico (fase de prototipo);
+# PLC0415 para imports opcionales diferidos; PLR2004 para umbrales de confianza.
+"src/backend/**/*.py" = ["E501", "PLR0915", "PLC0415", "PLR2004"]
 
 [tool.ruff.format]
 quote-style = "double"

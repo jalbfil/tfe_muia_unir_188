@@ -1,7 +1,9 @@
-"""T073 — Wrapper Qwen2.5-7B-Instruct Q4_K_M vía Ollama (OpenAI-compatible API).
+"""T073 — Wrapper LLM local vía Ollama (OpenAI-compatible API).
 
 Runtime: Ollama daemon en localhost:11434.
-Modelo:  qwen2.5:7b-instruct-q4_K_M  (descargado en Ollama, ~4.7 GB).
+Modelo por defecto: llama3.1:8b-instruct-q4_K_M (~4.7 GB VRAM).
+  Alternativas probadas: deepseek-r1:7b-q4_K_M, qwen2.5:7b-instruct-q4_K_M.
+  Configurable vía variable de entorno: OLLAMA_MODEL=<nombre>.
 
 Hardware: RTX 5070 8 GB VRAM — Ollama gestiona el offload CUDA automáticamente.
 Temperature: 0.0 en producción (NFR-009 / ADR-0005).
@@ -13,15 +15,22 @@ en v0.2.0 sin cambiar el contrato.
 from __future__ import annotations
 
 import logging
-from typing import Any, Generator
+import os
+from collections.abc import Generator
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 _OLLAMA_BASE_URL = "http://localhost:11434/v1"
 _OLLAMA_TAGS_URL = "http://localhost:11434/api/tags"
-_DEFAULT_MODEL = "qwen2.5:7b-instruct-q4_K_M"
+# Modelo configurable por entorno; cambia con: OLLAMA_MODEL=deepseek-r1:7b-q4_K_M
+# Opciones evaluadas (mayo 2026, RTX 5070 8 GB VRAM):
+#   llama3.1:8b-instruct-q4_K_M   → primera opción (español + instrucciones)
+#   deepseek-r1:7b-q4_K_M          → segunda opción (razonamiento estructurado)
+#   qwen2.5:7b-instruct-q4_K_M     → opción anterior (sigue siendo válida)
+_DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1:8b-instruct-q4_K_M")
 _TIMEOUT_AVAIL = 2.0    # segundos para el healthcheck de disponibilidad
-_TIMEOUT_CHAT = 120.0   # segundos para generación (7B Q4 con GPU)
+_TIMEOUT_CHAT = 120.0   # segundos para generación (8B Q4 con GPU)
 
 
 class QwenWrapper:
@@ -35,6 +44,7 @@ class QwenWrapper:
     def __init__(self, model_name: str = _DEFAULT_MODEL) -> None:
         self._model_name = model_name
         self._client: Any = None
+        logger.info("LLM configurado: %s", self._model_name)
 
     # ── disponibilidad ────────────────────────────────────────────────────────
 
@@ -47,7 +57,7 @@ class QwenWrapper:
             if r.status_code != 200:
                 return False
             models = [m["name"] for m in r.json().get("models", [])]
-            # Aceptar coincidencia parcial: "qwen2.5:7b" cubre "qwen2.5:7b-instruct-q4_K_M"
+            # Aceptar coincidencia parcial: "llama3.1:8b" cubre "llama3.1:8b-instruct-q4_K_M"
             return any(self._model_name in n or n in self._model_name for n in models)
         except Exception as exc:
             logger.debug("Ollama no disponible: %s", exc)

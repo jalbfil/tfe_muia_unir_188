@@ -15,6 +15,25 @@ Director: Dr. Andrés Soto Villaverde
 
 ---
 
+## Arranque rápido
+
+```bash
+uv sync                                # entorno reproducible
+ollama pull llama3.1:8b-instruct-q4_K_M  # LLM local (una vez, ~4.7 GB)
+```
+
+Luego, en 3 terminales (o `VS Code → Tasks: Run Task → Up: All`):
+
+```bash
+ollama serve                                                       # T1
+uv run uvicorn src.backend.api.main:app --reload --port 8000       # T2
+uv run streamlit run src/ui/app.py                                 # T3
+```
+
+Guía completa: [RUNBOOK.md](RUNBOOK.md).
+
+---
+
 ## Estructura del repositorio
 
 ```
