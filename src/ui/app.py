@@ -501,7 +501,7 @@ with col_dashboard:
                     incident_id=st.session_state.incident_input.incident_id,
                     priority_recommended_by_system=Priority(p_val),
                     priority_assigned_by_operator=prioridad_asignada,
-                    motivo_divergencia=motivo_divergencia,
+                    motivo_divergencia=motivo_divergencia.strip() or None,
                     operador_id=operador_id,
                     timestamp=datetime.now(timezone.utc),
                 )
