@@ -4,7 +4,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 # ============================================================
 # RUTAS DEL PROYECTO
 # ============================================================
@@ -137,17 +136,14 @@ def parse_coordinates(value):
     lon = pd.NA
     code = pd.NA
 
+    import contextlib
     if len(parts) >= 1:
-        try:
+        with contextlib.suppress(Exception):
             lat = float(parts[0])
-        except Exception:
-            pass
 
     if len(parts) >= 2:
-        try:
+        with contextlib.suppress(Exception):
             lon = float(parts[1])
-        except Exception:
-            pass
 
     if len(parts) >= 3:
         code = parts[2]

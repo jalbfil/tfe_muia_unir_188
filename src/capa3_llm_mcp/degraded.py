@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 # Añadir src/ al path para importar contratos sin instalación editable adicional
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # inserta src/ (un nivel menos de profundidad)
 
 from contracts import (  # type: ignore[import]
     LegalCitation,

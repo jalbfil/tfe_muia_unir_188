@@ -6,11 +6,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
-from contracts import IncidentInput, OperatorRecommendation  # type: ignore[import]
 from backend.orchestrator.pipeline import run_pipeline  # type: ignore[import]
+from contracts import IncidentInput, OperatorRecommendation  # type: ignore[import]
 
 router = APIRouter()
 
@@ -29,10 +29,9 @@ def predict(incident: IncidentInput, request: Request) -> PredictResponse:
 
     recommendation, log = run_pipeline(incident, llm=llm)
 
-    try:
+    import contextlib
+    with contextlib.suppress(Exception):
         logger.log(log)
-    except Exception:  # noqa: BLE001 — el logging no debe fallar la petición
-        pass
 
     degraded = (
         "degraded" in recommendation.llm_metadata.llm_model.lower()

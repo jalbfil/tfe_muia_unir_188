@@ -4,9 +4,9 @@ import pytest
 from pydantic import ValidationError
 
 from contracts import (
+    MCP_TOOLS_V0_1,
     LegalCitation,
     LLMMetadata,
-    MCP_TOOLS_V0_1,
     NormaID,
     OperatorRecommendation,
     Priority,
@@ -22,9 +22,9 @@ def test_factory_valid() -> None:
 
 
 def test_mcp_tools_set_is_three() -> None:
-    assert MCP_TOOLS_V0_1 == frozenset(
+    assert frozenset(
         {"search_normative", "get_rule_details", "cite_legal_basis"}
-    )
+    ) == MCP_TOOLS_V0_1
 
 
 def test_p1_requires_citations() -> None:

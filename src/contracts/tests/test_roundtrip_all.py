@@ -10,10 +10,10 @@ from contracts import (
     IncidentFeatures,
     IncidentInput,
     InferenceLog,
+    OperationalRule,
     OperatorDecision,
     OperatorRecommendation,
     PriorityRecommendation,
-    OperationalRule,
     WeakLabel,
 )
 from tests.factories import (

@@ -14,8 +14,8 @@ Parámetros de chunking:
 from __future__ import annotations
 
 import re
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import yaml  # pyyaml
 

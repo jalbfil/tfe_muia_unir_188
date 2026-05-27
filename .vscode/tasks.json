@@ -1,0 +1,80 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Up: Ollama",
+            "type": "shell",
+            "command": "ollama",
+            "args": ["serve"],
+            "isBackground": true,
+            "presentation": { "panel": "dedicated", "group": "up", "reveal": "always" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Up: API",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "uvicorn", "src.backend.api.main:app", "--reload", "--port", "8000"],
+            "isBackground": true,
+            "presentation": { "panel": "dedicated", "group": "up", "reveal": "always" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Up: UI",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "streamlit", "run", "src/ui/app.py"],
+            "isBackground": true,
+            "presentation": { "panel": "dedicated", "group": "up", "reveal": "always" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Up: All",
+            "dependsOn": ["Up: Ollama", "Up: API", "Up: UI"],
+            "dependsOrder": "parallel",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: All",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "pytest", "-q"],
+            "group": { "kind": "test", "isDefault": true },
+            "presentation": { "panel": "shared", "reveal": "always" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: Backend API",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "pytest", "tests/test_backend_api.py", "-v", "--tb=short"],
+            "group": "test",
+            "presentation": { "panel": "shared", "reveal": "always" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Lint: Ruff",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "ruff", "check", "."],
+            "presentation": { "panel": "shared", "reveal": "always" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Lock: uv",
+            "type": "shell",
+            "command": "uv",
+            "args": ["lock"],
+            "presentation": { "panel": "shared", "reveal": "always" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Sync: uv",
+            "type": "shell",
+            "command": "uv",
+            "args": ["sync"],
+            "presentation": { "panel": "shared", "reveal": "always" },
+            "problemMatcher": []
+        }
+    ]
+}

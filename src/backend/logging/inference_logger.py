@@ -5,13 +5,11 @@ JSONL:  registro append-only del JSON completo (base de auditoría reproducible)
 """
 from __future__ import annotations
 
-import json
 import sqlite3
+import sys
 from pathlib import Path
 
-import sys
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # inserta src/
 
 from contracts import InferenceLog  # type: ignore[import]
 

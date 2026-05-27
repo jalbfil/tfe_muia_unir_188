@@ -1,0 +1,15 @@
+{
+  "servers": {
+    "normativa-cyl-v010": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "-m",
+        "capa3_llm_mcp.mcp_server.server",
+        "--stdio"
+      ],
+      "cwd": "${workspaceFolder}/src",
+      "env": {}
+    }
+  }
+}

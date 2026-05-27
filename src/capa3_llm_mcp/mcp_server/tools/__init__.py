@@ -3,4 +3,4 @@ from .cite_legal_basis import cite_legal_basis
 from .get_rule_details import get_rule_details
 from .search_normative import search_normative
 
-__all__ = ["search_normative", "get_rule_details", "cite_legal_basis"]
+__all__ = ["cite_legal_basis", "get_rule_details", "search_normative"]

@@ -16,7 +16,7 @@ class LeakageFieldRejectedError(ContractsError):
         self.reason = reason
 
 
-class LowConfidenceWarning(ContractsError):
+class LowConfidenceWarning(ContractsError):  # noqa: N818
     """`ConfidenceLevel.LOW` o `UNKNOWN` ⇒ se exige revisión humana explícita."""
 
     def __init__(self, incident_id: str, p_max: float) -> None:
@@ -27,7 +27,7 @@ class LowConfidenceWarning(ContractsError):
         self.p_max = p_max
 
 
-class SLABreachWarning(ContractsError):
+class SLABreachWarning(ContractsError):  # noqa: N818
     """Latencia supera el SLA definido para la capa."""
 
     def __init__(self, capa: str, latency_ms: float, sla_ms: float) -> None:
@@ -39,7 +39,7 @@ class SLABreachWarning(ContractsError):
         self.sla_ms = sla_ms
 
 
-class DegradedModeActivated(ContractsError):
+class DegradedModeActivated(ContractsError):  # noqa: N818
     """Activado el modo degradado (LLM caído, RAG vacío, etc.)."""
 
     def __init__(self, reason: str) -> None:

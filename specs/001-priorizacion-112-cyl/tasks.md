@@ -121,7 +121,7 @@
 ## Fase 8 — UI mínima Streamlit (Conjunto, Q-01 cerrada)
 
 - [x] **T100** `[C]` Decisión Q-01 cerrada: **Streamlit** (R-13). Sin alternativa React en v0.1.0.
-- [ ] **T101** `[C]` Implementar UI Streamlit `src/ui/app.py`: formulario incidente + visualización recomendación + reglas activadas + explicación + acción aceptar/modificar/rechazar.
+- [x] **T101** `[C]` `src/ui/app.py`: formulario IncidentInput · badge P1–P4 · reglas activadas · citas normativas · pistas de actuación · panel operador aceptar/modificar/rechazar · historial de sesión.
 - [ ] **T102** `[C]` Capturas para `anexo_g.tex`.
 
 ## Fase 9 — Evaluación (Conjunto, líder Juan Carlos para ML; Brian para LLM)

@@ -11,18 +11,16 @@ permiten levantar el backend y ejecutar los tests de integración.
 """
 from __future__ import annotations
 
-import time
-from datetime import datetime, timezone
-
 import sys
+import time
+from datetime import UTC, datetime
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # inserta src/
 
 from contracts import (  # type: ignore[import]
-    ActivatedRule,
     Accesibilidad,
-    AvisoAEMET,
+    ActivatedRule,
     BoolWithConfidence,
     CategoriaPreliminar,
     ConfidenceLevel,
@@ -160,7 +158,7 @@ def stub_extract_features(input: IncidentInput) -> IncidentFeatures:
         signal_meteo_inundacion=signal_meteo_inundacion,
         riesgo_vital_textual=riesgo_vital_textual,
         model_version_capa1=_MODEL_VERSION_CAPA1,
-        inference_timestamp=datetime.now(tz=timezone.utc),
+        inference_timestamp=datetime.now(tz=UTC),
         inference_latency_ms=latency_ms,
     )
 

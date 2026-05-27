@@ -37,7 +37,7 @@ def test_probs_must_sum_to_one() -> None:
 
 
 def test_probs_must_contain_all_four_classes() -> None:
-    with pytest.raises(ValidationError, match="P1..P4"):
+    with pytest.raises(ValidationError, match=r"P1\.\.P4"):
         PriorityRecommendationFactory.build(
             probs={Priority.P1: 0.6, Priority.P2: 0.3, Priority.P3: 0.1}
         )

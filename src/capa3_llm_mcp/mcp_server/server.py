@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import sys
 
+
 # ── importación perezosa del SDK MCP ──────────────────────────────────────────
 def _get_mcp():
     try:
@@ -32,7 +33,7 @@ def build_server():
     """Construye y devuelve el servidor FastMCP con las 3 tools registradas."""
     from .tools import cite_legal_basis, get_rule_details, search_normative
 
-    FastMCP = _get_mcp()
+    FastMCP = _get_mcp()  # noqa: N806 — FastMCP es una clase retornada dinámicamente
     server = FastMCP("normativa-cyl-v010")
 
     @server.tool()

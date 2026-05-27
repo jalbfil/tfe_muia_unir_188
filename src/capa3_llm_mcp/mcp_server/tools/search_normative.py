@@ -77,7 +77,7 @@ def search_normative(query: str, n: int = 5) -> list[dict]:
     metas = results.get("metadatas", [[]])[0]
     distances = results.get("distances", [[]])[0]
 
-    for doc, meta, dist in zip(docs, metas, distances):
+    for doc, meta, dist in zip(docs, metas, distances, strict=False):
         chunks.append(
             {
                 "norma_id": meta.get("norma_id", ""),

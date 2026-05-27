@@ -9,15 +9,15 @@ Endpoints:
 from __future__ import annotations
 
 import sys
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import AsyncIterator
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # inserta src/ → backend importable
 
 from fastapi import FastAPI
 
-from backend.api.routes import feedback, health, predict  # type: ignore[import]
+from backend.api.routes import feedback, health, predict, predict_stream  # type: ignore[import]
 from backend.logging.inference_logger import InferenceLogger  # type: ignore[import]
 
 _LOG_DIR = Path(__file__).resolve().parents[4] / "artifacts" / "logs"
@@ -28,9 +28,28 @@ _JSONL_PATH = _LOG_DIR / "inference.jsonl"
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Inicializa el logger y el cliente LLM al arrancar."""
+    import logging as _logging
+
+    _log = _logging.getLogger(__name__)
+
     app.state.logger = InferenceLogger(db_path=_DB_PATH, jsonl_path=_JSONL_PATH)
-    app.state.llm = None  # Sin LLM en v0.1.0-stub; se inyecta en producción
     app.state.log_cache: dict[str, str] = {}
+
+    # Inicializar wrapper LLM — si Ollama no está disponible, queda en None (modo degradado)
+    try:
+        from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper  # type: ignore[import]
+
+        wrapper = QwenWrapper()
+        if wrapper.is_available():
+            app.state.llm = wrapper
+            _log.info("LLM disponible: Qwen2.5-7B-Instruct vía Ollama")
+        else:
+            app.state.llm = None
+            _log.warning("Ollama no disponible → modo degradado")
+    except Exception as exc:
+        app.state.llm = None
+        _log.warning("Error al inicializar LLM: %s → modo degradado", exc)
+
     yield
     # Cleanup (si fuera necesario)
 
@@ -46,8 +65,42 @@ app = FastAPI(
 )
 
 app.include_router(predict.router)
+app.include_router(predict_stream.router)
 app.include_router(feedback.router)
 app.include_router(health.router)
+
+
+@app.get("/.well-known/agent.json", include_in_schema=False)
+def agent_card() -> dict:
+    """Agent Card compatible con A2A Protocol (Agent2Agent §4.3).
+
+    Permite el descubrimiento programático de las capacidades del sistema
+    por agentes externos, siguiendo el estándar emergente Agent2Agent.
+
+    Referencia: arXiv:2505.02279v2 — Survey of Agent Interoperability Protocols.
+    """
+    return {
+        "id": "sistema-apoyo-emergencias-112-v1",
+        "name": "Sistema de Apoyo a la Decisión 112 CyL",
+        "version": "0.1.0",
+        "status": "live",
+        "capabilities": [
+            {
+                "name": "priorizar_incidente",
+                "description": "Clasifica un incidente de emergencia con prioridad P1-P4",
+                "endpoint": "/predict",
+                "method": "POST",
+            },
+            {
+                "name": "priorizar_incidente_stream",
+                "description": "Clasificación con SSE — muestra progreso por capas y tokens LLM",
+                "endpoint": "/predict/stream",
+                "method": "POST",
+            },
+        ],
+        "protocols": ["MCP", "A2A-lite"],
+        "mcpTools": ["search_normative", "cite_legal_basis", "get_rule_details"],
+    }
 
 
 if __name__ == "__main__":  # pragma: no cover
