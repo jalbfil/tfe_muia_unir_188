@@ -35,7 +35,7 @@ BACKEND_URL = "http://localhost:8000"
 # Intentar habilitar el fallback en proceso si el backend no está levantado
 try:
     from backend.orchestrator.pipeline import run_pipeline
-    from contracts import ULID, compute_input_hash, InferenceLog
+    from contracts import compute_input_hash, InferenceLog
     IN_PROCESS_AVAILABLE = True
 except ImportError:
     IN_PROCESS_AVAILABLE = False
@@ -297,23 +297,28 @@ with col_form:
         index=default_cat_idx,
     )
     
-    col_geo1, col_geo2 = st.columns(2)
-    with col_geo1:
-        lat = st.number_input(
-            "Latitud:",
-            value=default_vals.get("lat", 41.6521),
-            format="%.5f",
-            min_value=-90.0,
-            max_value=90.0,
-        )
-    with col_geo2:
-        lon = st.number_input(
-            "Longitud:",
-            value=default_vals.get("lon", -2.4632),
-            format="%.5f",
-            min_value=-180.0,
-            max_value=180.0,
-        )
+    incluir_coordenadas = st.checkbox("Incluir coordenadas GPS", value="lat" in default_vals)
+    if incluir_coordenadas:
+        col_geo1, col_geo2 = st.columns(2)
+        with col_geo1:
+            lat = st.number_input(
+                "Latitud:",
+                value=default_vals.get("lat", 41.6521),
+                format="%.5f",
+                min_value=-90.0,
+                max_value=90.0,
+            )
+        with col_geo2:
+            lon = st.number_input(
+                "Longitud:",
+                value=default_vals.get("lon", -2.4632),
+                format="%.5f",
+                min_value=-180.0,
+                max_value=180.0,
+            )
+    else:
+        lat = None
+        lon = None
         
     localidad = st.text_input("Localidad:", value=default_vals.get("localidad", "Soria"))
     
