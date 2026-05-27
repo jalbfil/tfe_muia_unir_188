@@ -6,7 +6,7 @@
 
 El presente Trabajo Fin de Master (TFM) se ha desarrollado en modalidad grupal, de conformidad con el procedimiento establecido por la Universidad Internacional de La Rioja (UNIR) para la elaboracion y defensa de Trabajos Fin de Estudios en grupo. La modalidad grupal resulta coherente con la naturaleza del proyecto: se dise\~na, implementa y evalua un sistema inteligente de apoyo a la decision para priorizacion temprana de incidentes 112 en Castilla y Leon, combinando procesamiento de lenguaje natural, aprendizaje interpretable, explicacion normativa y prototipo software.
 
-La organizacion del equipo se ha definido alrededor de tres capas tecnicas y una capa transversal de integracion. La Capa 1 transforma texto libre de incidentes en variables operativas estructuradas. La Capa 2 produce una recomendacion de prioridad P1--P4 mediante un nucleo interpretable basado en RuleFit, entrenado sobre etiquetas academicas construidas por supervision debil y comparado con un baseline experto y un techo opaco XGBoost. La Capa 3 genera explicaciones para el operador mediante un LLM local, recuperacion aumentada con corpus normativo de Castilla y Leon y herramientas MCP. La integracion se completa con contratos Pydantic, backend auditable, logs de inferencia, interfaz minima y evaluacion reproducible.
+La organizacion del equipo se ha definido alrededor de tres capas tecnicas y una capa transversal de integracion. La Capa 1 transforma texto libre de incidentes en variables operativas estructuradas. La Capa 2 produce una recomendacion de prioridad P1--P4 mediante un nucleo interpretable basado en RuleFit-lite, entrenado sobre etiquetas academicas construidas por supervision debil y comparado con un baseline experto y una ejecucion diagnostica con \texttt{imodels}. La Capa 3 genera explicaciones para el operador mediante un LLM local, recuperacion aumentada con corpus normativo de Castilla y Leon y herramientas MCP. La integracion se completa con contratos Pydantic, backend auditable, logs de inferencia, interfaz minima y evaluacion reproducible.
 
 El reparto no se limita a distribuir tareas de programacion. Cada integrante asume una contribucion diferenciada al componente inteligente del sistema, de modo que el resultado conjunto pueda defenderse como una solucion integrada y no como una suma de piezas independientes.
 
@@ -17,7 +17,7 @@ El equipo esta formado por tres estudiantes del Master Universitario en Intelige
 \subsection{Capa 2: weak supervision, RuleFit y evaluacion}
 \textbf{Responsable principal:} Juan Carlos Albert Fillol.
 
-Su bloque de trabajo se centra en la formalizacion del problema de priorizacion P1--P4, la auditoria del dataset 112 Castilla y Leon, la construccion de etiquetas academicas mediante supervision debil, el dise\~no del baseline experto, el entrenamiento del modelo RuleFit, la comparacion con XGBoost como techo opaco y la evaluacion cuantitativa del sistema. Desde el punto de vista academico, esta contribucion constituye el nucleo de explicabilidad y validez metodologica del TFM: el sistema debe ser capaz de recomendar una prioridad, justificarla mediante reglas activadas y demostrar su comportamiento con metricas como recall@P1, calibracion, sparsity y analisis de errores criticos.
+Su bloque de trabajo se centra en la formalizacion del problema de priorizacion P1--P4, la auditoria del dataset 112 Castilla y Leon, la construccion de etiquetas academicas mediante supervision debil, el dise\~no del baseline experto, el entrenamiento del modelo RuleFit-lite, la comparacion diagnostica con \texttt{imodels} y la evaluacion cuantitativa del sistema. Desde el punto de vista academico, esta contribucion constituye el nucleo de explicabilidad y validez metodologica del TFM: el sistema debe ser capaz de recomendar una prioridad, justificarla mediante reglas activadas y demostrar su comportamiento con metricas como macro-F1, recall P1, estabilidad temporal, sesgos por subgrupo, analisis de errores criticos y fidelidad explicativa.
 
 \subsection{Capa 3: LLM local, RAG normativo, MCP y backend}
 \textbf{Responsable principal:} Brian Mathias Pesci Juliani.
@@ -40,7 +40,7 @@ La Tabla~\ref{tab:contribuciones-ia-individuales} resume la aportacion de cada i
 \begin{tabular}{|p{2.8cm}|p{4.2cm}|p{4.4cm}|p{3.0cm}|}
 \hline
 \textbf{Integrante} & \textbf{Subproblema de IA} & \textbf{Contribucion principal} & \textbf{Evidencia} \\ \hline
-Juan Carlos Albert Fillol & Priorizacion interpretable bajo incertidumbre & Weak supervision P1--P4, baseline experto, RuleFit, XGBoost ceiling, evaluacion y analisis de errores & Caps. 3, 4, 6, 7, 9 y Anexos C, E, L \\ \hline
+Juan Carlos Albert Fillol & Priorizacion interpretable bajo incertidumbre & Weak supervision P1--P4, baseline experto, RuleFit-lite, comparativa \texttt{imodels}, evaluacion, errores P1 y validacion interna & Caps. 3, 4, 6, 7, 9 y Anexos C, D, E, L \\ \hline
 Brian Mathias Pesci Juliani & Explicacion normativa y orquestacion reproducible & RAG normativo, LLM local, MCP, backend, logs, modo degradado y trazabilidad de inferencia & Caps. 5, 6, 8, 9 y Anexos J, K, L, M \\ \hline
 Ancor Gonzalez Carballo & Extraccion de informacion operativa desde texto & Capa 1 NLP, se\~nales textuales, variables V01--V15, tests de contrato y latencia & Caps. 6, 7, 8, 9 y Anexos A, B, L \\ \hline
 \end{tabular}

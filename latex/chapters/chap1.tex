@@ -14,7 +14,7 @@ La saturacion informativa en emergencias aparece cuando el volumen, la velocidad
 
 El problema abordado por este TFM puede formularse asi: dado un conjunto de incidentes 112 descritos mediante texto libre y datos operativos parciales, ?como puede un sistema inteligente ayudar a estructurar la informacion, extraer variables relevantes, recomendar una prioridad P1--P4 y explicar esa recomendacion de forma comprensible y auditable?
 
-La respuesta propuesta se apoya en una arquitectura de tres capas. La Capa 1 extrae variables operativas V01--V15 y se\~nales textuales desde el incidente. La Capa 2 recomienda prioridad mediante RuleFit, manteniendo un nucleo interpretable y comparandolo con un baseline experto y un techo XGBoost no productivo. La Capa 3 genera una explicacion normativa mediante un LLM local, recuperacion aumentada sobre corpus CyL y herramientas MCP.
+La respuesta propuesta se apoya en una arquitectura de tres capas. La Capa 1 extrae variables operativas V01--V15 y se\~nales textuales desde el incidente. La Capa 2 recomienda prioridad mediante RuleFit-lite, manteniendo un nucleo interpretable y comparandolo con un baseline experto y una ejecucion diagnostica con \texttt{imodels}. La Capa 3 genera una explicacion normativa mediante un LLM local, recuperacion aumentada sobre corpus CyL y herramientas MCP.
 
 \section{Justificacion e impacto social}
 
@@ -28,7 +28,7 @@ Desde la perspectiva social, el proyecto se alinea con una vision responsable de
 
 La contribucion principal del TFM no consiste en entrenar un modelo opaco para maximizar una metrica aislada de precision. El proyecto aborda un problema mas delicado: construir un sistema explicable y evaluable cuando no existe una etiqueta oficial P1--P4 en el dataset abierto. Por ello, la prioridad academica se construye mediante supervision debil, anclada en PLANCAL y en la guia de etiquetado del proyecto.
 
-La aportacion de IA se concreta en cinco elementos. Primero, la extraccion NLP de variables operativas desde texto libre en espa\~nol. Segundo, la generacion de etiquetas P1--P4 mediante varios anotadores debiles y medicion de acuerdo. Tercero, el uso de RuleFit como nucleo interpretable de Capa 2, con limite de reglas activas y calibracion. Cuarto, la comparacion contra un baseline experto y un XGBoost ceiling, separando interpretabilidad productiva de rendimiento maximo opaco. Quinto, la generacion de explicaciones mediante LLM local, RAG normativo y MCP, manteniendo la decision final en manos del operador.
+La aportacion de IA se concreta en cinco elementos. Primero, la extraccion NLP de variables operativas desde texto libre en espa\~nol. Segundo, la generacion de etiquetas P1--P4 mediante varios anotadores debiles y medicion de acuerdo. Tercero, el uso de RuleFit-lite como nucleo interpretable de Capa 2, con reglas activas exportables y probabilidades por clase. Cuarto, la comparacion contra un baseline experto y una ejecucion \texttt{imodels}, separando la alternativa seleccionada de los experimentos diagnosticos. Quinto, la generacion de explicaciones mediante LLM local, RAG normativo y MCP, manteniendo la decision final en manos del operador.
 
 Esta combinacion permite que cada recomendacion pueda vincularse con entrada, variables extraidas, reglas activadas, probabilidad, confianza, citas legales, version de modelo y decision humana final. Esa trazabilidad constituye la diferencia entre un simple clasificador y un sistema de apoyo a la decision defendible en un TFM de IA aplicada.
 

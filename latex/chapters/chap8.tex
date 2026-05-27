@@ -1,197 +1,66 @@
-\chapter{Descripción del prototipo software desarrollado}
+\chapter{Descripcion del prototipo software desarrollado}
 \label{cap:8}
 
-% Este capítulo documenta cómo se ha materializado en un prototipo funcional el diseño analítico presentado en los capítulos anteriores. El objetivo no es rediseñar el sistema ni repetir la teoría ya desarrollada, sino mostrar cómo se implementa: el flujo del incidente, la lógica del motor, la estructura de datos, la interacción con el operador y la trazabilidad de la decisión.
+\section{Introduccion}
 
-% El prototipo constituye el vehículo mediante el cual el motor de priorización ---diseñado en el Capítulo~6--- puede ejecutarse sobre los datos definidos en el Capítulo~7, producir las salidas previstas (prioridad, confianza, situación operativa sugerida y explicación) y presentarlas al operador para su validación. Sin este prototipo, el diseño analítico quedaría como una construcción conceptual sin posibilidad de demostración ni de evaluación empírica. Con él, el TFM cumple el requisito esencial de un trabajo de Tipo~2: producir un artefacto software funcional y demostrable.
+Este capitulo describe como se materializa en software la arquitectura definida en el Capitulo~\ref{cap:6}. El objetivo no es repetir el dise\~no conceptual, sino mostrar que el prototipo ejecuta una cadena completa: recibe o carga incidentes, estructura variables, aplica la Capa 2 de priorizacion, genera una explicacion mediante Capa 3 y registra trazabilidad para revision posterior.
 
-% Conviene recordar, desde el inicio, que el prototipo es un instrumento académico de investigación. No es una plataforma industrial lista para su despliegue en un centro de coordinación real, ni una solución comercial. Su valor reside en que permite comprobar que la lógica del motor funciona, que las salidas son coherentes con el diseño y que el operador puede interactuar con la recomendación de forma trazable. Esta delimitación es coherente con las restricciones formuladas en el apartado~5.5 del Capítulo~5 y con el alcance cerrado del proyecto.
+El prototipo tiene alcance academico. No sustituye al sistema institucional del 112, no moviliza recursos, no activa planes y no toma decisiones autonomas. Su valor reside en demostrar que la propuesta puede ejecutarse de forma reproducible sobre datos reales abiertos y que sus salidas pueden auditarse.
 
-% \section{Arquitectura general del sistema}
+\section{Arquitectura software}
 
-% La arquitectura del prototipo responde a un principio de modularidad (requisito RNF3, Capítulo~5): cada componente funcional del sistema ---entrada de incidentes, contexto oficial, motor de priorización, persistencia y frontend--- se implementa como un módulo desacoplado, con interfaces definidas y responsabilidades delimitadas. Esta organización no es arbitraria: refleja la estructura lógica del diseño analítico y, al mismo tiempo, permite que cada integrante del equipo desarrolle su eje funcional con autonomía, tal como se describe en el apartado~0.3 de la organización del trabajo en grupo.
+El sistema se organiza en cuatro bloques principales:
 
-% El sistema se organiza en cinco módulos principales, que se corresponden con las fases del flujo de procesamiento de un incidente:
+\begin{enumerate}
+    \item \textbf{Pipeline de datos.} Limpia el Registro 112 Castilla y Leon, normaliza campos, construye variables y excluye columnas prohibidas por \textit{leakage}.
+    \item \textbf{Capa 2 RuleFit.} Implementa weak supervision, baseline experto, RuleFit-lite, comparativa \texttt{imodels}, evaluacion e inferencia.
+    \item \textbf{Capa 3 explicativa.} Genera explicaciones a partir de la salida de Capa 2, evidencias disponibles y corpus normativo recuperado mediante RAG/MCP.
+    \item \textbf{Trazabilidad y validacion.} Registra salidas, metricas, muestra de revision humana y artefactos de evaluacion.
+\end{enumerate}
 
-% \begin{enumerate}
-%     \item \textbf{Módulo de entrada y estructuración de incidentes.} Recibe la información del incidente ---ya sea por entrada manual del operador o por importación de datos estructurados--- y la transforma en un registro normalizado conforme al esquema de datos del bloque~1 (Capítulo~7, apartado~7.2.1; Anexo~F, apartado~F.4.1). Cumple el requisito RF1.
-%     \item \textbf{Módulo de contexto oficial.} Enriquece el incidente con información procedente de fuentes oficiales externas: nivel de aviso AEMET, peligrosidad por inundación (SNCZI/MITECO), proximidad a instalaciones Seveso, datos demográficos del INE y accesibilidad territorial (ICEARAGON). Alimenta las variables V08, V09, V10, V11 y V15 del motor, conforme al bloque~3 del esquema de datos (Capítulo~7, apartado~7.2.3; Anexo~F, apartado~F.4.3). Cumple el requisito RF3.
-%     \item \textbf{Módulo de priorización (motor).} Ejecuta el baseline interpretable de tres capas diseñado en el Capítulo~6: evalúa las reglas duras (RD1--RD8), calcula el scoring ponderado, integra ambas capas según la lógica de precedencia documentada en el Anexo~E, y genera la confianza y la explicación textual. Produce como salida prioridad recomendada, puntuación de scoring, nivel de confianza, reglas duras activadas, variables derivadas (D01--D04) y explicación. Cumple los requisitos RF4, RF5, RF6 y RF7.
-%     \item \textbf{Backend de servicios y persistencia.} Implementa el modelo de datos conforme al esquema de cinco bloques del Capítulo~7 y del Anexo~F, gestiona la API REST que conecta el motor con el frontend y garantiza la persistencia y trazabilidad de todas las operaciones. Cumple el requisito RF9.
-%     \item \textbf{Frontend de apoyo a la decisión.} Presenta al operador la información del incidente, la recomendación del motor (prioridad, confianza, situación operativa sugerida y explicación) y los mecanismos de validación humana. El operador puede aceptar, modificar o rechazar la recomendación, y el sistema registra la decisión con marca temporal y justificación. Cumple el requisito RF8.
-% \end{enumerate}
+La separacion entre capas evita que el LLM decida la prioridad. La prioridad procede de Capa 2; la Capa 3 traduce esa salida en una explicacion revisable.
 
-% La comunicación entre módulos sigue un flujo unidireccional: la entrada alimenta al motor junto con el contexto; el motor produce las salidas calculadas; el backend las persiste; y el frontend las presenta al operador. La decisión humana se registra en el bloque~5 del esquema de datos y cierra el ciclo. Esta arquitectura garantiza que el motor es una pieza autónoma evaluable con independencia del frontend, conforme al requisito de modularidad.
+\section{Componentes de Capa 2}
 
-% \begin{table}[ht]
-% \centering
-% \caption{Módulos del prototipo y correspondencia con requisitos y capítulos}
-% \label{tab:8.1}
-% \small
-% \begin{tabularx}{\textwidth}{|l|X|l|l|l|}
-% \hline
-% \textbf{Módulo} & \textbf{Función principal} & \textbf{Requisitos} & \textbf{Diseño en} & \textbf{Responsable} \\ \hline
-% Entrada & Recepción y estructuración del incidente & RF1, RF2 & Cap.~7 (7.2.1) & Brian / Ancor \\ \hline
-% Contexto oficial & Enriquecimiento con fuentes externas & RF3 & Cap.~3, 7 (7.2.3) & Brian \\ \hline
-% Motor & Cálculo de prioridad, confianza y explicación & RF4--RF7 & Cap.~6, Anexo~E & Brian / Juan Carlos \\ \hline
-% Backend & Modelo de datos, API, persistencia & RF9, RNF2, RNF3 & Cap.~7, Anexo~F & Brian \\ \hline
-% Frontend & Visualización y validación humana & RF8, RNF1, RNF4 & Cap.~5 (5.2, 5.4) & Ancor \\ \hline
-% \end{tabularx}
-% \end{table}
+La parte de priorizacion se estructura bajo \texttt{src/capa2\_rulefit/}. El submodulo de \texttt{weak\_supervision} contiene la logica de etiquetas academicas P1--P4. El submodulo \texttt{baseline\_expert} implementa las reglas expertas que sirven como referencia interpretable. El submodulo \texttt{rulefit} contiene la preparacion de features, entrenamiento, exportacion de reglas y comparativa. El submodulo \texttt{inference} encapsula la inferencia para que el resto del prototipo consuma una salida estable.
 
-% \noindent\textit{Fuente: elaboración propia. Coherente con la distribución de responsabilidades del apartado~0.3.}
+Esta estructura permite que el modelo seleccionado, RuleFit-lite, no quede mezclado con scripts de preparacion de datos ni con logica de explicacion. Tambien facilita comparar alternativas sin alterar el contrato de salida que recibe la Capa 3.
 
-% \section{Módulo de entrada y estructuración de incidentes}
+\section{Flujo de procesamiento}
 
-% El módulo de entrada constituye el punto de acceso al sistema. Su función es recibir la información inicial del incidente y transformarla en un registro normalizado que el motor pueda procesar. Esta función corresponde al requisito RF1 del Capítulo~5 y opera sobre la estructura del bloque~1 del esquema de datos (Anexo~F, apartado~F.4.1).
+El flujo funcional del prototipo es el siguiente:
 
-% El prototipo contempla dos vías de entrada. La primera es la entrada manual por el operador, mediante un formulario estructurado en el frontend que recoge los campos esenciales: localización (municipio, comarca, coordenadas), descripción textual del suceso, tipo aparente de incidente según la taxonomía operativa (Anexo~A), fuente del aviso y las variables de entrada que el operador pueda informar en el momento de la recepción. La segunda es la importación de datos estructurados desde el dataset piloto, que permite alimentar el sistema con los casos del Anexo~D para su procesamiento en lote durante la fase de evaluación.
+\begin{enumerate}
+    \item Se carga un incidente desde el dataset limpio o desde una entrada controlada.
+    \item Se extraen variables operativas y se\~nales textuales permitidas.
+    \item Se verifica que no se usen columnas posteriores a la decision.
+    \item Capa 2 calcula prioridad P1--P4, probabilidades y reglas o se\~nales activadas.
+    \item Capa 3 genera una explicacion breve, apoyada en evidencias y corpus normativo cuando procede.
+    \item El sistema registra la inferencia para auditoria y revision humana.
+\end{enumerate}
 
-% Cuando la entrada incluye una descripción textual no estructurada, el módulo aplica técnicas básicas de procesamiento del lenguaje natural (NLP) para asistir en la extracción de entidades relevantes: localizaciones, tipos de incidente, indicadores de gravedad y señales de contexto. Esta funcionalidad no sustituye la clasificación del operador, sino que la complementa, ofreciendo sugerencias que el usuario puede aceptar o corregir. El alcance del NLP en el prototipo es intencionalmente limitado: se centra en la extracción de entidades y en la clasificación inicial del tipo de incidente (requisito RF2), sin pretender un análisis semántico completo del texto.
+El resultado no es una orden operativa, sino una recomendacion estructurada. El operador mantiene la capacidad de aceptar, modificar o rechazar la salida.
 
-% Un aspecto crítico de este módulo es el tratamiento explícito de la información ausente. El esquema de datos distingue entre «valor informado» y «ausente» para cada variable (Anexo~F). Cuando una variable no puede informarse en el momento de la recepción, el módulo la registra como ausente y el motor aplica los valores por defecto conservadores definidos en el Anexo~B. Esta decisión es coherente con el requisito de robustez ante información incompleta (RNF5) y con la lógica de confianza de la tercera capa del baseline.
+\section{Contratos y trazabilidad}
 
-% \section{Módulo de contexto oficial (integración API AEMET, cartografías)}
+El prototipo utiliza contratos versionados para separar responsabilidades entre capas. La salida de Capa 2 debe incluir, como minimo, identificador del incidente, prioridad recomendada, probabilidades por clase, reglas o se\~nales relevantes, version del modelo y advertencias asociadas. La Capa 3 consume esa informacion y debe conservar la correspondencia entre explicacion y evidencia.
 
-% El módulo de contexto oficial complementa la información del incidente con datos procedentes de fuentes institucionales externas, conforme al requisito RF3 y a la estrategia de fuentes documentada en el Capítulo~3. Su función es que el motor no opere exclusivamente sobre la descripción textual inicial ---que suele ser fragmentaria e incompleta en los primeros minutos---, sino que disponga de señales contextuales oficiales que aporten objetividad y trazabilidad a la evaluación.
+La trazabilidad se apoya en artefactos reproducibles: dataset auditado, weak labels, splits, modelos entrenados, metricas, errores P1, muestra de validacion interna y reporte final de evaluacion. Este dise\~no permite reconstruir que datos se usaron, que modelo produjo la recomendacion y que explicacion se genero.
 
-% Las fuentes integradas en el prototipo son las siguientes. AEMET OpenData proporciona el nivel de aviso meteorológico vigente y el fenómeno activo, alimentando las variables V08 y V09. El SNCZI del MITECO aporta la capa de peligrosidad por inundación, alimentando V10. El Registro Seveso permite verificar la proximidad a instalaciones industriales de riesgo, alimentando V11. Los datos demográficos del INE (población total y proporción de mayores de 65 años) apoyan la estimación de vulnerabilidad territorial. Y la cartografía oficial de ICEARAGON contribuye a la valoración de accesibilidad del punto, alimentando V15.
+\section{Modo degradado}
 
-% En el prototipo, la integración con estas fuentes se implementa de forma adaptada al alcance del TFM. Para AEMET OpenData, se ha desarrollado un servicio de consulta a la API oficial que obtiene el aviso vigente para la zona geográfica del incidente. Para las fuentes geoespaciales (SNCZI, registro Seveso, ICEARAGON), el prototipo utiliza tablas de referencia precargadas con los datos del caso piloto aragonés, dado que la integración completa en tiempo real con servicios WMS/WFS excedería el alcance del trabajo. Para los datos del INE, se incorporan tablas demográficas municipales del último censo disponible.
+El prototipo contempla un modo degradado para la explicacion. Si el LLM local no esta disponible o no cumple el tiempo esperado, el sistema puede generar una explicacion determinista basada en reglas, probabilidades y evidencias de Capa 2. Este modo evita que la ausencia del componente generativo bloquee la recomendacion o fuerce dependencia de servicios externos.
 
-% \section{Módulo de priorización (implementación del motor)}
+El modo degradado tambien ha permitido evaluar fidelidad explicativa de forma controlada sobre la muestra de 111 casos de validacion interna, como se documenta en el Capitulo~\ref{cap:9}.
 
-% Este apartado describe cómo se ha traducido a código la lógica del baseline interpretable de tres capas diseñada en el Capítulo~6 y especificada en detalle en el Anexo~E. El módulo de priorización es el componente central del prototipo y la pieza en la que convergen el diseño analítico y la implementación técnica.
+\section{Relacion con la evaluacion}
 
-% La implementación respeta fielmente la arquitectura de tres capas: primero se evalúan las reglas duras, después se calcula el scoring ponderado, después se combinan ambas capas según la lógica de precedencia documentada en el Anexo~E (apartado~E.5), y finalmente se generan la confianza y la explicación. No se ha modificado ninguna regla, peso ni umbral respecto al diseño cerrado en los capítulos 6 y 7; la calibración definitiva se realiza en la fase de evaluación (Capítulo~9).
+El prototipo no se evalua por apariencia visual, sino por su capacidad para producir artefactos verificables. La evaluacion experimental utiliza los mismos scripts, features, splits y modelos que la arquitectura declara. Por eso los resultados del Capitulo~\ref{cap:9} pueden enlazarse con el dise\~no de Capitulo~\ref{cap:6}, los datos del Capitulo~\ref{cap:7} y los anexos de validacion.
 
-% \subsection{Implementación de reglas duras}
+El reporte \texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.json} actua como indice maestro de esta relacion entre prototipo, resultados y documentacion.
 
-% Las ocho reglas duras (RD1--RD8) se implementan como funciones deterministas que reciben las variables de entrada del incidente y devuelven, para cada regla, su estado de activación (activa o inactiva) y, en caso de activación, el tipo de asignación (prioridad fija o prioridad mínima) y el nivel resultante.
+\section{Conclusiones del capitulo}
 
-% La evaluación es secuencial, conforme al paso~1 del flujo de integración (Anexo~E, Tabla~E.5): se evalúan todas las reglas, no solo la primera que se active, y la prioridad resultante de esta capa (P\_RD) se determina por la regla activada que asigne la prioridad más alta. Así, si un incidente activa simultáneamente RD2 (P2~mínima) y RD1 (P1~fija), prevalece P1~fija.
+El prototipo software desarrollado materializa la propuesta del TFM en una cadena ejecutable y auditable. Su dise\~no mantiene separadas la extraccion, la priorizacion, la explicacion y la validacion humana; evita fuga de informacion; permite comparar modelos interpretables; y deja evidencias suficientes para defender los resultados de forma reproducible.
 
-% Cada regla dura se implementa como una función independiente, lo que facilita su prueba unitaria y su trazabilidad. La lista de reglas activadas se registra en el campo \texttt{reglas\_duras\_activadas} del bloque~4 del esquema de datos (Anexo~F, apartado~F.4.4), permitiendo que la explicación posterior identifique exactamente qué condiciones deterministas se han cumplido.
-
-% \subsection{Implementación del scoring ponderado}
-
-% La capa de scoring se implementa conforme a la fórmula del apartado~E.3.4 del Anexo~E: $S = w_1 \cdot G + w_2 \cdot V + w_3 \cdot A + w_4 \cdot E + w_5 \cdot C$, donde cada contribución de grupo se calcula como el promedio ponderado de las variables normalizadas que lo componen.
-
-% La implementación comprende tres pasos. Primero, la normalización de variables: cada variable de entrada se transforma al rango $[0,\,1]$ conforme a la estrategia del apartado~E.3.3. Las variables binarias se codifican como 0/1; las ordinales se mapean respetando el orden de sus categorías; y las categóricas se codifican mediante asignación ordinal basada en la jerarquía operativa. Las variables V13 y V14 no participan en el scoring: alimentan exclusivamente la capa de confianza.
-
-% Segundo, el cálculo ponderado por grupos funcionales: los pesos orientativos de la Tabla~E.2 se aplican sobre los cinco grupos (gravedad inmediata, vulnerabilidad y exposición, amenaza contextual, escalado y evolución, y contexto operativo). El resultado se escala al rango 0--100.
-
-% Tercero, la traducción a la escala P1--P4: la puntuación se traduce mediante los umbrales indicativos de la Tabla~E.3 ($\ge 75 \rightarrow$ P1; 50--74 $\rightarrow$ P2; 25--49 $\rightarrow$ P3; $< 25 \rightarrow$ P4). El scoring se calcula siempre, incluso cuando una regla dura ha determinado la prioridad, porque alimenta la explicación y permite evaluar la concordancia entre capas. La integración entre reglas duras y scoring sigue la lógica de precedencia del paso~3 del Anexo~E: si $P_{RD}$ es fija, $P_{final} = P_{RD}$; si $P_{RD}$ es mínima, $P_{final} = \max(P_{RD}, P_S)$; si no hay regla dura activa, $P_{final} = P_S$.
-
-% \subsection{Implementación de la explicación automática}
-
-% La tercera capa genera dos salidas: el nivel de confianza y la explicación textual. La confianza se calcula a partir de tres factores: la completitud de variables informadas, la fiabilidad del informador (V13) y la confirmación por múltiples avisos (V14), conforme a los umbrales de la Tabla~E.4 del Anexo~E. El resultado se expresa en la escala alto / medio / bajo.
-
-% La explicación textual se construye automáticamente incluyendo los siguientes elementos, conforme al paso~5 del flujo de integración: reglas duras activadas (si las hay), variables de mayor impacto en el scoring (las dos o tres que más han contribuido a la puntuación), señales contextuales relevantes (avisos AEMET, peligrosidad por inundación, proximidad Seveso) e información ausente (variables no informadas y su efecto sobre la confianza).
-
-% La explicación no es un elemento decorativo: cumple el requisito RF7 y el requisito no funcional de explicabilidad (RNF1). Su función es permitir al operador entender, cuestionar y, si procede, corregir la recomendación. El texto generado se almacena en el campo \texttt{explicacion\_textual} del bloque~4 del esquema de datos.
-
-% \section{Backend: modelo de datos, servicios y API}
-
-% \subsection{Modelo de datos}
-
-% El modelo de datos del prototipo reproduce fielmente el esquema de cinco bloques definido en el Capítulo~7 (apartado~7.2, Tabla~7.1) y especificado en detalle en el Anexo~F. Los cinco bloques ---estructura del incidente, evidencias y señales asociadas, contexto territorial y meteorológico, variables calculadas por el motor y decisión humana con trazabilidad--- se implementan como entidades del modelo de datos del backend, respetando los tipos de dato, la obligatoriedad y las reglas de integridad documentadas en el Anexo~F (apartado~F.5).
-
-% La regla RI-1 (unicidad del incidente), la regla RI-2 (integridad referencial entre evidencias e incidentes) y la regla RI-3 (obligatoriedad de variables críticas V01, V02, V04 y \texttt{fecha\_hora\_recepcion}) se implementan como restricciones del modelo. El tratamiento del valor «ausente» se gestiona mediante un mecanismo explícito que distingue entre valor informado y dato no disponible, activando automáticamente los valores por defecto del Anexo~B cuando procede.
-
-% \subsection{Servicios y API REST}
-
-% El backend expone una API REST que sirve como interfaz de comunicación entre el motor de priorización y el frontend. Los endpoints principales cubren las operaciones esenciales del flujo funcional: creación y actualización de incidentes, ejecución del motor sobre un incidente, consulta de la recomendación y registro de la decisión humana.
-
-% \begin{table}[ht]
-% \centering
-% \caption{Endpoints principales de la API REST}
-% \label{tab:8.2}
-% \small
-% \begin{tabularx}{\textwidth}{|l|X|X|l|}
-% \hline
-% \textbf{Método} & \textbf{Endpoint} & \textbf{Función} & \textbf{Requisito} \\ \hline
-% POST & /api/incidentes & Crear nuevo incidente estructurado & RF1 \\ \hline
-% PUT & /api/incidentes/\{id\} & Actualizar datos del incidente & RF1 \\ \hline
-% POST & /api/incidentes/\{id\}/priorizar & Ejecutar motor y obtener recomendación & RF4--RF7 \\ \hline
-% GET & /api/incidentes/\{id\}/recomendacion & Consultar recomendación vigente & RF5, RF7 \\ \hline
-% POST & /api/incidentes/\{id\}/validacion & Registrar decisión humana & RF8, RF9 \\ \hline
-% GET & /api/incidentes & Listar incidentes con prioridad & RF4 \\ \hline
-% \end{tabularx}
-% \end{table}
-
-% \noindent\textit{Fuente: elaboración propia.}
-
-% El diseño de la API sigue principios REST estándar: recursos identificados por URI, operaciones mediante verbos HTTP, y respuestas en formato JSON que incluyen los campos del esquema de datos correspondiente. La separación entre la creación del incidente y la ejecución del motor es deliberada: permite que el operador introduzca o actualice la información del incidente antes de solicitar la priorización, lo que refleja la dinámica real de un centro de coordinación donde la información llega de forma progresiva.
-
-% \subsection{Persistencia y trazabilidad}
-
-% El sistema persiste todos los datos del flujo funcional: la información del incidente, las evidencias asociadas, el contexto territorial, las salidas del motor y la decisión humana. La persistencia se implementa sobre una base de datos relacional que reproduce la estructura de los cinco bloques del esquema de datos.
-
-% La trazabilidad ---requisito RNF2 del Capítulo~5--- se garantiza mediante tres mecanismos. Primero, el registro de la marca temporal de cálculo (\texttt{marca\_temporal\_calculo}) en el bloque~4, que documenta cuándo el motor produjo la recomendación. Segundo, el almacenamiento de la lista completa de reglas duras activadas y de la puntuación de scoring, que permite reconstruir el razonamiento del motor. Tercero, el registro de la decisión humana en el bloque~5, con marca temporal de validación, acción del operador y justificación del cambio cuando procede.
-
-% \section{Frontend: interfaz de apoyo a la decisión}
-
-% La interfaz de usuario se ha diseñado con un objetivo claro: presentar al operador la información que necesita para tomar una decisión informada, sin sobrecargarlo con detalles innecesarios ni con complejidad técnica que no le corresponde. El frontend no es un fin en sí mismo dentro del TFM, sino el canal a través del cual el motor comunica su recomendación y el operador ejerce su supervisión.
-
-% \subsection{Visualización del incidente y contexto}
-
-% La pantalla principal del sistema presenta una vista consolidada de los incidentes activos, ordenados por prioridad recomendada. Para cada incidente, se muestra un resumen que incluye: identificador, fecha y hora de recepción, localización (municipio, comarca), tipo de incidente según la taxonomía operativa, prioridad recomendada con indicador visual diferenciado por nivel (P1 a P4), nivel de confianza y estado de la validación humana (pendiente, aceptada, modificada, rechazada).
-
-% Al seleccionar un incidente, se accede a su vista detallada, que muestra la información completa organizada conforme a los bloques del esquema de datos: los datos básicos y variables de entrada del bloque~1, el contexto territorial y meteorológico del bloque~3, las evidencias asociadas del bloque~2 (cuando las haya) y las salidas del motor del bloque~4. Esta organización visual replica la estructura lógica del sistema y facilita al operador la comprensión de qué información ha utilizado el motor para producir su recomendación.
-
-% \subsection{Visualización de la prioridad y la explicación}
-
-% La recomendación del motor se presenta al operador como un bloque diferenciado que incluye cuatro elementos: la prioridad recomendada (P1--P4) con codificación visual por colores, el nivel de confianza (alto, medio, bajo) con indicación de su significado, la situación operativa sugerida (0--3) con la advertencia explícita de que se trata de una estimación orientativa y no de una decisión de activación, y la explicación textual completa.
-
-% La explicación se presenta de forma legible, destacando las reglas duras activadas (si las hay), las variables que más han contribuido al scoring y las señales contextuales relevantes. Cuando la confianza es baja, el sistema muestra una advertencia visible que recuerda al operador que la recomendación se basa en información parcial y que conviene verificar los datos ausentes.
-
-% \subsection{Flujo de validación humana de la recomendación}
-
-% El flujo de validación es la materialización del requisito de supervisión humana obligatoria (RNF4). El prototipo no incluye ningún mecanismo de activación automática de planes, movilización de recursos ni envío de alertas. La interfaz presenta la recomendación y espera una acción explícita del operador.
-
-% El operador dispone de tres acciones posibles: \textbf{aceptar} la recomendación (la prioridad final coincide con la recomendada), \textbf{modificar} la recomendación (el operador selecciona una prioridad diferente y redacta una justificación breve) o \textbf{rechazar} la recomendación (el operador descarta la sugerencia del sistema, documenta el motivo y asigna la prioridad que considere adecuada). En los tres casos, el sistema registra la decisión en el bloque~5 del esquema de datos (Anexo~F, apartado~F.4.5), con marca temporal, acción realizada, prioridad final y justificación cuando procede.
-
-% Este diseño garantiza que la prioridad que finalmente se aplica es la que decide el operador, no la que recomienda el sistema. La diferencia entre ambas ---cuando existe--- es precisamente uno de los elementos que permite evaluar la coherencia del baseline en el Capítulo~9.
-
-% \section{Tecnologías utilizadas y justificación técnica}
-
-% La selección tecnológica del prototipo responde a tres criterios: coherencia con las competencias adquiridas durante el máster, adecuación al alcance de un TFM y viabilidad para un equipo de tres personas en el plazo académico establecido.
-
-% \begin{table}[ht]
-% \centering
-% \caption{Stack tecnológico del prototipo}
-% \label{tab:8.3}
-% \small
-% \begin{tabularx}{\textwidth}{|l|l|X|l|}
-% \hline
-% \textbf{Componente} & \textbf{Tecnología} & \textbf{Justificación} & \textbf{Referencia} \\ \hline
-% Backend & Python (Flask / FastAPI) & Lenguaje principal del máster; ecosistema amplio para ML y NLP & OE7 \\ \hline
-% Motor & Python (Scikit-learn, NumPy) & Implementación directa del baseline; familiar al equipo & Cap.~6, Anexo~E \\ \hline
-% NLP & spaCy / Transformers & Extracción de entidades y clasificación de texto & RF1, RF2 \\ \hline
-% Frontend & React / HTML-CSS-JS & Interfaz interactiva; componentes reutilizables & RF8, RNF4 \\ \hline
-% Base de datos & SQLite / PostgreSQL & Simplicidad para prototipo; SQL estándar & RNF2, RF9 \\ \hline
-% Control de versiones & Git & Trazabilidad de contribuciones individuales & Apartado~0.5.2 \\ \hline
-% \end{tabularx}
-% \end{table}
-
-% \noindent\textit{Fuente: elaboración propia. Coherente con las tecnologías previstas en el objetivo general del TFM.}
-
-% \section{Flujo completo de funcionamiento del prototipo}
-
-% Para consolidar la descripción de los módulos anteriores, se presenta a continuación el flujo completo de procesamiento de un incidente, desde su recepción hasta el registro de la decisión humana.
-
-% \begin{description}
-%     \item[\textbf{Paso 1. Recepción del incidente.}] El operador introduce la información del incidente a través del formulario del frontend (o el sistema importa un caso del dataset piloto). El módulo de entrada estructura los datos conforme al bloque~1 del esquema, asigna un identificador único, registra la marca temporal de recepción y clasifica el tipo de incidente según la taxonomía operativa. Las variables no informadas se registran como ausentes.
-%     \item[\textbf{Paso 2. Enriquecimiento contextual.}] El módulo de contexto oficial consulta las fuentes externas pertinentes en función de la localización y el tipo de incidente: obtiene el aviso AEMET vigente (V08, V09), verifica la peligrosidad por inundación (V10), comprueba la proximidad a instalaciones Seveso (V11), incorpora datos demográficos y evalúa la accesibilidad del punto (V15). Estos datos se almacenan en el bloque~3 y alimentan las variables de entrada correspondientes.
-%     \item[\textbf{Paso 3. Ejecución del motor.}] El módulo de priorización recibe las quince variables de entrada y ejecuta el baseline de tres capas. Primero evalúa las reglas duras (RD1--RD8), obteniendo $P_{RD}$ y la lista de reglas activadas. Después calcula el scoring ponderado, obteniendo $S$ y $P_S$. Después integra ambas capas según la lógica de precedencia, obteniendo $P_{final}$. Finalmente calcula el nivel de confianza y genera la explicación textual. Adicionalmente, calcula las variables derivadas: necesidad de coordinación multiagencia (D01), necesidad estimada de PMA (D02), situación operativa sugerida (D03) y plan activable recomendado (D04).
-%     \item[\textbf{Paso 4. Presentación al operador.}] El frontend recibe la recomendación a través de la API y la presenta al operador: prioridad recomendada con indicador visual, nivel de confianza, situación operativa sugerida y explicación completa. El incidente aparece en la lista de incidentes activos ordenado por prioridad.
-%     \item[\textbf{Paso 5. Validación humana.}] El operador revisa la recomendación y ejecuta una de las tres acciones posibles: aceptar, modificar o rechazar. El sistema registra la decisión en el bloque~5 del esquema de datos, con marca temporal, acción realizada, prioridad final asignada por el operador y justificación cuando procede.
-%     \item[\textbf{Paso 6. Registro y trazabilidad.}] El backend persiste todos los datos del flujo: la información del incidente, el contexto, las salidas del motor y la decisión humana. Para cualquier incidente posterior, es posible reconstruir el ciclo completo: qué información tenía el sistema, qué recomendó, con qué confianza, qué decidió el operador y por qué.
-% \end{description}
-
-% Este flujo es coherente con la secuencia lógica de los requisitos funcionales (RF1 a RF9) y con la estructura de cinco bloques del esquema de datos. Cada paso produce una salida trazable que alimenta al siguiente, y el ciclo completo queda registrado para su posterior evaluación. Las capturas de pantalla que ilustran cada paso del flujo se incluyen en el Anexo~G.
-
-% El prototipo descrito en este capítulo materializa en código funcional el diseño analítico de los capítulos 6 y 7. Su arquitectura modular refleja los requisitos del Capítulo~5 y su flujo de datos reproduce fielmente el esquema de cinco bloques. El motor ejecuta las tres capas del baseline sin modificar reglas, pesos ni umbrales respecto al diseño cerrado. La interfaz presenta la recomendación y garantiza la supervisión humana. Y la persistencia permite la trazabilidad completa del ciclo incidente-recomendación-decisión.
-
-% Con este prototipo operativo, el TFM dispone del instrumento necesario para abordar la evaluación del sistema en escenarios simulados, que se presenta en el Capítulo~9.
+Con este prototipo, la evaluacion del Capitulo~\ref{cap:9} no se apoya en una descripcion teorica, sino en una implementacion concreta de la arquitectura v0.1.0.

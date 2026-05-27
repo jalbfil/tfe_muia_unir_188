@@ -132,7 +132,7 @@
 - [ ] **T113** `[B]` EvaluaciÃ³n fidelidad explicaciones con **LLM-as-Judge** (Zheng et al., 2023): juez independiente puntÃºa coherencia explicaciÃ³nâ†”reglas sobre â‰¥100 casos. Base offline v0.1.0 ya generada por `scripts/evaluate_explanation_fidelity.py` sobre 111 casos con juez determinista; queda pendiente sustituir/contrastar con LLM-as-Judge independiente.
 - [ ] **T114** `[C]` ValidaciÃ³n interna entre los 3 autores sobre â‰¥30 casos (Q-02 cerrada, R-13): cada autor etiqueta de forma independiente, se calcula Î± inter-anotador local y se documenta divergencia con el sistema. Plantilla en `anexo_d.tex`. **ValidaciÃ³n externa con personal del 112** queda como trabajo futuro documentado en Cap. 10.
 - [ ] **T115** `[C]` Conformidad UE-IA: checklist Anexo III evaluada â†’ `anexo_m.tex` (trazabilidad extendida).
-- [ ] **T116** `[C]` Reporte final evaluaciÃ³n â†’ `artifacts/reports/evaluation_v0.1.0.json` y `latex/chapters/chap9.tex`.
+- [x] **T116** `[C]` Reporte final evaluaciÃ³n â†’ `artifacts/reports/evaluation_v0.1.0.json`, `artifacts/reports/final_evaluation_traceability_v0.1.0.json` y `latex/chapters/chap9.tex`.
 
 ## Fase 10 â€” RedacciÃ³n capÃ­tulos (LaTeX Scribe + autores)
 
@@ -149,6 +149,7 @@
 - [ ] **T130** `[C]` Escribir `chap10.tex` (conclusiones + trabajo futuro).
 - [ ] **T131 [P]** `[C]` Actualizar `anexo_a.tex` (taxonomÃ­a CyL), `anexo_b.tex` (variables V01â€“V15), `anexo_c.tex` (guÃ­a P1â€“P4), `anexo_d.tex` (plantilla + 20 casos), `anexo_e.tex` (baseline experto), `anexo_f.tex` (esquema datos).
 - [ ] **T132 [P]** `[C]` Crear anexos nuevos: `anexo_g.tex` (capturas), `anexo_h.tex` (uso IA), `anexo_i.tex` (contratos Pydantic), `anexo_j.tex` (corpus RAG), `anexo_k.tex` (prompts+tools), `anexo_l.tex` (model cards), `anexo_m.tex` (trazabilidad extendida).
+  - Avance parcial Juan Carlos: revisados y alineados `anexo_a.tex`, `anexo_b.tex`, `anexo_c.tex`, `anexo_d.tex`, `anexo_e.tex` y `anexo_l.tex` con CyL, V01--V15, weak labels P1--P4, RuleFit-lite, anti-leakage y validacion interna.
 - [ ] **T133** `[C]` Pase de coherencia cross-chapter por LaTeX Scribe.
 - [ ] **T134** `[C]` BibliografÃ­a: aÃ±adir 2023â€“26 (RuleFit, Snorkel, MarIA, LLM-as-Judge, MCP, Reg. UE IA Anexo III) + 15 normas CyL â†’ `bibliografia.bib`.
 - [ ] **T135** `[C]` CompilaciÃ³n final `latexmk -pdf -outdir=build latex/main.tex` sin warnings crÃ­ticos.
