@@ -38,9 +38,10 @@ El trabajo realizado aporta seis contribuciones principales.
     \item \textbf{Evaluacion reproducible y anti-leakage.} Los resultados se obtienen
     sobre splits versionados, con test estratificado y test temporal, evitando columnas
     posteriores a la decision.
-    \item \textbf{Trazabilidad y validacion interna.} Se documenta un procedimiento de
-    revision humana con 111 casos revisables, incluyendo los 51 falsos negativos P1
-    detectados en el test estratificado.
+    \item \textbf{Trazabilidad, validacion interna y fidelidad explicativa.} Se
+    documenta un procedimiento de revision humana con 111 casos revisables, incluyendo
+    los 51 falsos negativos P1 detectados en el test estratificado, y se evalua la
+    fidelidad de las explicaciones de Capa 3 sobre esa misma muestra.
 \end{enumerate}
 
 \section{Resultados principales}
@@ -60,6 +61,13 @@ El analisis de errores identifica 51 falsos negativos P1: 32 clasificados como P
 como P3. No se detectan errores P1 clasificados como P4. Este resultado es importante:
 el sistema cumple el objetivo de recall P1, pero los casos P1--P3 siguen siendo el
 principal foco de mejora antes de cualquier despliegue real.
+
+La evaluacion de fidelidad de explicaciones aporta una garantia complementaria. Sobre
+los 111 casos de validacion interna, el juez determinista offline obtiene pass rate
+1.000000, fidelidad media 0.958747 y fidelidad minima 0.925000. En los 51 falsos
+negativos P1, la fidelidad media es 0.951176. Esto no equivale a una evaluacion externa
+de calidad linguistica, pero si demuestra que las explicaciones generadas en modo
+degradado no contradicen la recomendacion de Capa 2 y conservan trazabilidad minima.
 
 \section{Cumplimiento de principios de dise\~no}
 
@@ -110,9 +118,9 @@ La continuacion natural del proyecto se organiza en seis lineas.
     \item \textbf{Variables contextuales avanzadas.} Incorporar AEMET historico,
     SNCZI/zonas inundables y Seveso como variables V08--V11, manteniendo el control
     anti-\textit{leakage}.
-    \item \textbf{Evaluacion de explicaciones.} Ejecutar T113 con una muestra superior
-    a 100 casos, comprobando que las explicaciones de Capa 3 son fieles a reglas,
-    probabilidades y citas normativas.
+    \item \textbf{Evaluacion de explicaciones con juez independiente.} Ampliar la
+    evaluacion T113 con un LLM-as-Judge local e independiente, usando la misma muestra
+    de 111 casos y comparando sus puntuaciones con el juez determinista offline.
     \item \textbf{Piloto controlado.} Integrar el prototipo en un entorno de prueba
     controlado para medir utilidad percibida, carga cognitiva, tiempo de revision y
     aceptacion de recomendaciones.

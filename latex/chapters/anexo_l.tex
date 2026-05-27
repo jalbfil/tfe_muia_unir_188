@@ -115,7 +115,18 @@ El mismo informe identifica 51 falsos negativos P1 en el test estratificado: 32 
 P1--P2, 19 casos P1--P3 y ningun caso P1--P4. Estos casos alimentan la plantilla de
 validacion interna documentada en \texttt{resources/internal\_validation}.
 
-\section*{L.7. Limitaciones}
+\section*{L.7. Fidelidad de explicaciones}
+
+La Capa 3 se evalua sobre los 111 casos de validacion interna mediante
+\texttt{scripts/evaluate\_explanation\_fidelity.py}. La ejecucion v0.1.0 usa un juez
+determinista offline sobre explicaciones en modo degradado, con seis criterios:
+prioridad mencionada, reglas trazables, cobertura de senales, citas legales en P1/P2,
+ausencia de contradiccion y disclaimer. El resultado global es pass rate 1.000000,
+fidelidad media 0.958747 y fidelidad minima 0.925000. En falsos negativos P1, la
+fidelidad media es 0.951176. La evaluacion LLM-as-Judge independiente queda como
+extension futura sobre la misma muestra.
+
+\section*{L.8. Limitaciones}
 
 \begin{itemize}
     \item La variable objetivo es una etiqueta academica debil, no una prioridad

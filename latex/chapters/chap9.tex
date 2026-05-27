@@ -240,6 +240,27 @@ el protocolo quedan versionados en \texttt{resources/internal\_validation}. La m
 generada para revision contiene 111 casos: los 51 falsos negativos P1 y 60 casos
 equilibrados, 15 por cada clase P1--P4.
 
+\section{Fidelidad de explicaciones}
+
+Sobre la misma muestra de 111 casos de validacion interna se ejecuta una evaluacion
+offline de fidelidad de explicaciones. El objetivo es comprobar que la Capa 3 explica
+lo que realmente entrega la Capa 2: prioridad recomendada, reglas o senales activadas,
+probabilidades y necesidad de cautela. La evaluacion se implementa en
+\texttt{scripts/evaluate\_explanation\_fidelity.py} y genera
+\texttt{artifacts/reports/explanation\_fidelity\_v0.1.0.json}.
+
+La version ejecutada utiliza un juez determinista reproducible, no un LLM-as-Judge
+externo. La rubrica verifica seis criterios: alineacion con la prioridad recomendada,
+trazabilidad de reglas, cobertura de senales, citas legales en P1/P2, ausencia de
+contradicciones y presencia de disclaimer de confianza o modo degradado. Sobre los 111
+casos se obtiene pass rate 1.000000, fidelidad media 0.958747 y fidelidad minima
+0.925000. En los 51 falsos negativos P1, la fidelidad media es 0.951176.
+
+Estos resultados no prueban calidad linguistica ni aceptacion por operadores, pero si
+aportan una garantia importante: incluso en modo degradado, las explicaciones no
+contradicen la salida de Capa 2 y conservan la trazabilidad minima exigida. Una
+evaluacion futura con LLM-as-Judge independiente puede reutilizar los mismos 111 casos.
+
 \section{Limitaciones}
 
 La evaluacion presenta cinco limitaciones principales:
