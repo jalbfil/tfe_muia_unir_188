@@ -3,7 +3,7 @@ name = "tfm188-contracts"
 version = "0.1.0"
 description = "Contratos Pydantic v2 vinculantes entre Capa 1 NLP, Capa 2 RuleFit y Capa 3 LLM/MCP del TFM 188 (Spec Kit Principio VIII)."
 readme = "README.md"
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.11,<3.14"
 license = { text = "MIT" }
 authors = [
     { name = "Juan Carlos Albert Fillol" },

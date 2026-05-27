@@ -1,0 +1,63 @@
+\chapter{Fichas técnicas de los modelos (Model Cards)}
+\label{cap:anexol}
+
+\section*{L.1. Ficha técnica del Transformer de Capa 1 (NLP)}
+
+Este apartado contiene la ficha técnica (\textit{Model Card}) del modelo de Procesamiento del Lenguaje Natural (NLP) empleado en la Capa 1 del prototipo, conforme al estándar propuesto por Mitchell et al. (2019) y alineado con los requisitos de transparencia del Reglamento (UE) 2024/1689 (Ley de IA).
+
+\subsection*{L.1.1. Detalles del Modelo}
+\begin{itemize}
+    \item \textbf{Nombre y versión:} Capa 1 NLP Multitask Classifier --- v0.1.0.
+    \item \textbf{Tipo de modelo:} Red neuronal profunda basada en arquitectura Transformer, con codificador bidireccional (tipo RoBERTa) y múltiples cabezas lineales de clasificación sobre el token \texttt{[CLS]}.
+    \item \textbf{Modelo base:} \texttt{PlanTL-GOB-ES/roberta-base-bne} (MarIA), entrenado por la Biblioteca Nacional de España y el Barcelona Supercomputing Center (BSC) sobre un corpus masivo en español.
+    \item \textbf{Fecha de publicación:} 2026-05-24.
+    \item \textbf{Desarrollador:} Ancor González Carballo \texttt{[A]}.
+    \item \textbf{Licencia:} MIT.
+\end{itemize}
+
+\subsection*{L.1.2. Propósito y Ámbito de Aplicación}
+\begin{itemize}
+    \item \textbf{Uso previsto:} Extracción automatizada de variables operativas del incidente ($V01-V07, V12-V15$) y 10 señales léxicas de alta prioridad a partir de la descripción textual anotada en español por los operadores del 112 CyL.
+    \item \textbf{Uso no previsto:} Clasificación automatizada directa sin supervisión humana. Este modelo actúa exclusivamente como apoyo al diagnóstico de prioridad dentro de una arquitectura \textit{Human-in-the-Loop} (HITL).
+\end{itemize}
+
+\subsection*{L.1.3. Datos de Entrenamiento y Ajuste Fino}
+El modelo ha sido entrenado y evaluado sobre el corpus histórico del Registro 112 CyL (2008--2022, $n=9\,380$ incidentes), empleando un split estratificado por año, provincia y categoría preliminar ($80\%$ entrenamiento, $10\%$ validación, $10\%$ test):
+\begin{itemize}
+    \item \textbf{Estrategia de etiquetado:} Supervisión débil combinada (Snorkel + LLM-as-annotator) para las variables latentes y etiquetado manual de control ($n=200$ ejemplos gold por variable crítica).
+    \item \textbf{Preprocesamiento:} Unificación de los campos \texttt{Título} y \texttt{DescripcionBlob}, remoción de metadatos del sistema y tokenización mediante el vocabulario nativo de MarIA ($50\,265$ tokens, tamaño máximo de secuencia de $256$ tokens).
+\end{itemize}
+
+\subsection*{L.1.4. Métricas de Evaluación Cuantitativa}
+La evaluación del modelo multitarea de la Capa 1 en el conjunto de test independiente muestra los siguientes resultados globales:
+
+\begin{table}[ht]
+\centering
+\caption{Métricas de evaluación del clasificador multitarrea de Capa 1}
+\label{tab:l1_metricas}
+\small
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Variable / Señal} & \textbf{F1-Score Macro} & \textbf{Recall} & \textbf{Precisión} \\ \hline
+\texttt{signal\_fallecido} & $0,941$ & $0,952$ & $0,930$ \\ \hline
+\texttt{signal\_herido\_grave} & $0,915$ & $0,924$ & $0,906$ \\ \hline
+\texttt{signal\_atrapado} & $0,968$ & $0,971$ & $0,965$ \\ \hline
+\texttt{signal\_incendio} & $0,932$ & $0,928$ & $0,937$ \\ \hline
+\texttt{riesgo\_vital\_textual} & $0,901$ & $0,895$ & $0,908$ \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection*{L.1.5. Consideraciones Éticas, Privacidad y Limitaciones}
+\begin{itemize}
+    \item \textbf{Privacidad y RGPD:} En cumplimiento con el Principio V y VI, el modelo procesa los datos localmente sin realizar llamadas a APIs en la nube. Toda la información personal (nombres propios, matrículas o números de teléfono) ha sido enmascarada durante el preprocesamiento del dataset piloto.
+    \item \textbf{Análisis de sesgos:} Se ha verificado que las diferencias en la tasa de error por provincias de Castilla y León y por años de registro se mantienen dentro de márgenes estadísticamente insignificantes ($p > 0,05$), evitando discriminación geográfica o temporal.
+    \item \textbf{Limitaciones conocidas:} El rendimiento puede degradarse ante descripciones excesivamente breves (menos de 5 palabras) o redactadas en lenguas cooficiales no contempladas en el modelo base de MarIA.
+\end{itemize}
+
+\subsection*{L.1.6. Sostenibilidad y Huella de Carbono}
+El proceso de entrenamiento se ejecutó de forma local en la estación de trabajo asignada (NVIDIA GeForce RTX 5070 8GB, potencia máxima de 220W):
+\begin{itemize}
+    \item \textbf{Tiempo total de cómputo:} $2,4$ horas.
+    \item \textbf{Consumo estimado:} $0,53$ kWh de energía eléctrica.
+    \item \textbf{Emisiones estimadas:} $0,14$ kg de $\text{CO}_2$ (calculado con un factor de emisión medio del mix eléctrico nacional de $0,26$ kg $\text{CO}_2$/kWh).
+\end{itemize}
