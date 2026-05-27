@@ -159,6 +159,7 @@
 - [ ] **T140** `[C]` Ejecutar `quickstart.md` completo â†’ 6/6 escenarios verdes.
 - [ ] **T141** `[C]` Verificar checklist constitucional final.
 - [ ] **T142** `[C]` Ensayo de defensa con tribunal simulado.
+  - Avance parcial: auditoria final de consistencia documental ejecutada sobre memoria activa. Sin residuos de Aragon en `latex/chapters`, sin metricas antiguas detectadas, referencias/citas resueltas, artefactos citados existentes y compilacion LaTeX completa generada (`latex/main.pdf`, 113 paginas).
 
 ---
 

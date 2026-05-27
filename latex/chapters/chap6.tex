@@ -151,7 +151,7 @@ La Capa 2 no se evalua en aislamiento. Se compara con dos referencias. El baseli
 
 La segunda referencia es \texttt{imodels.RuleFitClassifier}, utilizada como implementacion canonica de RuleFit. Dado que la libreria trabaja en clasificacion binaria, se adopta un esquema one-vs-rest P1--P4. La version productiva del TFM selecciona RuleFit-lite porque mantiene la filosofia RuleFit, respeta el limite de reglas activas y ofrece mejor equilibrio entre rendimiento, latencia y reproducibilidad local.
 
-XGBoost queda como techo opaco no productivo y linea futura de contraste. Su posible utilidad seria estimar cuanto rendimiento podria obtenerse con un modelo de mayor capacidad, pero no se propone como motor principal por razones de explicabilidad, trazabilidad y coherencia con el dominio.
+La ejecucion diagnostica con \texttt{imodels} queda como contraste externo de la familia RuleFit. Su utilidad es comprobar si una implementacion canonica aporta ventaja frente al nucleo reproducible seleccionado. En v0.1.0, RuleFit-lite se mantiene como motor principal por su equilibrio entre rendimiento, interpretabilidad, coste local y trazabilidad.
 
 \subsection{Probabilidad, confianza e invariantes}
 
