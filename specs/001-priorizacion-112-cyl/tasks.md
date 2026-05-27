@@ -1,6 +1,6 @@
 ﻿# Tasks â€” PriorizaciÃ³n 112 CyL
 
-**Feature**: `001-priorizacion-112-cyl` Â· **Generated**: 2026-05-24 Â· **Last update**: 2026-05-24 (R-13 scope simplification)
+**Feature**: `001-priorizacion-112-cyl` Â· **Generated**: 2026-05-24 Â· **Last update**: 2026-05-27 (prototype v0.1.0 + memoria Juan Carlos)
 **ConvenciÃ³n Spec Kit**:
 - `T###` numeraciÃ³n correlativa.
 - `[P]` = paralelizable (afecta ficheros distintos, sin dependencias con otras tareas en la misma oleada).
@@ -56,16 +56,16 @@
 
 ## Fase 3 â€” Capa 1 NLP (Ancor)
 
-- [ ] **T040** `[A]` Crear `src/capa1_nlp/` con mÃ³dulos `extraction/`, `training/`, `inference/`, `tests/`.
-- [ ] **T041 [P]** `[A]` Test contrato: dado un texto golden, `extract_features()` devuelve `IncidentFeatures` vÃ¡lido (Pydantic).
-- [ ] **T042 [P]** `[A]` Test latencia: extracciÃ³n â‰¤ 500 ms p95 sobre 100 textos del test set.
-- [ ] **T043 [P]** `[A]` Test anti-leakage: el extractor no consume ninguna columna prohibida (lista del Principio V).
-- [ ] **T044** `[A]` Implementar extractor determinista de `signals` (regex + diccionarios lÃ©xicos) en `extraction/signal_extractor.py`.
-- [ ] **T045** `[A]` Dataset HuggingFace para fine-tune NER + multi-label V01â€“V15 desde weak labels + anotaciones manuales mÃ­nimas (~200 ejemplos gold por variable crÃ­tica).
-- [ ] **T046** `[A]` `scripts/train_capa1.py`: fine-tune `roberta-base-bne` con cabeza multitarea. Persistir en `artifacts/models/capa1/v0.1.0/`.
-- [ ] **T047** `[A]` Wrapper de inferencia `inference/feature_extractor.py` que combina seÃ±ales deterministas + transformer y produce `IncidentFeatures`.
-- [ ] **T048** `[A]` Reporte de mÃ©tricas Capa 1: macro-F1 NER, F1 por variable V01â€“V15, latencia. Guardar en `artifacts/reports/capa1_v0.1.0.json`.
-- [ ] **T049** `[A]` Model card Capa 1 â†’ `latex/chapters/anexo_l.tex` (secciÃ³n transformer).
+- [x] **T040** `[A]` Crear `src/capa1_nlp/` con mÃ³dulos `extraction/`, `training/`, `inference/`, `tests/`.
+- [x] **T041 [P]** `[A]` Test contrato: dado un texto golden, `extract_features()` devuelve `IncidentFeatures` vÃ¡lido (Pydantic).
+- [x] **T042 [P]** `[A]` Test latencia: extracciÃ³n â‰¤ 500 ms p95 sobre 100 textos del test set.
+- [x] **T043 [P]** `[A]` Test anti-leakage: el extractor no consume ninguna columna prohibida (lista del Principio V).
+- [x] **T044** `[A]` Implementar extractor determinista de `signals` (regex + diccionarios lÃ©xicos) en `extraction/signal_extractor.py`.
+- [ ] **T045** `[A]` Dataset HuggingFace para fine-tune NER + multi-label V01â€“V15 desde weak labels + anotaciones manuales mÃ­nimas (~200 ejemplos gold por variable crÃ­tica). **Diferido v0.2.0** si se mantiene Capa 1 determinista para v0.1.0.
+- [ ] **T046** `[A]` `scripts/train_capa1.py`: fine-tune `roberta-base-bne` con cabeza multitarea. Persistir en `artifacts/models/capa1/v0.1.0/`. **Diferido v0.2.0**.
+- [x] **T047** `[A]` Wrapper de inferencia `inference/feature_extractor.py` que combina seÃ±ales deterministas y produce `IncidentFeatures`.
+- [x] **T048** `[A]` Reporte Capa 1 determinista v0.1.0 generado en `artifacts/reports/capa1_v0.1.0.json`; metricas NER/transformer quedan diferidas con T045-T046.
+- [x] **T049** `[A]` Model card Capa 1 â†’ `latex/chapters/anexo_l.tex` (extractor determinista v0.1.0).
 
 ## Fase 4 â€” Capa 2 RuleFit + baseline + ceiling (Juan Carlos)
 
@@ -74,12 +74,12 @@
 - [x] **T052 [P]** `[J]` Test invariantes: sum probs == 1, argmax == recommended, â‰¤30 reglas, P1 con â‰¥1 regla.
 - [x] **T053** `[J]` Implementar `baseline_expert/expert_rules.py`: ~15 reglas a batir, basadas en seÃ±ales + V01..V15, con anclaje normativo en cada regla.
 - [x] **T054** `[J]` `scripts/train_capa2.py` RuleFit:
-  - `imodels.RuleFitClassifier(max_rules=80, alpha=...)` con LASSO sparsity hasta â‰¤30 reglas activas.
-  - CalibraciÃ³n isotonic en validaciÃ³n.
-  - Persistir en `artifacts/models/capa2/v0.1.0/rulefit.joblib` + `rules.json`.
+  - RuleFit-lite seleccionado como motor v0.1.0 con 30 reglas activas.
+  - Comparativa diagnostica con `imodels.RuleFitClassifier` documentada; la ejecucion completa puede repetirse si hay mas tiempo de computo.
+  - Persistido en `artifacts/models/capa2/v0.1.0/rulefit.joblib` + `rules_lite.json`.
 - [ ] **T055 [P]** `[J]` `scripts/train_xgboost_ceiling.py`: techo opaco con XGBoost + SHAP. Persistir en `artifacts/models/capa2/v0.1.0/xgb_ceiling.joblib`. **Marcar como no productivo** (banner en logs).
 - [x] **T056** `[J]` Wrapper `inference/predictor.py` que selecciona RuleFit / baseline / fallback segÃºn disponibilidad.
-- [x] **T057** `[J]` Reporte de mÃ©tricas Capa 2: F1 macro/por clase, recall@P1 (â‰¥0,85), ECE (â‰¤0,10), sparsity, AUC. Comparativa baseline vs RuleFit vs XGBoost. `artifacts/reports/capa2_v0.1.0.json`.
+- [x] **T057** `[J]` Reporte de mÃ©tricas Capa 2: F1 macro/por clase, recall@P1 (â‰¥0,85), sparsity y comparativa baseline experto vs RuleFit-lite vs `imodels` diagnostico. Artefactos activos: `artifacts/reports/rulefit_lite_v0.1.0.json`, `artifacts/reports/baseline_expert_v0.1.0.json`, `artifacts/reports/capa2_model_selection_v0.1.0.json`, `artifacts/reports/evaluation_v0.1.0.json`. ECE y XGBoost ceiling quedan como extension.
 - [x] **T058** `[J]` Model card RuleFit + tabla de reglas activadas â†’ `anexo_e.tex` (baseline experto) + `anexo_l.tex` (model card RuleFit).
 
 ## Fase 5 â€” Corpus normativo + RAG (Brian)
@@ -96,7 +96,7 @@
 - [x] **T070** `[B]` Crear `src/capa3_llm_mcp/` con `rag/`, `llm/`, `prompts/`, `mcp_server/`, `tests/`. âœ… estructura completa.
 - [x] **T071 [P]** `[B]` Test contrato: dado `PriorityRecommendation`, `explain()` devuelve `OperatorRecommendation` vÃ¡lido. âœ… 7 tests PASS (T071-A..G), incluyendo modo degradado.
 - [x] **T072 [P]** `[B]` Test latencia: explicaciÃ³n â‰¤ 2 000 ms p95. âœ… 2 PASS (degradado + mock LLM), 1 SKIP (modelo real ausente).
-- [x] **T073** `[B]` Wrapper LLM `llm/qwen_wrapper.py` con `llama-cpp-python`, modelo `qwen2.5-7b-instruct-q4_k_m.gguf` en `artifacts/llm/`. Temperature 0.0. âœ… `artifacts/llm/README.md` incluye instrucciones de descarga.
+- [x] **T073** `[B]` Wrapper LLM `llm/qwen_wrapper.py` actualizado a Ollama local con modelo `llama3.1:8b-instruct-q4_K_M` configurable por `OLLAMA_MODEL`. Temperature 0.0 / salida estructurada. El modo `llama-cpp`/Qwen queda sustituido para v0.1.0.
 - [x] **T074** `[B]` Prompts en `prompts/`: system prompt + few-shot (3 ejemplos: P1, P3, P4). âœ…
 - [x] **T075 [P]** `[B]` Tool `mcp_server/tools/search_normative.py`. âœ…
 - [x] **T076 [P]** `[B]` Tool `mcp_server/tools/get_rule_details.py`. âœ…
@@ -106,7 +106,7 @@
 - [x] **T080** `[B]` Test integraciÃ³n MCP: cliente test invoca cada tool y valida schema. âœ… 11 tests PASS.
 - [x] **T081** `[B]` Wrapper `explainer.py` que orquesta LLM + tools + RAG y produce `OperatorRecommendation`. âœ…
 - [x] **T082** `[B]` Modo degradado: si LLM no disponible, devolver explicaciÃ³n estÃ¡tica derivada de reglas activadas. âœ… `degraded_explain()` + garantÃ­a P1/P2â‰¥1 cita.
-- [ ] **T083** `[B]` Model card LLM + prompts â†’ `anexo_l.tex` (secciÃ³n LLM) y `anexo_k.tex`.
+- [~] **T083** `[B]` Model card LLM + prompts â†’ Capa 3/Ollama documentada en `anexo_l.tex`; `anexo_k.tex` especifico de prompts/tools queda pendiente.
 
 ## Fase 7 â€” Backend + orquestador (Conjunto, lÃ­der Brian)
 
@@ -122,14 +122,14 @@
 
 - [x] **T100** `[C]` Decisión Q-01 cerrada: **Streamlit** (R-13). Sin alternativa React en v0.1.0.
 - [x] **T101** `[C]` `src/ui/app.py`: formulario IncidentInput · badge P1–P4 · reglas activadas · citas normativas · pistas de actuación · panel operador aceptar/modificar/rechazar · historial de sesión.
-- [ ] **T102** `[C]` Capturas para `anexo_g.tex`.
+- [~] **T102** `[C]` Capturas para `anexo_g.tex`. Anexo G ya preparado sin capturas definitivas; queda pendiente tomar e insertar imagenes reales de la interfaz.
 
 ## Fase 9 â€” EvaluaciÃ³n (Conjunto, lÃ­der Juan Carlos para ML; Brian para LLM)
 
 - [x] **T110** `[J]` `scripts/run_evaluation.py` produce todas las mÃ©tricas obligatorias de Cap. 9 sobre test set y test temporal.
 - [x] **T111** `[J]` AnÃ¡lisis de sesgo por provincia, aÃ±o y categorÃ­a â†’ tablas + figuras.
 - [x] **T112** `[J]` Matriz de confusiÃ³n + anÃ¡lisis de errores en P1 (falsos negativos crÃ­ticos).
-- [ ] **T113** `[B]` EvaluaciÃ³n fidelidad explicaciones con **LLM-as-Judge** (Zheng et al., 2023): juez independiente puntÃºa coherencia explicaciÃ³nâ†”reglas sobre â‰¥100 casos. Base offline v0.1.0 ya generada por `scripts/evaluate_explanation_fidelity.py` sobre 111 casos con juez determinista; queda pendiente sustituir/contrastar con LLM-as-Judge independiente.
+- [~] **T113** `[B]` EvaluaciÃ³n fidelidad explicaciones con **LLM-as-Judge** (Zheng et al., 2023): base offline v0.1.0 generada por `scripts/evaluate_explanation_fidelity.py` sobre 111 casos con juez determinista (`artifacts/reports/explanation_fidelity_v0.1.0.json`). Queda pendiente sustituir/contrastar con LLM-as-Judge independiente.
 - [ ] **T114** `[C]` ValidaciÃ³n interna entre los 3 autores sobre â‰¥30 casos (Q-02 cerrada, R-13): cada autor etiqueta de forma independiente, se calcula Î± inter-anotador local y se documenta divergencia con el sistema. Plantilla en `anexo_d.tex`. **ValidaciÃ³n externa con personal del 112** queda como trabajo futuro documentado en Cap. 10.
 - [ ] **T115** `[C]` Conformidad UE-IA: checklist Anexo III evaluada â†’ `anexo_m.tex` (trazabilidad extendida).
 - [x] **T116** `[C]` Reporte final evaluaciÃ³n â†’ `artifacts/reports/evaluation_v0.1.0.json`, `artifacts/reports/final_evaluation_traceability_v0.1.0.json` y `latex/chapters/chap9.tex`.
@@ -140,26 +140,26 @@
 - [x] **T121 [P]** `[C]` Reescribir `chap1.tex` (AragÃ³n â†’ CyL + frase-espina).
 - [x] **T122 [P]** `[C]` Ampliar `chap2.tex` con nuevas secciones estado-arte (RuleFit, weak supervision, LLM locales, MCP, Reg. UE IA, ello incluye fix de `(?,?)` pÃ¡gs 19â€“22).
 - [x] **T123** `[C]` Reescribir `chap3.tex` completo con marco normativo CyL + tabla de trazabilidad.
-- [ ] **T124 [P]** `[C]` Reformular `chap4.tex` con OG + OE1â€“OE4.
-- [ ] **T125 [P]** `[C]` Actualizar `chap5.tex` con RF/RNF nuevos.
+- [x] **T124 [P]** `[C]` Reformular `chap4.tex` con OG + OE1â€“OE8 y metodologia alineada con CyL, RuleFit-lite, LLM local y validacion interna.
+- [x] **T125 [P]** `[C]` Actualizar `chap5.tex` con RF/RNF nuevos y restricciones de prototipo academico.
 - [x] **T126** `[C]` Reescribir `chap6.tex` (3 capas reales).
 - [x] **T127** `[J]` Reescribir `chap7.tex` (CyL + weak supervision + secciÃ³n anti-leakage).
-- [ ] **T128** `[C]` Escribir `chap8.tex` (prototipo: contratos, mÃ³dulos, MCP, despliegue).
-- [ ] **T129** `[C]` Escribir `chap9.tex` (evaluaciÃ³n con resultados reales).
-- [ ] **T130** `[C]` Escribir `chap10.tex` (conclusiones + trabajo futuro).
-- [ ] **T131 [P]** `[C]` Actualizar `anexo_a.tex` (taxonomÃ­a CyL), `anexo_b.tex` (variables V01â€“V15), `anexo_c.tex` (guÃ­a P1â€“P4), `anexo_d.tex` (plantilla + 20 casos), `anexo_e.tex` (baseline experto), `anexo_f.tex` (esquema datos).
-- [ ] **T132 [P]** `[C]` Crear anexos nuevos: `anexo_g.tex` (capturas), `anexo_h.tex` (uso IA), `anexo_i.tex` (contratos Pydantic), `anexo_j.tex` (corpus RAG), `anexo_k.tex` (prompts+tools), `anexo_l.tex` (model cards), `anexo_m.tex` (trazabilidad extendida).
-  - Avance parcial Juan Carlos: revisados y alineados `anexo_a.tex`, `anexo_b.tex`, `anexo_c.tex`, `anexo_d.tex`, `anexo_e.tex` y `anexo_l.tex` con CyL, V01--V15, weak labels P1--P4, RuleFit-lite, anti-leakage y validacion interna.
-- [ ] **T133** `[C]` Pase de coherencia cross-chapter por LaTeX Scribe.
+- [x] **T128** `[C]` Escribir `chap8.tex` (prototipo: contratos, modulos, backend, interfaz, Ollama, smoke test P1--P4).
+- [x] **T129** `[C]` Escribir `chap9.tex` (evaluacion con resultados reales offline e integrados).
+- [x] **T130** `[C]` Escribir `chap10.tex` (conclusiones + trabajo futuro).
+- [x] **T131 [P]** `[C]` Actualizar `anexo_a.tex` (taxonomia CyL), `anexo_b.tex` (variables V01â€“V15), `anexo_c.tex` (guia P1â€“P4), `anexo_d.tex` (validacion interna), `anexo_e.tex` (baseline experto), `anexo_f.tex` (esquema datos).
+- [~] **T132 [P]** `[C]` Crear anexos nuevos: `anexo_g.tex` (capturas previstas) y `anexo_l.tex` (model cards) completados e incluidos. Pendientes si el alcance final los exige: `anexo_h.tex` (uso IA), `anexo_i.tex` (contratos Pydantic), `anexo_j.tex` (corpus RAG), `anexo_k.tex` (prompts+tools), `anexo_m.tex` (trazabilidad extendida).
+  - Avance Juan Carlos: revisados y alineados `anexo_a.tex`, `anexo_b.tex`, `anexo_c.tex`, `anexo_d.tex`, `anexo_e.tex`, `anexo_g.tex` y `anexo_l.tex` con CyL, V01--V15, weak labels P1--P4, RuleFit-lite, anti-leakage, smoke test y validacion interna.
+- [~] **T133** `[C]` Pase de coherencia cross-chapter ejecutado sobre memoria activa. Sin residuos de Aragon en `latex/chapters`; recursos Markdown antiguos bajo `latex/resources/` conservan borradores previos y no forman parte de `main.tex`.
 - [ ] **T134** `[C]` BibliografÃ­a: aÃ±adir 2023â€“26 (RuleFit, Snorkel, MarIA, LLM-as-Judge, MCP, Reg. UE IA Anexo III) + 15 normas CyL â†’ `bibliografia.bib`.
-- [ ] **T135** `[C]` CompilaciÃ³n final `latexmk -pdf -outdir=build latex/main.tex` sin warnings crÃ­ticos.
+- [~] **T135** `[C]` CompilaciÃ³n final `latexmk -pdf -outdir=build latex/main.tex` sin warnings crÃ­ticos. `pdflatex` compilo antes de incluir Anexo G; `latexmk` requiere Perl en MiKTeX y la recompilacion final tras Anexo G queda pendiente.
 
 ## Fase 11 â€” ValidaciÃ³n final
 
-- [ ] **T140** `[C]` Ejecutar `quickstart.md` completo â†’ 6/6 escenarios verdes.
+- [~] **T140** `[C]` Ejecutar `quickstart.md` completo â†’ smoke test integrado P1--P4 con Ollama ejecutado 4/4; quickstart completo 6/6 queda pendiente de pasada final.
 - [ ] **T141** `[C]` Verificar checklist constitucional final.
 - [ ] **T142** `[C]` Ensayo de defensa con tribunal simulado.
-  - Avance parcial: auditoria final de consistencia documental ejecutada sobre memoria activa. Sin residuos de Aragon en `latex/chapters`, sin metricas antiguas detectadas, referencias/citas resueltas, artefactos citados existentes y compilacion LaTeX completa generada (`latex/main.pdf`, 113 paginas).
+  - Avance parcial: auditoria final de consistencia documental ejecutada sobre memoria activa. Sin residuos de Aragon en `latex/chapters`, metricas actualizadas, artefactos principales regenerados (`evaluation_v0.1.0`, `explanation_fidelity_v0.1.0`, `final_evaluation_traceability_v0.1.0`, `prototype_v0.1.0_smoke_test`). Compilacion pendiente de repetir tras incluir `anexo_g.tex`.
 
 ---
 
