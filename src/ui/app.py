@@ -13,6 +13,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from ulid import ULID
 
 import httpx
 import streamlit as st
@@ -340,7 +341,7 @@ with col_form:
         # Crear IncidentInput
         try:
             incident = IncidentInput(
-                incident_id="01AN4V07BY79KA1307SR9X4MV3", # Generar ID ULID o usar mock
+                incident_id=str(ULID()),
                 texto_titulo=titulo,
                 texto_descripcion=descripcion,
                 categoria_preliminar=categoria,
