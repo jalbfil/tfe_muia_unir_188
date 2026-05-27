@@ -263,9 +263,46 @@ aportan una garantia importante: incluso en modo degradado, las explicaciones no
 contradicen la salida de Capa 2 y conservan la trazabilidad minima exigida. Una
 evaluacion futura con LLM-as-Judge independiente puede reutilizar los mismos 111 casos.
 
+\section{Smoke test integrado del prototipo}
+
+Ademas de la evaluacion offline de Capa 2, se ha ejecutado una prueba integrada del
+prototipo v0.1.0 contra el backend en vivo. Esta prueba no sustituye a las metricas de
+test ni a la validacion externa, pero comprueba que la cadena software real funciona de
+extremo a extremo: texto del incidente, extraccion de senales en Capa 1, priorizacion
+RuleFit-lite en Capa 2, explicacion con Ollama en Capa 3 y respuesta consumible por la
+interfaz.
+
+La ejecucion confirma disponibilidad de Ollama y uso del modelo local
+\texttt{llama3.1:8b-instruct-q4\_K\_M}. Los cuatro casos representativos P1--P4 se
+clasifican conforme a la prioridad esperada, con RuleFit activo y sin recurrir al modo
+degradado de Capa 3. La latencia media observada es 4.897,888 ms por inferencia
+integrada.
+
+\begin{table}[ht]
+\centering
+\caption{Resultado del smoke test P1--P4 con Ollama}
+\label{tab:9-smoke-prototipo}
+\small
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Caso} & \textbf{Esperada} & \textbf{Obtenida} & \textbf{Distribucion principal} \\ \hline
+Incendio con atrapados & P1 & P1 & P1 97.35\%, P2 2.61\% \\ \hline
+Fuga de gas sin heridos & P2 & P2 & P2 92.21\%, P3 5.03\% \\ \hline
+Arbol en calzada & P3 & P3 & P3 93.71\%, P2 3.79\% \\ \hline
+Consulta vecinal sin riesgo & P4 & P4 & P4 98.54\%, P3 1.40\% \\ \hline
+\end{tabular}
+\end{table}
+
+El informe reproducible se conserva en
+\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.json} y
+\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md}. Esta evidencia permite
+diferenciar dos niveles de madurez: la evaluacion cuantitativa de Capa 2, ya realizada
+sobre test estratificado y temporal, y la validacion tecnica del prototipo completo,
+todavia limitada a una prueba de humo controlada.
+
 \section{Limitaciones}
 
-La evaluacion presenta cinco limitaciones principales:
+La evaluacion presenta seis limitaciones principales:
 
 \begin{enumerate}
     \item La referencia P1--P4 es academica y debil, no una etiqueta operativa oficial
@@ -279,6 +316,9 @@ La evaluacion presenta cinco limitaciones principales:
     calibracion si el modelo se congela para demostracion.
     \item Las variables externas diferidas en v0.1.0 (AEMET historico, SNCZI y Seveso)
     no participan en esta evaluacion.
+    \item El smoke test integrado demuestra funcionamiento tecnico P1--P4, pero su
+    tamano es pequeno y la latencia media con LLM local, 4.897,888 ms, requiere
+    optimizacion antes de una demostracion exigente.
 \end{enumerate}
 
 Pese a estas limitaciones, la evaluacion permite concluir que la Capa 2 seleccionada

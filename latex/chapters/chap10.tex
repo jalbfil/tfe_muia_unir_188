@@ -23,9 +23,14 @@ integra una capa explicativa y evalua el resultado con metricas, errores critico
 trazabilidad. Por tanto, la defensa del TFM no depende de una promesa de despliegue
 operativo, sino de una cadena de evidencia verificable.
 
+Ademas, la version \texttt{v0.1.0} ya se ha comprobado como prototipo ejecutable de
+extremo a extremo: Capa 1 extrae senales desde texto, Capa 2 prioriza con RuleFit-lite,
+Capa 3 explica con Ollama local y el backend devuelve una respuesta consumible por la
+interfaz.
+
 \section{Principales contribuciones}
 
-El trabajo realizado aporta seis contribuciones principales.
+El trabajo realizado aporta siete contribuciones principales.
 
 \begin{enumerate}
     \item \textbf{Arquitectura en tres capas.} Se ha definido una arquitectura formada
@@ -45,6 +50,9 @@ El trabajo realizado aporta seis contribuciones principales.
     \item \textbf{Evaluacion reproducible y anti-leakage.} Los resultados se obtienen
     sobre splits versionados, con test estratificado y test temporal, evitando columnas
     posteriores a la decision.
+    \item \textbf{Prototipo integrado local.} Se ha validado una primera cadena
+    ejecutable con API, interfaz, RuleFit-lite y Ollama local
+    \texttt{llama3.1:8b-instruct-q4\_K\_M}, sin delegar la prioridad al LLM.
     \item \textbf{Trazabilidad, validacion interna y fidelidad explicativa.} Se
     documenta un procedimiento de revision humana con 111 casos revisables, incluyendo
     los 51 falsos negativos P1 detectados en el test estratificado, y se evalua la
@@ -81,6 +89,13 @@ El cierre documental de la evaluacion se recoge en
 indice maestro de metricas, artefactos, muestra de validacion interna, fidelidad
 explicativa y capitulos/anexos que sostienen los resultados.
 
+Como comprobacion integrada del prototipo, el smoke test P1--P4 obtiene 4 aciertos en
+4 casos representativos: incendio con atrapados como P1, fuga de gas sin heridos como
+P2, arbol en calzada como P3 y consulta vecinal sin riesgo como P4. La prueba confirma
+RuleFit activo, Ollama disponible y explicacion no degradada. La latencia media
+observada es 4.897,888 ms, valor suficiente para demostrar integracion funcional, pero
+pendiente de optimizacion si se quisiera una demo mas fluida.
+
 \section{Cumplimiento de principios de dise\~no}
 
 El prototipo respeta la linea de trabajo definida desde los capitulos iniciales. La
@@ -112,11 +127,13 @@ Las limitaciones del trabajo son claras y no deben ocultarse.
     proximidad Seveso, permanecen diferidas para v0.2.0.
     \item El prototipo no mide impacto operativo real sobre tiempos de decision,
     coordinacion de recursos o carga cognitiva en sala.
+    \item El smoke test integrado tiene solo cuatro casos controlados y no equivale a
+    una evaluacion de aceptacion con usuarios reales.
 \end{enumerate}
 
 \section{Trabajo futuro}
 
-La continuacion natural del proyecto se organiza en seis lineas.
+La continuacion natural del proyecto se organiza en siete lineas.
 
 \begin{enumerate}
     \item \textbf{Validacion externa con personal del 112.} Revisar una muestra de
@@ -133,6 +150,9 @@ La continuacion natural del proyecto se organiza en seis lineas.
     \item \textbf{Evaluacion de explicaciones con juez independiente.} Ampliar la
     evaluacion T113 con un LLM-as-Judge local e independiente, usando la misma muestra
     de 111 casos y comparando sus puntuaciones con el juez determinista offline.
+    \item \textbf{Optimizacion del prototipo integrado.} Reducir la latencia del LLM
+    local mediante prompts mas compactos, respuesta en streaming, cuantizacion o
+    ejecucion acelerada, y ampliar el smoke test con mas casos frontera.
     \item \textbf{Piloto controlado.} Integrar el prototipo en un entorno de prueba
     controlado para medir utilidad percibida, carga cognitiva, tiempo de revision y
     aceptacion de recomendaciones.

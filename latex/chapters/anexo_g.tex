@@ -1,39 +1,106 @@
-\chapter{Capturas de pantalla del prototipo}
+\chapter{Capturas previstas del prototipo}
 \label{cap:anexog}
 
 \section*{G.1. Finalidad del anexo}
 
-Este anexo recopila las capturas de pantalla representativas de la interfaz gráfica de usuario del prototipo, desarrollada en Streamlit e integrada con los servicios FastAPI de priorización y auditoría. Estas figuras ilustran la experiencia de usuario del operador del 112 Castilla y León durante la recepción de incidentes, la interpretación de las recomendaciones del sistema y la toma de decisiones asistida.
+Este anexo deja preparada la documentacion visual del prototipo software v0.1.0. En la
+version actual no se incorporan capturas de pantalla definitivas, porque estas deben
+tomarse sobre una ejecucion estable del backend, la interfaz y Ollama local. El objetivo
+es fijar que evidencias visuales deben anadirse, que debe mostrar cada una y como se
+relacionan con los resultados descritos en los Capitulos~\ref{cap:8}, \ref{cap:9} y
+\ref{cap:10}.
 
-\section*{G.2. Consola operativa: Entrada de incidentes}
+Las capturas no sustituyen a los artefactos reproducibles ni a las metricas. Su funcion
+es facilitar la defensa del TFM mostrando que la arquitectura no se queda en una
+descripcion abstracta, sino que existe una interfaz capaz de ejecutar el flujo completo:
+entrada textual, extraccion de senales, priorizacion RuleFit-lite, explicacion local,
+probabilidades P1--P4 y registro de feedback humano.
 
-La Figura~\ref{fig:g1} muestra el panel izquierdo de la consola del prototipo, encargado de la captura de los datos de entrada del incidente. El operador puede seleccionar una plantilla de demostración rápida para precargar datos de accidentes viales graves o registrar manualmente el título, descripción en texto libre, provincia, localidad y coordenadas geográficas.
+\section*{G.2. Criterios para incorporar capturas}
 
-\begin{figure}[ht]
-    \centering
-    % \includegraphics[width=0.9\textwidth]{figures/g1_entrada_incidente.png}
-    \caption{Consola de entrada de datos de incidentes (Panel Izquierdo)}
-    \label{fig:g1}
-\end{figure}
+Las imagenes que se incorporen a este anexo deben cumplir los siguientes criterios:
 
-\section*{G.3. Cuadro de mando: Priorización y justificación legal}
+\begin{itemize}
+    \item proceder de una ejecucion local del prototipo v0.1.0;
+    \item no contener datos personales, telefonos, direcciones completas ni informacion
+    sensible de personas reales;
+    \item usar incidentes sinteticos o casos anonimizados;
+    \item mostrar claramente la prioridad recomendada, la distribucion de confianza y
+    la explicacion generada;
+    \item permitir verificar que Capa 2 decide la prioridad y que Capa 3 solo la
+    explica;
+    \item estar alineadas con el smoke test P1--P4 documentado en
+    \texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md}.
+\end{itemize}
 
-La Figura~\ref{fig:g2} ilustra el resultado del análisis de un incidente crítico de tráfico con víctimas (P1). Se observa el badge rojo vibrante con el nivel de prioridad, las probabilidades asignadas a cada una de las cuatro prioridades por el motor de inferencia, y el bloque de explicación textual redactada por el LLM local citando las bases de la Ley 17/2015 del Sistema Nacional de Protección Civil.
+\section*{G.3. Capturas previstas}
 
-\begin{figure}[ht]
-    \centering
-    % \includegraphics[width=0.9\textwidth]{figures/g2_priorizacion_explicacion.png}
-    \caption{Priorización recomendada, explicación del LLM y citas legales}
-    \label{fig:g2}
-\end{figure}
+La Tabla~\ref{tab:anexo-g-capturas-previstas} resume las capturas que conviene anadir
+cuando se cierre la version visual del prototipo.
 
-\section*{G.4. Reglas RuleFit activas e intervención humana (HITL)}
+\begin{table}[ht]
+\centering
+\caption{Capturas previstas para documentar el prototipo}
+\label{tab:anexo-g-capturas-previstas}
+\small
+\begin{tabular}{|l|p{5.2cm}|p{5.1cm}|}
+\hline
+\textbf{Figura prevista} & \textbf{Contenido esperado} & \textbf{Evidencia que aporta} \\ \hline
+G.1. Entrada de incidente & Formulario de la interfaz con titulo, descripcion,
+provincia, municipio y texto operativo. & Demuestra que el prototipo acepta entrada
+manual controlada y permite reproducir incidentes sinteticos. \\ \hline
+G.2. Resultado P1 & Incidente critico, prioridad P1, probabilidades P1--P4,
+reglas/senales activadas y explicacion local. & Muestra el comportamiento esperado ante
+riesgo vital, atrapados, inconscientes, fallecidos o incendio grave. \\ \hline
+G.3. Resultado P2 & Incidente relevante sin criticidad vital inmediata, prioridad P2 y
+explicacion asociada. & Ilustra la separacion entre emergencia critica y caso relevante
+con potencial de deterioro. \\ \hline
+G.4. Resultado P3/P4 & Caso ordinario o consulta de baja urgencia con distribucion de
+confianza coherente. & Evidencia que el sistema no eleva todos los incidentes a P1/P2 y
+mantiene gradacion de prioridad. \\ \hline
+G.5. Feedback humano & Formulario de decision del operador con prioridad final,
+aceptacion o discrepancia motivada. & Documenta supervision humana, trazabilidad y
+registro de divergencias. \\ \hline
+\end{tabular}
+\end{table}
 
-La Figura~\ref{fig:g3} muestra el panel inferior de justificación operativa y el componente de interacción humana (\textit{Human-in-the-Loop}). El expandible dinámico expone las reglas operativas específicas aprendidas por RuleFit que justifican matemáticamente la decisión. A continuación, se presenta el formulario reactivo donde el operador registra la prioridad final, motivando de forma obligatoria cualquier discrepancia relevante antes de enviar los datos al log.
+\section*{G.4. Plantilla LaTeX para insertar las figuras}
 
-\begin{figure}[ht]
-    \centering
-    % \includegraphics[width=0.9\textwidth]{figures/g3_reglas_hitl.png}
-    \caption{Reglas de inferencia RuleFit activas e intervención HITL del operador}
-    \label{fig:g3}
-\end{figure}
+Cuando se disponga de las imagenes definitivas, deben guardarse en
+\texttt{latex/figures/} con nombres estables y sustituir los bloques comentados por
+figuras activas. Se recomienda usar formato PNG, anchura maxima
+\texttt{0.92\textbackslash textwidth} y pies de figura descriptivos pero breves.
+
+\begin{verbatim}
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.92\textwidth]{figures/g1_entrada_incidente.png}
+%     \caption{Entrada manual de un incidente sintetico en el prototipo}
+%     \label{fig:g1-entrada-incidente}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.92\textwidth]{figures/g2_resultado_p1.png}
+%     \caption{Priorizacion P1, probabilidades y explicacion local}
+%     \label{fig:g2-resultado-p1}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.92\textwidth]{figures/g3_feedback_humano.png}
+%     \caption{Registro de feedback humano y decision final del operador}
+%     \label{fig:g3-feedback-humano}
+% \end{figure}
+\end{verbatim}
+
+\section*{G.5. Relacion con la evidencia experimental}
+
+Las capturas deben interpretarse como evidencia de usabilidad y ejecucion del prototipo,
+no como evaluacion cuantitativa. La evaluacion principal sigue siendo la del
+Capitulo~\ref{cap:9}: comparativa baseline experto, RuleFit-lite e \texttt{imodels},
+recall P1, test temporal, control anti-\textit{leakage}, validacion interna y fidelidad
+explicativa.
+
+Por tanto, este anexo queda preparado para completar la memoria con soporte visual una
+vez se seleccionen las capturas definitivas de la interfaz.

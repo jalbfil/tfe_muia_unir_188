@@ -9,12 +9,13 @@ El prototipo tiene alcance academico. No sustituye al sistema institucional del 
 
 \section{Arquitectura software}
 
-El sistema se organiza en cuatro bloques principales:
+El sistema se organiza en cinco bloques principales:
 
 \begin{enumerate}
-    \item \textbf{Pipeline de datos.} Limpia el Registro 112 Castilla y Leon, normaliza campos, construye variables y excluye columnas prohibidas por \textit{leakage}.
+    \item \textbf{Pipeline de datos y Capa 1.} Limpia el Registro 112 Castilla y Leon, normaliza campos, construye variables y, en ejecucion, extrae senales textuales predecisionales desde el texto operativo del incidente.
     \item \textbf{Capa 2 RuleFit.} Implementa weak supervision, baseline experto, RuleFit-lite, comparativa \texttt{imodels}, evaluacion e inferencia.
-    \item \textbf{Capa 3 explicativa.} Genera explicaciones a partir de la salida de Capa 2, evidencias disponibles y corpus normativo recuperado mediante RAG/MCP.
+    \item \textbf{Capa 3 explicativa.} Genera explicaciones a partir de la salida de Capa 2, evidencias disponibles y corpus normativo recuperado mediante RAG/MCP. En la version integrada se ejecuta localmente mediante Ollama.
+    \item \textbf{Backend y interfaz.} Expone la inferencia mediante API FastAPI y una interfaz Streamlit para pruebas controladas del prototipo.
     \item \textbf{Trazabilidad y validacion.} Registra salidas, metricas, muestra de revision humana y artefactos de evaluacion.
 \end{enumerate}
 
@@ -40,6 +41,47 @@ El flujo funcional del prototipo es el siguiente:
 \end{enumerate}
 
 El resultado no es una orden operativa, sino una recomendacion estructurada. El operador mantiene la capacidad de aceptar, modificar o rechazar la salida.
+
+\section{Prototipo ejecutable v0.1.0}
+
+La version \texttt{v0.1.0} ya dispone de una ejecucion integrada del flujo completo:
+texto del incidente, Capa 1 determinista, Capa 2 RuleFit-lite, Capa 3 con LLM local y
+registro de la respuesta. La API expone endpoints de salud, version, prediccion y
+feedback, mientras que la interfaz permite introducir incidentes de prueba y visualizar
+prioridad, confianza, probabilidades P1--P4, reglas activadas y explicacion generada.
+
+La integracion con LLM se realiza mediante Ollama con el modelo
+\texttt{llama3.1:8b-instruct-q4\_K\_M}. El LLM no decide la prioridad: recibe la
+recomendacion ya calculada por RuleFit-lite y la convierte en una explicacion
+estructurada. Si Ollama no responde, el prototipo conserva el modo degradado
+determinista descrito en la seccion siguiente.
+
+Como comprobacion tecnica, se ha ejecutado un \textit{smoke test} P1--P4 contra el
+backend en vivo. El resultado queda versionado en
+\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.json} y
+\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md}. La prueba verifica cuatro
+incidentes representativos, uno por prioridad, con Capa 2 RuleFit activa y Capa 3 no
+degradada.
+
+\begin{table}[ht]
+\centering
+\caption{Smoke test integrado del prototipo v0.1.0}
+\label{tab:8-smoke-prototipo}
+\small
+\begin{tabular}{|l|c|c|r|c|}
+\hline
+\textbf{Caso} & \textbf{Esperada} & \textbf{Obtenida} & \textbf{Prob. dominante} & \textbf{LLM} \\ \hline
+Incendio con atrapados & P1 & P1 & 97.35\% & Ollama \\ \hline
+Fuga de gas sin heridos & P2 & P2 & 92.21\% & Ollama \\ \hline
+Arbol en calzada & P3 & P3 & 93.71\% & Ollama \\ \hline
+Consulta vecinal sin riesgo & P4 & P4 & 98.54\% & Ollama \\ \hline
+\end{tabular}
+\end{table}
+
+La prueba supera los cuatro casos esperados y observa una latencia media de
+4.897,888 ms por inferencia integrada, condicionada por el uso local del LLM. Esta
+cifra no se interpreta como rendimiento operativo final, sino como primera evidencia de
+integracion funcional del prototipo completo.
 
 \section{Contratos y trazabilidad}
 
