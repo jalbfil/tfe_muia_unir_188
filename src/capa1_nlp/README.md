@@ -18,18 +18,18 @@ En la siguiente tabla se detallan las tareas asignadas a Ancor (`[A]` individual
 
 | Tarea | Tipo | Descripción | Archivo / Ubicación de Entrega |
 |---|---|---|---|
-| **T040** | `[A]` | Crear la estructura de directorios de la Capa 1 | [src/capa1_nlp/](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/src/capa1_nlp) |
-| **T041** | `[A]` | Test de Contrato de `IncidentFeatures` | [test_capa1_contracts.py](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/src/capa1_nlp/tests/test_capa1_contracts.py) |
-| **T042** | `[A]` | Test de Latencia de Inferencia ($\le 500\text{ ms}$ p95) | [test_capa1_latency.py](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/src/capa1_nlp/tests/test_capa1_latency.py) |
-| **T043** | `[A]` | Test de Prevención de Fuga de Datos (Anti-Leakage) | [test_capa1_anti_leakage.py](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/src/capa1_nlp/tests/test_capa1_anti_leakage.py) |
-| **T044** | `[A]` | Extractor determinista de 10 señales léxicas (Regex) | [signal_extractor.py](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/src/capa1_nlp/extraction/signal_extractor.py) |
-| **T045** | `[A]` | Dataset de PyTorch para clasificación multitarrea | Clase `MultitaskDataset` en [train_capa1.py](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/scripts/train_capa1.py#L37-L73) |
-| **T046** | `[A]` | Script de entrenamiento multitarrea `roberta-base-bne` | [train_capa1.py](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/scripts/train_capa1.py) |
-| **T047** | `[A]` | Wrapper de inferencia unificado (Capa 1 NLP) | [feature_extractor.py](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/src/capa1_nlp/inference/feature_extractor.py) |
-| **T048** | `[A]` | Reporte de métricas técnicas de test (F1, Recall) | [capa1_v0.1.0.json](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/artifacts/reports/capa1_v0.1.0.json) |
-| **T049** | `[A]` | Ficha técnica (*Model Card*) académica | [anexo_l.tex](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/latex/chapters/anexo_l.tex) |
-| **T101** | `[C]` | Consola Gráfica de Emergencias (Streamlit) | [app.py](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/src/ui/app.py) |
-| **T102** | `[C]` | Apéndice de experiencia de usuario y capturas | [anexo_g.tex](file:///d:/repo-vault/Clase/UNIR/Segundo_Semestre/TFM/tfe_muia_unir_188/latex/chapters/anexo_g.tex) |
+| **T040** | `[A]` | Crear la estructura de directorios de la Capa 1 | [src/capa1_nlp/](tfe_muia_unir_188/src/capa1_nlp) |
+| **T041** | `[A]` | Test de Contrato de `IncidentFeatures` | [test_capa1_contracts.py](tfe_muia_unir_188/src/capa1_nlp/tests/test_capa1_contracts.py) |
+| **T042** | `[A]` | Test de Latencia de Inferencia ($\le 500\text{ ms}$ p95) | [test_capa1_latency.py](tfe_muia_unir_188/src/capa1_nlp/tests/test_capa1_latency.py) |
+| **T043** | `[A]` | Test de Prevención de Fuga de Datos (Anti-Leakage) | [test_capa1_anti_leakage.py](tfe_muia_unir_188/src/capa1_nlp/tests/test_capa1_anti_leakage.py) |
+| **T044** | `[A]` | Extractor determinista de 10 señales léxicas (Regex) | [signal_extractor.py](tfe_muia_unir_188/src/capa1_nlp/extraction/signal_extractor.py) |
+| **T045** | `[A]` | Dataset de PyTorch para clasificación multitarrea | Clase `MultitaskDataset` en [train_capa1.py](tfe_muia_unir_188/scripts/train_capa1.py#L37-L73) |
+| **T046** | `[A]` | Script de entrenamiento multitarrea `roberta-base-bne` | [train_capa1.py](tfe_muia_unir_188/scripts/train_capa1.py) |
+| **T047** | `[A]` | Wrapper de inferencia unificado (Capa 1 NLP) | [feature_extractor.py](tfe_muia_unir_188/src/capa1_nlp/inference/feature_extractor.py) |
+| **T048** | `[A]` | Reporte de métricas técnicas de test (F1, Recall) | [capa1_v0.1.0.json](tfe_muia_unir_188/artifacts/reports/capa1_v0.1.0.json) |
+| **T049** | `[A]` | Ficha técnica (*Model Card*) académica | [anexo_l.tex](tfe_muia_unir_188/latex/chapters/anexo_l.tex) |
+| **T101** | `[C]` | Consola Gráfica de Emergencias (Streamlit) | [app.py](tfe_muia_unir_188/src/ui/app.py) |
+| **T102** | `[C]` | Apéndice de experiencia de usuario y capturas | [anexo_g.tex](tfe_muia_unir_188/latex/chapters/anexo_g.tex) |
 
 ---
 
