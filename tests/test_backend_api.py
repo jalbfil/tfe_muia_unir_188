@@ -70,12 +70,22 @@ def test_t093_predict_returns_200(client: TestClient):
 
 
 def test_t093_predict_response_schema(client: TestClient):
-    """T093-B: respuesta contiene recommendation + log_id."""
+    """T093-B: respuesta contiene recommendation + priority_details + log_id."""
     resp = client.post("/predict", json=_INCIDENTE_P1)
     body = resp.json()
     assert "recommendation" in body
+    assert "priority_details" in body
     assert "log_id" in body
     assert len(body["log_id"]) == 26  # ULID
+
+
+def test_t093_predict_priority_details_has_probabilities(client: TestClient):
+    """T093-B2: Capa 2 expone probabilidades P1-P4 para la UI."""
+    resp = client.post("/predict", json=_INCIDENTE_P1)
+    details = resp.json()["priority_details"]
+    assert set(details["probabilities"]) == {"P1", "P2", "P3", "P4"}
+    assert sum(details["probabilities"].values()) == pytest.approx(1.0)
+    assert details["model_used"] in ("RULEFIT", "BASELINE_EXPERT", "FALLBACK")
 
 
 def test_t093_predict_recommendation_has_required_fields(client: TestClient):

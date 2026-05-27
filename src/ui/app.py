@@ -233,6 +233,7 @@ def run_predict(input_data: IncidentInput) -> dict | None:
             rec, log = run_pipeline(input_data)
             return {
                 "recommendation": json.loads(rec.model_dump_json()),
+                "priority_details": json.loads(log.capa2_output.model_dump_json()),
                 "log_id": log.log_id,
                 "degraded": "degraded" in rec.llm_metadata.llm_model.lower(),
             }
@@ -374,6 +375,7 @@ with col_dashboard:
     else:
         res = st.session_state.predict_response
         rec = res["recommendation"]
+        priority_details = res.get("priority_details", {}) or {}
         log_id = res["log_id"]
         degraded = res.get("degraded", False)
         
@@ -413,7 +415,7 @@ with col_dashboard:
         
         # 3. Distribución de Probabilidades
         st.markdown("#### 🎚️ Distribución de Confianza del Modelo:")
-        probs = rec.get("probabilities", {}) or {}
+        probs = priority_details.get("probabilities", {}) or rec.get("probabilities", {}) or {}
         # Aplanar si viene como diccionarios
         probs_flat = {k.get("value") if isinstance(k, dict) else k: v for k, v in probs.items()}
         
@@ -446,6 +448,11 @@ with col_dashboard:
 
         # 5. Reglas RuleFit Activadas (Expandible)
         activated_rules = rec.get("activated_rules_summary", [])
+        if not activated_rules and priority_details.get("activated_rules"):
+            activated_rules = [
+                rule.get("human_text", "")
+                for rule in priority_details.get("activated_rules", [])
+            ]
         with st.expander("🔍 Ver Reglas Operativas RuleFit Activadas"):
             if activated_rules:
                 for rule in activated_rules:

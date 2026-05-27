@@ -20,7 +20,7 @@ from fastapi import FastAPI
 from backend.api.routes import feedback, health, predict, predict_stream  # type: ignore[import]
 from backend.logging.inference_logger import InferenceLogger  # type: ignore[import]
 
-_LOG_DIR = Path(__file__).resolve().parents[4] / "artifacts" / "logs"
+_LOG_DIR = Path(__file__).resolve().parents[3] / "artifacts" / "logs"
 _DB_PATH = _LOG_DIR / "inference.db"
 _JSONL_PATH = _LOG_DIR / "inference.jsonl"
 

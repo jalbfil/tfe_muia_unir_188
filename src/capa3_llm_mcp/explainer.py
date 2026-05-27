@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 _SLA_MS = 2_000.0  # NFR-009: p95 ≤ 2000 ms
 _MODEL_VERSION = "0.1.0"
-_LLM_MODEL_NAME = "Qwen2.5-7B-Instruct-Q4_K_M"
+_LLM_MODEL_NAME = "ollama-local"
 
 # Caché de explicaciones por sesión. Clave: SHA-256(texto_incidente + prioridad).
 _EXPLAIN_CACHE: dict[str, OperatorRecommendation] = {}
@@ -97,11 +97,9 @@ def _build_context_block(
     """Ensambla el bloque de contexto para el user message."""
     priority_label = rec.priority_recommended.value  # "P1" / "P2" / ...
 
-    rules_lines = "\n".join(
-        f"- [{r.rule_id}] {r.human_text} (peso={r.weight:.3f}, "
-        f"normas={[str(n) for n in r.normative_anchors]})"
-        for r in rec.activated_rules
-    ) or "- (sin reglas activadas)"
+    rules_lines = "\n".join(f"- {r.human_text}" for r in rec.activated_rules[:5]) or (
+        "- Sin evidencias adicionales estructuradas."
+    )
 
     rag_lines = "\n".join(
         f"- [{c['norma_id']} {c['articulo']}] {c['text'][:200]}…"
@@ -111,8 +109,9 @@ def _build_context_block(
     return (
         f"INCIDENTE: \"{incident_text}\"\n"
         f"PRIORIDAD RECOMENDADA: {priority_label}\n"
-        f"REGLAS ACTIVADAS:\n{rules_lines}\n"
+        f"EVIDENCIAS OPERATIVAS:\n{rules_lines}\n"
         f"FRAGMENTOS NORMATIVOS:\n{rag_lines}\n"
+        "Devuelve solo el JSON solicitado."
     )
 
 
@@ -136,6 +135,15 @@ def _parse_llm_output(raw: str) -> dict:
     match = _JSON_RE.search(raw)
     if not match:
         logger.warning("LLM output no contiene JSON válido: %.200s", raw)
+        raw = raw.strip()
+        if len(raw) >= 20:
+            return {
+                "explanation_text": raw[:600],
+                "actuation_hints": [],
+                "confidence_disclaimer": (
+                    "Respuesta LLM convertida a formato contractual por no venir en JSON."
+                ),
+            }
         return {}
     try:
         parsed = json.loads(match.group())
@@ -159,6 +167,7 @@ def _build_operator_result(
     parsed: dict,
     citations: list[LegalCitation],
     rag_chunks: list[dict],
+    llm_model_name: str = _LLM_MODEL_NAME,
 ) -> OperatorRecommendation:
     """Construye OperatorRecommendation a partir del JSON parseado del LLM."""
     explanation_text = parsed["explanation_text"][:1200]
@@ -177,7 +186,7 @@ def _build_operator_result(
         confidence_disclaimer=disclaimer,
         model_version_capa3=_MODEL_VERSION,
         llm_metadata=LLMMetadata(
-            llm_model=_LLM_MODEL_NAME,
+            llm_model=llm_model_name,
             temperature=0.0,
             tools_invoked=tools_used,
         ),
@@ -252,7 +261,10 @@ def explain(
         _check_sla(rec.incident_id, t0)
         return result
 
-    result = _build_operator_result(rec, parsed, citations, rag_chunks)
+    llm_model_name = getattr(llm, "model_name", _LLM_MODEL_NAME)
+    if not isinstance(llm_model_name, str):
+        llm_model_name = _LLM_MODEL_NAME
+    result = _build_operator_result(rec, parsed, citations, rag_chunks, llm_model_name)
     _EXPLAIN_CACHE[_ckey] = result
     _check_sla(rec.incident_id, t0)
     return result
@@ -311,7 +323,10 @@ def explain_stream(
     if not parsed:
         result = degraded_explain(rec)
     else:
-        result = _build_operator_result(rec, parsed, citations, rag_chunks)
+        llm_model_name = getattr(llm, "model_name", _LLM_MODEL_NAME)
+        if not isinstance(llm_model_name, str):
+            llm_model_name = _LLM_MODEL_NAME
+        result = _build_operator_result(rec, parsed, citations, rag_chunks, llm_model_name)
         _EXPLAIN_CACHE[_ckey] = result
 
     yield {"type": "result", "content": result}

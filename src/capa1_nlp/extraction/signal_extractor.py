@@ -7,6 +7,12 @@ from typing import Any
 
 from contracts import BoolWithConfidence
 
+_NEGATION_WINDOW = 42
+_NEGATION_PATTERN = re.compile(
+    r"(?:\bno\s+(?:hay|consta|constan|presenta|presentan)\b|\bsin\b|\bni\b|\bning[uú]n\b|\bninguna\b)",
+    re.IGNORECASE,
+)
+
 
 class SignalExtractor:
     """Clase encargada de analizar texto libre y extraer 10 señales léxicas obligatorias.
@@ -60,6 +66,15 @@ class SignalExtractor:
             ),
         }
 
+    def _has_non_negated_match(self, regex: re.Pattern[str], text: str) -> bool:
+        """Return True when a pattern match is not locally negated."""
+
+        for match in regex.finditer(text):
+            prefix = text[max(0, match.start() - _NEGATION_WINDOW) : match.start()]
+            if not _NEGATION_PATTERN.search(prefix):
+                return True
+        return False
+
     def extract(self, text: str) -> dict[str, BoolWithConfidence]:
         """Analiza el texto y extrae el conjunto completo de señales léxicas.
         
@@ -73,7 +88,7 @@ class SignalExtractor:
         cleaned_text = text.strip() if text else ""
 
         for signal_name, regex in self.patterns.items():
-            if cleaned_text and regex.search(cleaned_text):
+            if cleaned_text and self._has_non_negated_match(regex, cleaned_text):
                 results[signal_name] = BoolWithConfidence(value=True, confidence=1.0)
             else:
                 results[signal_name] = BoolWithConfidence(value=False, confidence=1.0)
