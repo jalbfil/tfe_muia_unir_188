@@ -233,7 +233,7 @@ def run_predict(input_data: IncidentInput) -> dict | None:
             rec, log = run_pipeline(input_data)
             return {
                 "recommendation": json.loads(rec.model_dump_json()),
-                "priority_details": json.loads(log.capa2_output.model_dump_json()),
+                "features": json.loads(log.capa1_output.model_dump_json()) if log.capa1_output else None,
                 "log_id": log.log_id,
                 "degraded": "degraded" in rec.llm_metadata.llm_model.lower(),
             }
@@ -375,7 +375,6 @@ with col_dashboard:
     else:
         res = st.session_state.predict_response
         rec = res["recommendation"]
-        priority_details = res.get("priority_details", {}) or {}
         log_id = res["log_id"]
         degraded = res.get("degraded", False)
         
@@ -415,7 +414,7 @@ with col_dashboard:
         
         # 3. Distribución de Probabilidades
         st.markdown("#### 🎚️ Distribución de Confianza del Modelo:")
-        probs = priority_details.get("probabilities", {}) or rec.get("probabilities", {}) or {}
+        probs = rec.get("probabilities", {}) or {}
         # Aplanar si viene como diccionarios
         probs_flat = {k.get("value") if isinstance(k, dict) else k: v for k, v in probs.items()}
         
@@ -446,13 +445,28 @@ with col_dashboard:
             for hint in hints:
                 st.markdown(f"- {hint}")
 
+        # 4.5. Variables Operativas Extraídas (Capa 1 NLP)
+        features = res.get("features")
+        if features:
+            with st.expander("🔍 Ver Variables Operativas Extraídas (Capa 1 NLP)"):
+                st.markdown("#### Desglose de Señales y Características:")
+                col_c1_1, col_c1_2 = st.columns(2)
+                with col_c1_1:
+                    st.markdown(f"**¿Riesgo Vital?:** {'🔴 SÍ' if features['riesgo_vital']['value'] else '🟢 NO'} *(Confianza: {features['riesgo_vital']['confidence']:.2f})*")
+                    victimas = features['numero_victimas_estimado']['value']
+                    st.markdown(f"**Víctimas Estimadas (V02):** {victimas if victimas != -1 else 'Desconocido'} *(Confianza: {features['numero_victimas_estimado']['confidence']:.2f})*")
+                    st.markdown(f"**Gravedad Lesiones (V03):** `{features['gravedad_lesiones']}` *(Confianza: {features['gravedad_lesiones_confidence']:.2f})*")
+                    st.markdown(f"**Población Vulnerable (V05):** {'🟡 SÍ' if features['poblacion_vulnerable']['value'] else '🟢 NO'} *(Confianza: {features['poblacion_vulnerable']['confidence']:.2f})*")
+                    st.markdown(f"**Tipo Incidente Normalizado (V04):** `{features['tipo_incidente_normalizado']}`")
+                with col_c1_2:
+                    st.markdown(f"**Emplazamiento Crítico (V07):** {'🔴 SÍ' if features['emplazamiento_critico']['value'] else '🟢 NO'} *(Confianza: {features['emplazamiento_critico']['confidence']:.2f})*")
+                    st.markdown(f"**Riesgo de Propagación (V12):** {'🟡 SÍ' if features['riesgo_propagacion']['value'] else '🟢 NO'} *(Confianza: {features['riesgo_propagacion']['confidence']:.2f})*")
+                    st.markdown(f"**Multirriesgo (V13):** {'🔴 SÍ' if features['multirriesgo']['value'] else '🟢 NO'} *(Confianza: {features['multirriesgo']['confidence']:.2f})*")
+                    st.markdown(f"**Accesibilidad Recursos (V15):** `{features['accesibilidad_recursos']}`")
+                    st.markdown(f"**Latencia de Extracción:** `{features['inference_latency_ms']:.4f} ms`")
+
         # 5. Reglas RuleFit Activadas (Expandible)
         activated_rules = rec.get("activated_rules_summary", [])
-        if not activated_rules and priority_details.get("activated_rules"):
-            activated_rules = [
-                rule.get("human_text", "")
-                for rule in priority_details.get("activated_rules", [])
-            ]
         with st.expander("🔍 Ver Reglas Operativas RuleFit Activadas"):
             if activated_rules:
                 for rule in activated_rules:

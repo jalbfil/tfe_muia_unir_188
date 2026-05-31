@@ -10,14 +10,14 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from backend.orchestrator.pipeline import run_pipeline  # type: ignore[import]
-from contracts import IncidentInput, OperatorRecommendation, PriorityRecommendation  # type: ignore[import]
+from contracts import IncidentInput, OperatorRecommendation, IncidentFeatures  # type: ignore[import]
 
 router = APIRouter()
 
 
 class PredictResponse(BaseModel):
     recommendation: OperatorRecommendation
-    priority_details: PriorityRecommendation
+    features: IncidentFeatures | None = None
     log_id: str
     degraded: bool = False
 
@@ -45,7 +45,7 @@ def predict(incident: IncidentInput, request: Request) -> PredictResponse:
 
     return PredictResponse(
         recommendation=recommendation,
-        priority_details=log.capa2_output,
+        features=log.capa1_output,
         log_id=log.log_id,
         degraded=degraded,
     )
