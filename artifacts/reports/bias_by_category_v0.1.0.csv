@@ -1,0 +1,4 @@
+group,rows,accuracy,macro_f1,recall_p1,support_p1,support_p2,support_p3,support_p4
+incendio,141,0.77305,0.740248,0.628571,35,75,30,1
+sanitario,264,0.806818,0.820792,0.741935,31,75,97,61
+trafico,1042,0.915547,0.891502,0.948454,582,184,264,12

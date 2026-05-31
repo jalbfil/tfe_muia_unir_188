@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="454" height="410" viewBox="0 0 454 410">
+<rect width="100%" height="100%" fill="white"/>
+<text x="24" y="34" font-family="Arial" font-size="20" font-weight="700">Matriz de confusion RuleFit-lite</text>
+<text x="24" y="58" font-family="Arial" font-size="12" fill="#555">Test estratificado, referencia en filas y prediccion en columnas</text>
+<text x="155" y="78" font-family="Arial" font-size="13">P1</text>
+<text x="86" y="128" font-family="Arial" font-size="13">P1</text>
+<text x="227" y="78" font-family="Arial" font-size="13">P2</text>
+<text x="86" y="200" font-family="Arial" font-size="13">P2</text>
+<text x="299" y="78" font-family="Arial" font-size="13">P3</text>
+<text x="86" y="272" font-family="Arial" font-size="13">P3</text>
+<text x="371" y="78" font-family="Arial" font-size="13">P4</text>
+<text x="86" y="344" font-family="Arial" font-size="13">P4</text>
+<rect x="130" y="86" width="68" height="68" fill="#2563eb" opacity="0.900"/>
+<text x="156" y="126" font-family="Arial" font-size="15" fill="#111">597</text>
+<rect x="202" y="86" width="68" height="68" fill="#2563eb" opacity="0.162"/>
+<text x="228" y="126" font-family="Arial" font-size="15" fill="#111">32</text>
+<rect x="274" y="86" width="68" height="68" fill="#2563eb" opacity="0.145"/>
+<text x="300" y="126" font-family="Arial" font-size="15" fill="#111">19</text>
+<rect x="346" y="86" width="68" height="68" fill="#2563eb" opacity="0.120"/>
+<text x="372" y="126" font-family="Arial" font-size="15" fill="#111">0</text>
+<rect x="130" y="158" width="68" height="68" fill="#2563eb" opacity="0.170"/>
+<text x="156" y="198" font-family="Arial" font-size="15" fill="#111">38</text>
+<rect x="202" y="158" width="68" height="68" fill="#2563eb" opacity="0.483"/>
+<text x="228" y="198" font-family="Arial" font-size="15" fill="#111">278</text>
+<rect x="274" y="158" width="68" height="68" fill="#2563eb" opacity="0.137"/>
+<text x="300" y="198" font-family="Arial" font-size="15" fill="#111">13</text>
+<rect x="346" y="158" width="68" height="68" fill="#2563eb" opacity="0.129"/>
+<text x="372" y="198" font-family="Arial" font-size="15" fill="#111">7</text>
+<rect x="130" y="230" width="68" height="68" fill="#2563eb" opacity="0.120"/>
+<text x="156" y="270" font-family="Arial" font-size="15" fill="#111">0</text>
+<rect x="202" y="230" width="68" height="68" fill="#2563eb" opacity="0.198"/>
+<text x="228" y="270" font-family="Arial" font-size="15" fill="#111">60</text>
+<rect x="274" y="230" width="68" height="68" fill="#2563eb" opacity="0.555"/>
+<text x="300" y="270" font-family="Arial" font-size="15" fill="#111">333</text>
+<rect x="346" y="230" width="68" height="68" fill="#2563eb" opacity="0.125"/>
+<text x="372" y="270" font-family="Arial" font-size="15" fill="#111">4</text>
+<rect x="130" y="302" width="68" height="68" fill="#2563eb" opacity="0.120"/>
+<text x="156" y="342" font-family="Arial" font-size="15" fill="#111">0</text>
+<rect x="202" y="302" width="68" height="68" fill="#2563eb" opacity="0.120"/>
+<text x="228" y="342" font-family="Arial" font-size="15" fill="#111">0</text>
+<rect x="274" y="302" width="68" height="68" fill="#2563eb" opacity="0.120"/>
+<text x="300" y="342" font-family="Arial" font-size="15" fill="#111">0</text>
+<rect x="346" y="302" width="68" height="68" fill="#2563eb" opacity="0.217"/>
+<text x="372" y="342" font-family="Arial" font-size="15" fill="#111">74</text>
+</svg>

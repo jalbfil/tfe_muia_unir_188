@@ -1,0 +1,242 @@
+[
+  {
+    "rule_id": "RF-P4-005",
+    "class_label": "P4",
+    "rule": "signal_accidente_trafico <= 0.500 & riesgo_vital_textual <= 0.500 & signal_rescate <= 0.500",
+    "coef": 10.714186790229457,
+    "support": 0.073,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P3-006",
+    "class_label": "P3",
+    "rule": "signal_accidente_trafico <= 0.500 & riesgo_vital_textual <= 0.500 & signal_rescate > 0.500",
+    "coef": 5.019212678925849,
+    "support": 0.056,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-008",
+    "class_label": "P2",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas <= 0.500",
+    "coef": -4.567529768719202,
+    "support": 0.31733333333333336,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P1-001",
+    "class_label": "P1",
+    "rule": "riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500",
+    "coef": 4.546701025899571,
+    "support": 0.2683333333333333,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-002",
+    "class_label": "P2",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_accidente_trafico > 0.500 & signal_incendio > 0.500",
+    "coef": 3.3909793860643336,
+    "support": 0.011666666666666667,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-005",
+    "class_label": "P2",
+    "rule": "riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500",
+    "coef": -3.3763910449230776,
+    "support": 0.2683333333333333,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P1-004",
+    "class_label": "P1",
+    "rule": "riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido > 0.500",
+    "coef": 2.8984108035221454,
+    "support": 0.12666666666666668,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-007",
+    "class_label": "P2",
+    "rule": "signal_intoxicacion > 0.500 & signal_varias_llamadas <= 0.500 & cat_incendio <= 0.500",
+    "coef": -2.183388423136856,
+    "support": 0.072,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P3-005",
+    "class_label": "P3",
+    "rule": "riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido <= 0.500",
+    "coef": -2.1373818516946463,
+    "support": 0.36566666666666664,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P4-004",
+    "class_label": "P4",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas <= 0.500",
+    "coef": 1.7931312112332327,
+    "support": 0.31733333333333336,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-006",
+    "class_label": "P2",
+    "rule": "signal_intoxicacion <= 0.500 & signal_meteo_inundacion > 0.500 & riesgo_vital_textual <= 0.500",
+    "coef": 1.4940278166954337,
+    "support": 0.043333333333333335,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P1-003",
+    "class_label": "P1",
+    "rule": "signal_intoxicacion > 0.500 & signal_varias_llamadas > 0.500",
+    "coef": 1.4063435516982932,
+    "support": 0.014333333333333333,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-011",
+    "class_label": "P2",
+    "rule": "signal_accidente_trafico <= 0.500 & riesgo_vital_textual <= 0.500 & signal_rescate > 0.500",
+    "coef": -1.3981279127072932,
+    "support": 0.056,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P3-007",
+    "class_label": "P3",
+    "rule": "signal_accidente_trafico > 0.500 & signal_varias_llamadas > 0.500",
+    "coef": -1.3349749964446957,
+    "support": 0.14933333333333335,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P3-002",
+    "class_label": "P3",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_accidente_trafico > 0.500 & signal_incendio > 0.500",
+    "coef": -1.2007183335712095,
+    "support": 0.011666666666666667,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-009",
+    "class_label": "P2",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_meteo_inundacion > 0.500 & signal_varias_llamadas > 0.500",
+    "coef": 1.0529719230232149,
+    "support": 0.013666666666666667,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P1-002",
+    "class_label": "P1",
+    "rule": "signal_intoxicacion <= 0.500 & signal_meteo_inundacion > 0.500 & riesgo_vital_textual <= 0.500",
+    "coef": -1.037422412123125,
+    "support": 0.043333333333333335,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P3-001",
+    "class_label": "P3",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_accidente_trafico <= 0.500 & cat_incendio > 0.500",
+    "coef": 0.9945397382238894,
+    "support": 0.025,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P1-005",
+    "class_label": "P1",
+    "rule": "riesgo_vital_textual > 0.500 & cat_sanitario > 0.500 & signal_intoxicacion > 0.500",
+    "coef": -0.9781363245112887,
+    "support": 0.06366666666666666,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P4-002",
+    "class_label": "P4",
+    "rule": "signal_intoxicacion <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_fallecido <= 0.500",
+    "coef": 0.9267059831300892,
+    "support": 0.6783333333333333,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P4-001",
+    "class_label": "P4",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_accidente_trafico <= 0.500 & cat_incendio <= 0.500",
+    "coef": 0.7043907641291628,
+    "support": 0.104,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-004",
+    "class_label": "P2",
+    "rule": "riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate <= 0.500",
+    "coef": 0.5397513234165544,
+    "support": 0.132,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-003",
+    "class_label": "P2",
+    "rule": "riesgo_vital_textual > 0.500 & signal_accidente_trafico <= 0.500 & signal_fallecido > 0.500",
+    "coef": 0.3906757814392423,
+    "support": 0.03,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P3-004",
+    "class_label": "P3",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas > 0.500",
+    "coef": 0.33187096726723675,
+    "support": 0.056666666666666664,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P1-006",
+    "class_label": "P1",
+    "rule": "signal_accidente_trafico <= 0.500 & riesgo_vital_textual <= 0.500 & signal_rescate <= 0.500",
+    "coef": -0.3286478393880634,
+    "support": 0.073,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P4-003",
+    "class_label": "P4",
+    "rule": "signal_intoxicacion <= 0.500 & signal_meteo_inundacion > 0.500 & riesgo_vital_textual <= 0.500",
+    "coef": -0.29348480525546183,
+    "support": 0.043333333333333335,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P3-003",
+    "class_label": "P3",
+    "rule": "signal_intoxicacion <= 0.500 & signal_meteo_inundacion > 0.500 & riesgo_vital_textual <= 0.500",
+    "coef": 0.2553555912120845,
+    "support": 0.043333333333333335,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-010",
+    "class_label": "P2",
+    "rule": "riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido <= 0.500",
+    "coef": 0.12119724660921914,
+    "support": 0.36566666666666664,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-001",
+    "class_label": "P2",
+    "rule": "riesgo_vital_textual <= 0.500 & signal_accidente_trafico <= 0.500 & cat_incendio <= 0.500",
+    "coef": -0.020620369892598724,
+    "support": 0.104,
+    "type": "tree_rule"
+  },
+  {
+    "rule_id": "RF-P2-012",
+    "class_label": "P2",
+    "rule": "signal_accidente_trafico > 0.500 & signal_varias_llamadas > 0.500",
+    "coef": 0.007929334485340828,
+    "support": 0.14933333333333335,
+    "type": "tree_rule"
+  }
+]

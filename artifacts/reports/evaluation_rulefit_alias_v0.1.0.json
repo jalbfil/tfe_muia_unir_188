@@ -1,0 +1,457 @@
+{
+  "generated_at": "2026-05-26T18:02:48.910643+00:00",
+  "scope": "T110-T112 final evaluation, bias analysis and P1 error review",
+  "model_path": "artifacts\\models\\capa2\\v0.1.0\\rulefit.joblib",
+  "evaluation": {
+    "stratified_test": {
+      "metrics": {
+        "rows": 1455,
+        "accuracy": 0.8811,
+        "macro_f1": 0.88075,
+        "recall_p1": 0.921296,
+        "per_class": {
+          "P1": {
+            "precision": 0.940157,
+            "recall": 0.921296,
+            "f1": 0.930631,
+            "support": 648
+          },
+          "P2": {
+            "precision": 0.751351,
+            "recall": 0.827381,
+            "f1": 0.787535,
+            "support": 336
+          },
+          "P3": {
+            "precision": 0.912329,
+            "recall": 0.838791,
+            "f1": 0.874016,
+            "support": 397
+          },
+          "P4": {
+            "precision": 0.870588,
+            "recall": 1.0,
+            "f1": 0.930818,
+            "support": 74
+          }
+        },
+        "confusion_matrix": {
+          "P1": {
+            "P1": 597,
+            "P2": 32,
+            "P3": 19,
+            "P4": 0
+          },
+          "P2": {
+            "P1": 38,
+            "P2": 278,
+            "P3": 13,
+            "P4": 7
+          },
+          "P3": {
+            "P1": 0,
+            "P2": 60,
+            "P3": 333,
+            "P4": 4
+          },
+          "P4": {
+            "P1": 0,
+            "P2": 0,
+            "P3": 0,
+            "P4": 74
+          }
+        }
+      },
+      "critical_errors": {
+        "p1_false_negatives": 51,
+        "p1_to_p2": 32,
+        "p1_to_p3": 19,
+        "p1_to_p4": 0
+      }
+    },
+    "temporal_test": {
+      "metrics": {
+        "rows": 735,
+        "accuracy": 0.884354,
+        "macro_f1": 0.877594,
+        "recall_p1": 0.928767,
+        "per_class": {
+          "P1": {
+            "precision": 0.94958,
+            "recall": 0.928767,
+            "f1": 0.939058,
+            "support": 365
+          },
+          "P2": {
+            "precision": 0.740113,
+            "recall": 0.829114,
+            "f1": 0.78209,
+            "support": 158
+          },
+          "P3": {
+            "precision": 0.90184,
+            "recall": 0.821229,
+            "f1": 0.859649,
+            "support": 179
+          },
+          "P4": {
+            "precision": 0.868421,
+            "recall": 1.0,
+            "f1": 0.929577,
+            "support": 33
+          }
+        },
+        "confusion_matrix": {
+          "P1": {
+            "P1": 339,
+            "P2": 17,
+            "P3": 9,
+            "P4": 0
+          },
+          "P2": {
+            "P1": 18,
+            "P2": 131,
+            "P3": 7,
+            "P4": 2
+          },
+          "P3": {
+            "P1": 0,
+            "P2": 29,
+            "P3": 147,
+            "P4": 3
+          },
+          "P4": {
+            "P1": 0,
+            "P2": 0,
+            "P3": 0,
+            "P4": 33
+          }
+        }
+      },
+      "critical_errors": {
+        "p1_false_negatives": 26,
+        "p1_to_p2": 17,
+        "p1_to_p3": 9,
+        "p1_to_p4": 0
+      }
+    }
+  },
+  "bias_analysis": {
+    "province": [
+      {
+        "group": "Salamanca",
+        "rows": 131,
+        "accuracy": 0.78626,
+        "macro_f1": 0.769722,
+        "recall_p1": 0.862069,
+        "support_p1": 58,
+        "support_p2": 23,
+        "support_p3": 41,
+        "support_p4": 9
+      },
+      {
+        "group": "Palencia",
+        "rows": 76,
+        "accuracy": 0.921053,
+        "macro_f1": 0.843922,
+        "recall_p1": 0.974359,
+        "support_p1": 39,
+        "support_p2": 16,
+        "support_p3": 20,
+        "support_p4": 1
+      },
+      {
+        "group": "Zamora",
+        "rows": 105,
+        "accuracy": 0.857143,
+        "macro_f1": 0.851736,
+        "recall_p1": 0.882353,
+        "support_p1": 51,
+        "support_p2": 20,
+        "support_p3": 29,
+        "support_p4": 5
+      },
+      {
+        "group": "Leon",
+        "rows": 485,
+        "accuracy": 0.865979,
+        "macro_f1": 0.878557,
+        "recall_p1": 0.882022,
+        "support_p1": 178,
+        "support_p2": 135,
+        "support_p3": 140,
+        "support_p4": 32
+      },
+      {
+        "group": "Segovia",
+        "rows": 92,
+        "accuracy": 0.880435,
+        "macro_f1": 0.88525,
+        "recall_p1": 0.913043,
+        "support_p1": 46,
+        "support_p2": 16,
+        "support_p3": 26,
+        "support_p4": 4
+      },
+      {
+        "group": "Burgos",
+        "rows": 237,
+        "accuracy": 0.902954,
+        "macro_f1": 0.892961,
+        "recall_p1": 0.966667,
+        "support_p1": 120,
+        "support_p2": 53,
+        "support_p3": 54,
+        "support_p4": 10
+      },
+      {
+        "group": "Soria",
+        "rows": 61,
+        "accuracy": 0.901639,
+        "macro_f1": 0.903691,
+        "recall_p1": 0.96875,
+        "support_p1": 32,
+        "support_p2": 14,
+        "support_p3": 13,
+        "support_p4": 2
+      },
+      {
+        "group": "Avila",
+        "rows": 137,
+        "accuracy": 0.905109,
+        "macro_f1": 0.916327,
+        "recall_p1": 0.944444,
+        "support_p1": 54,
+        "support_p2": 29,
+        "support_p3": 48,
+        "support_p4": 6
+      },
+      {
+        "group": "Valladolid",
+        "rows": 128,
+        "accuracy": 0.960938,
+        "macro_f1": 0.96598,
+        "recall_p1": 0.956522,
+        "support_p1": 69,
+        "support_p2": 29,
+        "support_p3": 25,
+        "support_p4": 5
+      }
+    ],
+    "year": [
+      {
+        "group": "2009",
+        "rows": 66,
+        "accuracy": 0.909091,
+        "macro_f1": 0.787559,
+        "recall_p1": 0.975,
+        "support_p1": 40,
+        "support_p2": 12,
+        "support_p3": 13,
+        "support_p4": 1
+      },
+      {
+        "group": "2010",
+        "rows": 58,
+        "accuracy": 0.862069,
+        "macro_f1": 0.791342,
+        "recall_p1": 0.888889,
+        "support_p1": 36,
+        "support_p2": 11,
+        "support_p3": 10,
+        "support_p4": 1
+      },
+      {
+        "group": "2008",
+        "rows": 19,
+        "accuracy": 0.789474,
+        "macro_f1": 0.805556,
+        "recall_p1": 0.888889,
+        "support_p1": 9,
+        "support_p2": 4,
+        "support_p3": 5,
+        "support_p4": 1
+      },
+      {
+        "group": "2017",
+        "rows": 136,
+        "accuracy": 0.823529,
+        "macro_f1": 0.817402,
+        "recall_p1": 0.875,
+        "support_p1": 56,
+        "support_p2": 30,
+        "support_p3": 41,
+        "support_p4": 9
+      },
+      {
+        "group": "2014",
+        "rows": 109,
+        "accuracy": 0.862385,
+        "macro_f1": 0.852144,
+        "recall_p1": 0.895833,
+        "support_p1": 48,
+        "support_p2": 22,
+        "support_p3": 32,
+        "support_p4": 7
+      },
+      {
+        "group": "2019",
+        "rows": 111,
+        "accuracy": 0.837838,
+        "macro_f1": 0.870088,
+        "recall_p1": 0.923077,
+        "support_p1": 39,
+        "support_p2": 36,
+        "support_p3": 31,
+        "support_p4": 5
+      },
+      {
+        "group": "2022",
+        "rows": 113,
+        "accuracy": 0.867257,
+        "macro_f1": 0.873349,
+        "recall_p1": 0.925926,
+        "support_p1": 54,
+        "support_p2": 26,
+        "support_p3": 26,
+        "support_p4": 7
+      },
+      {
+        "group": "2018",
+        "rows": 112,
+        "accuracy": 0.848214,
+        "macro_f1": 0.879039,
+        "recall_p1": 0.829787,
+        "support_p1": 47,
+        "support_p2": 31,
+        "support_p3": 29,
+        "support_p4": 5
+      },
+      {
+        "group": "2011",
+        "rows": 63,
+        "accuracy": 0.888889,
+        "macro_f1": 0.882324,
+        "recall_p1": 0.942857,
+        "support_p1": 35,
+        "support_p2": 11,
+        "support_p3": 16,
+        "support_p4": 1
+      },
+      {
+        "group": "2016",
+        "rows": 139,
+        "accuracy": 0.892086,
+        "macro_f1": 0.891086,
+        "recall_p1": 0.966667,
+        "support_p1": 60,
+        "support_p2": 34,
+        "support_p3": 37,
+        "support_p4": 8
+      },
+      {
+        "group": "2013",
+        "rows": 102,
+        "accuracy": 0.901961,
+        "macro_f1": 0.894306,
+        "recall_p1": 0.955556,
+        "support_p1": 45,
+        "support_p2": 24,
+        "support_p3": 27,
+        "support_p4": 6
+      },
+      {
+        "group": "2021",
+        "rows": 110,
+        "accuracy": 0.9,
+        "macro_f1": 0.90494,
+        "recall_p1": 0.931818,
+        "support_p1": 44,
+        "support_p2": 23,
+        "support_p3": 35,
+        "support_p4": 8
+      },
+      {
+        "group": "2012",
+        "rows": 108,
+        "accuracy": 0.916667,
+        "macro_f1": 0.915442,
+        "recall_p1": 0.913043,
+        "support_p1": 46,
+        "support_p2": 25,
+        "support_p3": 30,
+        "support_p4": 7
+      },
+      {
+        "group": "2015",
+        "rows": 116,
+        "accuracy": 0.913793,
+        "macro_f1": 0.924647,
+        "recall_p1": 0.913043,
+        "support_p1": 46,
+        "support_p2": 24,
+        "support_p3": 40,
+        "support_p4": 6
+      },
+      {
+        "group": "2020",
+        "rows": 93,
+        "accuracy": 0.956989,
+        "macro_f1": 0.962922,
+        "recall_p1": 0.976744,
+        "support_p1": 43,
+        "support_p2": 23,
+        "support_p3": 25,
+        "support_p4": 2
+      }
+    ],
+    "category": [
+      {
+        "group": "incendio",
+        "rows": 141,
+        "accuracy": 0.77305,
+        "macro_f1": 0.740248,
+        "recall_p1": 0.628571,
+        "support_p1": 35,
+        "support_p2": 75,
+        "support_p3": 30,
+        "support_p4": 1
+      },
+      {
+        "group": "sanitario",
+        "rows": 264,
+        "accuracy": 0.806818,
+        "macro_f1": 0.820792,
+        "recall_p1": 0.741935,
+        "support_p1": 31,
+        "support_p2": 75,
+        "support_p3": 97,
+        "support_p4": 61
+      },
+      {
+        "group": "trafico",
+        "rows": 1042,
+        "accuracy": 0.915547,
+        "macro_f1": 0.891502,
+        "recall_p1": 0.948454,
+        "support_p1": 582,
+        "support_p2": 184,
+        "support_p3": 264,
+        "support_p4": 12
+      }
+    ]
+  },
+  "p1_error_review": {
+    "rows": 51,
+    "path": "artifacts\\reports\\p1_error_analysis_v0.1.0.csv",
+    "review_policy": "Every P1 false negative must be reviewed by the internal panel before freezing Capa 2 v0.1.0."
+  },
+  "artifacts": {
+    "json": "artifacts\\reports\\evaluation_rulefit_alias_v0.1.0.json",
+    "markdown": "artifacts\\reports\\evaluation_rulefit_alias_v0.1.0.md",
+    "bias_by_province": "artifacts\\reports\\bias_by_province_v0.1.0.csv",
+    "bias_by_year": "artifacts\\reports\\bias_by_year_v0.1.0.csv",
+    "bias_by_category": "artifacts\\reports\\bias_by_category_v0.1.0.csv",
+    "p1_error_analysis": "artifacts\\reports\\p1_error_analysis_v0.1.0.csv"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-05-26T17:32:52.685478+00:00",
+  "models": [
+    {
+      "model": "baseline_expert",
+      "available": true,
+      "test_accuracy": 0.727835,
+      "test_macro_f1": 0.703932,
+      "test_recall_p1": 0.998457,
+      "active_rules": 16,
+      "training_seconds": null,
+      "mean_inference_ms_per_row": null,
+      "model_size_bytes": null
+    },
+    {
+      "model": "rulefit_lite",
+      "available": true,
+      "engine": "lite",
+      "fit_rows": 3000,
+      "test_accuracy": 0.885911,
+      "test_macro_f1": 0.884163,
+      "test_recall_p1": 0.938272,
+      "active_rules": 30,
+      "training_seconds": 6.504204,
+      "mean_inference_ms_per_row": 0.450127,
+      "model_size_bytes": 14472
+    },
+    {
+      "model": "rulefit_imodels",
+      "available": true,
+      "engine": "imodels",
+      "fit_rows": 50,
+      "test_accuracy": 0.768385,
+      "test_macro_f1": 0.568239,
+      "test_recall_p1": 0.902778,
+      "active_rules": 30,
+      "training_seconds": 13.191647,
+      "mean_inference_ms_per_row": 7.496081,
+      "model_size_bytes": 22313
+    }
+  ],
+  "recommendation": {
+    "recommended_model": "rulefit_lite",
+    "criterion": "Maximize test macro-F1, keep high P1 recall, prefer fewer rules on ties."
+  }
+}
