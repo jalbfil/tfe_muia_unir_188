@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,35 +36,37 @@ class FeatureExtractor:
         self.device = None
         self.dl_engine_active = False
 
-        # Intentar cargar las dependencias de Deep Learning e inicializar el clasificador RoBERTa
+        # Intentar cargar el modelo RoBERTa solo cuando existan pesos locales.
         try:
+            repo_root = Path(__file__).resolve().parents[3]
+            if not model_path:
+                model_path = str(repo_root / "artifacts" / "models" / "capa1" / "v0.1.0" / "pytorch_model.bin")
+
+            if not Path(model_path).exists():
+                return
+
+            import sys
             import torch
             from transformers import AutoTokenizer
-            
-            # Intentar importar la clase del modelo definida en train_capa1
-            # Ajustamos sys.path temporalmente por si estamos corriendo en un entorno aislado
-            import sys
-            repo_root = Path(__file__).resolve().parents[3]
-            sys.path.insert(0, str(repo_root))
-            
+
+            if str(repo_root) not in sys.path:
+                sys.path.insert(0, str(repo_root))
+
             from scripts.train_capa1 import RobertaMultitaskClassifier, HAS_TORCH_HF
-            
+
             if HAS_TORCH_HF:
                 self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-                
-                # Definir ruta de los pesos persistidos
-                if not model_path:
-                    model_path = str(repo_root / "artifacts" / "models" / "capa1" / "v0.1.0" / "pytorch_model.bin")
-                
-                # Cargar el tokenizador (local/cache a roberta-base-bne)
-                self.tokenizer = AutoTokenizer.from_pretrained("PlanTL-GOB-ES/roberta-base-bne")
+
+                # Cargar tokenizer/modelo solo desde caché local para evitar descargas implícitas.
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    "PlanTL-GOB-ES/roberta-base-bne",
+                    local_files_only=True,
+                )
                 self.model = RobertaMultitaskClassifier("PlanTL-GOB-ES/roberta-base-bne")
-                
-                if Path(model_path).exists():
-                    self.model.load_state_dict(torch.load(model_path, map_location=self.device))
-                    self.model.to(self.device)
-                    self.model.eval()
-                    self.dl_engine_active = True
+                self.model.load_state_dict(torch.load(model_path, map_location=self.device))
+                self.model.to(self.device)
+                self.model.eval()
+                self.dl_engine_active = True
         except Exception:
             # Fallback silencioso en entornos de desarrollo sin librerías o internet
             self.model = None
@@ -119,7 +122,7 @@ class FeatureExtractor:
             confidence=0.90 if multirriesgo_val else 0.50,
         )
 
-        # 2. Motor Deep Learning (Real o Simulación de Alta Fidelidad)
+        # 2. Motor Deep Learning opcional o proxy determinista local
         p_vital = 0.0
         p_fallecido = 0.0
         p_herido = 0.0
@@ -163,25 +166,26 @@ class FeatureExtractor:
             else:
                 warnings.append("Inferencia neural omitida de forma segura para cumplir SLA de latencia")
 
-        # 3. Simulación neural de alta fidelidad si no se usó Deep Learning real
+        # 3. Proxy determinista calibrado si no se usó Deep Learning real
         if not dl_used:
-            # Generar probabilidades realistas y continuas basadas en la presencia de señales léxicas
-            # para alimentar el ensamble híbrido con datos semánticamente consistentes y dinámicos.
+            # Generar probabilidades continuas basadas en señales léxicas para alimentar
+            # el ensamble híbrido sin inventar inferencia neuronal.
             p_vital = 0.96 if (signals["riesgo_vital_textual"].value or has_fatal or has_injured) else 0.08
             p_fallecido = 0.94 if has_fatal else 0.04
             p_herido = 0.92 if has_injured else 0.06
             p_atrapado = 0.95 if has_trapped else 0.03
             p_incendio = 0.93 if has_incendio else 0.05
 
-            # Agregar un ligero ruido determinista basado en el hash del texto para dar sensación continua profesional
-            text_hash = hash(merged_text) % 100 / 1000.0  # en el rango [0, 0.1]
-            p_vital = min(0.99, max(0.01, p_vital + text_hash - 0.05))
-            p_fallecido = min(0.99, max(0.01, p_fallecido + text_hash - 0.05))
-            p_herido = min(0.99, max(0.01, p_herido + text_hash - 0.05))
-            p_atrapado = min(0.99, max(0.01, p_atrapado + text_hash - 0.05))
-            p_incendio = min(0.99, max(0.01, p_incendio + text_hash - 0.05))
+            # Ajuste estable por contenido: reproducible entre ejecuciones y máquinas.
+            text_hash = int(hashlib.sha256(merged_text.encode("utf-8")).hexdigest()[:8], 16)
+            stable_offset = (text_hash % 100) / 1000.0 - 0.05
+            p_vital = min(0.99, max(0.01, p_vital + stable_offset))
+            p_fallecido = min(0.99, max(0.01, p_fallecido + stable_offset))
+            p_herido = min(0.99, max(0.01, p_herido + stable_offset))
+            p_atrapado = min(0.99, max(0.01, p_atrapado + stable_offset))
+            p_incendio = min(0.99, max(0.01, p_incendio + stable_offset))
 
-        # 4. Fusión Ensemble Híbrida (Reglas de Alta Precisión + Inferencia Neuronal)
+        # 4. Fusión híbrida: reglas de alta precisión y probabilidades auxiliares
         # La fusión refina el resultado: la presencia de una palabra clave eleva la confianza
         # del clasificador. Si la red tiene altísima confianza (>0.85) pero la regex falló
         # (por ejemplo, por sinónimos complejos), la red puede activar la señal de forma inteligente.

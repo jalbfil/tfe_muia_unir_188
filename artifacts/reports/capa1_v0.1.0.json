@@ -1,0 +1,142 @@
+{
+  "generated_at": "2026-06-01T07:34:38.133200+00:00",
+  "model_name": "capa1_deterministic_signal_extractor",
+  "model_version_capa1": "0.1.0",
+  "implementation": "src/capa1_nlp/inference/feature_extractor.py",
+  "training_status": "deterministic_rules_no_transformer_checkpoint",
+  "features_output_contract": "IncidentFeatures",
+  "signals_evaluated": [
+    "signal_fallecido",
+    "signal_herido_grave",
+    "signal_atrapado",
+    "signal_intoxicacion",
+    "signal_varias_llamadas",
+    "signal_incendio",
+    "signal_accidente_trafico",
+    "signal_rescate",
+    "signal_meteo_inundacion",
+    "riesgo_vital_textual"
+  ],
+  "evaluation_base": {
+    "source": "curated operational E2E scenarios",
+    "cases": 5
+  },
+  "metrics": {
+    "signals": {
+      "signal_fallecido": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_herido_grave": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_atrapado": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_intoxicacion": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "tn": 3,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.666667
+      },
+      "signal_varias_llamadas": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_incendio": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_accidente_trafico": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_rescate": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_meteo_inundacion": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "riesgo_vital_textual": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 0,
+        "tn": 2,
+        "precision": 0.666667,
+        "recall": 1.0,
+        "f1": 0.8
+      }
+    },
+    "micro": {
+      "precision": 0.846154,
+      "recall": 1.0,
+      "f1": 0.916667
+    }
+  },
+  "latency": {
+    "mean_ms": 0.31106,
+    "scenario_latencies_ms": [
+      0.5992,
+      0.3023,
+      0.2829,
+      0.175,
+      0.1959
+    ]
+  },
+  "artifacts": {
+    "model_metadata": "artifacts\\models\\capa1\\v0.1.0\\deterministic_extractor.json",
+    "e2e_report": "artifacts\\reports\\capa1_capa2_e2e_v0.1.0.json"
+  },
+  "limitations": [
+    "No hay checkpoint transformer congelado en v0.1.0.",
+    "Las metricas proceden de escenarios operativos curados, no de un gold set externo 112.",
+    "Debe ampliarse con anotacion manual si se congela Capa 1 como modelo productivo."
+  ]
+}

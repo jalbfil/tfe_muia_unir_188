@@ -267,12 +267,22 @@ evaluacion futura con LLM-as-Judge independiente puede reutilizar los mismos 111
 
 \section{Smoke test integrado del prototipo}
 
-Ademas de la evaluacion offline de Capa 2, se ha ejecutado una prueba integrada del
-prototipo v0.1.0 contra el backend en vivo. Esta prueba no sustituye a las metricas de
-test ni a la validacion externa, pero comprueba que la cadena software real funciona de
-extremo a extremo: texto del incidente, extraccion de senales en Capa 1, priorizacion
-RuleFit-lite en Capa 2, explicacion con Ollama en Capa 3 y respuesta consumible por la
-interfaz.
+Ademas de la evaluacion offline de Capa 2, se han ejecutado dos pruebas integradas del
+prototipo v0.1.0. La primera valida la cadena reproducible Capa 1--Capa 2--Capa 3 en
+modo degradado sobre escenarios curados. La segunda comprueba el backend en vivo con
+Ollama local. Ninguna sustituye a las metricas de test ni a la validacion externa, pero
+ambas verifican que la cadena software real funciona de extremo a extremo: texto del
+incidente, extraccion de senales en Capa 1, priorizacion RuleFit-lite en Capa 2,
+explicacion en Capa 3 y respuesta consumible por la interfaz.
+
+La validacion reproducible se conserva en
+\texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.json} y
+\texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}. Tras integrar la rama de Capa
+1, el sistema supera 5/5 escenarios curados con modelo \texttt{RULEFIT} activo:
+incendio urbano con atrapados, accidente de trafico con inconsciente, fuga quimica con
+intoxicacion, inundacion sin victimas e incidencia vial ordinaria. Este ultimo caso
+incluye negaciones explicitas (``no hay heridos ni vehiculos atrapados'') y confirma
+que Capa 1 no activa falsos positivos de atrapamiento tras el saneamiento realizado.
 
 La ejecucion confirma disponibilidad de Ollama y uso del modelo local
 \texttt{llama3.1:8b-instruct-q4\_K\_M}. Los cuatro casos representativos P1--P4 se
@@ -302,6 +312,27 @@ diferenciar dos niveles de madurez: la evaluacion cuantitativa de Capa 2, ya rea
 sobre test estratificado y temporal, y la validacion tecnica del prototipo completo,
 todavia limitada a una prueba de humo controlada.
 
+La Tabla~\ref{tab:9-e2e-capa1-capa2} resume la validacion reproducible posterior a la
+integracion de Capa 1. En ella, las latencias medias son 0.31106 ms para Capa 1,
+347.0036 ms para Capa 2 y 0.30772 ms para Capa 3 degradada. Las metricas micro de
+senales de Capa 1 son precision 0.846154, recall 1.000000 y F1 0.916667.
+
+\begin{table}[ht]
+\centering
+\caption{Validacion reproducible Capa 1--Capa 2--Capa 3}
+\label{tab:9-e2e-capa1-capa2}
+\small
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Caso} & \textbf{Prioridad} & \textbf{OK} & \textbf{Senales clave} \\ \hline
+Incendio urbano con atrapados & P1 & Si & atrapado, incendio, varias llamadas, riesgo vital \\ \hline
+Accidente de trafico grave & P1 & Si & herido grave, atrapado, trafico \\ \hline
+Fuga quimica en nave industrial & P2 & Si & intoxicacion, riesgo vital textual \\ \hline
+Inundacion en garajes & P2 & Si & meteo/inundacion \\ \hline
+Arbol caido en carretera secundaria & P3 & Si & trafico, sin falso atrapamiento \\ \hline
+\end{tabular}
+\end{table}
+
 \section{Limitaciones}
 
 La evaluacion presenta seis limitaciones principales:
@@ -318,9 +349,10 @@ La evaluacion presenta seis limitaciones principales:
     calibracion si el modelo se congela para demostracion.
     \item Las variables externas diferidas en v0.1.0 (AEMET historico, SNCZI y Seveso)
     no participan en esta evaluacion.
-    \item El smoke test integrado demuestra funcionamiento tecnico P1--P4, pero su
-    tamano es pequeno y la latencia media con LLM local, 4.897,888 ms, requiere
-    optimizacion antes de una demostracion exigente.
+    \item Las pruebas integradas demuestran funcionamiento tecnico P1--P4 y validacion
+    Capa 1--Capa 2 sobre 5 escenarios, pero su tamano sigue siendo pequeno y la
+    latencia media con LLM local, 4.897,888 ms, requiere optimizacion antes de una
+    demostracion exigente.
 \end{enumerate}
 
 Pese a estas limitaciones, la evaluacion permite concluir que la Capa 2 seleccionada

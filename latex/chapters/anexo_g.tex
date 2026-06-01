@@ -30,7 +30,9 @@ Las imagenes que se incorporen a este anexo deben cumplir los siguientes criteri
     \item permitir verificar que Capa 2 decide la prioridad y que Capa 3 solo la
     explica;
     \item estar alineadas con el smoke test P1--P4 documentado en
-    \texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md}.
+    \texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md} y con la validacion
+    reproducible Capa 1--Capa 2--Capa 3 documentada en
+    \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}.
 \end{itemize}
 
 \section*{G.3. Capturas previstas}
@@ -58,7 +60,11 @@ con potencial de deterioro. \\ \hline
 G.4. Resultado P3/P4 & Caso ordinario o consulta de baja urgencia con distribucion de
 confianza coherente. & Evidencia que el sistema no eleva todos los incidentes a P1/P2 y
 mantiene gradacion de prioridad. \\ \hline
-G.5. Feedback humano & Formulario de decision del operador con prioridad final,
+G.5. Variables Capa 1 & Panel desplegable con senales extraidas, numero de victimas,
+gravedad, riesgo vital, multirriesgo, accesibilidad y metadatos de inferencia. &
+Permite comprobar que la Capa 1 alimenta la Capa 2 con variables predecisionales y que
+las negaciones no activan falsos positivos. \\ \hline
+G.6. Feedback humano & Formulario de decision del operador con prioridad final,
 aceptacion o discrepancia motivada. & Documenta supervision humana, trazabilidad y
 registro de divergencias. \\ \hline
 \end{tabular}
@@ -88,9 +94,16 @@ figuras activas. Se recomienda usar formato PNG, anchura maxima
 
 % \begin{figure}[ht]
 %     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g3_feedback_humano.png}
+%     \includegraphics[width=0.92\textwidth]{figures/g4_variables_capa1.png}
+%     \caption{Variables y senales extraidas por Capa 1 para alimentar RuleFit-lite}
+%     \label{fig:g4-variables-capa1}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.92\textwidth]{figures/g5_feedback_humano.png}
 %     \caption{Registro de feedback humano y decision final del operador}
-%     \label{fig:g3-feedback-humano}
+%     \label{fig:g5-feedback-humano}
 % \end{figure}
 \end{verbatim}
 
@@ -100,7 +113,9 @@ Las capturas deben interpretarse como evidencia de usabilidad y ejecucion del pr
 no como evaluacion cuantitativa. La evaluacion principal sigue siendo la del
 Capitulo~\ref{cap:9}: comparativa baseline experto, RuleFit-lite e \texttt{imodels},
 recall P1, test temporal, control anti-\textit{leakage}, validacion interna y fidelidad
-explicativa.
+explicativa. La captura de variables de Capa 1 debe servir especialmente para conectar
+la interfaz con la validacion \texttt{capa1\_capa2\_e2e\_v0.1.0}, donde el flujo
+integrado supera 5/5 escenarios curados tras el saneamiento de negaciones.
 
 Por tanto, este anexo queda preparado para completar la memoria con soporte visual una
 vez se seleccionen las capturas definitivas de la interfaz.

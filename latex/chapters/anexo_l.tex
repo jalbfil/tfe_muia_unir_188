@@ -22,7 +22,10 @@ La salida de Capa 1 alimenta directamente la inferencia de Capa 2 mediante el co
 de features permitido. Se han incluido controles simples de negacion para reducir falsos
 positivos en expresiones del tipo ``no hay atrapados'' o ``sin heridos''. Los artefactos
 asociados son \url{artifacts/reports/capa1_v0.1.0.json} y
-\url{artifacts/models/capa1/v0.1.0/deterministic_extractor.json}.
+\url{artifacts/models/capa1/v0.1.0/deterministic_extractor.json}. Tras la integracion con la
+rama de Capa 1, se ha verificado especificamente el caso ``no hay heridos ni vehiculos
+atrapados'', evitando que la negacion active falsos positivos en la senal de
+atrapamiento.
 
 Sus limitaciones principales son la dependencia de patrones textuales explicitos, la
 ausencia de aprendizaje contextual profundo y la necesidad de ampliacion futura con
@@ -147,6 +150,42 @@ El componente mantiene un modo degradado determinista si Ollama no esta disponib
 la respuesta no cumple el contrato esperado. Este modo conserva la prioridad y las
 probabilidades de Capa 2, evitando que un fallo generativo bloquee la recomendacion.
 
+\section*{L.8.1. Validacion integrada Capa 1--Capa 2--Capa 3}
+
+Como control de integracion posterior al merge de la rama de Capa 1, se regenera el
+informe \url{artifacts/reports/capa1_capa2_e2e_v0.1.0.json} junto con su version
+\url{artifacts/reports/capa1_capa2_e2e_v0.1.0.md}. La prueba ejecuta cinco escenarios
+curados y comprueba que las senales extraidas por Capa 1 llegan correctamente a Capa 2,
+que RuleFit esta disponible y que Capa 3 conserva la trazabilidad minima en modo
+degradado.
+
+\begin{table}[ht]
+\centering
+\caption{Resumen de validacion integrada Capa 1--Capa 2--Capa 3}
+\label{tab:model-card-e2e-capa1-capa2}
+\small
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Indicador} & \textbf{Valor} \\ \hline
+Casos curados & 5 \\ \hline
+Casos correctos & 5 \\ \hline
+Casos fallidos & 0 \\ \hline
+Modelo Capa 2 observado & \texttt{RULEFIT} \\ \hline
+Precision micro Capa 1 & 0.846154 \\ \hline
+Recall micro Capa 1 & 1.000000 \\ \hline
+F1 micro Capa 1 & 0.916667 \\ \hline
+Latencia media Capa 1 & 0.31106 ms \\ \hline
+Latencia media Capa 2 & 347.0036 ms \\ \hline
+Latencia media Capa 3 degradada & 0.30772 ms \\ \hline
+\end{tabular}
+\end{table}
+
+El resultado 5/5 permite afirmar que, tras integrar los cambios de Ancor en Capa 1, el
+flujo texto del incidente, extraccion de senales, priorizacion RuleFit-lite y explicacion
+degradada funciona de forma consistente. Esta validacion no sustituye al smoke test con
+Ollama ni a la evaluacion offline de Capa 2, pero aporta evidencia de compatibilidad
+entre capas.
+
 \begin{table}[ht]
 \centering
 \caption{Smoke test integrado Capa 1--Capa 2--Capa 3}
@@ -196,6 +235,6 @@ y los artefactos principales de metricas, sesgo, validacion interna y fidelidad.
     calibracion cuando el modelo sea congelado.
     \item El rendimiento debe interpretarse dentro del alcance v0.1.0, sin variables
     externas diferidas como AEMET historico, SNCZI o Seveso.
-    \item La prueba integrada con Ollama valida el flujo completo, pero todavia no
-    mide utilidad percibida ni impacto real en sala.
+    \item Las pruebas integradas con Ollama y con Capa 3 degradada validan el flujo
+    completo, pero todavia no miden utilidad percibida ni impacto real en sala.
 \end{itemize}
