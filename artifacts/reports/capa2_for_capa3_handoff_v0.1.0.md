@@ -1,10 +1,7 @@
 # Handoff Capa 2 -> Capa 3 v0.1.0
 
-## Mensaje para Brian
-
-Brian, copia o actualiza la rama `juancarlos` antes de empezar con Capa 3. Esta
-rama contiene la integracion actualizada de Capa 1 y Capa 2, los reportes E2E y
-el endpoint `POST /predict` con el contexto preparado para explicaciones.
+Actualiza la rama `juancarlos` antes de empezar con Capa 3. Esta
+rama contiene la integracion actualizada de Capa 1 y Capa 2, los reportes E2E y el endpoint `POST /predict` con el contexto preparado para explicaciones.
 
 Este archivo resume lo que debes tener claro para avanzar:
 
@@ -15,9 +12,8 @@ Este archivo resume lo que debes tener claro para avanzar:
 - Capa 3 no debe recalcular la prioridad: debe explicar la decision de Capa 2,
   apoyarse en normativa/RAG/MCP y presentar el resultado al operador.
 
-La idea central es sencilla: Capa 1 lee el incidente, Capa 2 prioriza y Capa 3
-explica. El LLM ayuda a redactar y justificar, pero no sustituye al motor de
-priorizacion.
+La idea central es: Capa 1 lee el incidente, Capa 2 prioriza y Capa 3
+explica. El LLM ayuda a redactar y justificar, pero no sustituye al motor de priorizacion.
 
 ## Objetivo
 
