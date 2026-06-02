@@ -8,7 +8,7 @@ Esta guía explica detalladamente cómo comprobar el funcionamiento, ejecutar la
 
 *   `src/capa1_nlp/extraction/signal_extractor.py`: Extractor determinista de señales léxicas por expresiones regulares en español para el 112 CyL.
 *   `src/capa1_nlp/inference/feature_extractor.py`: Wrapper principal de inferencia que orquesta el extractor de señales, computa las variables operativas y valida los esquemas contractuales de Pydantic v2.
-*   `scripts/train_capa1.py`: Pipeline de entrenamiento multitarrea para `roberta-base-bne` con cabezas lineales independientes y simulación integrada de alto rendimiento.
+*   `scripts/train_capa1.py`: Marcador de alcance. En v0.1.0 no entrena transformers ni genera métricas simuladas; remite al reporte determinista y al E2E integrado.
 
 ---
 
@@ -23,8 +23,8 @@ En la siguiente tabla se detallan las tareas asignadas a Ancor (`[A]` individual
 | **T042** | `[A]` | Test de Latencia de Inferencia ($\le 500\text{ ms}$ p95) | [test_capa1_latency.py](tfe_muia_unir_188/src/capa1_nlp/tests/test_capa1_latency.py) |
 | **T043** | `[A]` | Test de Prevención de Fuga de Datos (Anti-Leakage) | [test_capa1_anti_leakage.py](tfe_muia_unir_188/src/capa1_nlp/tests/test_capa1_anti_leakage.py) |
 | **T044** | `[A]` | Extractor determinista de 10 señales léxicas (Regex) | [signal_extractor.py](tfe_muia_unir_188/src/capa1_nlp/extraction/signal_extractor.py) |
-| **T045** | `[A]` | Dataset de PyTorch para clasificación multitarrea | Clase `MultitaskDataset` en [train_capa1.py](tfe_muia_unir_188/scripts/train_capa1.py#L37-L73) |
-| **T046** | `[A]` | Script de entrenamiento multitarrea `roberta-base-bne` | [train_capa1.py](tfe_muia_unir_188/scripts/train_capa1.py) |
+| **T045** | `[A]` | Dataset de PyTorch para clasificación multitarrea | Diferido a trabajo futuro; Capa 1 v0.1.0 queda determinista |
+| **T046** | `[A]` | Entrenamiento multitarrea `roberta-base-bne` | Diferido a trabajo futuro; no hay checkpoint congelado en v0.1.0 |
 | **T047** | `[A]` | Wrapper de inferencia unificado (Capa 1 NLP) | [feature_extractor.py](tfe_muia_unir_188/src/capa1_nlp/inference/feature_extractor.py) |
 | **T048** | `[A]` | Reporte de métricas técnicas de test (F1, Recall) | [capa1_v0.1.0.json](tfe_muia_unir_188/artifacts/reports/capa1_v0.1.0.json) |
 | **T049** | `[A]` | Ficha técnica (*Model Card*) académica | [anexo_l.tex](tfe_muia_unir_188/latex/chapters/anexo_l.tex) |
@@ -53,19 +53,21 @@ pytest tests/test_leakage_gate.py -v
 
 ---
 
-## 📈 2. Ejecución del Entrenamiento y Generación de Métricas
+## 📈 2. Alcance del entrenamiento de Capa 1
 
-Para comprobar el pipeline de carga del dataset y el guardado del reporte de métricas de la Capa 1, ejecuta:
+En v0.1.0 la Capa 1 no entrena transformers. Para evitar confusión metodológica,
+`scripts/train_capa1.py` actúa como marcador explícito de alcance: no genera checkpoints
+ni métricas simuladas. La evidencia oficial de Capa 1 procede del extractor
+determinista y de la validación integrada.
 
 ```powershell
 python scripts/train_capa1.py
 ```
 
 ### Salida Esperada:
-*   El script detectará si el entorno tiene PyTorch/HuggingFace y cargará el dataset de emergencias. 
-*   Si no se dispone de hardware específico en el entorno actual de desarrollo, iniciará de forma automática en **modo simulación**.
-*   Generará el reporte de calidad técnica oficial del modelo en la ruta:
-    📄 `artifacts/reports/capa1_v0.1.0.json`
+*   Indicará que Capa 1 v0.1.0 es determinista.
+*   Remitirá a `artifacts/reports/capa1_v0.1.0.json`.
+*   Remitirá a `artifacts/reports/capa1_capa2_e2e_v0.1.0.json`.
 
 ---
 

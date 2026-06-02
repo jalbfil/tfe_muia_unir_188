@@ -121,7 +121,14 @@ V15 & Accesibilidad de recursos & Modular complejidad de intervencion & Activa \
 
 Ademas de variables estructuradas, la Capa 1 extrae se\~nales textuales booleanas con confianza asociada. Algunas son criticas para no infraestimar incidentes graves: \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_fallecido} o \texttt{riesgo\_vital\_textual}. Otras ayudan a contextualizar: \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_varias\_llamadas} y \texttt{signal\_meteo\_inundacion}.
 
-La Capa 1 combina dos aproximaciones. Por un lado, reglas deterministas y diccionarios lexicos detectan se\~nales robustas de alto impacto. Por otro, un modelo transformer en espa\~nol puede aprender patrones mas flexibles para variables menos triviales. Esta combinacion evita depender exclusivamente de un modelo opaco y permite tests de contrato sobre casos golden.
+En la version \texttt{v0.1.0}, la Capa 1 se implementa como extractor determinista
+auditable. Reglas lexicas, patrones de negacion y diccionarios operativos detectan
+se\~nales robustas de alto impacto, como atrapamiento, herido grave, incendio,
+intoxicacion o riesgo vital textual. Esta decision reduce dependencias externas,
+facilita los tests de contrato y evita presentar como validado un modelo neuronal que
+no dispone de checkpoint congelado. El uso de modelos transformer para extraccion
+contextual queda reservado como linea futura, condicionada a entrenamiento, versionado
+y evaluacion especifica.
 
 \section{Capa 2: priorizacion interpretable con RuleFit}
 

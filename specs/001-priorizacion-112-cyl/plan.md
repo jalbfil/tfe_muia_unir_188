@@ -7,13 +7,13 @@
 
 ## Summary
 
-DSS de tres capas para priorizar incidentes 112 en Castilla y León. **Capa 1** extrae variables operativas desde texto libre con un transformer en español fine-tuned. **Capa 2** entrena RuleFit sobre etiqueta académica P1–P4 construida por supervisión débil, y se compara contra baseline experto y techo XGBoost. **Capa 3** genera explicaciones con LLM local cuantizado, RAG sobre corpus normativo CyL y tool calling, y se expone como **servidor MCP** para integración con clientes externos. Coordinación entre capas mediante contratos Pydantic v2 versionados. Despliegue 100% on-premise sobre hardware del equipo.
+DSS de tres capas para priorizar incidentes 112 en Castilla y León. **Capa 1** extrae variables operativas desde texto libre mediante reglas deterministas auditables en v0.1.0; los transformers quedan como línea futura si se dispone de checkpoint congelado y evaluado. **Capa 2** entrena RuleFit sobre etiqueta académica P1–P4 construida por supervisión débil, y se compara contra baseline experto y una ejecución diagnóstica de RuleFit canónico. **Capa 3** genera explicaciones con LLM local cuantizado, RAG sobre corpus normativo CyL y tool calling, y se expone como **servidor MCP** para integración con clientes externos. Coordinación entre capas mediante contratos Pydantic v2 versionados. Despliegue 100% on-premise sobre hardware del equipo.
 
 ## Technical Context
 
 **Languages**: Python 3.11 (todas las capas + backend + scripts), Markdown/LaTeX (documento), opcional TypeScript/React (UI mínima)
 **Primary Dependencies**:
-- Capa 1: `transformers`, `torch` (CUDA 12.x), modelo base `PlanTL-GOB-ES/roberta-base-bne` (MarIA) o `BSC-LT/roberta-base-bne`
+- Capa 1: extractor determinista propio en `src/capa1_nlp`; `transformers`/`torch` quedan fuera del alcance v0.1.0.
 - Capa 2: `imodels` (RuleFit), `scikit-learn`, `xgboost` (techo), `snorkel` o equivalente (weak supervision), `shap` (auditoría XGBoost)
 - Capa 3: `llama-cpp-python` o `ollama` (LLM cuantizado), `chromadb` (vector store), `sentence-transformers` (`paraphrase-multilingual-MiniLM-L12-v2`), `mcp` (Anthropic MCP SDK Python)
 - Contratos: `pydantic>=2.5`, `polyfactory` (test fixtures)
@@ -185,7 +185,7 @@ Salida: [research.md](./research.md)
 
 Decisiones que requieren justificación documental:
 
-1. **Modelo NLP español**: MarIA (RoBERTa-bne) vs BETO vs XLM-RoBERTa
+1. **Extractor NLP español**: reglas deterministas auditables en v0.1.0; comparación MarIA (RoBERTa-bne) vs BETO vs XLM-RoBERTa diferida a trabajo futuro.
 2. **Implementación RuleFit**: `imodels` vs Microsoft `InterpretML` vs implementación custom
 3. **Framework de weak supervision**: Snorkel vs Cleanlab vs implementación custom con majority voting
 4. **LLM local**: Qwen2.5-7B-Instruct Q4_K_M vs Llama-3.1-8B-Instruct Q4_K_M vs Mistral-7B

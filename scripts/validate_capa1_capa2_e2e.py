@@ -354,7 +354,7 @@ def run_validation() -> dict[str, Any]:
         "cases": rows,
         "limitations": [
             "Curated smoke test, not a replacement for the full offline Capa 2 evaluation.",
-            "Capa 1 v0.1.0 uses deterministic lexical rules; transformer training remains pending.",
+            "Capa 1 v0.1.0 uses deterministic lexical rules; transformer training is out of scope for this version.",
             "Capa 3 runs in degraded mode because LLM installation is intentionally deferred.",
         ],
     }
@@ -367,7 +367,7 @@ def write_capa1_report(payload: dict[str, Any], report_path: Path, model_meta_pa
         "model_name": "capa1_deterministic_signal_extractor",
         "model_version_capa1": "0.1.0",
         "implementation": "src/capa1_nlp/inference/feature_extractor.py",
-        "training_status": "deterministic_rules_no_transformer_checkpoint",
+        "training_status": "deterministic_rules_transformer_out_of_scope_v0.1.0",
         "features_output_contract": "IncidentFeatures",
         "signals_evaluated": SIGNALS,
         "evaluation_base": {
@@ -386,7 +386,7 @@ def write_capa1_report(payload: dict[str, Any], report_path: Path, model_meta_pa
             "e2e_report": str(DEFAULT_E2E_JSON.relative_to(PROJECT_ROOT)),
         },
         "limitations": [
-            "No hay checkpoint transformer congelado en v0.1.0.",
+            "No se entrena ni valida transformer en v0.1.0; queda como linea futura.",
             "Las metricas proceden de escenarios operativos curados, no de un gold set externo 112.",
             "Debe ampliarse con anotacion manual si se congela Capa 1 como modelo productivo.",
         ],

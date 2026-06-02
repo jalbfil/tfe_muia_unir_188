@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-01T07:34:38.133200+00:00",
+  "generated_at": "2026-06-02T17:47:55.883300+00:00",
   "model_name": "capa1_deterministic_signal_extractor",
   "model_version_capa1": "0.1.0",
   "implementation": "src/capa1_nlp/inference/feature_extractor.py",
-  "training_status": "deterministic_rules_no_transformer_checkpoint",
+  "training_status": "deterministic_rules_transformer_out_of_scope_v0.1.0",
   "features_output_contract": "IncidentFeatures",
   "signals_evaluated": [
     "signal_fallecido",
@@ -106,28 +106,28 @@
       },
       "riesgo_vital_textual": {
         "tp": 2,
-        "fp": 1,
+        "fp": 0,
         "fn": 0,
-        "tn": 2,
-        "precision": 0.666667,
+        "tn": 3,
+        "precision": 1.0,
         "recall": 1.0,
-        "f1": 0.8
+        "f1": 1.0
       }
     },
     "micro": {
-      "precision": 0.846154,
+      "precision": 0.916667,
       "recall": 1.0,
-      "f1": 0.916667
+      "f1": 0.956522
     }
   },
   "latency": {
-    "mean_ms": 0.31106,
+    "mean_ms": 0.20928,
     "scenario_latencies_ms": [
-      0.5992,
-      0.3023,
-      0.2829,
-      0.175,
-      0.1959
+      0.23,
+      0.2536,
+      0.2176,
+      0.1843,
+      0.1609
     ]
   },
   "artifacts": {
@@ -135,7 +135,7 @@
     "e2e_report": "artifacts\\reports\\capa1_capa2_e2e_v0.1.0.json"
   },
   "limitations": [
-    "No hay checkpoint transformer congelado en v0.1.0.",
+    "No se entrena ni valida transformer en v0.1.0; queda como linea futura.",
     "Las metricas proceden de escenarios operativos curados, no de un gold set externo 112.",
     "Debe ampliarse con anotacion manual si se congela Capa 1 como modelo productivo."
   ]

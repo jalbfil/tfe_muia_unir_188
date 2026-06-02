@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T07:34:38.133200+00:00",
+  "generated_at": "2026-06-02T17:47:55.883300+00:00",
   "scope": "T040-T049/T091 compatibility validation without LLM installation",
   "environment": {
     "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
@@ -15,9 +15,9 @@
     "capa2_models_used": [
       "RULEFIT"
     ],
-    "mean_capa1_latency_ms": 0.31106,
-    "mean_capa2_latency_ms": 347.0036,
-    "mean_capa3_degraded_latency_ms": 0.30772
+    "mean_capa1_latency_ms": 0.20928,
+    "mean_capa2_latency_ms": 193.95686,
+    "mean_capa3_degraded_latency_ms": 0.0384
   },
   "capa1_signal_metrics": {
     "signals": {
@@ -104,18 +104,18 @@
       },
       "riesgo_vital_textual": {
         "tp": 2,
-        "fp": 1,
+        "fp": 0,
         "fn": 0,
-        "tn": 2,
-        "precision": 0.666667,
+        "tn": 3,
+        "precision": 1.0,
         "recall": 1.0,
-        "f1": 0.8
+        "f1": 1.0
       }
     },
     "micro": {
-      "precision": 0.846154,
+      "precision": 0.916667,
       "recall": 1.0,
-      "f1": 0.916667
+      "f1": 0.956522
     }
   },
   "cases": [
@@ -174,9 +174,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido > 0.500; s",
       "latency_ms": {
-        "capa1": 0.5992,
-        "capa2": 1733.2867,
-        "capa3_degraded": 1.3088
+        "capa1": 0.23,
+        "capa2": 968.4571,
+        "capa3_degraded": 0.0919
       },
       "passed": true
     },
@@ -213,7 +213,7 @@
         "signal_accidente_trafico": true,
         "signal_rescate": false,
         "signal_meteo_inundacion": false,
-        "riesgo_vital_textual": true
+        "riesgo_vital_textual": false
       },
       "signals_ok": true,
       "acceptable_priorities": [
@@ -223,10 +223,10 @@
       "priority_recommended": "P1",
       "priority_ok": true,
       "probabilities": {
-        "P1": 0.978642,
-        "P2": 0.0213,
-        "P3": 5.8e-05,
-        "P4": 0.0
+        "P1": 0.997046,
+        "P2": 0.000116,
+        "P3": 0.002836,
+        "P4": 2e-06
       },
       "confidence_level": "HIGH",
       "model_used_capa2": "RULEFIT",
@@ -235,9 +235,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido > 0.500; s",
       "latency_ms": {
-        "capa1": 0.3023,
-        "capa2": 0.5602,
-        "capa3_degraded": 0.1737
+        "capa1": 0.2536,
+        "capa2": 0.3625,
+        "capa3_degraded": 0.0291
       },
       "passed": true
     },
@@ -295,9 +295,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico > 0.500 & signal_i",
       "latency_ms": {
-        "capa1": 0.2829,
-        "capa2": 0.5162,
-        "capa3_degraded": 0.0235
+        "capa1": 0.2176,
+        "capa2": 0.4965,
+        "capa3_degraded": 0.0425
       },
       "passed": true
     },
@@ -356,9 +356,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico > 0.500 & signal_i",
       "latency_ms": {
-        "capa1": 0.175,
-        "capa2": 0.3381,
-        "capa3_degraded": 0.0198
+        "capa1": 0.1843,
+        "capa2": 0.2517,
+        "capa3_degraded": 0.0177
       },
       "passed": true
     },
@@ -417,16 +417,16 @@
       "capa3_citations": 0,
       "explanation_excerpt": "Incidente clasificado como URGENCIA MEDIA (P3). Reglas activadas: signal_accidente_trafico <= 0.500 & riesgo_vital_textual <= 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido <= 0.500;",
       "latency_ms": {
-        "capa1": 0.1959,
-        "capa2": 0.3168,
-        "capa3_degraded": 0.0128
+        "capa1": 0.1609,
+        "capa2": 0.2165,
+        "capa3_degraded": 0.0108
       },
       "passed": true
     }
   ],
   "limitations": [
     "Curated smoke test, not a replacement for the full offline Capa 2 evaluation.",
-    "Capa 1 v0.1.0 uses deterministic lexical rules; transformer training remains pending.",
+    "Capa 1 v0.1.0 uses deterministic lexical rules; transformer training is out of scope for this version.",
     "Capa 3 runs in degraded mode because LLM installation is intentionally deferred."
   ]
 }

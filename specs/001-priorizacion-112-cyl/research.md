@@ -69,7 +69,7 @@ Cada entrada sigue el formato Spec Kit: **Decision · Rationale · Alternatives 
 ## R-07 Modelo de embeddings
 
 - **Decision**: `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (~120 MB, 384 dims).
-- **Rationale**: rápido en CPU, calidad suficiente para retrieval en corpus jurídico-administrativo en español, no consume VRAM (la VRAM se reserva para LLM y transformer Capa 1).
+- **Rationale**: rápido en CPU, calidad suficiente para retrieval en corpus jurídico-administrativo en español, no consume VRAM (la VRAM se reserva para el LLM local; Capa 1 v0.1.0 queda como extractor determinista).
 - **Alternatives considered**:
   - **`BAAI/bge-m3`** — mejor calidad pero 2,3 GB y 1024 dims; ocupa más RAM y reduce throughput.
   - **`intfloat/multilingual-e5-base`** — alternativa razonable; queda como plan B.
