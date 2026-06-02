@@ -1,12 +1,12 @@
 # Validacion end-to-end Capa 1 -> Capa 2 -> Capa 3 degradada v0.1.0
 
-- Generado: `2026-06-02T17:47:55.883300+00:00`
+- Generado: `2026-06-02T17:57:47.544128+00:00`
 - Casos: `5`
 - Casos OK: `5`
 - Capa 2 usa RuleFit: `True`
 - Modelo Capa 2 observado: `['RULEFIT']`
-- Latencia media Capa 1 ms: `0.20928`
-- Latencia media Capa 2 ms: `193.95686`
+- Latencia media Capa 1 ms: `0.42244`
+- Latencia media Capa 2 ms: `220.93672`
 
 | Caso | Prioridad | Modelo C2 | OK | Senales clave |
 |---|---:|---|---:|---|

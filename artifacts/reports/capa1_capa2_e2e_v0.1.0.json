@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-02T17:47:55.883300+00:00",
+  "generated_at": "2026-06-02T17:57:47.544128+00:00",
   "scope": "T040-T049/T091 compatibility validation without LLM installation",
   "environment": {
     "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
@@ -15,9 +15,9 @@
     "capa2_models_used": [
       "RULEFIT"
     ],
-    "mean_capa1_latency_ms": 0.20928,
-    "mean_capa2_latency_ms": 193.95686,
-    "mean_capa3_degraded_latency_ms": 0.0384
+    "mean_capa1_latency_ms": 0.42244,
+    "mean_capa2_latency_ms": 220.93672,
+    "mean_capa3_degraded_latency_ms": 0.0984
   },
   "capa1_signal_metrics": {
     "signals": {
@@ -174,9 +174,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido > 0.500; s",
       "latency_ms": {
-        "capa1": 0.23,
-        "capa2": 968.4571,
-        "capa3_degraded": 0.0919
+        "capa1": 0.2659,
+        "capa2": 1101.215,
+        "capa3_degraded": 0.2478
       },
       "passed": true
     },
@@ -235,9 +235,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido > 0.500; s",
       "latency_ms": {
-        "capa1": 0.2536,
-        "capa2": 0.3625,
-        "capa3_degraded": 0.0291
+        "capa1": 0.4768,
+        "capa2": 1.0743,
+        "capa3_degraded": 0.0899
       },
       "passed": true
     },
@@ -295,9 +295,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico > 0.500 & signal_i",
       "latency_ms": {
-        "capa1": 0.2176,
-        "capa2": 0.4965,
-        "capa3_degraded": 0.0425
+        "capa1": 0.548,
+        "capa2": 0.9347,
+        "capa3_degraded": 0.0691
       },
       "passed": true
     },
@@ -356,9 +356,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico > 0.500 & signal_i",
       "latency_ms": {
-        "capa1": 0.1843,
-        "capa2": 0.2517,
-        "capa3_degraded": 0.0177
+        "capa1": 0.4002,
+        "capa2": 0.8016,
+        "capa3_degraded": 0.058
       },
       "passed": true
     },
@@ -417,9 +417,9 @@
       "capa3_citations": 0,
       "explanation_excerpt": "Incidente clasificado como URGENCIA MEDIA (P3). Reglas activadas: signal_accidente_trafico <= 0.500 & riesgo_vital_textual <= 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido <= 0.500;",
       "latency_ms": {
-        "capa1": 0.1609,
-        "capa2": 0.2165,
-        "capa3_degraded": 0.0108
+        "capa1": 0.4213,
+        "capa2": 0.658,
+        "capa3_degraded": 0.0272
       },
       "passed": true
     }

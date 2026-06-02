@@ -88,6 +88,20 @@ def test_t093_predict_priority_details_has_probabilities(client: TestClient):
     assert details["model_used"] in ("RULEFIT", "BASELINE_EXPERT", "FALLBACK")
 
 
+def test_t093_predict_explanation_context_for_capa3(client: TestClient):
+    """T093-B3: Capa 2 entrega contexto estable para Capa 3."""
+    resp = client.post("/predict", json=_INCIDENTE_P1)
+    context = resp.json()["explanation_context"]
+
+    assert context["incident_id"] == _INCIDENTE_P1["incident_id"]
+    assert context["decision_source"] == "capa2_rulefit_lite_v0.1.0"
+    assert context["priority_recommended"] in ("P1", "P2", "P3", "P4")
+    assert set(context["probabilities"]) == {"P1", "P2", "P3", "P4"}
+    assert context["probability_margin"] >= 0.0
+    assert context["anti_leakage_status"].startswith("ok_no_forbidden_columns")
+    assert isinstance(context["evidence"], list)
+
+
 def test_t093_predict_recommendation_has_required_fields(client: TestClient):
     """T093-C: recommendation tiene todos los campos del contrato."""
     resp = client.post("/predict", json=_INCIDENTE_P1)

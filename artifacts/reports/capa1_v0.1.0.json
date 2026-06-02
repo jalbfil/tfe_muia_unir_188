@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-02T17:47:55.883300+00:00",
+  "generated_at": "2026-06-02T17:57:47.544128+00:00",
   "model_name": "capa1_deterministic_signal_extractor",
   "model_version_capa1": "0.1.0",
   "implementation": "src/capa1_nlp/inference/feature_extractor.py",
@@ -121,13 +121,13 @@
     }
   },
   "latency": {
-    "mean_ms": 0.20928,
+    "mean_ms": 0.42244,
     "scenario_latencies_ms": [
-      0.23,
-      0.2536,
-      0.2176,
-      0.1843,
-      0.1609
+      0.2659,
+      0.4768,
+      0.548,
+      0.4002,
+      0.4213
     ]
   },
   "artifacts": {
