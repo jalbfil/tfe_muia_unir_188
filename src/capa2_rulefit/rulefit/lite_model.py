@@ -21,6 +21,14 @@ class RuleSetClassifierModel:
     rules_by_class: dict[str, list[dict[str, Any]]]
     model_version: str = "0.1.0"
 
+    def _ensure_classifier_compatibility(self) -> None:
+        """Patch known attribute gaps when loading persisted sklearn artifacts."""
+
+        # sklearn>=1.7 expects this attribute in LogisticRegression; some
+        # persisted artifacts created elsewhere may not carry it.
+        if not hasattr(self.classifier, "multi_class"):
+            setattr(self.classifier, "multi_class", "auto")
+
     def transform(self, x: np.ndarray) -> np.ndarray:
         parts = [x]
         for label in self.class_labels:
@@ -31,6 +39,7 @@ class RuleSetClassifierModel:
 
     def predict_proba_from_row(self, row: dict[str, Any]) -> dict[str, float]:
         x = np.asarray([row_to_vector(row, self.feature_names)], dtype=float)
+        self._ensure_classifier_compatibility()
         raw = self.classifier.predict_proba(self.transform(x))[0]
         calibrated = []
         for idx, label in enumerate(self.class_labels):

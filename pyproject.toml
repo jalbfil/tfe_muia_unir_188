@@ -36,7 +36,7 @@ capa2 = [
     "imodels>=2.0,<3",
     "joblib>=1.5,<2",
     "pandas>=2.2,<4",
-    "scikit-learn>=1.5,<2",
+    "scikit-learn==1.7.2",
 ]
 dev = [
     "ruff>=0.5",

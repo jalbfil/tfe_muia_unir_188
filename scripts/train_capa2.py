@@ -18,7 +18,6 @@ sys.path.insert(0, str(SRC_ROOT))
 import joblib  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-from imodels import RuleFitClassifier  # noqa: E402
 from sklearn.linear_model import LogisticRegression  # noqa: E402
 from sklearn.isotonic import IsotonicRegression  # noqa: E402
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_recall_fscore_support  # noqa: E402
@@ -112,6 +111,14 @@ def _train_models(
     alpha: float,
     n_estimators: int,
 ) -> tuple[RuleFitOvRModel, dict[str, Any]]:
+    try:
+        from imodels import RuleFitClassifier
+    except Exception as exc:
+        raise RuntimeError(
+            "Engine 'imodels' requires imodels to be installed and importable. "
+            "Use --engine lite or install compatible imodels dependencies."
+        ) from exc
+
     estimators: dict[str, Any] = {}
     calibrators: dict[str, Any] = {}
     rules_by_class: dict[str, list[dict[str, Any]]] = {}

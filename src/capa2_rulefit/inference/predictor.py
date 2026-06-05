@@ -109,7 +109,12 @@ def _rulefit_recommendation(features: IncidentFeatures) -> PriorityRecommendatio
     model = _load_rulefit_model()
     if model is None:
         return None
-    probabilities_raw = model.predict_proba_from_row(incident_features_to_row(features))
+    try:
+        probabilities_raw = model.predict_proba_from_row(incident_features_to_row(features))
+    except Exception:
+        # If persisted RuleFit artifacts are incompatible with the active
+        # runtime, degrade gracefully to the interpretable baseline.
+        return None
     probabilities = {Priority(label): value for label, value in probabilities_raw.items()}
     recommended = max(probabilities, key=probabilities.get)
     p_max = probabilities[recommended]
