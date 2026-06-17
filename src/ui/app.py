@@ -1,8 +1,8 @@
 """T101 — Interfaz Gráfica de Usuario (Streamlit UI) para el DSS 112 CyL.
 
 Proporciona una consola operativa para el operador 112 con formulario de incidentes,
-visualización reactiva de prioridad en colores curados HSL, explicación con base legal,
-desglose de reglas operativas RuleFit y registro interactivo de la decisión final (HITL).
+visualización reactiva de prioridad en colores curados HSL, explicación operativa,
+desglose de reglas RuleFit y registro interactivo de la decisión final (HITL).
 """
 
 from __future__ import annotations
@@ -540,7 +540,7 @@ with col_form:
                 response = run_predict(incident)
                 if response:
                     st.session_state.predict_response = response
-                    st.success("Priorización y análisis legal completados.")
+                    st.success("Priorización y análisis operativo completados.")
                 else:
                     st.session_state.predict_response = None
         except Exception as e:
@@ -639,42 +639,14 @@ with col_dashboard:
 
         st.markdown("---")
         
-        # 4. Bases Legales y Citas
-        st.markdown("#### ⚖️ Sustento Normativo y Recomendaciones")
-        citations = rec.get("legal_citations", [])
-        if citations:
-            for idx, cit in enumerate(citations):
-                _art_raw = str(cit.get("articulo_o_seccion") or "").strip()
-                _low = _art_raw.lower()
-                for _pre in ("artículo ", "articulo ", "art. ", "art ", "art.", "art"):
-                    if _low.startswith(_pre):
-                        _art_raw = _art_raw[len(_pre):].strip()
-                        break
-                if _art_raw and _art_raw.lower() != "general":
-                    _art_label = f" (Art. {_art_raw})"
-                else:
-                    _art_label = ""
-                
-                url_url = cit.get("url_oficial")
-                if url_url and str(url_url).lower() not in ("none", "null", ""):
-                    url_link_markdown = f"\n                    🔗 [Ver Boletín Oficial (BOE/BOCYL)]({url_url})"
-                else:
-                    url_link_markdown = ""
-                
-                st.markdown(
-                    f"""
-                    🔹 **{cit['norma_id']}{_art_label}**: 
-                    > "{cit['texto_relevante']}"  {url_link_markdown}
-                    """
-                )
-        else:
-            st.markdown("*No se requieren citas legales obligatorias para prioridades ordinarias (P3/P4).*")
-            
+        # 4. Recomendaciones operativas del MVP
+        st.markdown("#### 📌 Recomendaciones operativas")
         hints = rec.get("actuation_hints", [])
         if hints:
-            st.markdown("##### 📌 Pautas de Actuación recomendadas:")
             for hint in hints:
                 st.markdown(f"- {hint}")
+        else:
+            st.markdown("*Sin pautas operativas adicionales para este caso.*")
 
         # 4.5. Variables Operativas Extraídas (Capa 1 NLP)
         features = res.get("features")
@@ -705,49 +677,36 @@ with col_dashboard:
             else:
                 st.markdown("*No se activaron reglas operativas de urgencia específicas.*")
 
-        # 5b. Trazabilidad de proceso IA (tools MCP + temperatura)
+        # 5b. Trazabilidad de proceso IA
         with st.expander("🔬 Trazabilidad del proceso de IA (Capa 3)"):
             llm_meta_full = rec.get("llm_metadata", {})
             if isinstance(llm_meta_full, dict):
-                tools = llm_meta_full.get("tools_invoked", [])
                 temp = llm_meta_full.get("temperature", None)
                 tokens_in = llm_meta_full.get("tokens_input")
                 tokens_out = llm_meta_full.get("tokens_output")
                 st.markdown(f"**Modelo LLM:** `{llm_meta_full.get('llm_model', '—')}`")
                 st.markdown(f"**Temperatura:** `{temp}` {'✅ modo producción (0.0)' if temp == 0.0 else '⚠️ temperatura distinta de 0'}")
-                st.markdown(f"**Tools MCP invocadas:** {', '.join(f'`{t}`' for t in tools) if tools else '*ninguna (modo degradado)*'}")
                 if tokens_in is not None:
                     st.markdown(f"**Tokens entrada / salida:** `{tokens_in}` / `{tokens_out}`")
                 st.markdown(f"**Motor Capa 2:** `{priority_details.get('model_used', '—')}` · versión `{priority_details.get('model_version_capa2', '—')}`")
-                st.caption("La temperatura 0.0 garantiza determinismo de la explicación (NFR-009). "
-                           "Las tools MCP confirman que se consultó el corpus normativo real.")
+                st.caption("La temperatura 0.0 garantiza determinismo de la explicación (NFR-009).")
             else:
                 st.markdown("*Metadatos LLM no disponibles.*")
 
-        # 5c. Tabla causal: Señal activa → Regla RuleFit → Base normativa
+        # 5c. Tabla causal: Señal activa → Regla RuleFit
         _rules_full = priority_details.get("activated_rules", [])
-        _citations = rec.get("legal_citations", [])
-        if _rules_full or _citations:
-            with st.expander("🔗 Cadena causal: Señal → Regla → Norma"):
-                st.caption("Trazabilidad completa de la recomendación: por qué cada señal del incidente activó qué regla y qué norma la respalda.")
+        if _rules_full:
+            with st.expander("🔗 Cadena causal: Señal → Regla"):
+                st.caption("Trazabilidad operativa de la recomendación: por qué cada señal del incidente activó una regla del motor.")
                 _table_rows = []
                 for _r in _rules_full[:10]:
-                    _anchors = _r.get("normative_anchors", []) if isinstance(_r, dict) else []
-                    _normas = ", ".join(f"`{a}`" for a in _anchors) if _anchors else "—"
                     _table_rows.append({
                         "🚨 Señal / Evidencia": _r.get("human_text", "—")[:60] if isinstance(_r, dict) else str(_r)[:60],
                         "Peso": f"{_r.get('weight', 0.0):.3f}" if isinstance(_r, dict) else "—",
-                        "⚖️ Norma anclaje": _normas,
                     })
                 if _table_rows:
                     import pandas as _pd
                     st.dataframe(_pd.DataFrame(_table_rows), use_container_width=True, hide_index=True)
-                else:
-                    # Fallback cuando solo hay summary (modo degradado)
-                    _act = rec.get("activated_rules_summary", [])
-                    _raw_cit = ", ".join(f"`{c['norma_id']}`" for c in _citations) if _citations else "—"
-                    for _rs in _act:
-                        st.markdown(f"- **{_rs}** → {_raw_cit}")
 
         # 6. HITL — Interacción Humana Decisiva
         st.markdown("---")
@@ -838,7 +797,6 @@ with col_dashboard:
             },
             "capa3": {
                 "explicacion": rec.get("explanation_text"),
-                "citas": rec.get("legal_citations", []),
                 "pautas": rec.get("actuation_hints", []),
                 "llm_metadata": rec.get("llm_metadata", {}),
             },
