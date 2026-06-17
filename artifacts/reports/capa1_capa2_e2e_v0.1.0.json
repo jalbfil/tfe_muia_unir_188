@@ -1,0 +1,432 @@
+{
+  "generated_at": "2026-06-17T15:28:15.185531+00:00",
+  "scope": "T040-T049/T091 compatibility validation without LLM installation",
+  "environment": {
+    "python_version": "3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 15:03:56) [MSC v.1929 64 bit (AMD64)]",
+    "rulefit_model_path": "artifacts\\models\\capa2\\v0.1.0\\rulefit.joblib",
+    "rulefit_model_available": true,
+    "llm_installed": false,
+    "capa3_mode": "degraded-static-v0.1.0"
+  },
+  "summary": {
+    "cases": 5,
+    "passed_cases": 5,
+    "failed_cases": 0,
+    "capa2_models_used": [
+      "RULEFIT"
+    ],
+    "mean_capa1_latency_ms": 0.74972,
+    "mean_capa2_latency_ms": 285.82126,
+    "mean_capa3_degraded_latency_ms": 0.04788
+  },
+  "capa1_signal_metrics": {
+    "signals": {
+      "signal_fallecido": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_herido_grave": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_atrapado": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_intoxicacion": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "tn": 3,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.666667
+      },
+      "signal_varias_llamadas": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_incendio": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_accidente_trafico": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_rescate": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "tn": 5,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "signal_meteo_inundacion": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "riesgo_vital_textual": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      }
+    },
+    "micro": {
+      "precision": 0.916667,
+      "recall": 1.0,
+      "f1": 0.956522
+    }
+  },
+  "cases": [
+    {
+      "incident_id": "E2E-P1-ATRAPADO-INCENDIO",
+      "title": "Incendio urbano con atrapados",
+      "category": "INCENDIO_URBANO",
+      "province": "BURGOS",
+      "rationale": "P1 esperado por incendio, atrapamiento, varias llamadas y riesgo vital textual.",
+      "expected_signals_subset": {
+        "signal_incendio": true,
+        "signal_atrapado": true,
+        "signal_varias_llamadas": true,
+        "riesgo_vital_textual": true
+      },
+      "expected_signals_complete": {
+        "signal_fallecido": false,
+        "signal_herido_grave": false,
+        "signal_atrapado": true,
+        "signal_intoxicacion": false,
+        "signal_varias_llamadas": true,
+        "signal_incendio": true,
+        "signal_accidente_trafico": false,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": false,
+        "riesgo_vital_textual": true
+      },
+      "observed_signals": {
+        "signal_fallecido": false,
+        "signal_herido_grave": false,
+        "signal_atrapado": true,
+        "signal_intoxicacion": true,
+        "signal_varias_llamadas": true,
+        "signal_incendio": true,
+        "signal_accidente_trafico": false,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": false,
+        "riesgo_vital_textual": true
+      },
+      "signals_ok": true,
+      "acceptable_priorities": [
+        "P1"
+      ],
+      "priority_recommended": "P1",
+      "priority_ok": true,
+      "probabilities": {
+        "P1": 0.97353,
+        "P2": 0.026133,
+        "P3": 0.000337,
+        "P4": 0.0
+      },
+      "confidence_level": "HIGH",
+      "model_used_capa2": "RULEFIT",
+      "activated_rules_count": 1,
+      "capa3_model": "degraded-static-v0.1.0",
+      "capa3_citations": 1,
+      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: signal_intoxicacion > 0.500 & signal_varias_llamadas > 0.500.",
+      "latency_ms": {
+        "capa1": 1.1114,
+        "capa2": 1427.1465,
+        "capa3_degraded": 0.1011
+      },
+      "passed": true
+    },
+    {
+      "incident_id": "E2E-P1-TRAFICO-INCONSCIENTE",
+      "title": "Accidente de trafico grave",
+      "category": "ACCIDENTE_TRAFICO",
+      "province": "LEON",
+      "rationale": "P1/P2 aceptable por accidente grave con inconsciencia y atrapamiento.",
+      "expected_signals_subset": {
+        "signal_accidente_trafico": true,
+        "signal_herido_grave": true,
+        "signal_atrapado": true
+      },
+      "expected_signals_complete": {
+        "signal_fallecido": false,
+        "signal_herido_grave": true,
+        "signal_atrapado": true,
+        "signal_intoxicacion": false,
+        "signal_varias_llamadas": false,
+        "signal_incendio": false,
+        "signal_accidente_trafico": true,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": false,
+        "riesgo_vital_textual": false
+      },
+      "observed_signals": {
+        "signal_fallecido": false,
+        "signal_herido_grave": true,
+        "signal_atrapado": true,
+        "signal_intoxicacion": false,
+        "signal_varias_llamadas": false,
+        "signal_incendio": false,
+        "signal_accidente_trafico": true,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": false,
+        "riesgo_vital_textual": false
+      },
+      "signals_ok": true,
+      "acceptable_priorities": [
+        "P1",
+        "P2"
+      ],
+      "priority_recommended": "P1",
+      "priority_ok": true,
+      "probabilities": {
+        "P1": 0.997046,
+        "P2": 0.000116,
+        "P3": 0.002836,
+        "P4": 2e-06
+      },
+      "confidence_level": "HIGH",
+      "model_used_capa2": "RULEFIT",
+      "activated_rules_count": 6,
+      "capa3_model": "degraded-static-v0.1.0",
+      "capa3_citations": 3,
+      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: Riesgo vital explícito requiere máxima prioridad académica; Herido grave atrapado combina daño personal y rescate urgente; Herido grave sin fallecimiento mantiene prioridad ",
+      "latency_ms": {
+        "capa1": 0.6855,
+        "capa2": 0.5714,
+        "capa3_degraded": 0.0569
+      },
+      "passed": true
+    },
+    {
+      "incident_id": "E2E-P1-QUIMICO-INTOXICACION",
+      "title": "Fuga quimica en nave industrial",
+      "category": "QUIMICO_NRBQ",
+      "province": "VALLADOLID",
+      "rationale": "P1/P2 aceptable por riesgo quimico e intoxicacion.",
+      "expected_signals_subset": {
+        "signal_intoxicacion": true,
+        "riesgo_vital_textual": true
+      },
+      "expected_signals_complete": {
+        "signal_fallecido": false,
+        "signal_herido_grave": false,
+        "signal_atrapado": false,
+        "signal_intoxicacion": true,
+        "signal_varias_llamadas": false,
+        "signal_incendio": false,
+        "signal_accidente_trafico": false,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": false,
+        "riesgo_vital_textual": true
+      },
+      "observed_signals": {
+        "signal_fallecido": false,
+        "signal_herido_grave": false,
+        "signal_atrapado": false,
+        "signal_intoxicacion": true,
+        "signal_varias_llamadas": false,
+        "signal_incendio": false,
+        "signal_accidente_trafico": false,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": false,
+        "riesgo_vital_textual": true
+      },
+      "signals_ok": true,
+      "acceptable_priorities": [
+        "P1",
+        "P2"
+      ],
+      "priority_recommended": "P1",
+      "priority_ok": true,
+      "probabilities": {
+        "P1": 0.97,
+        "P2": 0.01,
+        "P3": 0.01,
+        "P4": 0.01
+      },
+      "confidence_level": "HIGH",
+      "model_used_capa2": "RULEFIT",
+      "activated_rules_count": 3,
+      "capa3_model": "degraded-static-v0.1.0",
+      "capa3_citations": 2,
+      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: Puerta de seguridad: Presencia de fallecido, riesgo vital inminente o soporte vital detectado.; signal_intoxicacion > 0.500 & signal_varias_llamadas <= 0.500 & cat_incendio ",
+      "latency_ms": {
+        "capa1": 0.7275,
+        "capa2": 0.4379,
+        "capa3_degraded": 0.0318
+      },
+      "passed": true
+    },
+    {
+      "incident_id": "E2E-P2-INUNDACION",
+      "title": "Inundacion en garajes",
+      "category": "METEOROLOGIA",
+      "province": "SALAMANCA",
+      "rationale": "No hay victimas; se acepta prioridad no P1, con seguimiento operativo.",
+      "expected_signals_subset": {
+        "signal_meteo_inundacion": true,
+        "signal_herido_grave": false
+      },
+      "expected_signals_complete": {
+        "signal_fallecido": false,
+        "signal_herido_grave": false,
+        "signal_atrapado": false,
+        "signal_intoxicacion": false,
+        "signal_varias_llamadas": false,
+        "signal_incendio": false,
+        "signal_accidente_trafico": false,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": true,
+        "riesgo_vital_textual": false
+      },
+      "observed_signals": {
+        "signal_fallecido": false,
+        "signal_herido_grave": false,
+        "signal_atrapado": false,
+        "signal_intoxicacion": false,
+        "signal_varias_llamadas": false,
+        "signal_incendio": false,
+        "signal_accidente_trafico": false,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": true,
+        "riesgo_vital_textual": false
+      },
+      "signals_ok": true,
+      "acceptable_priorities": [
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "priority_recommended": "P2",
+      "priority_ok": true,
+      "probabilities": {
+        "P1": 0.002453,
+        "P2": 0.856765,
+        "P3": 0.040231,
+        "P4": 0.100551
+      },
+      "confidence_level": "HIGH",
+      "model_used_capa2": "RULEFIT",
+      "activated_rules_count": 2,
+      "capa3_model": "degraded-static-v0.1.0",
+      "capa3_citations": 1,
+      "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: signal_intoxicacion <= 0.500 & signal_meteo_inundacion > 0.500 & riesgo_vital_textual <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico <= 0.500 & cat_incendi",
+      "latency_ms": {
+        "capa1": 0.5525,
+        "capa2": 0.383,
+        "capa3_degraded": 0.0233
+      },
+      "passed": true
+    },
+    {
+      "incident_id": "E2E-P3-INCIDENCIA-VIA",
+      "title": "Arbol caido en carretera secundaria",
+      "category": "INCIDENCIA_VIA",
+      "province": "SORIA",
+      "rationale": "Incidencia ordinaria sin victimas; P3/P4 es coherente.",
+      "expected_signals_subset": {
+        "signal_accidente_trafico": true,
+        "signal_herido_grave": false,
+        "signal_atrapado": false
+      },
+      "expected_signals_complete": {
+        "signal_fallecido": false,
+        "signal_herido_grave": false,
+        "signal_atrapado": false,
+        "signal_intoxicacion": false,
+        "signal_varias_llamadas": false,
+        "signal_incendio": false,
+        "signal_accidente_trafico": true,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": false,
+        "riesgo_vital_textual": false
+      },
+      "observed_signals": {
+        "signal_fallecido": false,
+        "signal_herido_grave": false,
+        "signal_atrapado": false,
+        "signal_intoxicacion": false,
+        "signal_varias_llamadas": false,
+        "signal_incendio": false,
+        "signal_accidente_trafico": true,
+        "signal_rescate": false,
+        "signal_meteo_inundacion": false,
+        "riesgo_vital_textual": false
+      },
+      "signals_ok": true,
+      "acceptable_priorities": [
+        "P3",
+        "P4"
+      ],
+      "priority_recommended": "P3",
+      "priority_ok": true,
+      "probabilities": {
+        "P1": 0.024223,
+        "P2": 0.037917,
+        "P3": 0.937136,
+        "P4": 0.000724
+      },
+      "confidence_level": "HIGH",
+      "model_used_capa2": "RULEFIT",
+      "activated_rules_count": 1,
+      "capa3_model": "degraded-static-v0.1.0",
+      "capa3_citations": 1,
+      "explanation_excerpt": "Incidente clasificado como URGENCIA MEDIA (P3). Reglas activadas: Accidente de tráfico sin señal crítica conserva prioridad de seguimiento.",
+      "latency_ms": {
+        "capa1": 0.6717,
+        "capa2": 0.5675,
+        "capa3_degraded": 0.0263
+      },
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Curated smoke test, not a replacement for the full offline Capa 2 evaluation.",
+    "Capa 1 v0.1.0 uses deterministic lexical rules; transformer training is out of scope for this version.",
+    "Capa 3 runs in degraded mode because LLM installation is intentionally deferred."
+  ]
+}

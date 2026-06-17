@@ -1,0 +1,121 @@
+\chapter{Capturas previstas del prototipo}
+\label{cap:anexog}
+
+\section*{G.1. Finalidad del anexo}
+
+Este anexo deja preparada la documentacion visual del prototipo software v0.1.0. En la
+version actual no se incorporan capturas de pantalla definitivas, porque estas deben
+tomarse sobre una ejecucion estable del backend, la interfaz y Ollama local. El objetivo
+es fijar que evidencias visuales deben anadirse, que debe mostrar cada una y como se
+relacionan con los resultados descritos en los Capitulos~\ref{cap:8}, \ref{cap:9} y
+\ref{cap:10}.
+
+Las capturas no sustituyen a los artefactos reproducibles ni a las metricas. Su funcion
+es facilitar la defensa del TFM mostrando que la arquitectura no se queda en una
+descripcion abstracta, sino que existe una interfaz capaz de ejecutar el flujo completo:
+entrada textual, extraccion de senales, priorizacion RuleFit-lite, explicacion local,
+probabilidades P1--P4 y registro de feedback humano.
+
+\section*{G.2. Criterios para incorporar capturas}
+
+Las imagenes que se incorporen a este anexo deben cumplir los siguientes criterios:
+
+\begin{itemize}
+    \item proceder de una ejecucion local del prototipo v0.1.0;
+    \item no contener datos personales, telefonos, direcciones completas ni informacion
+    sensible de personas reales;
+    \item usar incidentes sinteticos o casos anonimizados;
+    \item mostrar claramente la prioridad recomendada, la distribucion de confianza y
+    la explicacion generada;
+    \item permitir verificar que Capa 2 decide la prioridad y que Capa 3 solo la
+    explica;
+    \item estar alineadas con el smoke test P1--P4 documentado en
+    \texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md} y con la validacion
+    reproducible Capa 1--Capa 2--Capa 3 documentada en
+    \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}.
+\end{itemize}
+
+\section*{G.3. Capturas previstas}
+
+La Tabla~\ref{tab:anexo-g-capturas-previstas} resume las capturas que conviene anadir
+cuando se cierre la version visual del prototipo.
+
+\begin{table}[ht]
+\centering
+\caption{Capturas previstas para documentar el prototipo}
+\label{tab:anexo-g-capturas-previstas}
+\small
+\begin{tabular}{|l|p{5.2cm}|p{5.1cm}|}
+\hline
+\textbf{Figura prevista} & \textbf{Contenido esperado} & \textbf{Evidencia que aporta} \\ \hline
+G.1. Entrada de incidente & Formulario de la interfaz con titulo, descripcion,
+provincia, municipio y texto operativo. & Demuestra que el prototipo acepta entrada
+manual controlada y permite reproducir incidentes sinteticos. \\ \hline
+G.2. Resultado P1 & Incidente critico, prioridad P1, probabilidades P1--P4,
+reglas/senales activadas y explicacion local. & Muestra el comportamiento esperado ante
+riesgo vital, atrapados, inconscientes, fallecidos o incendio grave. \\ \hline
+G.3. Resultado P2 & Incidente relevante sin criticidad vital inmediata, prioridad P2 y
+explicacion asociada. & Ilustra la separacion entre emergencia critica y caso relevante
+con potencial de deterioro. \\ \hline
+G.4. Resultado P3/P4 & Caso ordinario o consulta de baja urgencia con distribucion de
+confianza coherente. & Evidencia que el sistema no eleva todos los incidentes a P1/P2 y
+mantiene gradacion de prioridad. \\ \hline
+G.5. Variables Capa 1 & Panel desplegable con senales extraidas, numero de victimas,
+gravedad, riesgo vital, multirriesgo, accesibilidad y metadatos de inferencia. &
+Permite comprobar que la Capa 1 alimenta la Capa 2 con variables predecisionales y que
+las negaciones no activan falsos positivos. \\ \hline
+G.6. Feedback humano & Formulario de decision del operador con prioridad final,
+aceptacion o discrepancia motivada. & Documenta supervision humana, trazabilidad y
+registro de divergencias. \\ \hline
+\end{tabular}
+\end{table}
+
+\section*{G.4. Plantilla LaTeX para insertar las figuras}
+
+Cuando se disponga de las imagenes definitivas, deben guardarse en
+\texttt{latex/figures/} con nombres estables y sustituir los bloques comentados por
+figuras activas. Se recomienda usar formato PNG, anchura maxima
+\texttt{0.92\textbackslash textwidth} y pies de figura descriptivos pero breves.
+
+\begin{verbatim}
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.92\textwidth]{figures/g1_entrada_incidente.png}
+%     \caption{Entrada manual de un incidente sintetico en el prototipo}
+%     \label{fig:g1-entrada-incidente}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.92\textwidth]{figures/g2_resultado_p1.png}
+%     \caption{Priorizacion P1, probabilidades y explicacion local}
+%     \label{fig:g2-resultado-p1}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.92\textwidth]{figures/g4_variables_capa1.png}
+%     \caption{Variables y senales extraidas por Capa 1 para alimentar RuleFit-lite}
+%     \label{fig:g4-variables-capa1}
+% \end{figure}
+
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=0.92\textwidth]{figures/g5_feedback_humano.png}
+%     \caption{Registro de feedback humano y decision final del operador}
+%     \label{fig:g5-feedback-humano}
+% \end{figure}
+\end{verbatim}
+
+\section*{G.5. Relacion con la evidencia experimental}
+
+Las capturas deben interpretarse como evidencia de usabilidad y ejecucion del prototipo,
+no como evaluacion cuantitativa. La evaluacion principal sigue siendo la del
+Capitulo~\ref{cap:9}: comparativa baseline experto, RuleFit-lite e \texttt{imodels},
+recall P1, test temporal, control anti-\textit{leakage}, validacion interna y fidelidad
+explicativa. La captura de variables de Capa 1 debe servir especialmente para conectar
+la interfaz con la validacion \texttt{capa1\_capa2\_e2e\_v0.1.0}, donde el flujo
+integrado supera 5/5 escenarios curados tras el saneamiento de negaciones.
+
+Por tanto, este anexo queda preparado para completar la memoria con soporte visual una
+vez se seleccionen las capturas definitivas de la interfaz.

@@ -1,69 +1,120 @@
-\chapter{Identificación de requisitos del sistema}
+\chapter{Identificacion de requisitos del sistema}
 \label{cap:5}
 
-% \section*{Introducción al capítulo}
-% En un TFM de Tipo 2 (Desarrollo de software), la identificación de requisitos no es un trámite previo a la programación, sino el momento en el que se traduce todo el análisis del dominio —el problema operativo, el marco normativo, las fuentes de datos, las restricciones del entorno— en especificaciones concretas que guían el diseño y la implementación del sistema. Sin esta traducción, el riesgo es construir un prototipo técnicamente funcional pero desconectado de las necesidades reales del contexto para el que se concibe.
-% Este capítulo define con precisión qué problema resuelve el sistema, para quién lo resuelve, qué debe hacer (requisitos funcionales), cómo debe comportarse (requisitos no funcionales) y dentro de qué límites opera (restricciones y supuestos). Las decisiones recogidas aquí condicionan directamente el diseño del motor de priorización presentado en el Capítulo 6, la arquitectura del prototipo documentada en el Capítulo 8 y los criterios de evaluación aplicados en el Capítulo 9.
-% \section{Definición formal del problema operativo}
-% El problema que aborda el sistema puede formularse de la siguiente manera: dado un entorno de coordinación de emergencias —un CECOP autonómico, un puesto de mando avanzado o la sala operativa de un servicio 112— en el que confluyen múltiples incidentes simultáneos con información fragmentaria e incierta, el responsable operativo necesita determinar, en el menor tiempo posible, cuáles de esos incidentes requieren atención prioritaria y bajo qué marco de coordinación deben gestionarse.
-% La unidad de análisis del sistema es el incidente operativo individual, entendido como un suceso comunicado al centro de coordinación que requiere algún tipo de valoración y, potencialmente, una respuesta. Cada incidente se caracteriza por un conjunto de atributos —tipo, localización, gravedad aparente, contexto meteorológico, presencia de población vulnerable, entre otros— que pueden estar parcialmente informados en el momento de la recepción y que se enriquecen progresivamente a medida que llega nueva información.
-% Priorizar, en el contexto de este sistema, no significa clasificar incidentes en categorías estancas ni ordenarlos en un ranking numérico abstracto. Significa asignar a cada incidente una estimación de su urgencia operativa relativa —expresada en la escala P1–P4, una abstracción operativa propia del prototipo inspirada en la lógica de situaciones operativas de la Norma Básica de Protección Civil (Ministerio del Interior, 2023)—, acompañada de un nivel de confianza, una sugerencia de situación operativa y una explicación de los factores que han determinado esa estimación. La prioridad resultante no es una decisión cerrada, sino una recomendación estructurada que el operador puede aceptar, modificar o rechazar.
-% Esta distinción es fundamental: el sistema no es un clasificador automático que sustituye el criterio del operador. Es una herramienta de apoyo a la decisión que pretende reducir el tiempo que el responsable necesita para formarse una primera impresión fundamentada sobre la urgencia de cada incidente —lo que hemos definido como Time To First Decision (TTFD)—. La diferencia entre clasificar y apoyar la decisión tiene consecuencias directas sobre el diseño: un clasificador se evalúa por su precisión; un sistema de apoyo a la decisión se evalúa, además, por la utilidad de sus explicaciones, por su capacidad de señalar incertidumbre cuando la información es insuficiente y por la facilidad con la que el operador puede supervisar y corregir sus recomendaciones.
-% El problema tiene, además, dos características que lo distinguen de un problema estándar de clasificación supervisada. En primer lugar, la información disponible en el momento de la primera decisión es casi siempre incompleta: el operador puede conocer la localización aproximada y la naturaleza aparente del incidente, pero rara vez dispone de todos los datos que el motor necesitaría para producir una estimación óptima. El sistema debe ser capaz de operar bajo estas condiciones de incertidumbre, produciendo una recomendación razonable con la información disponible y señalando qué datos adicionales mejorarían la fiabilidad de la estimación. En segundo lugar, la prioridad no es estática: un incidente inicialmente clasificado como P3 puede escalar a P1 si se confirman víctimas, si las condiciones meteorológicas empeoran o si se descubre que el punto de impacto está próximo a una instalación sujeta al Real Decreto 840/2015 de control de riesgos por sustancias peligrosas (Ministerio de la Presidencia, 2015). El motor debe poder reevaluar la prioridad cuando se actualiza la información, sin que cada nueva evaluación sea independiente de la anterior.
-% \section{Usuario objetivo, rol y contexto de uso}
-% El sistema está diseñado para un perfil de usuario específico: el responsable de coordinación o mando en un entorno operativo de emergencias. Este perfil incluye, entre otros, al jefe de sala de un CECOP autonómico, al responsable de un puesto de mando avanzado (PMA), al coordinador de turno de un servicio 112 —cuyas funciones de recepción, identificación, evaluación y movilización están reguladas por la Ley 4/2024 de Protección Civil de Aragón (Cortes de Aragón, 2024)— y, en general, a cualquier persona que, en un momento dado, deba tomar decisiones sobre la asignación de atención y recursos ante múltiples incidentes simultáneos.
-% No se trata de un usuario genérico ni de un ciudadano que consulta información sobre emergencias. Es un profesional con experiencia operativa, familiarizado con la terminología del dominio —situaciones operativas, planes de protección civil, grupos de acción, avisos meteorológicos— y acostumbrado a tomar decisiones bajo presión temporal y con información incompleta. Esta experiencia previa es un requisito funcional del sistema, no un supuesto prescindible: la recomendación del motor cobra sentido cuando la recibe alguien capaz de interpretarla, cuestionarla si es necesario y contextualizarla dentro de la situación operativa global que, por definición, el sistema no puede captar en toda su complejidad.
-% El contexto de uso es el de un entorno de coordinación operativa en el que el usuario recibe avisos de incidentes procedentes de múltiples canales —llamadas al 112, alertas de organismos oficiales, partes de servicios desplegados— y debe decidir cómo distribuir su atención y qué acciones iniciar en primer lugar. El sistema se presenta como una herramienta que, en paralelo a la recepción de avisos, ofrece al operador una recomendación de prioridad para cada incidente, junto con la explicación de los factores que la sustentan. El operador consulta la recomendación, la valida o la corrige, y el sistema registra esa decisión para garantizar la trazabilidad.
-% Conviene aclarar lo que el sistema no pretende ser. No es un sustituto del sistema de gestión de incidentes del 112, ni una interfaz de despacho automático de recursos, ni una plataforma de comunicaciones entre servicios de emergencia. No requiere integración productiva con los sistemas institucionales cerrados del centro de coordinación para funcionar como prototipo de investigación, aunque su diseño modular permitiría esa integración en un desarrollo futuro. En el contexto de este TFM, el sistema opera de forma autónoma sobre los datos que recibe, sin presuponer un acoplamiento con infraestructuras que no están disponibles para el equipo.
-% \section{Requisitos funcionales}
-% Los requisitos funcionales describen qué debe ser capaz de hacer el sistema para cumplir su propósito. Se presentan a continuación organizados según la secuencia lógica del flujo de procesamiento de un incidente, desde su recepción hasta el registro de la decisión del operador.
-% \paragraph{RF1. Recepción y estructuración del incidente}
-% El sistema debe ser capaz de recibir la información relativa a un incidente —ya sea mediante entrada manual del operador o mediante importación de datos estructurados— y transformarla en un registro normalizado que contenga, como mínimo, la localización, la descripción del suceso, el tipo aparente de incidente, la fecha y hora de recepción y la fuente del aviso. Cuando la entrada sea textual no estructurada, el sistema debe aplicar técnicas de procesamiento del lenguaje natural para extraer las entidades relevantes.
-% \paragraph{RF2. Clasificación inicial del tipo de incidente}
-% A partir de la información recibida, el sistema debe asignar el incidente a una categoría de la taxonomía operativa definida en el Capítulo 3 (nivel 1 y, cuando sea posible, nivel 2). Esta clasificación condiciona qué variables contextuales se activan y qué reglas de priorización aplican.
-% \paragraph{RF3. Incorporación de contexto oficial}
-% El sistema debe enriquecer la información del incidente con datos procedentes de fuentes oficiales externas cuando resulte pertinente, en consonancia con el principio de información sistematizada que establece la Ley 17/2015 del Sistema Nacional de Protección Civil (Jefatura del Estado, 2015). Esto incluye, según el tipo de incidente y la localización, la consulta del nivel de aviso meteorológico vigente (AEMET), la verificación de la peligrosidad por inundación de la zona (SNCZI/MITECO), la comprobación de proximidad a instalaciones sujetas al Real Decreto 840/2015 (Ministerio de la Presidencia, 2015) y la estimación de la densidad de población y vulnerabilidad demográfica de la zona afectada (INE). La incorporación de estos datos debe ser automática o semiautomática, sin requerir que el operador los busque manualmente.
-% \paragraph{RF4. Cálculo de la prioridad}
-% El sistema debe calcular la prioridad operativa del incidente aplicando la arquitectura del baseline interpretable de tres capas: primero, la capa de reglas duras, que evalúa condiciones deterministas de prioridad máxima (por ejemplo, riesgo vital inmediato confirmado); segundo, la capa de scoring explicable, que pondera las variables de entrada normalizadas para producir una puntuación; y tercero, la capa de confianza, que estima la fiabilidad de la recomendación en función de la completitud de la información disponible. El resultado debe expresarse en la escala P1–P4 definida para el prototipo.
-% \paragraph{RF5. Cálculo del nivel de confianza}
-% El sistema debe generar, para cada incidente priorizado, un indicador del nivel de confianza de la recomendación. Este indicador debe reflejar la proporción de variables de entrada que el sistema ha podido evaluar efectivamente, distinguiendo entre las recomendaciones apoyadas en información suficiente y aquellas que se basan en datos parciales o ausentes. El operador debe poder identificar de un vistazo si la prioridad recomendada es robusta o si conviene interpretarla con cautela.
-% \paragraph{RF6. Sugerencia de situación operativa}
-% El sistema debe producir, como salida derivada, una sugerencia de la situación operativa (0–3) —conforme al esquema establecido por la Norma Básica de Protección Civil (Ministerio del Interior, 2023)— que podría corresponder al incidente según los indicadores disponibles. Esta sugerencia no tiene carácter vinculante ni jurídico; se trata de una orientación operativa que el sistema genera como apoyo adicional al operador. Debe presentarse siempre acompañada de la advertencia de que la determinación formal de la situación operativa corresponde a la autoridad competente.
-% \paragraph{RF7. Generación de la explicación}
-% El sistema debe producir, para cada incidente priorizado, una explicación textual resumida de los factores que han determinado la prioridad asignada. La explicación debe indicar qué variables han tenido mayor peso, qué reglas duras se han activado (si las hay) y qué factores contextuales han modulado la puntuación. El operador debe poder leer esta explicación y comprender por qué el sistema ha producido esa recomendación concreta, sin necesidad de conocer los detalles internos del algoritmo.
-% \paragraph{RF8. Validación humana de la recomendación}
-% El sistema debe permitir al operador revisar la recomendación y confirmarla, modificarla o rechazarla. La validación humana no es una funcionalidad opcional, sino un requisito esencial derivado de la naturaleza del dominio. La prioridad que finalmente se aplica es la que decide el operador, no la que recomienda el sistema.
-% \paragraph{RF9. Almacenamiento de trazabilidad}
-% El sistema debe registrar, para cada incidente, la recomendación generada por el motor (prioridad, confianza, explicación), la decisión final adoptada por el operador (si difiere de la recomendación) y la marca temporal de ambas acciones. Este registro cumple una doble función: permite la evaluación posterior del sistema y garantiza la trazabilidad operativa que exige la normativa de protección civil.
-% \section{Requisitos no funcionales}
-% Los requisitos no funcionales definen cómo debe comportarse el sistema más allá de lo que hace. En un dominio donde las recomendaciones pueden influir en la protección de personas, estos requisitos no son secundarios: condicionan la confianza que el operador deposita en el sistema y, en última instancia, determinan si la herramienta resulta útil o se descarta por opaca, rígida o poco fiable.
-% \subsection{Explicabilidad}
-% El sistema debe ser capaz de explicar cada una de sus recomendaciones de forma comprensible para el operador. Esto implica que la salida del motor no puede limitarse a un valor numérico o a una etiqueta de prioridad: debe incluir una justificación legible que identifique los factores determinantes y permita al usuario valorar si la recomendación es razonable en el contexto concreto de la situación.
-% La explicabilidad no es un complemento estético, sino un requisito funcional derivado de la naturaleza del dominio. En un entorno donde las decisiones afectan a la seguridad de las personas, una recomendación que el operador no puede comprender ni cuestionar es, en la práctica, inútil o, peor aún, peligrosa. La confianza del operador en el sistema depende directamente de su capacidad para entender por qué el sistema dice lo que dice. Este requisito condiciona la elección de la arquitectura del motor: un baseline interpretable basado en reglas y scoring ponderado satisface este requisito de forma más natural que un modelo de caja negra que requiriese técnicas de explicabilidad post-hoc.
-% \subsection{Trazabilidad}
-% Toda recomendación del sistema debe ser rastreable hasta sus datos de entrada, las reglas aplicadas y las variables que la determinaron. El operador, un auditor posterior o el propio equipo de desarrollo deben poder reconstruir, para cualquier incidente, el camino que siguió el motor desde la información recibida hasta la prioridad recomendada.
-% Este requisito responde a una doble exigencia. Por un lado, la normativa de protección civil prevé la existencia de registros de datos sobre emergencias y exige trazabilidad en la gestión de las actuaciones (Jefatura del Estado, 2015). Por otro, la evaluación del sistema requiere poder analizar a posteriori por qué se asignó una prioridad determinada a cada caso del dataset piloto, lo que solo es posible si el motor registra el detalle de su procesamiento interno. La trazabilidad es, además, un requisito previo para la mejora iterativa del sistema: sin saber qué reglas se activaron y qué variables pesaron más, no es posible identificar los puntos de ajuste del baseline.
-% \subsection{Modularidad}
-% El sistema debe estar diseñado como un conjunto de módulos desacoplados que puedan desarrollarse, probarse y modificarse de forma independiente. Como mínimo, deben ser separables el módulo de entrada y estructuración de incidentes, el motor de priorización, el módulo de consulta de fuentes externas, el backend de servicios y la interfaz de usuario.
-% La modularidad no es solo una buena práctica de ingeniería del software; es una necesidad derivada de la organización del equipo —con tres integrantes trabajando en ejes funcionales distintos— y de la propia naturaleza del dominio. Un motor de priorización que esté embebido de forma inseparable en la interfaz de usuario no puede evaluarse de forma independiente, ni puede adaptarse a un contexto territorial diferente sin reescribir todo el sistema. La modularidad garantiza que el motor es una pieza autónoma cuyo diseño analítico puede valorarse con independencia del frontend y del backend que lo rodean.
-% \subsection{Supervisión humana obligatoria}
-% Ninguna recomendación del sistema debe traducirse automáticamente en una acción operativa sin la intervención explícita del operador. El sistema recomienda, pero el ser humano decide. Este principio, enunciado ya en la introducción del TFM y reforzado en las consideraciones éticas del Capítulo 4, se materializa aquí como un requisito no funcional con implicaciones de diseño concretas.
-% En la práctica, significa que el prototipo no incluye ningún mecanismo de activación automática de planes, movilización de recursos ni envío de alertas. La interfaz presenta la recomendación al operador y espera una acción de confirmación, modificación o rechazo antes de registrar la decisión. Este diseño no responde a una limitación técnica, sino a una decisión ética y normativa: en un dominio donde un error puede costar vidas, la responsabilidad de la decisión debe recaer siempre en un profesional con criterio para evaluar si la recomendación del sistema es apropiada en el contexto específico de la emergencia.
-% \subsection{Robustez ante información incompleta}
-% El sistema debe ser capaz de producir una recomendación razonable incluso cuando parte de la información de entrada no está disponible. Esta situación no es excepcional, sino la norma: en los primeros minutos de una emergencia, el operador rara vez dispone de todos los datos que el motor necesitaría para una evaluación óptima. Puede conocer la localización aproximada y el tipo aparente de incidente, pero no tener confirmación de víctimas, ni datos meteorológicos de detalle, ni información sobre la accesibilidad al punto.
-% Un sistema que solo funcionase con información completa sería inútil precisamente cuando más se necesita. La robustez ante información incompleta se implementa en el motor a través de dos mecanismos: el uso de valores por defecto conservadores para las variables no informadas —que evitan infraestimar la urgencia por falta de datos— y el ajuste del nivel de confianza, que desciende proporcionalmente al número de variables que el sistema no ha podido evaluar. De esta forma, el operador recibe una recomendación aunque la información sea parcial, pero sabe que esa recomendación está sujeta a una incertidumbre mayor que si la información fuese completa.
-% \section{Restricciones y supuestos del sistema}
-% Todo sistema opera dentro de un conjunto de restricciones que delimitan lo que puede y lo que no puede hacer. Identificar estas restricciones de forma explícita es un ejercicio de honestidad metodológica que evita expectativas desajustadas y permite al lector —y al tribunal— interpretar los resultados del TFM en su justa medida.
-% La primera restricción es que el sistema se desarrolla como un prototipo de investigación académica, no como un producto preparado para su despliegue operativo en un centro de coordinación real. Esto implica que determinadas funcionalidades que serían imprescindibles en un entorno productivo —como la integración en tiempo real con el sistema de gestión del 112, la conexión directa con las APIs de AEMET o del SAIH, o la gestión de múltiples usuarios concurrentes— se abordan a nivel de diseño pero no se implementan en su versión operativa completa.
-% La segunda restricción se refiere al acceso a datos. No se ha dispuesto de acceso garantizado a microdatos operativos reales del servicio 112 de Aragón. El sistema se valida con un dataset piloto de naturaleza híbrida, compuesto por estructura inspirada en datos institucionales, variables contextuales oficiales y casos simulados plausibles. Esta limitación, ya explicada en capítulos anteriores, condiciona el alcance de la evaluación: los resultados permiten valorar la coherencia y la aplicabilidad del enfoque, pero no equivalen a una validación con datos de incidentes reales.
-% La tercera restricción es que la evaluación se realiza en escenarios simulados, no en un entorno operativo con usuarios reales gestionando emergencias en curso. La evaluación mide la coherencia del baseline con el etiquetado humano, la distribución de prioridades, la tasa de falsos negativos graves y la explicabilidad de las recomendaciones, pero no puede capturar completamente las dinámicas de presión temporal, estrés cognitivo e interacción multicanal que caracterizan un entorno de coordinación real.
-% La cuarta restricción es la simplificación del dominio. El sistema de protección civil español es un entramado complejo de competencias, planes, protocolos y actores que no puede reducirse íntegramente a un conjunto de variables y reglas. La taxonomía, las variables y las reglas del motor son una abstracción operativa que captura los factores más relevantes para la priorización inicial, pero que inevitablemente deja fuera matices, excepciones y situaciones atípicas que en la práctica solo puede resolver el criterio profesional del operador.
-% La quinta restricción es que el sistema parte de un baseline interpretable como punto de partida. La decisión de no incorporar directamente modelos complejos de aprendizaje automático es deliberada y está justificada por la ausencia de un dataset de entrenamiento suficiente y por la prioridad que el TFM otorga a la explicabilidad. El baseline no se presenta como la solución definitiva al problema, sino como una primera aproximación bien fundamentada que podría complementarse con modelos más sofisticados si en el futuro se dispusiera de datos y se demostrase que aportan valor real frente a la versión basada en reglas.
-% Estas restricciones no debilitan el trabajo: lo delimitan. Un TFM excelente no es el que promete resolver un problema completo, sino el que resuelve bien una parte significativa dentro de un alcance realista, documenta con rigor sus limitaciones y deja abierto un camino claro para la mejora futura.
+\section{Introduccion al capitulo}
 
-% % Las referencias de este capítulo se incluyen en la bibliografía global.
-% % Cortes de Aragón. (2024). Ley 4/2024, de 28 de junio, del Sistema de Protección Civil y Gestión de Emergencias de Aragón. Boletín Oficial de Aragón, núm. 133, de 9 de julio de 2024. https://www.boa.aragon.es/cgi-bin/EBOA/BRSCGI?CMD=VEROBJ\&MLKOB=1349789043232
-% Jefatura del Estado. (2015). Ley 17/2015, de 9 de julio, del Sistema Nacional de Protección Civil. Boletín Oficial del Estado, núm. 164, de 10 de julio de 2015. https://www.boe.es/buscar/act.php?id=BOE-A-2015-7730
-% Ministerio de la Presidencia. (2015). Real Decreto 840/2015, de 21 de septiembre, por el que se aprueban medidas de control de los riesgos inherentes a los accidentes graves en los que intervengan sustancias peligrosas. Boletín Oficial del Estado, núm. 251, de 20 de octubre de 2015. https://www.boe.es/buscar/act.php?id=BOE-A-2015-11268
-% Ministerio del Interior. (2023). Real Decreto 524/2023, de 20 de junio, por el que se aprueba la Norma Básica de Protección Civil. Boletín Oficial del Estado, núm. 147, de 21 de junio de 2023. https://www.boe.es/buscar/act.php?id=BOE-A-2023-14679
+En un TFM de desarrollo software, los requisitos son el puente entre el analisis del dominio y la implementacion. Este capitulo traduce el problema de priorizacion temprana de incidentes 112 en especificaciones funcionales, no funcionales y restricciones de alcance. La version final del sistema se concibe como un prototipo academico de apoyo a la decision para Castilla y Leon, no como una plataforma productiva de despacho ni como un sustituto del operador.
 
+Las decisiones recogidas aqui condicionan la arquitectura descrita en el Capitulo~\ref{cap:6}, el tratamiento de datos del Capitulo~\ref{cap:7} y la evaluacion experimental del Capitulo~\ref{cap:9}. Por ello, los requisitos se formulan ya alineados con la linea tecnica consolidada: Capa 1 NLP, Capa 2 RuleFit-lite, Capa 3 LLM+RAG+MCP, supervision humana, anti-\textit{leakage} y trazabilidad reproducible.
+
+\section{Definicion formal del problema}
+
+El sistema aborda el siguiente problema: dado un incidente 112 descrito mediante texto libre, categoria preliminar, localizacion, fecha y datos operativos parciales, se necesita generar una recomendacion inicial de prioridad P1--P4 que ayude al operador a formar una primera valoracion, sin sustituir su criterio profesional.
+
+La unidad de analisis es el incidente individual. La prioridad P1--P4 no es una etiqueta oficial del Registro 112 Castilla y Leon; es una construccion academica del prototipo, creada para estudiar la viabilidad de una recomendacion explicable basada en variables operativas, supervision debil y aprendizaje interpretable. La recomendacion debe ir acompa\~nada de evidencia suficiente para que pueda ser aceptada, corregida o rechazada por una persona.
+
+El sistema se diferencia de un clasificador automatico convencional en tres aspectos. Primero, opera en condiciones de informacion incompleta. Segundo, debe evitar usar datos posteriores a la primera decision. Tercero, debe explicar la salida de forma comprensible, porque en emergencias la confianza depende tanto del resultado como de la capacidad de auditarlo.
+
+\section{Usuario objetivo y contexto de uso}
+
+El usuario objetivo es un responsable de coordinacion, jefe de sala, operador avanzado o perfil equivalente que deba valorar incidentes en un entorno 112. Se presupone conocimiento del dominio y capacidad para interpretar una recomendacion como apoyo, no como orden automatica. El prototipo puede utilizarse sobre registros historicos, cargas controladas o entradas manuales, siempre dentro de un entorno academico o de prueba.
+
+El sistema no moviliza recursos, no activa planes, no envia alertas y no toma decisiones juridicamente vinculantes. Su funcion es ordenar la informacion, proponer una prioridad inicial y mostrar las razones principales de esa propuesta.
+
+\section{Requisitos funcionales}
+
+\paragraph{RF1. Recepcion y normalizacion del incidente}
+El sistema debe recibir incidentes desde carga de dataset o entrada controlada y transformarlos en un registro normalizado con identificador, texto operativo, categoria, fecha, provincia, municipio, coordenadas cuando existan y campos auxiliares permitidos.
+
+\paragraph{RF2. Extraccion de variables y se\~nales}
+La Capa 1 debe extraer variables operativas V01--V15 y se\~nales textuales relevantes para la priorizacion. En v0.1.0 el nucleo evaluable se centra en las variables disponibles de forma reproducible y deja V08--V11 como extension futura cuando se integren AEMET, SNCZI y Seveso.
+
+\paragraph{RF3. Control de columnas prohibidas}
+El sistema debe excluir de entrenamiento e inferencia los campos posteriores a la decision o que reflejen consecuencias del operativo, como \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado} o \texttt{ultimaActualizacion}. Este requisito es obligatorio para evitar fuga de informacion.
+
+\paragraph{RF4. Generacion de etiqueta academica}
+Cuando no exista prioridad oficial P1--P4, el sistema debe construir etiquetas academicas mediante supervision debil, usando fuentes de se\~nal separadas y midiendo acuerdo. La etiqueta resultante debe documentarse como aproximacion metodologica, no como verdad operativa oficial.
+
+\paragraph{RF5. Recomendacion de prioridad P1--P4}
+La Capa 2 debe generar una recomendacion de prioridad mediante un modelo interpretable. En v0.1.0 el modelo seleccionado es RuleFit-lite, comparado con un baseline experto y con una ejecucion diagnostica \texttt{imodels}. La salida debe incluir prioridad, probabilidades por clase, reglas o se\~nales activadas y version del modelo.
+
+\paragraph{RF6. Calculo de confianza e incertidumbre}
+El sistema debe exponer informacion sobre confianza o incertidumbre asociada a la recomendacion, especialmente cuando falten variables relevantes o cuando la prediccion se apoye en se\~nales debiles. La confianza no debe confundirse con gravedad.
+
+\paragraph{RF7. Generacion de explicacion}
+La Capa 3 debe generar una explicacion breve y trazable que conecte la prioridad recomendada con reglas, probabilidades, evidencias disponibles y, cuando proceda, citas normativas recuperadas del corpus CyL. El LLM no decide la prioridad: explica la salida de Capa 2.
+
+\paragraph{RF8. Validacion humana}
+El sistema debe permitir que una persona revise la recomendacion y registre una decision: aceptar, modificar o rechazar. Este feedback debe conservarse para analisis posterior, mejora del modelo y validacion interna.
+
+\paragraph{RF9. Registro auditable}
+Cada inferencia debe quedar asociada a entrada, variables, modelo, version, prioridad, probabilidades, explicacion, evidencias, decision humana si existe y marca temporal. Esta trazabilidad sostiene la auditoria tecnica y la defensa academica.
+
+\paragraph{RF10. Reevaluacion}
+El sistema debe poder reevaluar un incidente cuando cambien los datos de entrada, conservando el historial de recomendaciones para reconstruir la evolucion del caso.
+
+\section{Requisitos no funcionales}
+
+\subsection{Explicabilidad}
+
+La recomendacion debe ser interpretable para un operador. Este requisito justifica que la Capa 2 use un modelo con reglas exportables y que la Capa 3 traduzca esas evidencias a lenguaje operativo. No basta con predecir una clase; el sistema debe mostrar por que la propone.
+
+\subsection{Trazabilidad}
+
+Toda salida debe poder reconstruirse desde los datos de entrada hasta la explicacion final. La trazabilidad incluye scripts de datos, weak labels, splits, modelo entrenado, reglas activas, metricas, logs y decisiones humanas registradas.
+
+\subsection{Supervision humana}
+
+Ninguna recomendacion debe ejecutarse automaticamente. La persona responsable conserva la decision final y puede corregir la prioridad propuesta. Este principio es coherente con el Reglamento Europeo de Inteligencia Artificial \cite{EUAIAct2024} y con la prudencia exigible en un dominio de alto impacto.
+
+\subsection{Robustez ante informacion incompleta}
+
+El sistema debe funcionar con informacion parcial, porque esa es la situacion habitual en la primera decision. Cuando la informacion sea insuficiente, la herramienta debe indicarlo y evitar presentar una certeza artificial.
+
+\subsection{Reproducibilidad}
+
+Los resultados deben poder regenerarse con scripts versionados. Esto incluye auditoria del dataset, construccion de etiquetas, splits, entrenamiento, evaluacion, analisis de errores, muestra de validacion interna y reporte final.
+
+\subsection{Soberania del dato}
+
+El prototipo debe priorizar ejecucion local y evitar dependencias cloud para datos sensibles. Las herramientas generativas se tratan como apoyo explicativo, no como mecanismo autonomo de decision.
+
+\section{Restricciones y supuestos}
+
+La primera restriccion es que se trabaja con un prototipo academico, no con un sistema certificado ni desplegado en una sala 112 real. La segunda es que el Registro 112 Castilla y Leon no contiene prioridad oficial P1--P4, por lo que la evaluacion se realiza contra una etiqueta academica de supervision debil. La tercera es que no se dispone todavia de validacion externa con operadores del 112; por eso se prepara una muestra de validacion interna y se documenta como paso previo.
+
+La cuarta restriccion es que algunas variables contextuales de alto interes, como AEMET historico, inundabilidad SNCZI y proximidad Seveso, quedan diferidas a v0.2.0. La quinta es que la evaluacion no mide reduccion real del tiempo de decision en sala, sino rendimiento tecnico, estabilidad temporal, errores criticos, fidelidad explicativa y trazabilidad documental.
+
+Estas restricciones no invalidan el trabajo. Lo delimitan y evitan prometer mas de lo que el prototipo puede demostrar. La excelencia del TFM se apoya precisamente en reconocer esas fronteras y en dejar un camino verificable para ampliarlas.
+
+\section{Trazabilidad entre requisitos y componentes}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|p{1.4cm}|p{4.4cm}|p{4.3cm}|p{4.1cm}|}
+\hline
+\textbf{Req.} & \textbf{Descripcion resumida} & \textbf{Componente asociado} & \textbf{Evidencia} \\ \hline
+RF1 & Recepcion y normalizacion & Pipeline de datos y backend & Dataset limpio y contratos \\ \hline
+RF2 & Extraccion de variables & Capa 1 NLP & Variables V01--V15 y se\~nales \\ \hline
+RF3 & Anti-\textit{leakage} & Pipeline y Capa 2 & Columnas prohibidas excluidas \\ \hline
+RF4 & Weak labels P1--P4 & Supervision debil & Acuerdo y ablacion \\ \hline
+RF5 & Prioridad P1--P4 & RuleFit-lite & Modelo, reglas y metricas \\ \hline
+RF6 & Confianza & Capa 2 e inferencia & Probabilidades por clase \\ \hline
+RF7 & Explicacion & Capa 3 LLM+RAG+MCP & Explicacion y citas \\ \hline
+RF8 & Validacion humana & UI y feedback & Muestra de revision interna \\ \hline
+RF9 & Registro auditable & Backend y logs & \texttt{InferenceLog} \\ \hline
+RF10 & Reevaluacion & Orquestador & Historial de inferencias \\ \hline
+\end{tabular}
+\caption{Trazabilidad entre requisitos y componentes del sistema.}
+\label{tab:trazabilidad-requisitos-componentes}
+\end{table}
+
+\noindent\textit{Fuente: elaboracion propia.}
+
+\section{Conclusiones del capitulo}
+
+Los requisitos definidos convierten el problema operativo en una especificacion coherente con la arquitectura final. El sistema debe recibir incidentes, extraer variables, evitar leakage, recomendar prioridad mediante Capa 2 interpretable, explicar la salida mediante Capa 3, registrar la trazabilidad y mantener siempre la decision humana en el centro.
+
+El siguiente capitulo desarrolla la arquitectura que materializa estos requisitos: una solucion modular de tres capas, preparada para evaluacion reproducible y para una futura validacion externa con personal experto.

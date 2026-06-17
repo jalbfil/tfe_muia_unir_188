@@ -1,0 +1,141 @@
+{
+  "$contractsVersion": "0.1.0",
+  "$defs": {
+    "CategoriaPreliminar": {
+      "enum": [
+        "ACCIDENTE_TRAFICO",
+        "INCENDIO_FORESTAL",
+        "INCENDIO_URBANO",
+        "INCIDENCIA_VIA",
+        "METEOROLOGIA",
+        "QUIMICO_NRBQ",
+        "RESCATE",
+        "SANITARIO",
+        "SEGURIDAD_CIUDADANA",
+        "SUMINISTROS",
+        "OTROS",
+        "DESCONOCIDA"
+      ],
+      "title": "CategoriaPreliminar",
+      "type": "string"
+    },
+    "ProvinciaCyL": {
+      "enum": [
+        "AVILA",
+        "BURGOS",
+        "LEON",
+        "PALENCIA",
+        "SALAMANCA",
+        "SEGOVIA",
+        "SORIA",
+        "VALLADOLID",
+        "ZAMORA"
+      ],
+      "title": "ProvinciaCyL",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "categoria_preliminar": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CategoriaPreliminar"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "fecha_incidente": {
+      "format": "date-time",
+      "title": "Fecha Incidente",
+      "type": "string"
+    },
+    "incident_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "latitud": {
+      "anyOf": [
+        {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Latitud"
+    },
+    "localidad": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Localidad"
+    },
+    "longitud": {
+      "anyOf": [
+        {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Longitud"
+    },
+    "operador_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Operador Id",
+      "type": "string"
+    },
+    "provincia": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProvinciaCyL"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "texto_descripcion": {
+      "default": "",
+      "maxLength": 5000,
+      "title": "Texto Descripcion",
+      "type": "string"
+    },
+    "texto_titulo": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Texto Titulo",
+      "type": "string"
+    }
+  },
+  "required": [
+    "incident_id",
+    "texto_titulo",
+    "fecha_incidente",
+    "operador_id"
+  ],
+  "title": "IncidentInput",
+  "type": "object"
+}

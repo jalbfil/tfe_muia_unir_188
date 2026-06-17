@@ -1,0 +1,172 @@
+[
+  {
+    "rule_id": "EXP-P1-FALLECIDO",
+    "target_priority": "P1",
+    "weight": 3.8,
+    "condition_expression": "signal_fallecido",
+    "human_text": "Fallecimiento indicado en el texto o seniales lexicas",
+    "normative_anchors": [
+      "LEY_17_2015",
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P1-RIESGO-VITAL",
+    "target_priority": "P1",
+    "weight": 3.4,
+    "condition_expression": "riesgo_vital or riesgo_vital_textual",
+    "human_text": "Riesgo vital explicito requiere maxima prioridad academica",
+    "normative_anchors": [
+      "LEY_17_2015",
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P1-CRITICO-ATRAPADO",
+    "target_priority": "P1",
+    "weight": 2.7,
+    "condition_expression": "signal_herido_grave and signal_atrapado",
+    "human_text": "Herido grave atrapado combina dano personal y rescate urgente",
+    "normative_anchors": [
+      "LEY_17_2015",
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P1-MULTIVICTIMA",
+    "target_priority": "P1",
+    "weight": 2.5,
+    "condition_expression": "numero_victimas_estimado >= 3 and riesgo_vital",
+    "human_text": "Multiples victimas con riesgo vital elevan el incidente a P1",
+    "normative_anchors": [
+      "LEY_17_2015",
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P2-HERIDO-GRAVE",
+    "target_priority": "P2",
+    "weight": 2.1,
+    "condition_expression": "signal_herido_grave",
+    "human_text": "Herido grave sin fallecimiento mantiene prioridad alta",
+    "normative_anchors": [
+      "LEY_17_2015",
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P2-ATRAPADO",
+    "target_priority": "P2",
+    "weight": 2.0,
+    "condition_expression": "signal_atrapado",
+    "human_text": "Persona atrapada exige coordinacion operativa prioritaria",
+    "normative_anchors": [
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P2-INTOXICACION",
+    "target_priority": "P2",
+    "weight": 1.9,
+    "condition_expression": "signal_intoxicacion",
+    "human_text": "Intoxicacion o riesgo NRBQ requiere escalado preventivo",
+    "normative_anchors": [
+      "MPCYL_ACUERDO_3_2008",
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P2-INCENDIO-VIVIENDA",
+    "target_priority": "P2",
+    "weight": 1.8,
+    "condition_expression": "signal_incendio and (sanitario or urbano or vivienda)",
+    "human_text": "Incendio en entorno habitado puede evolucionar rapidamente",
+    "normative_anchors": [
+      "PLANCAL_DEC_4_2019",
+      "LEY_4_2007_CYL"
+    ]
+  },
+  {
+    "rule_id": "EXP-P2-RESCATE",
+    "target_priority": "P2",
+    "weight": 1.7,
+    "condition_expression": "signal_rescate",
+    "human_text": "Rescate implica complejidad tecnica y coordinacion de recursos",
+    "normative_anchors": [
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P2-TRAFICO-GRAVE",
+    "target_priority": "P2",
+    "weight": 1.6,
+    "condition_expression": "signal_accidente_trafico and signal_herido_grave",
+    "human_text": "Accidente de trafico con heridos graves requiere respuesta prioritaria",
+    "normative_anchors": [
+      "LEY_17_2015",
+      "REGISTRO_112_CYL"
+    ]
+  },
+  {
+    "rule_id": "EXP-P2-METEORO-ALTO-IMPACTO",
+    "target_priority": "P2",
+    "weight": 1.4,
+    "condition_expression": "signal_meteo_inundacion and signal_varias_llamadas",
+    "human_text": "Inundacion o meteorologia adversa con varias llamadas sugiere impacto zonal",
+    "normative_anchors": [
+      "INUNCYL",
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P3-ACCIDENTE-TRAFICO",
+    "target_priority": "P3",
+    "weight": 1.0,
+    "condition_expression": "signal_accidente_trafico",
+    "human_text": "Accidente de trafico sin senial critica conserva prioridad de seguimiento",
+    "normative_anchors": [
+      "REGISTRO_112_CYL"
+    ]
+  },
+  {
+    "rule_id": "EXP-P3-VARIAS-LLAMADAS",
+    "target_priority": "P3",
+    "weight": 0.9,
+    "condition_expression": "signal_varias_llamadas",
+    "human_text": "Varias llamadas aumentan plausibilidad e impacto operativo",
+    "normative_anchors": [
+      "REGISTRO_112_CYL"
+    ]
+  },
+  {
+    "rule_id": "EXP-P3-INCENDIO-SIN-VICTIMAS",
+    "target_priority": "P3",
+    "weight": 0.9,
+    "condition_expression": "signal_incendio",
+    "human_text": "Incendio sin victimas explicitas requiere vigilancia y recursos",
+    "normative_anchors": [
+      "LEY_4_2007_CYL",
+      "PLANCAL_DEC_4_2019"
+    ]
+  },
+  {
+    "rule_id": "EXP-P3-METEO-INUNDACION",
+    "target_priority": "P3",
+    "weight": 0.8,
+    "condition_expression": "signal_meteo_inundacion",
+    "human_text": "Incidente meteorologico o inundacion requiere seguimiento territorial",
+    "normative_anchors": [
+      "INUNCYL"
+    ]
+  },
+  {
+    "rule_id": "EXP-P4-SIN-SENALES-CRITICAS",
+    "target_priority": "P4",
+    "weight": 0.8,
+    "condition_expression": "no critical signals and numero_llamadas == 1",
+    "human_text": "Ausencia de seniales criticas y llamada unica sugiere prioridad baja",
+    "normative_anchors": [
+      "REGISTRO_112_CYL"
+    ]
+  }
+]

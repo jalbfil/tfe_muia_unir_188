@@ -1,0 +1,86 @@
+\chapter{Corpus normativo para RAG (Capa 3)}
+\label{cap:anexoj}
+
+\section*{J.1. Objetivo y alcance}
+
+Este anexo documenta el corpus normativo usado por la Capa 3 en la version
+\texttt{v0.1.0}. Su objetivo es dejar trazabilidad sobre que fuentes se indexan,
+que cobertura se logra y que limitaciones siguen abiertas para recuperacion
+semantica en casos quimicos.
+
+El corpus se construye en \texttt{resources/corpus\_normativo/} y se indexa en
+\texttt{artifacts/rag/chroma/} mediante
+\texttt{scripts/build\_rag\_index.py}.
+
+\section*{J.2. Metodo de ingesta e indexacion}
+
+La ingesta aplica pipeline reproducible:
+
+\begin{enumerate}
+    \item Lectura de fuentes PDF/HTML oficiales disponibles.
+    \item Segmentacion en fragmentos (chunking) de tamano aproximado 400 tokens,
+    con solape de 50 tokens.
+    \item Enriquecimiento de metadatos por fragmento:
+    \texttt{norma\_id}, \texttt{articulo}, \texttt{anio}, \texttt{jerarquia}.
+    \item Embeddings con modelo
+    \texttt{paraphrase-multilingual-MiniLM-L12-v2}.
+    \item Persistencia del indice en ChromaDB local.
+\end{enumerate}
+
+Implementacion principal: \texttt{src/capa3\_llm\_mcp/rag/ingestion.py}.
+
+\section*{J.3. Cobertura actual del corpus (v0.1.0)}
+
+Resultado de \texttt{python scripts/build\_rag\_index.py --dry-run}:
+
+\begin{itemize}
+    \item LEY\_17\_2015: 64 chunks
+    \item RD\_524\_2023: 26 chunks
+    \item PLEGEM: 53 chunks
+    \item LEY\_4\_2007\_CYL: 67 chunks
+    \item PLANCAL\_DEC\_4\_2019: 52 chunks
+    \item INFOCAL\_DEC\_6\_2025: 160 chunks
+    \item INUNCYL: 3 chunks
+    \item LEY\_11\_2022: 330 chunks
+    \item RGPD: 202 chunks
+    \item LOPDGDD: 151 chunks
+    \item REG\_UE\_2024\_1689: 362 chunks
+\end{itemize}
+
+Total: \textbf{1470 chunks}.
+
+\section*{J.4. Validaciones de retrieval}
+
+\begin{itemize}
+    \item \textbf{T063 (cerrada)}: consulta \textit{atrapado herido grave} con
+    recuperacion top-1 coherente con Ley 17/2015 art. 1.
+    \item \textbf{T064 (cerrada en v0.1.0)}: consulta
+    \textit{fuga quimica camion cisterna} con top-1 en conjunto fallback quimico
+    verificable (PLANCAL/INFOCAL/Ley 17/2015).
+\end{itemize}
+
+La limitacion documental persiste: no se dispone del texto tecnico completo de
+MPCyL con anexos operativos en fuente oficial verificable para indexacion.
+
+\section*{J.5. Limitacion abierta y condicion de cierre}
+
+El criterio de cierre de retrieval quimico en v0.1.0 se define por fallback
+normativo verificable y no por recuperacion top-1 de MPCyL.
+
+Condicion de mejora futura (v0.2.0):
+
+\begin{enumerate}
+    \item localizar fuente oficial completa de MPCyL;
+    \item reingestar y reindexar corpus;
+    \item repetir prueba de retrieval quimico con evidencia de top-1 MPCyL.
+\end{enumerate}
+
+\section*{J.6. Trazabilidad de artefactos}
+
+Artefactos relacionados con este anexo:
+
+\begin{itemize}
+    \item \texttt{artifacts/rag/chroma/}
+    \item \texttt{tests/test\_rag\_retrieval.py}
+    \item \texttt{specs/001-priorizacion-112-cyl/tasks.md} (T060--T065)
+\end{itemize}

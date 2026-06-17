@@ -1,0 +1,13 @@
+{
+  "norma_id": "RGPD",
+  "titulo": "Reglamento (UE) 2016/679, General de Protección de Datos",
+  "jerarquia": "ue",
+  "ambito": "ue",
+  "ano": 2016,
+  "fuente": "DOUE",
+  "identificador": "CELEX:32016R0679",
+  "url_pdf": "https://eur-lex.europa.eu/legal-content/ES/TXT/PDF/?uri=CELEX:32016R0679",
+  "url_html": "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32016R0679",
+  "verified": true,
+  "notes": "Texto consolidado en EUR-Lex."
+}

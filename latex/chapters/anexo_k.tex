@@ -1,0 +1,91 @@
+\chapter{Prompts y herramientas MCP de Capa 3}
+\label{cap:anexok}
+
+\section*{K.1. Objetivo}
+
+Este anexo describe como la Capa 3 transforma la salida congelada de Capa 2 en
+una explicacion estructurada para supervision humana. El principio operativo es
+invariable: \textbf{la prioridad P1--P4 la decide Capa 2}; Capa 3 solo explica,
+cita y contextualiza.
+
+\section*{K.2. Entradas y salida esperada}
+
+La Capa 3 consume principalmente dos bloques del endpoint
+\texttt{/predict}:
+
+\begin{itemize}
+    \item \texttt{priority\_details}: prioridad, distribucion de probabilidades,
+    confianza, modelo usado y reglas activadas.
+    \item \texttt{explanation\_context}: decision de Capa 2,
+    \texttt{probability\_margin}, resumen de reglas, evidencias y avisos.
+\end{itemize}
+
+Salida contractual de Capa 3: \texttt{OperatorRecommendation} con
+\texttt{priority\_recommended}, \texttt{explanation\_text},
+\texttt{legal\_citations}, \texttt{actuation\_hints} y metadatos del LLM.
+
+\section*{K.3. Politica de prompts (v0.1.0)}
+
+Los prompts de sistema y ejemplos \textit{few-shot} estan orientados a:
+
+\begin{enumerate}
+    \item mantener la prioridad calculada por Capa 2;
+    \item explicar incertidumbre cuando el margen de probabilidad es bajo;
+    \item justificar la recomendacion con reglas/evidencias reales;
+    \item incluir cita legal minima en casos P1/P2.
+\end{enumerate}
+
+Reglas de seguridad del prompt:
+
+\begin{itemize}
+    \item no recalcular prioridad;
+    \item no inventar reglas ni citas cuando no hay evidencia;
+    \item declarar necesidad de revision humana en baja confianza.
+\end{itemize}
+
+Archivos de referencia:
+\texttt{src/capa3\_llm\_mcp/prompts/system\_prompt.py} y
+\texttt{src/capa3\_llm\_mcp/prompts/few\_shots.py}.
+
+\section*{K.4. Herramientas MCP activas en v0.1.0}
+
+En \texttt{v0.1.0} se registran tres tools:
+
+\begin{itemize}
+    \item \texttt{search\_normative}
+    \item \texttt{get\_rule\_details}
+    \item \texttt{cite\_legal\_basis}
+\end{itemize}
+
+Implementacion: \texttt{src/capa3\_llm\_mcp/mcp\_server/server.py} y
+\texttt{src/capa3\_llm\_mcp/mcp\_server/tools/}.
+
+La tool \texttt{get\_aemet\_context} queda diferida a \texttt{v0.2.0}
+segun alcance aprobado.
+
+\section*{K.5. Runtime LLM y modo degradado}
+
+El runtime operativo en \texttt{v0.1.0} usa Ollama local con modelo por defecto
+\texttt{llama3.1:8b-instruct-q4\_K\_M}, configurable por variable
+\texttt{OLLAMA\_MODEL}. El wrapper mantiene nombre historico
+\texttt{QwenWrapper} por compatibilidad de codigo.
+
+Si el LLM no esta disponible o la respuesta no cumple contrato, se activa modo
+degradado determinista:
+
+\begin{itemize}
+    \item se conserva la prioridad de Capa 2;
+    \item se construye explicacion basada en reglas y probabilidades;
+    \item se preserva la exigencia de citas minimas para P1/P2.
+\end{itemize}
+
+\section*{K.6. Limites conocidos}
+
+\begin{itemize}
+    \item la latencia con LLM real depende del hardware local y de la carga del
+    runtime Ollama;
+    \item el soporte normativo para escenarios quimicos sigue condicionado por la
+    cobertura documental de MPCyL (ver Anexo~\ref{cap:anexoj});
+    \item la fidelidad explicativa con juez LLM independiente queda como cierre
+    pendiente de T113.
+\end{itemize}

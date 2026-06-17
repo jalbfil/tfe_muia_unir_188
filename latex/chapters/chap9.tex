@@ -1,157 +1,389 @@
-\chapter{Evaluación}
+\chapter{Evaluacion experimental}
 \label{cap:9}
 
-% Los capítulos anteriores han construido el sistema de forma incremental: identificaron el problema (Capítulo~1), revisaron la literatura (Capítulo~2), caracterizaron el contexto normativo y operativo (Capítulos~3 y 4), especificaron los requisitos (Capítulo~5), diseñaron el motor (Capítulo~6), definieron los datos (Capítulo~7) y materializaron el prototipo (Capítulo~8). Este capítulo cierra el ciclo analítico evaluando si el sistema construido es útil, coherente y mejorable.
+Los capitulos anteriores han definido el problema, el marco normativo, la arquitectura
+del sistema, el dataset y el procedimiento de construccion de etiquetas academicas
+P1--P4. Este capitulo cierra el ciclo experimental evaluando la Capa 2 de priorizacion
+interpretable sobre artefactos reproducibles: dataset limpio, weak labels, splits,
+baseline experto, modelos RuleFit y controles anti-leakage.
 
-% La evaluación no tiene por objetivo validar un sistema en producción. Tiene por objetivo producir evidencia sobre el comportamiento del baseline en condiciones controladas y ofrecer al equipo los insumos necesarios para comprender sus fortalezas, sus limitaciones y las vías de mejora prioritarias.
+La evaluacion no pretende demostrar validez operativa en produccion. El Registro 112
+CyL no contiene una prioridad oficial historica comparable con la recomendacion del
+sistema. Por tanto, la evaluacion mide el comportamiento frente a la etiqueta academica
+P1--P4 generada por weak supervision y documenta sus limitaciones. Esta distincion es
+central para no sobredimensionar los resultados.
 
-% \section{Estrategia general de evaluación}
+\section{Objetivos de evaluacion}
 
-% La evaluación del sistema se organiza en siete dimensiones complementarias, que dan respuesta a diferentes aspectos del comportamiento esperado del prototipo. Estas dimensiones no son independientes: los resultados de la evaluación del baseline (dimensión~1) alimentan la discusión de la evaluación de aplicabilidad (dimensión~3) y la interpretación de las limitaciones (dimensión~7).
+La evaluacion experimental persigue cinco objetivos:
 
-% \begin{table}[ht]
-% \centering
-% \caption{Dimensiones de la evaluación del sistema}
-% \label{tab:9.1}
-% \small
-% \begin{tabularx}{\textwidth}{|l|X|X|l|}
-% \hline
-% \textbf{Dimensión} & \textbf{Objeto de evaluación} & \textbf{Métricas principales} & \textbf{Apartado} \\ \hline
-% 1. Coherencia del baseline & ¿El motor produce prioridades coherentes con las reglas diseñadas? & Coherencia interna, tasa de activación RD, scoring promedio por nivel & 9.2 \\ \hline
-% 2. Precisión y clasificación & ¿En qué medida coincide P\_final con P\_etiqueta del dataset piloto? & Precisión, recall, F1 por nivel; matriz de confusión & 9.2.1 \\ \hline
-% 3. Distribución y sesgo & ¿La distribución de prioridades es razonable? ¿Hay sesgo hacia algún nivel? & Distribución relativa P1--P4, comparación con distribución objetivo & 9.2.2 \\ \hline
-% 4. Seguridad operativa & ¿El sistema evita los falsos negativos graves? & Tasa FN(P1→P3/P4), tasa FN(P2→P4) & 9.2.3 \\ \hline
-% 5. Funcional & ¿El prototipo cumple los requisitos funcionales? & Verificación RF1--RF9 & 9.3 \\ \hline
-% 6. Aplicabilidad & ¿El sistema funciona razonablemente en escenarios reales de Aragón? & Análisis cualitativo de casos representativos & 9.4 \\ \hline
-% 7. Usabilidad & ¿El frontend es utilizable? & SUS, TTFD & 9.5, 9.6 \\ \hline
-% \end{tabularx}
-% \end{table}
+\begin{enumerate}
+    \item verificar que la Capa 2 aprende a reproducir la etiqueta academica P1--P4 con
+    mejor rendimiento que un baseline experto;
+    \item comprobar que el recall de P1 se mantiene por encima del umbral de seguridad
+    fijado en 0.85;
+    \item preservar la interpretabilidad mediante un limite de 30 reglas activas
+    exportadas;
+    \item comparar una implementacion RuleFit eficiente frente a \texttt{imodels}, la
+    libreria canonica recomendada en el diseno;
+    \item garantizar que no se utilizan columnas post-decision ni variables con leakage.
+\end{enumerate}
 
-% \noindent\textit{Fuente: elaboración propia.}
+Las metricas principales son accuracy, macro-F1, precision/recall/F1 por clase,
+recall P1, numero de reglas activas, tiempo de entrenamiento e inferencia media por
+fila. La macro-F1 se emplea como metrica de seleccion porque evita que el rendimiento
+quede dominado por las clases mas frecuentes. El recall P1 se interpreta como metrica
+de seguridad, ya que los falsos negativos criticos tienen mayor coste potencial.
 
-% Las evaluaciones de precisión (dimensiones~1--4) se realizan sobre el dataset piloto del Capítulo~7 (casos documentados con etiqueta de referencia asignada mediante el protocolo del Anexo~C). Las evaluaciones funcional y de aplicabilidad se realizan mediante inspección del prototipo (Capítulo~8). La evaluación de usabilidad se realizará mediante el cuestionario SUS con un subconjunto de usuarios con perfil operativo.
+\section{Datos, etiquetas y splits}
 
-% \section{Evaluación del baseline}
+El experimento usa el dataset limpio \texttt{emergencias\_112\_cyl\_2008\_2022\_clean.csv},
+con 9.380 registros del Registro 112 Castilla y Leon. La etiqueta objetivo P1--P4 se
+obtiene mediante weak supervision con cuatro fuentes debiles. La ejecucion principal
+alcanza Krippendorff $\alpha = 0.858348$, superior al umbral aceptable de 0.67. La
+ablacion sin reglas heuristicas mantiene $\alpha = 0.834155$, lo que reduce el riesgo
+de circularidad extrema.
 
-% \subsection{Coherencia, precisión, recall y F1}
+Los splits se generan de forma estratificada por ano, provincia inferida y etiqueta
+P1--P4, con semilla fija 42. La Tabla~\ref{tab:9-splits} resume los tamanos y la
+distribucion de etiquetas.
 
-% La evaluación de la capacidad de clasificación del baseline se realiza comparando la prioridad final producida por el motor ($P_{final}$, bloque~4 del esquema de datos) con la etiqueta de referencia asignada mediante el protocolo del Anexo~C ($P_{etiqueta}$, bloque~5, campo \texttt{prioridad\_validada}).
+\begin{table}[ht]
+\centering
+\caption{Distribucion de etiquetas por split}
+\label{tab:9-splits}
+\small
+\begin{tabular}{|l|r|r|r|r|r|}
+\hline
+\textbf{Split} & \textbf{Registros} & \textbf{P1} & \textbf{P2} & \textbf{P3} & \textbf{P4} \\ \hline
+Train & 6.511 & 2.939 & 1.477 & 1.837 & 258 \\ \hline
+Validacion & 1.414 & 625 & 329 & 406 & 54 \\ \hline
+Test & 1.455 & 648 & 336 & 397 & 74 \\ \hline
+\end{tabular}
+\end{table}
 
-% Esta comparación se materializa en la \textbf{matriz de confusión} de la Tabla~\ref{tab:9.2}, que cruza la prioridad predicha con la prioridad de referencia para los cuatro niveles P1--P4. Los valores de la matriz son \textbf{placeholders}: dependen de la ejecución del prototipo sobre el dataset piloto, que se realiza en la fase final del proyecto. En el momento de redacción, el prototipo está operativo pero el dataset completo aún se está generando; los valores se actualizarán en la entrega definitiva.
+Adicionalmente se ha generado un split temporal alternativo: entrenamiento hasta 2020,
+validacion en 2021 y test en 2022. Este split se utiliza como prueba de robustez
+temporal, mientras que el experimento principal usa el split estratificado por su mayor
+equilibrio entre anos, provincias y etiquetas.
 
-% \begin{table}[ht]
-% \centering
-% \caption{Matriz de confusión: prioridad predicha vs. prioridad de referencia (dataset piloto)}
-% \label{tab:9.2}
-% \small
-% \begin{tabular}{|l|c|c|c|c|}
-% \hline
-% \textbf{Predicho $\backslash$ Referencia} & \textbf{P1 (ref.)} & \textbf{P2 (ref.)} & \textbf{P3 (ref.)} & \textbf{P4 (ref.)} \\ \hline
-% \textbf{P1 (pred.)} & VP(P1) & -- & -- & -- \\ \hline
-% \textbf{P2 (pred.)} & -- & VP(P2) & -- & -- \\ \hline
-% \textbf{P3 (pred.)} & -- & -- & VP(P3) & -- \\ \hline
-% \textbf{P4 (pred.)} & -- & -- & -- & VP(P4) \\ \hline
-% \end{tabular}
-% \end{table}
+\section{Politica anti-leakage}
 
-% \noindent\textit{Nota: Valores pendientes de la ejecución del prototipo sobre el dataset piloto. VP = verdaderos positivos; -- = celdas fuera de la diagonal (errores de clasificación) a completar con datos reales. Fuente: elaboración propia.}
+La evaluacion excluye todas las columnas conocidas despues de la decision operativa o
+derivadas de procesos post-hoc. En particular, no se usan \texttt{MediosMov},
+\texttt{medios\_mov\_limpio}, \texttt{medios\_mov\_uso\_recomendado},
+\texttt{PacientesAten}, \texttt{pacientes\_aten\_limpio}, \texttt{IncidenteCerrado},
+\texttt{ultimaActualizacion}, \texttt{Enlace al contenido} ni \texttt{Unnamed: 13}.
 
-% A partir de la matriz de confusión, se calcularán las métricas por nivel:
-% \begin{itemize}
-%     \item \textbf{Precisión} ($Pr_k$): fracción de casos asignados a $P_k$ que efectivamente son $P_k$ según la referencia. $Pr_k = VP_k / \sum_{j} \text{Predicho}_{jk}$.
-%     \item \textbf{Recall} ($Re_k$): fracción de casos realmente $P_k$ que el motor clasifica como $P_k$. $Re_k = VP_k / \sum_{j} \text{Referencia}_{kj}$.
-%     \item \textbf{F1} por nivel: media armónica de precisión y recall. $F1_k = 2 \cdot Pr_k \cdot Re_k / (Pr_k + Re_k)$.
-%     \item \textbf{Macro-F1}: media no ponderada del F1 de los cuatro niveles.
-% \end{itemize}
+Las features permitidas se limitan a senales textuales predecisionales
+(\texttt{signal\_fallecido}, \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado},
+\texttt{signal\_intoxicacion}, \texttt{signal\_varias\_llamadas},
+\texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate},
+\texttt{signal\_meteo\_inundacion}, \texttt{riesgo\_vital\_textual}) y variables
+categoricas derivadas de la categoria preliminar. El repositorio incluye un test
+automatico que escanea \texttt{src/capa2\_rulefit} para detectar referencias a columnas
+prohibidas.
 
-% El objetivo del baseline no es maximizar la precisión global, sino garantizar que los errores que comete no comprometan la seguridad operativa (véase el apartado~9.2.3). Por ello, la métrica de mayor peso en la interpretación será el recall de P1 y P2, no la precisión global.
+\section{Modelos evaluados}
 
-% \subsection{Distribución y sesgo}
+Se comparan tres aproximaciones:
 
-% Una evaluación completa del baseline no puede limitarse a las métricas de clasificación: debe también verificar que la distribución de prioridades asignadas por el motor es razonable y que no existe un sesgo sistemático hacia algún nivel que comprometa su utilidad práctica.
+\begin{description}
+    \item[Baseline experto.] Conjunto de 16 reglas manuales con anclaje normativo,
+    descritas en el Anexo~\ref{cap:anexoe}. Su funcion es actuar como linea base
+    interpretable a batir.
+    \item[RuleFit-lite.] Modelo seleccionado para Capa 2 v0.1.0. Combina reglas de
+    arboles poco profundos con una capa logistica escasa. Exporta 30 reglas activas y
+    mantiene inferencia rapida.
+    \item[RuleFit \texttt{imodels}.] Implementacion canonica basada en
+    \texttt{imodels.RuleFitClassifier}. Como la libreria soporta clasificacion binaria,
+    se emplea un esquema one-vs-rest P1--P4. La ejecucion se realiza en un entorno
+    Python 3.12 aislado, con configuracion diagnostica reducida por coste temporal.
+\end{description}
 
-% La distribución objetivo del dataset piloto, establecida en el Capítulo~7, es deliberadamente no uniforme y refleja la distribución esperada en operaciones reales: P1 (incidentes críticos, activación inmediata) debe representar aproximadamente el 10--15\% de los casos; P2 (incidentes relevantes, coordinación ampliada) entre el 20 y el 25\%; P3 (incidentes menores gestionables con recursos ordinarios) entre el 35 y el 40\%; y P4 (consultas y situaciones de baja urgencia) entre el 20 y el 25\%.
+\section{Resultados globales}
 
-% Se analizará si la distribución de predicciones del motor se aproxima a esta distribución objetivo. Una concentración excesiva en P1 indicaría sobrepriorización (el motor tiende a activar reglas duras o asignar puntuaciones altas con más frecuencia de la prevista); una concentración en P3--P4 podría indicar infrasensibilidad ante señales de gravedad. Ambos patrones son indeseables por razones operativas: el primero genera fatiga de alerta y saturación de recursos; el segundo, falsos negativos graves.
+La Tabla~\ref{tab:9-comparativa} muestra la comparativa sobre el conjunto de test.
 
-% \subsection{Seguridad operativa: análisis de falsos negativos graves}
+\begin{table}[ht]
+\centering
+\caption{Comparativa de modelos de Capa 2 en test}
+\label{tab:9-comparativa}
+\small
+\begin{tabular}{|l|r|r|r|r|r|r|}
+\hline
+\textbf{Modelo} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} & \textbf{Reglas} & \textbf{Train s} & \textbf{ms/fila} \\ \hline
+Baseline experto & 0.727835 & 0.703932 & 0.998457 & 16 & -- & -- \\ \hline
+RuleFit-lite & 0.881100 & 0.880750 & 0.921296 & 30 & 6.504204 & 0.450127 \\ \hline
+RuleFit \texttt{imodels} & 0.768385 & 0.568239 & 0.902778 & 30 & 13.191647 & 7.496081 \\ \hline
+\end{tabular}
+\end{table}
 
-% En el contexto de un sistema de apoyo a la decisión para emergencias, no todos los errores tienen el mismo coste operativo. Un error de P3 clasificado como P4 tiene consecuencias limitadas ---el incidente se gestionará con algo menos urgencia de la adecuada--- pero es recuperable. Un error de P1 clasificado como P3 o P4 puede comprometer la respuesta ante una emergencia crítica y tiene consecuencias potencialmente graves.
+El baseline experto obtiene un recall P1 muy alto (0.998457), como cabia esperar por
+su diseno conservador, pero su macro-F1 queda en 0.703932. RuleFit-lite mejora
+claramente la macro-F1 hasta 0.880750, manteniendo un recall P1 de 0.921296, por
+encima del umbral minimo de 0.85. RuleFit \texttt{imodels}, en la ejecucion diagnostica
+disponible, no supera a RuleFit-lite y presenta mayor latencia de inferencia.\footnote{Las metricas de RuleFit-lite proceden del reporte canonico \texttt{evaluation\_v0.1.0.json} (run 26-may 18:05~UTC). El artefacto \texttt{capa2\_model\_selection\_v0.1.0} refleja un run previo (17:32~UTC) con valores ligeramente distintos (acc~0.885911, F1~0.884163, recall~P1~0.938272); la presente tabla usa la evaluacion final sobre splits fijos.}
 
-% Por tanto, la evaluación de seguridad operativa se centra en los \textbf{falsos negativos graves}, definidos como los casos en que el motor asigna una prioridad significativamente inferior a la prioridad de referencia:
-% \begin{itemize}
-%     \item FN-crítico: P1 clasificado como P3 o P4 (dos o más niveles de diferencia).
-%     \item FN-grave: P1 clasificado como P2, o P2 clasificado como P4 (un nivel crítico de diferencia).
-% \end{itemize}
+La decision experimental es seleccionar \textbf{RuleFit-lite} como modelo Capa 2
+v0.1.0. La seleccion se basa en cuatro criterios: mejor macro-F1 reproducible en test,
+recall P1 suficiente, cumplimiento del limite de 30 reglas activas y menor coste de
+inferencia.
 
-% La tasa objetivo de FN-críticos es cero o próxima a cero. El diseño de las reglas duras (Capítulo~6, Anexo~E) tiene precisamente este propósito: garantizar que los incidentes que cumplen condiciones deterministas de máxima gravedad reciben P1 independientemente del scoring. Los FN-graves son tolerables en un rango bajo, pero deben analizarse cualitativamente para identificar patrones y determinar si hay variables ausentes o combinaciones de condiciones no cubiertas por las reglas duras actuales.
+\section{Metricas por clase del modelo seleccionado}
 
-% \subsection{Explicabilidad}
+La Tabla~\ref{tab:9-rulefit-lite-clases} resume las metricas por clase de RuleFit-lite
+en el conjunto de test.
 
-% La evaluación de la capa de explicabilidad complementa la evaluación cuantitativa del baseline. No se trata de medir la «calidad literaria» de la explicación, sino de verificar que el texto generado cumple las condiciones funcionales del requisito RF7: identifica las reglas duras activadas cuando las hay, menciona las variables de mayor impacto en el scoring, señala las señales contextuales relevantes y advierte sobre la información ausente cuando la confianza es baja.
+\begin{table}[ht]
+\centering
+\caption{Metricas por clase de RuleFit-lite en test}
+\label{tab:9-rulefit-lite-clases}
+\small
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Clase} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Soporte} \\ \hline
+P1 & 0.940157 & 0.921296 & 0.930631 & 648 \\ \hline
+P2 & 0.751351 & 0.827381 & 0.787535 & 336 \\ \hline
+P3 & 0.912329 & 0.838791 & 0.874016 & 397 \\ \hline
+P4 & 0.870588 & 1.000000 & 0.930818 & 74 \\ \hline
+\end{tabular}
+\end{table}
 
-% La evaluación se realizará sobre una muestra representativa de explicaciones generadas, verificando sistemáticamente para cada caso la presencia de los cuatro elementos requeridos. Se documentará la tasa de cumplimiento de cada elemento y se identificarán los patrones de explicación incompleta o inadecuada.
+El comportamiento por clase muestra un equilibrio razonable. P1 mantiene alto recall
+y alta precision, lo que es especialmente relevante para seguridad operativa. P2 es la
+clase mas dificil, con F1 inferior al resto, un resultado esperable al tratarse de una
+zona frontera entre gravedad critica y seguimiento ordinario. P4 obtiene recall total
+en test, aunque con menor precision por su baja frecuencia relativa.
 
-% \section{Evaluación funcional}
+\section{Matriz de confusion del modelo seleccionado}
 
-% La evaluación funcional verifica que el prototipo implementa correctamente los nueve requisitos funcionales especificados en el Capítulo~5 (apartado~5.3). La verificación se realiza mediante pruebas de sistema sobre los casos del dataset piloto y la inspección del código de cada módulo.
+La Tabla~\ref{tab:9-confusion-rulefit-lite} muestra la matriz de confusion de
+RuleFit-lite en test.
 
-% \begin{description}
-%     \item[\textbf{RF1 -- Recepción y estructuración.}] Verificado si el prototipo recibe un incidente con al menos los campos obligatorios (V01, V02, V04, \texttt{fecha\_hora\_recepcion}), genera el identificador único y almacena el registro en el bloque~1 del esquema de datos.
-%     \item[\textbf{RF2 -- Clasificación del tipo.}] Verificado si el módulo de entrada asiste al operador en la clasificación del tipo de incidente según la taxonomía operativa del Anexo~A, utilizando técnicas básicas de NLP sobre la descripción textual.
-%     \item[\textbf{RF3 -- Integración de contexto oficial.}] Verificado si el módulo de contexto consulta las fuentes externas pertinentes para la localización del incidente y enriquece los campos V08--V11 y V15 conforme al bloque~3 del esquema de datos.
-%     \item[\textbf{RF4 -- Priorización automática.}] Verificado si el motor produce una prioridad recomendada P1--P4 para cada incidente a partir de las quince variables de entrada, aplicando las tres capas del baseline.
-%     \item[\textbf{RF5 -- Confianza y transparencia.}] Verificado si el motor produce un nivel de confianza (alto, medio, bajo) para cada recomendación, conforme a los umbrales del Anexo~E.
-%     \item[\textbf{RF6 -- Variables derivadas.}] Verificado si el motor calcula D01 (necesidad de coordinación multiagencia), D02 (necesidad de PMA), D03 (situación operativa sugerida) y D04 (plan activable recomendado).
-%     \item[\textbf{RF7 -- Explicación textual.}] Verificado si el motor genera una explicación que incluye los cuatro elementos requeridos (reglas duras, variables de impacto, señales contextuales, datos ausentes) para cada recomendación.
-%     \item[\textbf{RF8 -- Validación humana.}] Verificado si el frontend permite al operador aceptar, modificar o rechazar la recomendación, y el sistema registra la decisión en el bloque~5 del esquema de datos.
-%     \item[\textbf{RF9 -- Trazabilidad.}] Verificado si el backend persiste todos los datos del flujo y permite reconstruir el ciclo completo (incidente, recomendación, decisión) para cualquier caso procesado.
-% \end{description}
+\begin{table}[ht]
+\centering
+\caption{Matriz de confusion de RuleFit-lite en test}
+\label{tab:9-confusion-rulefit-lite}
+\small
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Referencia / Prediccion} & \textbf{P1} & \textbf{P2} & \textbf{P3} & \textbf{P4} \\ \hline
+P1 & 597 & 32 & 19 & 0 \\ \hline
+P2 & 38 & 278 & 13 & 7 \\ \hline
+P3 & 0 & 60 & 333 & 4 \\ \hline
+P4 & 0 & 0 & 0 & 74 \\ \hline
+\end{tabular}
+\end{table}
 
-% \section{Evaluación de aplicabilidad en escenarios de Aragón}
+No aparecen errores P1 clasificados como P4. La mayoria de discrepancias criticas son
+desplazamientos a niveles adyacentes, especialmente P1--P2, aunque se detectan 19 casos
+P1--P3 que deben revisarse manualmente antes de congelar el modelo. Este patron
+es coherente con la naturaleza academica de la etiqueta y con la dificultad de separar
+casos frontera.
 
-% La evaluación de aplicabilidad analiza el comportamiento del sistema ante escenarios representativos del contexto operativo aragonés, verificando que las prioridades generadas son coherentes con la casuística real de emergencias civiles en esta comunidad autónoma.
+\section{Robustez temporal y sesgo interno}
 
-% Aragón presenta una combinación de riesgos específica: riesgo de inundación en cuencas del Ebro y sus afluentes, riesgo de incendio forestal en la interfaz urbano-forestal de amplias zonas del Pirineo y del Sistema Ibérico, riesgo industrial asociado a instalaciones Seveso en el corredor del Ebro, y riesgo de emergencias en zonas de baja densidad poblacional con accesibilidad limitada. Estos riesgos están representados en el dataset piloto y corresponden a las variables V08--V11 y V15 del motor.
+Para comprobar que el rendimiento no depende exclusivamente del split estratificado, se
+evalua el mismo modelo sobre el test temporal de 2022. En este escenario se obtienen
+735 registros, accuracy 0.884354, macro-F1 0.877594 y recall P1 0.928767. La estabilidad
+entre ambos cortes sugiere que no hay una degradacion temporal relevante en la version
+v0.1.0, aunque no sustituye a una validacion prospectiva con datos nuevos.
 
-% El análisis cualitativo de aplicabilidad se organizará en torno a los ocho casos piloto del Anexo~D, evaluando si las prioridades producidas por el motor son coherentes con las asignadas por el protocolo de etiquetado del Anexo~C, y si las explicaciones generadas son pertinentes en el contexto operativo aragonés. Se prestará especial atención a los casos frontera (CASO-005, CASO-006, CASO-007) donde la diferencia entre niveles adyacentes es sutil y donde el motor puede producir recomendaciones discrepantes con la etiqueta de referencia.
+El analisis por subgrupos se realiza por provincia, ano y categoria operativa. La
+provincia con menor macro-F1 dentro de los grupos con soporte suficiente es Salamanca
+(0.769722), seguida de Palencia (0.843922) y Zamora (0.851736). Por categoria, incendio
+presenta el resultado mas debil, con macro-F1 0.740248 y recall P1 0.628571, mientras
+que trafico alcanza macro-F1 0.891502 y recall P1 0.948454. Estos resultados no
+permiten afirmar sesgo estructural, pero si identifican focos de revision prioritaria:
+incendios, casos sanitarios y provincias con menor soporte o peor macro-F1.
 
-% \section{Evaluación de usabilidad (SUS)}
+\section{Interpretabilidad}
 
-% La evaluación de usabilidad se realizará mediante el cuestionario SUS (\textit{System Usability Scale}), compuesto por diez ítems valorados en escala Likert 1--5, que produce una puntuación final en el rango 0--100. El umbral de usabilidad aceptable para el prototipo es una puntuación SUS mayor de 70 (percentil~50, nivel «aceptable» en la escala de Bangor, Kortum y Miller, 2008).
+RuleFit-lite exporta 30 reglas activas, cumpliendo el requisito de parsimonia. Las
+reglas combinan señales legibles, por ejemplo riesgo vital textual, accidente de
+trafico, rescate, incendio o ausencia de señales criticas. Esta forma de salida
+facilita su uso posterior por la Capa 3, que puede transformar reglas activadas en una
+explicacion normativa y operacional.
 
-% El cuestionario SUS se administrará a un subconjunto de usuarios con perfil operativo compatible con el del usuario objetivo definido en el Capítulo~5 (apartado~5.2): técnicos de protección civil, coordinadores de emergencias o personal con experiencia en gestión de incidentes. La muestra prevista es de entre 5 y 10 participantes, número estándar en evaluaciones de usabilidad de prototipos académicos.
+El baseline experto queda documentado en el Anexo~\ref{cap:anexoe}; la model card de
+Capa 2 y la comparativa completa se recogen en el Anexo~\ref{cap:anexol}. Los
+artefactos reproducibles principales son
+\texttt{artifacts/reports/rulefit\_lite\_v0.1.0.json},
+\texttt{artifacts/reports/capa2\_model\_selection\_v0.1.0.json} y
+\texttt{artifacts/reports/evaluation\_v0.1.0.json}. Este ultimo consolida T110--T112:
+metricas finales, test temporal, tablas de sesgo y fichero de falsos negativos P1.
+Como indice maestro de cierre, \texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.json}
+enlaza metricas, validacion interna, fidelidad explicativa y documentos LaTeX.
 
-% \section{Evaluación de tiempo hasta la primera decisión (TTFD)}
+\section{Validacion interna y trazabilidad}
 
-% El TTFD (\textit{Time to First Decision}) mide el tiempo transcurrido desde que el operador recibe la notificación de un nuevo incidente hasta que valida (acepta, modifica o rechaza) la recomendación del motor. Esta métrica no busca medir la velocidad del operador, sino la fricción cognitiva que introduce el sistema en el flujo de trabajo.
+La evaluacion automatica se complementa con un procedimiento de validacion interna. El
+objetivo no es simular una certificacion externa del 112, sino comprobar que cada
+recomendacion puede revisarse con evidencias suficientes y que las discrepancias quedan
+registradas de forma auditable.
 
-% La evaluación del TTFD se realizará de forma observacional durante la sesión de evaluación de usabilidad: se medirá el tiempo de respuesta para cada caso evaluado y se identificarán los pasos del flujo donde los participantes invierten más tiempo. Un TTFD medio inferior a 90 segundos para casos con alta confianza se considera indicativo de una interfaz suficientemente eficiente.
+En cada caso revisado se muestran el texto operativo minimizado, provincia, fecha,
+categoria preliminar, etiqueta academica, acuerdo de weak supervision, recomendacion
+P1--P4, confianza, probabilidades por clase, reglas activadas, features permitidas,
+columnas excluidas por anti-leakage, version de modelo y, cuando la Capa 3 esta
+disponible, la explicacion normativa asociada. Esta ficha permite que el revisor acepte
+la recomendacion, la modifique o la rechace.
 
-% \section{Discusión de resultados}
+El registro del feedback se realiza mediante el contrato \texttt{OperatorDecision} y el
+endpoint \texttt{/feedback}. La decision humana queda enlazada con \texttt{InferenceLog},
+incluyendo \texttt{incident\_id}, prioridad recomendada, prioridad final asignada,
+motivo de divergencia, revisor, timestamp, hash de entrada y versiones de modelo. Las
+divergencias de dos o mas niveles se marcan como casos de auditoria especial.
 
-% La discusión de los resultados de evaluación se organiza en cuatro ejes analíticos, una vez que se disponga de los datos completos de la fase de evaluación.
+La muestra minima de revision interna debe incluir todos los falsos negativos P1 del
+test estratificado, o al menos 30 casos si se selecciona una muestra acotada para
+defensa, junto con casos frontera P1/P2 y P2/P3. En la ejecucion actual se detectan 51
+falsos negativos P1: 32 P1--P2, 19 P1--P3 y ningun P1--P4. La plantilla de revision y
+el protocolo quedan versionados en \texttt{resources/internal\_validation}. La muestra
+generada para revision contiene 111 casos: los 51 falsos negativos P1 y 60 casos
+equilibrados, 15 por cada clase P1--P4.
 
-% El primer eje es la \textbf{coherencia del diseño y la implementación}: ¿coincide el comportamiento del motor con el comportamiento esperado según el diseño de las reglas y los pesos? ¿Las reglas duras se activan en los escenarios previstos? ¿El scoring es proporcional a la gravedad?
+\section{Fidelidad de explicaciones}
 
-% El segundo eje es el \textbf{análisis de errores}: ¿cuáles son los patrones de error más frecuentes? ¿Hay variables cuya ausencia sistemática degrada la confianza? ¿Los casos frontera entre P2 y P3 son los que producen más discrepancias, como se esperaría por el diseño?
+Sobre la misma muestra de 111 casos de validacion interna se ejecuta una evaluacion
+offline de fidelidad de explicaciones. El objetivo es comprobar que la Capa 3 explica
+lo que realmente entrega la Capa 2: prioridad recomendada, reglas o senales activadas,
+probabilidades y necesidad de cautela. La evaluacion se implementa en
+\texttt{scripts/evaluate\_explanation\_fidelity.py} y genera
+\texttt{artifacts/reports/explanation\_fidelity\_v0.1.0.json}.
 
-% El tercer eje es la \textbf{comparación con la etiqueta humana}: ¿hasta qué punto las prioridades del motor coinciden con las del operador experto? ¿Los casos donde el operador modifica la recomendación revelan algún patrón sistemático?
+La version ejecutada utiliza un juez determinista reproducible, no un LLM-as-Judge
+externo. La rubrica verifica seis criterios: alineacion con la prioridad recomendada,
+trazabilidad de reglas, cobertura de senales, citas legales en P1/P2, ausencia de
+contradicciones y presencia de disclaimer de confianza o modo degradado. Sobre los 111
+casos se obtiene pass rate 1.000000, fidelidad media 0.958747 y fidelidad minima
+0.925000. En los 51 falsos negativos P1, la fidelidad media es 0.951176.
 
-% El cuarto eje es la \textbf{implicación para el trabajo futuro}: ¿qué reglas adicionales o ajustes de pesos parecen más prometedores a partir de los resultados? ¿La integración de técnicas de aprendizaje automático podría mejorar la sensibilidad ante combinaciones de condiciones no capturadas por las reglas actuales?
+Estos resultados no prueban calidad linguistica ni aceptacion por operadores, pero si
+aportan una garantia importante: incluso en modo degradado, las explicaciones no
+contradicen la salida de Capa 2 y conservan la trazabilidad minima exigida. Una
+evaluacion futura con LLM-as-Judge independiente, en la linea propuesta por
+\citeA{Zheng2023LLMJudge}, puede reutilizar los mismos 111 casos.
 
-% \section{Limitaciones de la evaluación}
+\section{Posicionamiento frente a trabajos relacionados}
 
-% La evaluación presenta seis limitaciones que es necesario reconocer explícitamente para no sobredimensionar los resultados.
+La Tabla~\ref{tab:9-comparativa-autores} contrasta el enfoque propuesto con los trabajos relacionados del estado del arte, siguiendo la recomendacion de presentar resultados propios frente a otros autores.
 
-% La primera es el \textbf{tamaño del dataset}. El dataset piloto tiene un tamaño limitado (en el orden de decenas a centenares de casos) respecto a lo que requeriría una validación estadísticamente robusta. Los resultados son informativos, no estadísticamente generalizables.
+\begin{table}[htbp]
+\centering
+\caption{Comparativa del enfoque propuesto frente a trabajos relacionados}
+\label{tab:9-comparativa-autores}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{|p{2.6cm}|p{1.8cm}|p{1.8cm}|p{1.5cm}|p{1.4cm}|p{1.5cm}|p{2.0cm}|}
+\hline
+\textbf{Enfoque} & \textbf{Datos reales} & \textbf{Interp.} & \textbf{Expl. norm.} & \textbf{On-prem.} & \textbf{Superv.} & \textbf{Metrica clave} \\ \hline
+AIDR~\cite{Imran2014AIDR} & Redes sociales & No (DNN) & No & No & Fuerte & Acc. multi-label \\ \hline
+CrisisTransformers~\cite{Lamsal2024} & Crisis real & No (transformer) & No & Parcial & Fuerte & F1 clasificacion \\ \hline
+TREC-IS~\cite{TRECIS2021} & Twitter & No (ensemble) & No & No & Fuerte & Benchmarks \\ \hline
+Baseline experto (este TFM) & 112 CyL & Si (reglas) & Parcial & Si & Debil & F1 0{,}704; P1 recall 0{,}998 \\ \hline
+\textbf{RuleFit-lite~+~Capa~3} & \textbf{112 CyL} & \textbf{Si} & \textbf{Si} & \textbf{Si} & \textbf{Debil} & \textbf{F1 0{,}881; P1 0{,}921} \\ \hline
+\end{tabular}
+\end{table}
 
-% La segunda es el \textbf{origen de las etiquetas}. Las etiquetas de referencia del dataset piloto han sido asignadas mediante el protocolo del Anexo~C (criterios de referencia) y verificadas mediante los casos piloto del Anexo~D. No provienen de un sistema operativo en producción con etiquetas de múltiples expertos, lo que introduce una limitación inherente al sesgo del etiquetador.
+\noindent\textit{Fuente: elaboracion propia a partir de los trabajos citados.}
 
-% La tercera es la \textbf{naturaleza sintética de los datos}. La mayor parte del dataset piloto está compuesto por casos simulados controlados, construidos con el conocimiento del diseñador del motor. Esto introduce un riesgo de optimismo: el motor puede comportarse bien en los casos que el equipo tiene en mente al diseñarlo y peor ante casos imprevistos.
+\smallskip
+Las ventajas diferenciales del enfoque son: (1)~datos empiricos reales del 112 CyL frente a redes sociales; (2)~nucleo interpretable con reglas auditables; (3)~explicacion normativa local sin APIs externas; y (4)~supervision debil que evita la dependencia de etiquetado manual masivo. La limitacion principal es la etiqueta academica P1--P4, no validada por personal operativo.
 
-% La cuarta es la \textbf{evaluación de usabilidad de bajo presupuesto}. La muestra de 5--10 participantes es estándar para estudios académicos de usabilidad, pero insuficiente para generalizar a la diversidad de perfiles operativos de los centros de coordinación de emergencias.
+\section{Smoke test integrado del prototipo}
 
-% La quinta es la \textbf{integración parcial de fuentes externas}. Como se ha señalado en el Capítulo~8, la integración con fuentes como SNCZI o registros Seveso se ha implementado mediante tablas de referencia precargadas, no mediante consultas en tiempo real. La evaluación refleja el comportamiento del sistema en condiciones de laboratorio, no en integración productiva completa.
+Ademas de la evaluacion offline de Capa 2, se han ejecutado dos pruebas integradas del
+prototipo v0.1.0. La primera valida la cadena reproducible Capa 1--Capa 2--Capa 3 en
+modo degradado sobre escenarios curados. La segunda comprueba el backend en vivo con
+Ollama local. Ninguna sustituye a las metricas de test ni a la validacion externa, pero
+ambas verifican que la cadena software real funciona de extremo a extremo: texto del
+incidente, extraccion de senales en Capa 1, priorizacion RuleFit-lite en Capa 2,
+explicacion en Capa 3 y respuesta consumible por la interfaz.
 
-% La sexta es el \textbf{contexto geográfico acotado}. El sistema ha sido diseñado y evaluado para el contexto operativo aragonés. La transferibilidad a otras comunidades autónomas con marcos normativos y casuísticas diferentes no puede afirmarse sin una fase de adaptación y reevaluación específica.
+La validacion reproducible se conserva en
+\texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.json} y
+\texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}. Tras integrar la rama de Capa
+1, el sistema supera 5/5 escenarios curados con modelo \texttt{RULEFIT} activo:
+incendio urbano con atrapados, accidente de trafico con inconsciente, fuga quimica con
+intoxicacion, inundacion sin victimas e incidencia vial ordinaria. Este ultimo caso
+incluye negaciones explicitas (``no hay heridos ni vehiculos atrapados'') y confirma
+que Capa 1 no activa falsos positivos de atrapamiento tras el saneamiento realizado.
+
+La ejecucion confirma disponibilidad de Ollama y uso del modelo local
+\texttt{llama3.1:8b-instruct-q4\_K\_M}. Los cuatro casos representativos P1--P4 se
+clasifican conforme a la prioridad esperada, con RuleFit activo y sin recurrir al modo
+degradado de Capa 3. La latencia media observada es 4.897,888 ms por inferencia
+integrada.
+
+\begin{table}[ht]
+\centering
+\caption{Resultado del smoke test P1--P4 con Ollama}
+\label{tab:9-smoke-prototipo}
+\small
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Caso} & \textbf{Esperada} & \textbf{Obtenida} & \textbf{Distribucion principal} \\ \hline
+Incendio con atrapados & P1 & P1 & P1 97.35\%, P2 2.61\% \\ \hline
+Fuga de gas sin heridos & P2 & P2 & P2 92.21\%, P3 5.03\% \\ \hline
+Arbol en calzada & P3 & P3 & P3 93.71\%, P2 3.79\% \\ \hline
+Consulta vecinal sin riesgo & P4 & P4 & P4 98.54\%, P3 1.40\% \\ \hline
+\end{tabular}
+\end{table}
+
+El informe reproducible se conserva en
+\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.json} y
+\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md}. Esta evidencia permite
+diferenciar dos niveles de madurez: la evaluacion cuantitativa de Capa 2, ya realizada
+sobre test estratificado y temporal, y la validacion tecnica del prototipo completo,
+todavia limitada a una prueba de humo controlada.
+
+La Tabla~\ref{tab:9-e2e-capa1-capa2} resume la validacion reproducible posterior a la
+integracion de Capa 1. En ella, las latencias medias son 0.31106 ms para Capa 1,
+347.0036 ms para Capa 2 y 0.30772 ms para Capa 3 degradada. Las metricas micro de
+senales de Capa 1 son precision 0.846154, recall 1.000000 y F1 0.916667.
+
+\begin{table}[ht]
+\centering
+\caption{Validacion reproducible Capa 1--Capa 2--Capa 3}
+\label{tab:9-e2e-capa1-capa2}
+\small
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Caso} & \textbf{Prioridad} & \textbf{OK} & \textbf{Senales clave} \\ \hline
+Incendio urbano con atrapados & P1 & Si & atrapado, incendio, varias llamadas, riesgo vital \\ \hline
+Accidente de trafico grave & P1 & Si & herido grave, atrapado, trafico \\ \hline
+Fuga quimica en nave industrial & P2 & Si & intoxicacion, riesgo vital textual \\ \hline
+Inundacion en garajes & P2 & Si & meteo/inundacion \\ \hline
+Arbol caido en carretera secundaria & P3 & Si & trafico, sin falso atrapamiento \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Limitaciones}
+
+La evaluacion presenta seis limitaciones principales:
+
+\begin{enumerate}
+    \item La referencia P1--P4 es academica y debil, no una etiqueta operativa oficial
+    del 112.
+    \item El acuerdo de weak supervision es alto, pero no sustituye a una validacion
+    externa con personal experto del servicio.
+    \item La ejecucion \texttt{imodels} se ha realizado de forma diagnostica reducida
+    por coste computacional local; una ejecucion completa podria modificar sus
+    resultados.
+    \item El objetivo ECE $\leq 0.10$ queda reservado para una pasada final de
+    calibracion \cite{Guo2017Calibration} si el modelo se congela para demostracion.
+    \item Las variables externas diferidas en v0.1.0 (AEMET historico, SNCZI y Seveso)
+    no participan en esta evaluacion.
+    \item Las pruebas integradas demuestran funcionamiento tecnico P1--P4 y validacion
+    Capa 1--Capa 2 sobre 5 escenarios, pero su tamano sigue siendo pequeno y la
+    latencia media con LLM local, 4.897,888 ms, requiere optimizacion antes de una
+    demostracion exigente.
+\end{enumerate}
+
+Pese a estas limitaciones, la evaluacion permite concluir que la Capa 2 seleccionada
+supera de forma clara al baseline experto en macro-F1, mantiene recall P1 por encima
+del umbral fijado y respeta las restricciones de interpretabilidad y anti-leakage. Por
+ello, RuleFit-lite se adopta como nucleo interpretable de Capa 2 en la version v0.1.0
+del prototipo.

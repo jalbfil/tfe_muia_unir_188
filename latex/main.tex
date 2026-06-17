@@ -1,4 +1,4 @@
-% !TEX root = main.tex
+﻿% !TEX root = main.tex
 \documentclass[11pt,a4paper,spanish, oneside]{book}
 \usepackage{estilo_unir-1}
 \usepackage{apacite}
@@ -9,7 +9,7 @@
 \numberwithin{figure}{chapter}
 \usepackage{longtable, booktabs, array, ragged2e, multirow, tabularx}
 %\usepackage{chngcntr}
-%\counterwithin{equation}{chapter}
+%\counterwithin{equatioººn}{chapter}
 %\counterwithin{figure}{chapter}
 %\counterwithin{table}{chapter}
 %\renewcommand\theequation{\thechapter.\arabic{equation}}
@@ -28,13 +28,13 @@
 
 
 %---------------------------
-%título del trabajo y autor
+%titulo del trabajo y autor
 %---------------------------
-\title{Sistema inteligente de apoyo a la decisión para puestos de mando de emergencias}
-\titulacion{Máster Universitario en Inteligencia Artificial}
-\author{Juan Carlos Albert Fillol, Ancor González Carballo y Brian Mathias Pesci Juliani}
+\title{Sistema inteligente de apoyo a la decisi\'on para puestos de mando de emergencias}
+\titulacion{M\'aster Universitario en Inteligencia Artificial}
+\author{Juan Carlos Albert Fillol, Ancor Gonz\'alez Carballo y Brian Mathias Pesci Juliani}
 \date{22 de abril de 2026}
-\director{Dr. Andrés Soto Villaverde}
+\director{Dr. Andr\'es Soto Villaverde}
 \nombreciudad{ Madrid, Tenerife y Alicante}
 
 %---------------------------
@@ -46,9 +46,9 @@
 %---------------------------
 %---------------------------
 \begin{document}
-\renewcommand{\listfigurename}{Índice de Ilustraciones}
-\renewcommand{\listtablename}{Índice de Tablas}
-\renewcommand{\contentsname}{Índice de Contenidos}
+\renewcommand{\listfigurename}{Indice de Ilustraciones}
+\renewcommand{\listtablename}{Indice de Tablas}
+\renewcommand{\contentsname}{Indice de Contenidos}
 \renewcommand{\figurename}{Figura}
 \renewcommand{\tablename}{Tabla} 
 
@@ -62,7 +62,7 @@
 \centering{
 \begin{tabular}{!{\color{azulunir}\vrule width 2pt}p{12cm}}
 {\Large {\bf Universidad Internacional de la Rioja (UNIR)}} \\ \vspace{0.1cm}
-{ \huge {\bf Escuela Superior de Ingeniería y Tecnología}} \\ \vspace{0.1cm}
+{ \huge {\bf Escuela Superior de Ingenier\'ia y Tecnolog\'ia}} \\ \vspace{0.1cm}
 { \Large {\bf \@titulacion}}\\ \vspace{1cm}
 {\Huge {\bf {\color{azulunir}{\thetitle} }  }  }
 \end{tabular}
@@ -92,20 +92,18 @@
 \chapter*{Resumen}
 \addcontentsline{toc}{chapter}{Resumen}
 
-La gestión de emergencias civiles exige decisiones rápidas y fundamentadas ante información heterogénea, incompleta y fragmentaria. En este contexto, los operadores de los puestos de mando se enfrentan a una presión temporal elevada que puede comprometer la calidad de la primera valoración y, con ello, la eficacia de la respuesta. Este trabajo diseña e implementa un prototipo modular de apoyo a la decisión para puestos de mando de emergencias, orientado a reducir el \textit{Time To First Decision} (TTFD) mediante una lógica explicable basada en criterios operativos y fuentes oficiales. La metodología sigue un enfoque iterativo e incremental sustentado en el marco normativo del sistema español de protección civil, con caso piloto en Aragón. El prototipo integra quince variables operativas organizadas en seis grupos funcionales e incorpora contexto oficial procedente de AEMET y del Sistema Nacional de Cartografía de Zonas Inundables (SNCZI) del MITECO. El motor de priorización adopta una arquitectura de tres capas ---reglas duras, \textit{scoring} ponderado y capa de confianza y explicación--- que produce recomendaciones estructuradas, trazables y justificables sin recurrir a modelos de caja negra. La evaluación sobre escenarios simulados demuestra coherencia con el criterio experto y la viabilidad técnica del enfoque. Los resultados apoyan la aplicabilidad de la inteligencia artificial explicable en contextos operativos de emergencia, manteniendo al operador humano como responsable final de la decisión.
+La gestion de emergencias civiles exige decisiones rapidas y fundamentadas ante informacion heterogenea, incompleta y fragmentaria. En este contexto, los operadores del 112 y los responsables de coordinacion necesitan herramientas que ayuden a estructurar la informacion inicial sin sustituir el criterio humano. Este trabajo dise\~na, implementa y evalua un prototipo modular de apoyo a la decision para la priorizacion temprana de incidentes 112 en Castilla y Leon. La propuesta se apoya en el Registro de Emergencias del 112 de Castilla y Leon 2008--2022, una escala academica P1--P4 construida mediante supervision debil y una arquitectura de tres capas: extraccion de variables y se\~nales, priorizacion interpretable con RuleFit-lite y explicacion normativa mediante LLM local, RAG y herramientas MCP. La evaluacion compara un baseline experto, RuleFit-lite y una ejecucion diagnostica con \texttt{imodels}, usando splits estratificado y temporal, control anti-\textit{leakage}, analisis de falsos negativos P1, sesgos por subgrupo y fidelidad de explicaciones. Los resultados muestran que RuleFit-lite mejora el rendimiento global frente al baseline experto, mantiene recall P1 por encima del umbral definido y conserva trazabilidad suficiente para revision humana. El prototipo no se presenta como producto operativo ni como sistema certificado, sino como una base academica reproducible para estudiar IA responsable, explicable y supervisada en apoyo a la primera decision de emergencia.
 
 \medskip
-\textbf{Palabras clave:} emergencias civiles, apoyo a la decisión, priorización de incidentes, inteligencia artificial explicable, protección civil.
+\textbf{Palabras clave:} emergencias 112, apoyo a la decision, priorizacion de incidentes, RuleFit, supervision debil, inteligencia artificial explicable.
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Civil emergency management demands rapid, evidence-based decisions under heterogeneous, incomplete and fragmented information. In this context, command post operators face intense time pressure that can compromise the quality of the initial assessment and, consequently, the effectiveness of the response. This work designs and implements a modular decision-support prototype for emergency command posts, aimed at reducing the \textit{Time To First Decision} (TTFD) through an explainable logic grounded in operational criteria and official sources. The methodology follows an iterative and incremental approach, grounded in the Spanish civil protection normative framework with a pilot case in Aragón. The prototype integrates fifteen operational variables organised into six functional groups, incorporating official contextual data from AEMET and the National Flood Zone Mapping System (SNCZI). The prioritisation engine adopts a three-layer architecture---hard rules, weighted scoring, and a confidence and explanation layer---producing structured, traceable and justifiable recommendations without black-box models. Evaluation on simulated scenarios demonstrates coherence with expert judgment and technical viability of the approach. The results support the applicability of explainable artificial intelligence in operational emergency contexts, while preserving the human operator as the final decision-maker.
+Civil emergency management requires rapid and evidence-based decisions under heterogeneous, incomplete and fragmented information. In this context, 112 operators and coordination staff need tools that help structure early information without replacing human judgement. This thesis designs, implements and evaluates a modular decision-support prototype for early prioritisation of 112 incidents in Castilla y Leon. The proposal relies on the 2008--2022 Castilla y Leon 112 emergency registry, an academic P1--P4 priority scale built through weak supervision, and a three-layer architecture: feature and signal extraction, interpretable prioritisation with RuleFit-lite, and normative explanation through a local LLM, RAG and MCP tools. The evaluation compares an expert baseline, RuleFit-lite and a diagnostic \texttt{imodels} run, using stratified and temporal splits, anti-leakage controls, P1 false-negative analysis, subgroup bias checks and explanation fidelity assessment. Results show that RuleFit-lite improves global performance over the expert baseline, keeps P1 recall above the predefined threshold and preserves sufficient traceability for human review. The prototype is not presented as an operational product or certified system, but as a reproducible academic basis for studying responsible, explainable and supervised AI in support of the first emergency decision.
 
 \medskip
-\textbf{Keywords:} civil emergency management, decision support system, incident prioritisation, explainable artificial intelligence, civil protection.
-
-
+\textbf{Keywords:} 112 emergencies, decision support system, incident prioritisation, RuleFit, weak supervision, explainable artificial intelligence.
 
 
 \mainmatter
@@ -131,6 +129,11 @@ Civil emergency management demands rapid, evidence-based decisions under heterog
 \input{chapters/anexo_d}
 \input{chapters/anexo_e}
 \input{chapters/anexo_f}
+\input{chapters/anexo_g}
+\input{chapters/anexo_h}
+\input{chapters/anexo_j}
+\input{chapters/anexo_k}
+\input{chapters/anexo_l}
 
 \end{document}
 

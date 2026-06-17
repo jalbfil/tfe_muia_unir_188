@@ -1,0 +1,64 @@
+{
+  "$contractsVersion": "0.1.0",
+  "$defs": {
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agreement_score": {
+      "maximum": 1.0,
+      "minimum": -1.0,
+      "title": "Agreement Score",
+      "type": "number"
+    },
+    "annotator_votes": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Priority"
+      },
+      "propertyNames": {
+        "maxLength": 64,
+        "minLength": 1
+      },
+      "title": "Annotator Votes",
+      "type": "object"
+    },
+    "final_label": {
+      "$ref": "#/$defs/Priority"
+    },
+    "incident_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "label_model_confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Label Model Confidence",
+      "type": "number"
+    },
+    "was_used_in_training": {
+      "title": "Was Used In Training",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "incident_id",
+    "annotator_votes",
+    "final_label",
+    "label_model_confidence",
+    "agreement_score",
+    "was_used_in_training"
+  ],
+  "title": "WeakLabel",
+  "type": "object"
+}

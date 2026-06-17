@@ -1,0 +1,210 @@
+{
+  "$contractsVersion": "0.1.0",
+  "$defs": {
+    "LLMMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "llm_model": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Llm Model",
+          "type": "string"
+        },
+        "temperature": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "tokens_input": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tokens Input"
+        },
+        "tokens_output": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tokens Output"
+        },
+        "tools_invoked": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tools Invoked",
+          "type": "array"
+        }
+      },
+      "required": [
+        "llm_model",
+        "temperature"
+      ],
+      "title": "LLMMetadata",
+      "type": "object"
+    },
+    "LegalCitation": {
+      "additionalProperties": false,
+      "properties": {
+        "articulo_o_seccion": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Articulo O Seccion"
+        },
+        "norma_id": {
+          "$ref": "#/$defs/NormaID"
+        },
+        "texto_relevante": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Texto Relevante",
+          "type": "string"
+        },
+        "url_oficial": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "maxLength": 2083,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url Oficial"
+        }
+      },
+      "required": [
+        "norma_id",
+        "texto_relevante"
+      ],
+      "title": "LegalCitation",
+      "type": "object"
+    },
+    "NormaID": {
+      "enum": [
+        "LEY_17_2015",
+        "RD_524_2023",
+        "PLEGEM",
+        "LEY_4_2007_CYL",
+        "PLANCAL_DEC_4_2019",
+        "INFOCAL_DEC_6_2025",
+        "INUNCYL",
+        "MPCYL_ACUERDO_3_2008",
+        "LEY_11_2022",
+        "REGISTRO_112_CYL",
+        "RGPD",
+        "LOPDGDD",
+        "REG_UE_2024_1689",
+        "RD_840_2015_SEVESO"
+      ],
+      "title": "NormaID",
+      "type": "string"
+    },
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "activated_rules_summary": {
+      "items": {
+        "maxLength": 200,
+        "type": "string"
+      },
+      "title": "Activated Rules Summary",
+      "type": "array"
+    },
+    "actuation_hints": {
+      "items": {
+        "maxLength": 200,
+        "type": "string"
+      },
+      "title": "Actuation Hints",
+      "type": "array"
+    },
+    "confidence_disclaimer": {
+      "anyOf": [
+        {
+          "maxLength": 300,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence Disclaimer"
+    },
+    "explanation_text": {
+      "maxLength": 1200,
+      "minLength": 20,
+      "title": "Explanation Text",
+      "type": "string"
+    },
+    "incident_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "legal_citations": {
+      "items": {
+        "$ref": "#/$defs/LegalCitation"
+      },
+      "title": "Legal Citations",
+      "type": "array"
+    },
+    "llm_metadata": {
+      "$ref": "#/$defs/LLMMetadata"
+    },
+    "model_version_capa3": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Model Version Capa3",
+      "type": "string"
+    },
+    "priority_recommended": {
+      "$ref": "#/$defs/Priority"
+    }
+  },
+  "required": [
+    "incident_id",
+    "priority_recommended",
+    "explanation_text",
+    "model_version_capa3",
+    "llm_metadata"
+  ],
+  "title": "OperatorRecommendation",
+  "type": "object"
+}

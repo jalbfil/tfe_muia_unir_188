@@ -1,0 +1,228 @@
+{
+  "generated_at": "2026-06-16T23:20:56.093560+00:00",
+  "model": "rulefit_lite_ruleset",
+  "model_version_capa2": "0.1.0",
+  "feature_names": [
+    "signal_fallecido",
+    "signal_herido_grave",
+    "signal_atrapado",
+    "signal_intoxicacion",
+    "signal_varias_llamadas",
+    "signal_incendio",
+    "signal_accidente_trafico",
+    "signal_rescate",
+    "signal_meteo_inundacion",
+    "riesgo_vital_textual",
+    "cat_trafico",
+    "cat_incendio",
+    "cat_rescate",
+    "cat_sanitario",
+    "cat_meteorologico",
+    "cat_seguridad",
+    "cat_otros"
+  ],
+  "class_labels": [
+    "P1",
+    "P2",
+    "P3",
+    "P4"
+  ],
+  "selection": {
+    "engine": "sklearn_rulefit_lite",
+    "val_macro_f1": 0.880523,
+    "active_rule_count": 30
+  },
+  "fit_rows": 3000,
+  "engine": "lite",
+  "training_seconds": 4.415806,
+  "model_size_bytes": 14575,
+  "mean_inference_ms_per_row": 0.241316,
+  "active_rule_count_total": 30,
+  "active_rule_count_exported": 30,
+  "artifacts": {
+    "model_path": "artifacts\\models\\capa2\\v0.1.0\\rulefit.joblib",
+    "rules_json": "artifacts\\models\\capa2\\v0.1.0\\rules.json"
+  },
+  "splits": {
+    "train": {
+      "rows": 6511,
+      "accuracy": 0.891875,
+      "macro_f1": 0.888409,
+      "recall_p1": 0.921402,
+      "per_class": {
+        "P1": {
+          "precision": 0.958245,
+          "recall": 0.921402,
+          "f1": 0.939462,
+          "support": 2939
+        },
+        "P2": {
+          "precision": 0.757101,
+          "recall": 0.884225,
+          "f1": 0.81574,
+          "support": 1477
+        },
+        "P3": {
+          "precision": 0.926373,
+          "recall": 0.835602,
+          "f1": 0.878649,
+          "support": 1837
+        },
+        "P4": {
+          "precision": 0.851485,
+          "recall": 1.0,
+          "f1": 0.919786,
+          "support": 258
+        }
+      },
+      "confusion_matrix": {
+        "P1": {
+          "P1": 2708,
+          "P2": 133,
+          "P3": 98,
+          "P4": 0
+        },
+        "P2": {
+          "P1": 118,
+          "P2": 1306,
+          "P3": 24,
+          "P4": 29
+        },
+        "P3": {
+          "P1": 0,
+          "P2": 286,
+          "P3": 1535,
+          "P4": 16
+        },
+        "P4": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0,
+          "P4": 258
+        }
+      }
+    },
+    "val": {
+      "rows": 1414,
+      "accuracy": 0.881188,
+      "macro_f1": 0.880523,
+      "recall_p1": 0.92,
+      "per_class": {
+        "P1": {
+          "precision": 0.951987,
+          "recall": 0.92,
+          "f1": 0.93572,
+          "support": 625
+        },
+        "P2": {
+          "precision": 0.741602,
+          "recall": 0.87234,
+          "f1": 0.801676,
+          "support": 329
+        },
+        "P3": {
+          "precision": 0.916667,
+          "recall": 0.812808,
+          "f1": 0.861619,
+          "support": 406
+        },
+        "P4": {
+          "precision": 0.857143,
+          "recall": 1.0,
+          "f1": 0.923077,
+          "support": 54
+        }
+      },
+      "confusion_matrix": {
+        "P1": {
+          "P1": 575,
+          "P2": 26,
+          "P3": 24,
+          "P4": 0
+        },
+        "P2": {
+          "P1": 29,
+          "P2": 287,
+          "P3": 6,
+          "P4": 7
+        },
+        "P3": {
+          "P1": 0,
+          "P2": 74,
+          "P3": 330,
+          "P4": 2
+        },
+        "P4": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0,
+          "P4": 54
+        }
+      }
+    },
+    "test": {
+      "rows": 1455,
+      "accuracy": 0.8811,
+      "macro_f1": 0.88075,
+      "recall_p1": 0.921296,
+      "per_class": {
+        "P1": {
+          "precision": 0.940157,
+          "recall": 0.921296,
+          "f1": 0.930631,
+          "support": 648
+        },
+        "P2": {
+          "precision": 0.751351,
+          "recall": 0.827381,
+          "f1": 0.787535,
+          "support": 336
+        },
+        "P3": {
+          "precision": 0.912329,
+          "recall": 0.838791,
+          "f1": 0.874016,
+          "support": 397
+        },
+        "P4": {
+          "precision": 0.870588,
+          "recall": 1.0,
+          "f1": 0.930818,
+          "support": 74
+        }
+      },
+      "confusion_matrix": {
+        "P1": {
+          "P1": 597,
+          "P2": 32,
+          "P3": 19,
+          "P4": 0
+        },
+        "P2": {
+          "P1": 38,
+          "P2": 278,
+          "P3": 13,
+          "P4": 7
+        },
+        "P3": {
+          "P1": 0,
+          "P2": 60,
+          "P3": 333,
+          "P4": 4
+        },
+        "P4": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 0,
+          "P4": 74
+        }
+      }
+    }
+  },
+  "notes": [
+    "imodels.RuleFitClassifier is binary in imodels 2.0.4; P1-P4 uses one-vs-rest.",
+    "The lite engine uses shallow tree rules plus a sparse logistic layer as a fast RuleFit-style bridge.",
+    "The imodels engine calibrates outputs with isotonic regression on the validation split.",
+    "The lite engine stores direct sparse-logistic probabilities to avoid isotonic collapse on rare P4."
+  ]
+}

@@ -1,0 +1,15 @@
+﻿campo_dataset_cyl,descripcion,tipo,uso_en_tfm,variable_destino,origen_variable,limitacion
+Título,Texto breve del incidente,texto,"Extracción de tipo, gravedad textual, víctimas probables y palabras clave",Tipo incidente / señales NLP,Dataset real,Requiere procesamiento NLP; no es etiqueta de prioridad
+DescripcionBlob,Descripción HTML del incidente,texto largo,"Extracción de entidades, localizaciones, víctimas, medios avisados y evolución narrativa",Variables derivadas de gravedad y contexto,Dataset real,Contiene HTML; puede incluir información posterior a la primera llamada
+FechaIncidente,Fecha del incidente YYYYMMDD,temporal,"Análisis temporal, estacionalidad, filtros de rango",Contexto temporal,Dataset real,Contiene dos anomalías detectadas: 20070101 y 20881223
+Localidad,Municipio/localidad del incidente,geográfico,Agrupación territorial y cruce indirecto con población u otras fuentes,Localización territorial,Dataset real,No equivale necesariamente a coordenada exacta del suceso
+Localidad.1,Coordenadas en formato lat#lon#código,geográfico,"Cruce con SNCZI, AEMET, Seveso, INE/territorio",Exposición territorial / amenaza contextual,Dataset real,71 registros sin coordenadas; requiere parseo
+Localidad.2,Identificador interno de localidad,identificador,Trazabilidad territorial si se documenta significado,Identificador auxiliar,Dataset real,No se conoce semántica exacta del identificador
+TipoIncidente,Clasificación genérica Emergencia/Intervención,categórico,Filtro básico del tipo de registro,Tipo de registro,Dataset real,Muy genérico; 835 nulos; no basta para taxonomía operativa
+IncidenteCerrado,Indica si el incidente está cerrado,categórico,Control de calidad o filtrado,Estado del registro,Dataset real,Casi todos son 'Si'; bajo valor discriminante
+MediosMov,Medios movilizados en HTML,texto/categórico derivable,"Validación proxy de gravedad, recursos y complejidad",Complejidad operativa / variable de validación,Dataset real,No debe usarse como entrada principal si representa respuesta posterior: riesgo de fuga de información
+PacientesAten,Pacientes atendidos en HTML,texto sparse,Validación o extracción puntual de víctimas/traslado,Víctimas/afectados como apoyo,Dataset real,Solo 115 registros no nulos; cobertura insuficiente
+Identificador,ID único del incidente,identificador,"Trazabilidad, deduplicación, enlace con fuente",ID incidente,Dataset real,No aporta prioridad
+ultimaActualizacion,Fecha de actualización YYYYMMDD,temporal,Control de actualización del registro,Metadato,Dataset real,No representa necesariamente fecha del incidente
+Enlace al contenido,URL del incidente,url,Trazabilidad y verificación manual,Fuente del caso,Dataset real,No es variable del motor
+Unnamed: 13,Columna vacía,vacío,Descartar,Ninguna,No utilizable,Columna vacía por separador final

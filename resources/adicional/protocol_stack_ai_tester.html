@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Protocol Stack Premium v4</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--bg2:#161b27;--bg3:#1e2535;--bg4:#252d40;--bg5:#2e3850;
+  --b1:#2a3448;--b2:#3a4560;--b3:#4d5c78;
+  --t1:#e2e8f0;--t2:#94a3b8;--t3:#64748b;--t4:#475569;
+  --purple:#7c3aed;--purple2:#a855f7;--purple3:#1e1033;--purple4:#2d1a4a;
+  --teal:#0d9488;--teal2:#14b8a6;--teal3:#0c2926;
+  --blue:#1d4ed8;--blue2:#3b82f6;--blue3:#0f1e3d;
+  --amber:#b45309;--amber2:#f59e0b;--amber3:#2d1a00;
+  --coral:#c2410c;--coral2:#f97316;--coral3:#2d0f00;
+  --green:#15803d;--green2:#22c55e;--green3:#0d2018;
+  --red:#dc2626;--red2:#f87171;--red3:#2d0a0a;
+  --mono:'JetBrains Mono','Fira Code','Courier New',monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1)}
+.app{display:grid;grid-template-columns:205px 1fr;height:100vh}
+
+/* ─── Sidebar ─── */
+.sb{background:var(--bg2);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+.sb-logo{padding:.85rem 1rem;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px}
+.logo-led{width:7px;height:7px;border-radius:50%;background:var(--purple2);animation:lp 2s infinite}
+@keyframes lp{0%,100%{box-shadow:0 0 0 0 #a855f740}70%{box-shadow:0 0 0 5px #a855f700}}
+.logo-t{font-size:12px;font-weight:700;letter-spacing:.02em}
+.logo-s{font-size:9px;color:var(--t3);margin-top:1px}
+.nav-sec{padding:.5rem .85rem .15rem;font-size:8.5px;font-weight:700;color:var(--t4);letter-spacing:.1em;text-transform:uppercase}
+.nav-i{display:flex;align-items:center;gap:7px;padding:.4rem .85rem;cursor:pointer;font-size:11.5px;color:var(--t2);transition:all .12s;border-left:2px solid transparent;user-select:none}
+.nav-i:hover{color:var(--t1);background:var(--bg3)}
+.nav-i.on{color:var(--t1);background:var(--bg3);border-left-color:var(--purple2)}
+.ndot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.nbadge{margin-left:auto;font-size:8.5px;padding:1px 5px;border-radius:3px;font-weight:700}
+.sb-foot{margin-top:auto;padding:.65rem;border-top:1px solid var(--b1);font-size:9px}
+.sb-model{color:var(--purple2);font-weight:700}
+.sb-sub{color:var(--t4);margin-top:2px}
+
+/* ─── Main ─── */
+.main{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.panels{flex:1;position:relative;overflow:hidden}
+.panel{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .15s}
+.panel.on{opacity:1;pointer-events:all}
+
+/* ─── Panel header ─── */
+.ph{background:var(--bg2);border-bottom:1px solid var(--b1);padding:.55rem 1.1rem;display:flex;align-items:center;gap:9px;flex-shrink:0;min-height:42px}
+.ph-led{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ph-name{font-size:12.5px;font-weight:700}
+.ph-desc{font-size:10.5px;color:var(--t3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph-tag{font-size:8.5px;padding:2px 7px;border-radius:3px;font-weight:700;flex-shrink:0}
+
+/* ─── Split layout: wire | rendered ─── */
+.split{flex:1;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;min-height:0}
+.split-col{display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.split-col+.split-col{border-left:1px solid var(--b1)}
+.split-hd{padding:.4rem .85rem;background:var(--bg4);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.split-hd-t{font-size:9.5px;font-weight:700;color:var(--t3);letter-spacing:.06em;text-transform:uppercase}
+.split-dot{width:5px;height:5px;border-radius:50%}
+.col-scroll{flex:1;overflow-y:auto;padding:.85rem;display:flex;flex-direction:column;gap:.55rem}
+.col-scroll::-webkit-scrollbar{width:3px}
+.col-scroll::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+/* ─── Wire messages (left col) ─── */
+.wire-msg{animation:fi .18s ease}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+/* Direction badges */
+.dir-row{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.dir-badge{font-size:8.5px;padding:1px 6px;border-radius:3px;font-weight:700;border:1px solid}
+.dir-arrow{font-size:10px;color:var(--t4)}
+
+/* Wire envelope: the actual protocol frame */
+.wire-env{border:1px solid var(--b2);border-radius:7px;overflow:hidden;margin-bottom:2px}
+.wire-env-hd{display:flex;align-items:center;justify-content:space-between;padding:.3rem .6rem;border-bottom:1px solid var(--b1)}
+.wire-proto{font-size:8.5px;font-weight:700;padding:1px 6px;border-radius:3px}
+.wire-method{font-size:9px;color:var(--t2);font-family:var(--mono)}
+.wire-id{font-size:8.5px;color:var(--t4);font-family:var(--mono)}
+.wire-body{font-family:var(--mono);font-size:9.5px;padding:.5rem .65rem;color:var(--t2);white-space:pre;overflow-x:auto;line-height:1.65;background:var(--bg)}
+
+/* SSE stream line */
+.sse-line{font-family:var(--mono);font-size:9.5px;line-height:1.65;padding:.15rem 0;display:flex;gap:6px;animation:fi .1s ease}
+.sse-field{color:var(--t4)}
+.sse-event{color:var(--teal2)}
+.sse-data{color:var(--t2)}
+
+/* System note in wire col */
+.wire-note{display:flex;align-items:center;gap:5px;font-size:9.5px;color:var(--t4);padding:.2rem 0}
+.wire-note-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+
+/* ─── Rendered UI (right col) ─── */
+/* The right col shows what the frontend renders after receiving the protocol message */
+
+/* Frame around rendered component */
+.render-frame{border:1px solid var(--b2);border-radius:8px;overflow:hidden;animation:fi .2s ease}
+.render-frame-hd{display:flex;align-items:center;gap:6px;padding:.35rem .7rem;border-bottom:1px solid var(--b1);background:var(--bg4)}
+.render-frame-t{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.render-frame-sub{font-size:8.5px;color:var(--t4);margin-left:auto;font-family:var(--mono)}
+.render-body{padding:.75rem;background:var(--bg3)}
+
+/* UI card */
+.ui-card{background:var(--bg4);border:1px solid var(--b2);border-radius:7px;padding:.7rem;margin-bottom:.4rem}
+.ui-card-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.ui-card-sub{font-size:11px;color:var(--t3);margin-bottom:.5rem}
+.ui-rows{margin:.35rem 0}
+.ui-row{display:flex;justify-content:space-between;align-items:center;padding:.22rem 0;border-bottom:1px solid var(--b1);font-size:11.5px}
+.ui-row:last-child{border-bottom:none}
+.ui-lbl{color:var(--t3)}
+.ui-val{color:var(--t1);font-weight:500}
+.ui-badges{display:flex;gap:4px;flex-wrap:wrap;margin:.3rem 0}
+.ui-badge{font-size:9.5px;padding:2px 7px;border-radius:4px;font-weight:600}
+.ui-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:.55rem}
+.ui-btn{font-size:11px;padding:5px 13px;border-radius:5px;border:1px solid;cursor:pointer;font-weight:600;transition:all .12s;line-height:1}
+.ui-btn.primary{background:var(--purple);border-color:var(--purple);color:#fff}
+.ui-btn.primary:hover{background:var(--purple2)}
+.ui-btn.secondary{background:transparent;border-color:var(--b2);color:var(--t2)}
+.ui-btn.secondary:hover{background:var(--bg3);color:var(--t1)}
+.ui-btn.danger{background:var(--red3);border-color:var(--red);color:var(--red2)}
+.ui-btn.danger:hover{background:var(--red);color:#fff}
+
+/* UI form */
+.ui-field{margin:.4rem 0}
+.ui-field label{display:block;font-size:9.5px;color:var(--t3);margin-bottom:3px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.ui-field input,.ui-field select,.ui-field textarea{width:100%;background:var(--bg5);border:1px solid var(--b2);border-radius:5px;padding:5px 8px;font-size:11.5px;color:var(--t1);outline:none;font-family:var(--sans)}
+.ui-field input:focus,.ui-field select:focus{border-color:var(--purple)}
+
+/* Dashboard metrics */
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin:.4rem 0}
+.metric-cell{background:var(--bg5);border-radius:6px;padding:.55rem .5rem;text-align:center}
+.metric-val{font-size:17px;font-weight:700;color:var(--t1)}
+.metric-lbl{font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.metric-bar{height:3px;background:var(--b1);border-radius:2px;overflow:hidden;margin-top:5px}
+.metric-fill{height:100%;border-radius:2px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+/* Table */
+.ui-table{width:100%;border-collapse:collapse}
+.ui-table th{text-align:left;padding:5px 7px;font-size:9.5px;font-weight:700;color:var(--t4);border-bottom:1px solid var(--b1);text-transform:uppercase;letter-spacing:.04em}
+.ui-table td{padding:5px 7px;font-size:11px;color:var(--t2);border-bottom:1px solid var(--b1)}
+.ui-table tr:last-child td{border-bottom:none}
+
+/* Ring 2 confirmation */
+.r2-box{background:var(--red3);border:1px solid var(--red);border-radius:8px;padding:.7rem}
+.r2-title{font-size:10px;font-weight:700;color:var(--red2);letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
+.r2-action{font-size:10.5px;color:#f97316;font-family:var(--mono);margin-bottom:5px;padding:3px 6px;background:#2d0f00;border-radius:4px;border:1px solid #c2410c}
+.r2-desc{font-size:11.5px;color:var(--t2);margin-bottom:.6rem;line-height:1.5}
+.r2-input-row{display:flex;gap:6px}
+.r2-input{flex:1;background:var(--bg);border:1px solid var(--b2);border-radius:5px;padding:5px 8px;font-family:var(--mono);font-size:11px;color:var(--t1);outline:none}
+.r2-input:focus{border-color:var(--red)}
+.r2-btn{font-size:11px;padding:5px 12px;border-radius:5px;border:1px solid var(--red);background:var(--red3);color:var(--red2);cursor:pointer;white-space:nowrap;font-weight:600}
+.r2-btn:hover{background:var(--red);color:#fff}
+
+/* Clarification */
+.clarif-option{background:var(--bg4);border:1px solid var(--b2);border-radius:6px;padding:.5rem .75rem;margin:.3rem 0;cursor:pointer;transition:all .12s;font-size:11.5px;display:flex;align-items:flex-start;gap:8px}
+.clarif-option:hover{border-color:var(--purple);background:var(--purple3)}
+.clarif-option.best{border-color:var(--purple)}
+.clarif-tag{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0;margin-top:1px}
+
+/* Cluster status */
+.cluster-grid{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin:.35rem 0}
+.agent-node{background:var(--bg4);border:1px solid var(--b2);border-radius:6px;padding:.45rem .65rem;display:flex;align-items:center;gap:7px}
+.agent-led{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.led-h{background:var(--green2);box-shadow:0 0 5px #22c55e80}
+.led-d{background:var(--amber2);box-shadow:0 0 5px #f59e0b80;animation:blink 1s infinite}
+.led-f{background:var(--red2);box-shadow:0 0 5px #f8717180;animation:blink .5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.agent-name{font-size:10.5px;color:var(--t1);font-weight:600}
+.agent-st{font-size:9px;color:var(--t3)}
+.agent-lat{margin-left:auto;font-size:9px;color:var(--t4);font-family:var(--mono)}
+
+/* ANP passport */
+.passport{border:1px solid var(--amber);border-radius:8px;overflow:hidden}
+.passport-hd{background:var(--amber3);padding:.35rem .7rem;display:flex;align-items:center;justify-content:space-between}
+.passport-hd-t{font-size:9.5px;font-weight:700;color:var(--amber2);letter-spacing:.04em}
+.passport-body{padding:.5rem .7rem}
+.prow{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(180,83,9,.12);font-size:10.5px}
+.prow:last-child{border-bottom:none}
+.pk{color:var(--t3)}
+.pv{color:var(--amber2);font-family:var(--mono);font-size:9.5px}
+
+/* Trust bar */
+.trust-row{margin:.3rem 0}
+.trust-meta{display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px}
+.trust-bar{height:3px;background:var(--b1);border-radius:2px;overflow:hidden}
+.trust-fill{height:100%;border-radius:2px;transition:width .7s}
+
+/* Route flow */
+.route-flow{display:flex;flex-direction:column;gap:.35rem;margin:.35rem 0}
+.route-step{display:flex;align-items:flex-start;gap:8px}
+.route-num{width:20px;height:20px;border-radius:50%;background:var(--bg5);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--t3);flex-shrink:0;margin-top:1px}
+.route-content{flex:1}
+.route-proto-tag{font-size:9px;padding:1px 7px;border-radius:4px;font-weight:700;border:1px solid;display:inline-block;margin-bottom:2px}
+.route-target{font-size:11px;color:var(--t2)}
+.route-reason{font-size:10px;color:var(--t4)}
+
+/* Ring badges */
+.rb{display:inline-flex;align-items:center;font-size:9px;padding:1px 6px;border-radius:4px;font-weight:700;border:1px solid;flex-shrink:0}
+.rb0{background:var(--green3);border-color:var(--green);color:var(--green2)}
+.rb1{background:var(--amber3);border-color:var(--amber);color:var(--amber2)}
+.rb2{background:var(--red3);border-color:var(--red);color:var(--red2)}
+
+/* petrea chip */
+.petrea{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:3px;font-weight:700}
+.p-null{background:#1e2535;color:#475569;border:1px solid #3a4560}
+.p-ok{background:#0d2018;color:#22c55e;border:1px solid #15803d}
+.p-block{background:#2d0a0a;color:#f87171;border:1px solid #dc2626}
+.p-review{background:#2d1a00;color:#f59e0b;border:1px solid #b45309}
+
+/* Lifecycle indicator */
+.lifecycle-row{display:flex;align-items:center;gap:4px;margin:.35rem 0;font-size:9.5px}
+.lc-step{padding:3px 9px;border-radius:4px;border:1px solid;font-weight:700;white-space:nowrap}
+.lc-arrow{color:var(--t4);font-size:11px}
+
+/* Typing dots */
+.tdots{display:flex;gap:3px;align-items:center;height:16px}
+.tdots span{width:3px;height:3px;border-radius:50%;background:var(--t3);animation:td 1.2s infinite}
+.tdots span:nth-child(2){animation-delay:.2s}
+.tdots span:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--t4);font-size:11px}
+.empty-icon{font-size:28px;opacity:.3}
+
+/* ─── Input zone ─── */
+.input-zone{background:var(--bg2);border-top:1px solid var(--b1);padding:.65rem .9rem;flex-shrink:0}
+.quick-strip{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:.55rem}
+.qb{font-size:10px;padding:3px 9px;border-radius:4px;border:1px solid var(--b2);background:transparent;color:var(--t2);cursor:pointer;transition:all .12s;white-space:nowrap;user-select:none}
+.qb:hover{background:var(--bg3);color:var(--t1);border-color:var(--b3)}
+.input-row{display:flex;gap:6px;align-items:flex-end}
+.input-row textarea{flex:1;background:var(--bg3);border:1px solid var(--b2);border-radius:7px;padding:.45rem .7rem;color:var(--t1);font-size:12px;font-family:var(--sans);resize:none;outline:none;line-height:1.5;min-height:36px;max-height:96px}
+.input-row textarea::placeholder{color:var(--t4)}
+.input-row textarea:focus{border-color:var(--purple)}
+.send-btn{background:var(--purple);color:#fff;border:none;border-radius:7px;padding:.45rem .85rem;cursor:pointer;font-size:12px;font-weight:600;transition:background .12s;flex-shrink:0;height:36px}
+.send-btn:hover{background:var(--purple2)}
+.send-btn:disabled{background:var(--bg4);color:var(--t3);cursor:not-allowed}
+
+/* JSON syntax */
+.jk{color:#7dd3fc}.js{color:#86efac}.jn{color:#fbbf24}.jb{color:#f472b6}.jnull{color:#94a3b8}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="logo-led"></div>
+    <div><div class="logo-t">Protocol Stack</div><div class="logo-s">Premium v4 · Wire + Render</div></div>
+  </div>
+
+  <div class="nav-sec">Interfaz y Usuario</div>
+  <div class="nav-i on" data-p="agui"><div class="ndot" style="background:#a855f7"></div>AG-UI<span class="nbadge" style="background:#1e1033;color:#a855f7">HITL</span></div>
+  <div class="nav-i" data-p="a2ui"><div class="ndot" style="background:#3b82f6"></div>A2UI<span class="nbadge" style="background:#0f1e3d;color:#60a5fa">UI gen</span></div>
+
+  <div class="nav-sec">Capa de Agentes</div>
+  <div class="nav-i" data-p="acp"><div class="ndot" style="background:#14b8a6"></div>ACP Local<span class="nbadge" style="background:#0c2926;color:#14b8a6">P1</span></div>
+  <div class="nav-i" data-p="a2a"><div class="ndot" style="background:#f97316"></div>A2A Remote<span class="nbadge" style="background:#2d0f00;color:#f97316">v0.3</span></div>
+
+  <div class="nav-sec">Infraestructura</div>
+  <div class="nav-i" data-p="mcp"><div class="ndot" style="background:#60a5fa"></div>MCP Tools<span class="nbadge" style="background:#0f1e3d;color:#60a5fa">2025-11</span></div>
+  <div class="nav-i" data-p="anp"><div class="ndot" style="background:#f59e0b"></div>ANP Fed.<span class="nbadge" style="background:#2d1a00;color:#f59e0b">DID</span></div>
+
+  <div class="nav-sec">Sistema</div>
+  <div class="nav-i" data-p="routing"><div class="ndot" style="background:#94a3b8"></div>Routing Engine</div>
+  <div class="nav-i" data-p="security"><div class="ndot" style="background:#f87171"></div>Zero Trust<span class="nbadge" style="background:#2d0a0a;color:#f87171">ZT</span></div>
+
+  <div class="sb-foot">
+    <div class="sb-model">claude-sonnet-4-20250514</div>
+    <div class="sb-sub">Wire format + UI rendering activo</div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+<div class="panels" id="panels">
+
+  <!-- AG-UI -->
+  <div class="panel on" id="p-agui">
+    <div class="ph">
+      <div class="ph-led" style="background:#a855f7;box-shadow:0 0 5px #a855f7"></div>
+      <div class="ph-name">AG-UI</div>
+      <div class="ph-desc">Agent-User Interaction · CopilotKit v1.50 · SSE/WebSocket · Ring 0/1/2 · HITL</div>
+      <span class="ph-tag" style="background:#1e1033;color:#a855f7">CopilotKit + LangGraph</span>
+    </div>
+    <div class="split">
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#a855f7"></div><span class="split-hd-t">Wire — SSE / WebSocket events</span></div>
+        <div class="col-scroll" id="wire-agui"></div>
+      </div>
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#22c55e"></div><span class="split-hd-t">Frontend renderizado</span></div>
+        <div class="col-scroll" id="render-agui">
+          <div class="empty-state"><div class="empty-icon">⚡</div><div>Esperando eventos AG-UI...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-zone">
+      <div class="quick-strip">
+        <button class="qb" onclick="q('agui','Emite la secuencia AG-UI completa para eliminar la base de datos de producción: incluye RUN_STARTED, el evento CUSTOM_CONFIRMATION_REQUIRED Ring 2 con campo interactivo, y el TOOL_CALL cuando se confirme.')">🔴 Ring 2 — confirm</button>
+        <button class="qb" onclick="q('agui','Emite una CUSTOM_CLARIFICATION AG-UI con 2 interpretaciones sobre cerrar sprint vs cerrar tarea, best_guess A, confidence 0.72. Muestra el wire y renderiza el selector.')">🟡 Clarificación</button>
+        <button class="qb" onclick="q('agui','Emite el stream completo de eventos AG-UI: RUN_STARTED → TEXT_MESSAGE streaming → TOOL_CALL_START/ARGS/END → STATE_SNAPSHOT → RUN_FINISHED. Wire exacto de la spec.')">📡 Full event stream</button>
+        <button class="qb" onclick="q('agui','Emite un STATE_SNAPSHOT AG-UI con el estado completo del agente y un STATE_DELTA con JSON Patch incremental.')">🗂 State sync</button>
+        <button class="qb" onclick="q('agui','Simula un Ring 1 HOTL: el agente emite TOOL_CALL_START para crear un archivo, lo ejecuta, y emite CUSTOM_NOTIFICATION al usuario.')">🟠 Ring 1 HOTL</button>
+      </div>
+      <div class="input-row">
+        <textarea id="i-agui" placeholder="Describe una interacción AG-UI..." onkeydown="hk(event,'agui')"></textarea>
+        <button class="send-btn" onclick="send('agui')">Enviar ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- A2UI -->
+  <div class="panel" id="p-a2ui">
+    <div class="ph">
+      <div class="ph-led" style="background:#3b82f6;box-shadow:0 0 5px #3b82f6"></div>
+      <div class="ph-name">A2UI</div>
+      <div class="ph-desc">Agent-to-User Interface · Google dic 2025 · Payload UI generativo dentro de evento AG-UI TOOL_CALL</div>
+      <span class="ph-tag" style="background:#0f1e3d;color:#60a5fa">Google 2025</span>
+    </div>
+    <div class="split">
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#3b82f6"></div><span class="split-hd-t">Wire — AG-UI envelope + A2UI payload</span></div>
+        <div class="col-scroll" id="wire-a2ui"></div>
+      </div>
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#22c55e"></div><span class="split-hd-t">Componente A2UI renderizado</span></div>
+        <div class="col-scroll" id="render-a2ui">
+          <div class="empty-state"><div class="empty-icon">🎨</div><div>Esperando payload A2UI...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-zone">
+      <div class="quick-strip">
+        <button class="qb" onclick="q('a2ui','Genera el evento AG-UI TOOL_CALL_START con payload A2UI tipo card para reserva de vuelo MAD-JFK: precio 340€, asiento 12A, clase Economy, fecha 25 marzo. Acciones: Confirmar (primary), Modificar (secondary), Cancelar (danger).')">✈ Card vuelo</button>
+        <button class="qb" onclick="q('a2ui','Genera el evento AG-UI con payload A2UI tipo form: formulario de login con campos email, password, selector rol (admin,user,viewer). Muestra el wire completo y renderiza el form con inputs reales.')">📝 Form login</button>
+        <button class="qb" onclick="q('a2ui','Genera el evento AG-UI con payload A2UI tipo dashboard con 6 métricas del cluster de agentes: mensajes, latencia p50, uptime, errores, tareas activas, trust promedio.')">📊 Dashboard métricas</button>
+        <button class="qb" onclick="q('a2ui','Genera el evento AG-UI con payload A2UI tipo table mostrando 4 agentes: nombre, protocolo, estado, latencia, último heartbeat.')">📋 Tabla agentes</button>
+        <button class="qb" onclick="q('a2ui','Genera el evento AG-UI con payload A2UI tipo card de pago con desglose: vuelo 280€, tasas 60€, total 340€. Ring 2 con required_confirmation I UNDERSTAND.')">💳 Card pago R2</button>
+      </div>
+      <div class="input-row">
+        <textarea id="i-a2ui" placeholder="Pide un componente A2UI: card, form, dashboard, table..." onkeydown="hk(event,'a2ui')"></textarea>
+        <button class="send-btn" onclick="send('a2ui')">Enviar ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACP -->
+  <div class="panel" id="p-acp">
+    <div class="ph">
+      <div class="ph-led" style="background:#14b8a6;box-shadow:0 0 5px #14b8a6"></div>
+      <div class="ph-name">ACP</div>
+      <div class="ph-desc">Local-first pattern (fusionado en A2A ago 2025) · &lt;1ms · Heartbeat 15s · trajectory metadata · OTEL</div>
+      <span class="ph-tag" style="background:#0c2926;color:#14b8a6">IBM → LF AI &amp; Data</span>
+    </div>
+    <div class="split">
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#14b8a6"></div><span class="split-hd-t">Wire — mensajes ACP JSON</span></div>
+        <div class="col-scroll" id="wire-acp"></div>
+      </div>
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#22c55e"></div><span class="split-hd-t">Cluster status renderizado</span></div>
+        <div class="col-scroll" id="render-acp">
+          <div class="empty-state"><div class="empty-icon">🔗</div><div>Esperando mensajes ACP...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-zone">
+      <div class="quick-strip">
+        <button class="qb" onclick="q('acp','Envía un mensaje ACP directive de main-agent a worker-agent-1 para analizar logs. Muestra el JSON completo con trajectory metadata, ttl, session_id. Renderiza el cluster status con LEDs.')">📋 Directive</button>
+        <button class="qb" onclick="q('acp','Simula heartbeat miss progresivo en analyzer-agent: miss 1 (warning) → miss 3 (degraded) → miss 5 (failed). Muestra el wire de cada heartbeat y el cluster con LEDs cambiando de color.')">💔 Heartbeat degradación</button>
+        <button class="qb" onclick="q('acp','Ejecuta ciclo ACP completo: query de main-agent → result de memory-agent con trajectory de 3 steps. Muestra el lifecycle INITIALIZING → ACTIVE → RETIRED.')">🔄 Query/Result + lifecycle</button>
+        <button class="qb" onclick="q('acp','Muestra /acp status completo: todos los agentes con latencias, estado de lifecycle, OTEL trace spans.')">🌐 /acp status</button>
+      </div>
+      <div class="input-row">
+        <textarea id="i-acp" placeholder="Simula mensajes ACP entre agentes locales..." onkeydown="hk(event,'acp')"></textarea>
+        <button class="send-btn" onclick="send('acp')">Enviar ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- A2A -->
+  <div class="panel" id="p-a2a">
+    <div class="ph">
+      <div class="ph-led" style="background:#f97316;box-shadow:0 0 5px #f97316"></div>
+      <div class="ph-name">A2A</div>
+      <div class="ph-desc">Agent-to-Agent v0.3 · Google → LF AI&amp;Data · HTTP+SSE / gRPC · Signed Agent Cards · Ring≥1</div>
+      <span class="ph-tag" style="background:#2d0f00;color:#f97316">Linux Foundation v0.3</span>
+    </div>
+    <div class="split">
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#f97316"></div><span class="split-hd-t">Wire — HTTP + SSE task lifecycle</span></div>
+        <div class="col-scroll" id="wire-a2a"></div>
+      </div>
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#22c55e"></div><span class="split-hd-t">Task state + Artifact renderizado</span></div>
+        <div class="col-scroll" id="render-a2a">
+          <div class="empty-state"><div class="empty-icon">🌐</div><div>Esperando tareas A2A...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-zone">
+      <div class="quick-strip">
+        <button class="qb" onclick="q('a2a','Ejecuta una tarea A2A completa con airline-booking-agent para reservar MAD-JFK 25 marzo. Wire: Agent Card discovery → message/send → 202 Accepted → SSE progress events → task completed → Artifact. Renderiza el estado y el artifact.')">✈ Task booking E2E</button>
+        <button class="qb" onclick="q('a2a','Muestra un mensaje A2A completo con method message/send, parts, pushNotificationConfig. El agente pasa por estado input-required (necesita más datos). Renderiza el task state machine.')">📥 input-required</button>
+        <button class="qb" onclick="q('a2a','Muestra el Agent Card JSON completo de FlightBookingAgent con skills, capabilities streaming/gRPC/pushNotifications, securitySchemes OIDC. Luego renderiza la card visual.')">🪪 Agent Card</button>
+        <button class="qb" onclick="q('a2a','Simula una tarea que falla: wire completo con estado failed, error payload y cancelación por el cliente. Renderiza el estado final.')">❌ Task failed</button>
+      </div>
+      <div class="input-row">
+        <textarea id="i-a2a" placeholder="Simula tareas A2A con agentes remotos..." onkeydown="hk(event,'a2a')"></textarea>
+        <button class="send-btn" onclick="send('a2a')">Enviar ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MCP -->
+  <div class="panel" id="p-mcp">
+    <div class="ph">
+      <div class="ph-led" style="background:#60a5fa;box-shadow:0 0 5px #60a5fa"></div>
+      <div class="ph-name">MCP</div>
+      <div class="ph-desc">Model Context Protocol 2025-11-25 · JSON-RPC 2.0 · Tasks async · Parallel tools · OAuth 2.1 RFC 8707</div>
+      <span class="ph-tag" style="background:#0f1e3d;color:#60a5fa">AAIF / Linux Fdn.</span>
+    </div>
+    <div class="split">
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#60a5fa"></div><span class="split-hd-t">Wire — JSON-RPC 2.0 messages</span></div>
+        <div class="col-scroll" id="wire-mcp"></div>
+      </div>
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#22c55e"></div><span class="split-hd-t">Tool result + sanitización renderizada</span></div>
+        <div class="col-scroll" id="render-mcp">
+          <div class="empty-state"><div class="empty-icon">🔧</div><div>Esperando tool calls MCP...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-zone">
+      <div class="quick-strip">
+        <button class="qb" onclick="q('mcp','Ejecuta tools/call en server filesystem (stdio) para read_file. Wire: initialize → capabilities → tools/list → tools/call → result. petrea_check ∅, Ring 0. Renderiza el resultado.')">📁 filesystem:read_file</button>
+        <button class="qb" onclick="q('mcp','Llama github:search_code. El output contiene una API_KEY que debe sanitizarse. Wire JSON-RPC completo + pipeline sanitización + trust cap 0.70. Renderiza el resultado con [SANITIZED:credentials].')">🐙 github + sanitize</button>
+        <button class="qb" onclick="q('mcp','Usa la nueva feature Tasks async de spec 2025-11-25: tool_call que devuelve task con status running. Wire: request → task creada → polling → completed. Renderiza el task tracker.')">⚡ Tasks async (nov 2025)</button>
+        <button class="qb" onclick="q('mcp','Ejecuta parallel tool calls: filesystem:read_file + memory:retrieve + sqlite:query simultáneamente. Wire con los 3 JSON-RPC en paralelo. Renderiza los 3 resultados.')">⚡ Parallel tools</button>
+        <button class="qb" onclick="q('mcp','Muestra /mcp list: todos los servers (filesystem, github, memory, fetch, sqlite, omniverse) con transporte, estado, tools disponibles. Renderiza la tabla.')">📋 /mcp list</button>
+      </div>
+      <div class="input-row">
+        <textarea id="i-mcp" placeholder="Prueba tools MCP: filesystem, github, memory, fetch, sqlite..." onkeydown="hk(event,'mcp')"></textarea>
+        <button class="send-btn" onclick="send('mcp')">Enviar ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANP -->
+  <div class="panel" id="p-anp">
+    <div class="ph">
+      <div class="ph-led" style="background:#f59e0b;box-shadow:0 0 5px #f59e0b"></div>
+      <div class="ph-name">ANP</div>
+      <div class="ph-desc">Agent Network Protocol · W3C CG · did:wba · 3 capas: Identity + Meta-Protocol + Application · RFC 8615</div>
+      <span class="ph-tag" style="background:#2d1a00;color:#f59e0b">W3C Community Group</span>
+    </div>
+    <div class="split">
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#f59e0b"></div><span class="split-hd-t">Wire — DID auth + passport + negotiation</span></div>
+        <div class="col-scroll" id="wire-anp"></div>
+      </div>
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#22c55e"></div><span class="split-hd-t">Passport + veredicto renderizado</span></div>
+        <div class="col-scroll" id="render-anp">
+          <div class="empty-state"><div class="empty-icon">🔏</div><div>Esperando passports ANP...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-zone">
+      <div class="quick-strip">
+        <button class="qb" onclick="q('anp','Evalúa el passport ANP de did:wba:partner-analytics.com con trustScore 0.87, constitutionHash correcto, depth 2, VC válida. Wire: DID auth → passport exchange → evaluación → ACCEPT. Renderiza el passport card.')">✅ ACCEPT passport</button>
+        <button class="qb" onclick="q('anp','Simula did:wba:malicious-agent.io con constitutionHash incorrecto. Wire: DID auth → passport → hash mismatch → QUARANTINE alert. Renderiza el passport con veredicto rojo.')">🚫 Hash mismatch → QUARANTINE</button>
+        <button class="qb" onclick="q('anp','Simula cadena federada que llega a depth=5. Wire: passport chain con depth tracking → REJECT por anti-amplificación. Renderiza el rechazo.')">⚡ depth&gt;4 → REJECT</button>
+        <button class="qb" onclick="q('anp','Muestra /anp peers: 5 nodos con sus trust scores, veredictos y capabilities. Wire de discovery RFC 8615 para cada uno. Renderiza la tabla de peers.')">🌐 /anp peers</button>
+        <button class="qb" onclick="q('anp','Simula la Meta-Protocol Layer de ANP: dos agentes negocian en lenguaje natural el formato de comunicación antes de proceder. Wire de la negociación.')">💬 Meta-Protocol negotiation</button>
+      </div>
+      <div class="input-row">
+        <textarea id="i-anp" placeholder="Prueba federación ANP: passports, DID auth, quarantine..." onkeydown="hk(event,'anp')"></textarea>
+        <button class="send-btn" onclick="send('anp')">Enviar ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Routing -->
+  <div class="panel" id="p-routing">
+    <div class="ph">
+      <div class="ph-led" style="background:#94a3b8"></div>
+      <div class="ph-name">Routing Engine</div>
+      <div class="ph-desc">ACP &gt; MCP &gt; A2A &gt; ANP · Árbol de decisión · Flujos end-to-end multi-protocolo</div>
+    </div>
+    <div class="split">
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#94a3b8"></div><span class="split-hd-t">Wire — decisiones de routing</span></div>
+        <div class="col-scroll" id="wire-routing"></div>
+      </div>
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#22c55e"></div><span class="split-hd-t">Route flow visualizado</span></div>
+        <div class="col-scroll" id="render-routing">
+          <div class="empty-state"><div class="empty-icon">🗺</div><div>Esperando escenario de routing...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-zone">
+      <div class="quick-strip">
+        <button class="qb" onclick="q('routing','Traza el flujo completo end-to-end para reservar vuelo MAD-JFK: AG-UI clarification → ACP local search → MCP tool flights-api → A2A payment agent → AG-UI A2UI confirmation R2 → MCP send_email. Wire de cada salto.')">✈ E2E: reserva vuelo</button>
+        <button class="qb" onclick="q('routing','Escenario: agente local necesita datos externos, procesa localmente y notifica al usuario con R2. Muestra las decisiones del árbol de routing con el árbol de código completo.')">🔀 Multi-hop routing</button>
+        <button class="qb" onclick="q('routing','Explica con wire concreto por qué ACP gana sobre A2A para agentes locales: muestra la diferencia de overhead HTTP vs in-process con tiempos reales.')">⚖ ACP vs A2A latencia</button>
+      </div>
+      <div class="input-row">
+        <textarea id="i-routing" placeholder="Describe un escenario y el motor traza el routing..." onkeydown="hk(event,'routing')"></textarea>
+        <button class="send-btn" onclick="send('routing')">Enviar ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Security -->
+  <div class="panel" id="p-security">
+    <div class="ph">
+      <div class="ph-led" style="background:#f87171;box-shadow:0 0 5px #f87171"></div>
+      <div class="ph-name">Zero Trust</div>
+      <div class="ph-desc">Rings 0/1/2 · petrea_check · provenance sha256 · Pipeline sanitización · Trust defaults · Lookalike tools</div>
+      <span class="ph-tag" style="background:#2d0a0a;color:#f87171">Zero Trust</span>
+    </div>
+    <div class="split">
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#f87171"></div><span class="split-hd-t">Wire — mensajes con campos de seguridad</span></div>
+        <div class="col-scroll" id="wire-security"></div>
+      </div>
+      <div class="split-col">
+        <div class="split-hd"><div class="split-dot" style="background:#22c55e"></div><span class="split-hd-t">Análisis de seguridad renderizado</span></div>
+        <div class="col-scroll" id="render-security">
+          <div class="empty-state"><div class="empty-icon">🛡</div><div>Esperando análisis de seguridad...</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-zone">
+      <div class="quick-strip">
+        <button class="qb" onclick="q('security','Pipeline sanitización completo: tool output externo contiene \"api_key: sk-prod-abc123xyz\" y un prompt injection. Muestra el wire del output original, cada paso del pipeline y el resultado sanitizado con [SANITIZED:credentials] y [SANITIZED:injection_attempt].')">🧹 Pipeline sanitización</button>
+        <button class="qb" onclick="q('security','Clasifica con wire completo: 1) leer config (ring?), 2) escribir log (ring?), 3) borrar tabla producción (ring?), 4) deploy a prod (ring?). petrea_check para cada uno.')">💍 Clasificar rings</button>
+        <button class="qb" onclick="q('security','Simula detección de lookalike tool: un MCP server expone \"filesytem\" (typo) que intenta suplantar a \"filesystem\". Wire del alert ring=2 severity CRITICAL.')">👥 Lookalike tool detection</button>
+        <button class="qb" onclick="q('security','Muestra todos los trust defaults con wire de ejemplo para cada origen. Renderiza las barras de trust.')">📊 Trust defaults</button>
+      </div>
+      <div class="input-row">
+        <textarea id="i-security" placeholder="Prueba seguridad: rings, sanitización, trust, petrea_check..." onkeydown="hk(event,'security')"></textarea>
+        <button class="send-btn" onclick="send('security')">Enviar ↗</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+const histories={agui:[],a2ui:[],acp:[],a2a:[],mcp:[],anp:[],routing:[],security:[]};
+const busy={};
+
+const PROTO={
+  agui:{color:'#a855f7',bg:'#1e1033',border:'#7c3aed',label:'AG-UI'},
+  a2ui:{color:'#60a5fa',bg:'#0f1e3d',border:'#1d4ed8',label:'A2UI'},
+  acp: {color:'#14b8a6',bg:'#0c2926',border:'#0d9488',label:'ACP'},
+  a2a: {color:'#f97316',bg:'#2d0f00',border:'#c2410c',label:'A2A'},
+  mcp: {color:'#60a5fa',bg:'#0f1e3d',border:'#1d4ed8',label:'MCP'},
+  anp: {color:'#f59e0b',bg:'#2d1a00',border:'#b45309',label:'ANP'},
+  routing:{color:'#94a3b8',bg:'#1e2535',border:'#3a4560',label:'RTR'},
+  security:{color:'#f87171',bg:'#2d0a0a',border:'#dc2626',label:'SEC'},
+};
+
+// ══════════════════════════════════════════════════════════════════
+// SYSTEM PROMPTS — spec-accurate, instruct on BOTH wire AND render blocks
+// ══════════════════════════════════════════════════════════════════
+const SYS={
+
+agui:`Eres el simulador de AG-UI del protocol stack premium (CopilotKit v1.50+, mayo 2025).
+
+AG-UI usa SSE/WebSocket/WebRTC. Cada evento tiene: type, timestamp, datos específicos.
+5 categorías: Lifecycle (RUN_STARTED, RUN_FINISHED, RUN_ERROR), Text (TEXT_MESSAGE_START, TEXT_MESSAGE_CONTENT, TEXT_MESSAGE_END), Tools (TOOL_CALL_START, TOOL_CALL_ARGS, TOOL_CALL_END), State (STATE_SNAPSHOT, STATE_DELTA con JSON Patch), Custom (CUSTOM_*).
+
+REGLA PRINCIPAL: Para cada interacción debes emitir DOS secciones separadas claramente:
+
+SECCIÓN 1: wire exacto usando el bloque [WIRE] ... [/WIRE]
+SECCIÓN 2: qué renderiza el frontend usando bloques de componente
+
+[WIRE]
+event: RUN_STARTED
+data: {"runId":"run_abc123","threadId":"th_001","timestamp":"2026-03-21T10:00:00Z"}
+
+event: TEXT_MESSAGE_START
+data: {"messageId":"msg_001","role":"assistant"}
+
+event: TEXT_MESSAGE_CONTENT
+data: {"messageId":"msg_001","delta":"Procesando tu solicitud..."}
+
+event: TOOL_CALL_START
+data: {"toolCallId":"tc_001","toolCallName":"read_file","parentMessageId":"msg_001"}
+
+event: TOOL_CALL_ARGS
+data: {"toolCallId":"tc_001","delta":"{\"path\":\"/etc/config.json\"}"}
+
+event: TOOL_CALL_END
+data: {"toolCallId":"tc_001"}
+
+event: STATE_SNAPSHOT
+data: {"snapshot":{"agentState":"idle","tasks":[],"ring":0}}
+
+event: RUN_FINISHED
+data: {"runId":"run_abc123","status":"success","totalTokens":312}
+[/WIRE]
+
+Para Ring 2:
+[WIRE]
+event: CUSTOM_CONFIRMATION_REQUIRED
+data: {"type":"CUSTOM_CONFIRMATION_REQUIRED","ring":2,"action":"delete_production_database","description":"Elimina todos los datos de producción de forma irreversible.","required_response":"I UNDERSTAND","timeout_seconds":120}
+[/WIRE]
+
+[RENDER_R2]
+action: delete_production_database
+description: Elimina todos los datos de producción de forma irreversible.
+timeout: 120
+[/RENDER_R2]
+
+Para clarificación:
+[RENDER_CLARIF]
+interp_a: cerrar la tarea actual del sprint
+interp_b: cerrar el sprint completo
+best_guess: A
+confidence: 0.72
+[/RENDER_CLARIF]
+
+Para state snapshot:
+[RENDER_STATE]
+{"agentState":"idle","activeTask":null,"memory":{"entries":247},"tools":["read_file","send_email"],"ring":0}
+[/RENDER_STATE]
+
+Responde en español. Usa datos realistas y concretos.`,
+
+a2ui:`Eres el simulador de A2UI (Google, dic 2025) integrado en AG-UI.
+
+A2UI es el PAYLOAD. AG-UI es el TRANSPORTE. El payload A2UI viaja dentro de un evento AG-UI TOOL_CALL_START en el campo args.a2ui.
+
+REGLA: SIEMPRE emite primero el wire completo (AG-UI envelope + A2UI payload) y luego el componente renderizado.
+
+Wire para un card:
+[WIRE]
+→ POST ws://localhost:18789/a2ui
+event: TOOL_CALL_START
+data: {
+  "toolCallId": "tc-render-001",
+  "toolCallName": "render_ui",
+  "parentMessageId": "msg_001",
+  "args": {
+    "a2ui": {
+      "type": "card",
+      "title": "Reserva confirmada",
+      "description": "MAD → JFK · 25 mar 2026 · Iberia IB6258",
+      "fields": [
+        {"id":"passenger","type":"text","label":"Pasajero","value":"Juan García","readonly":true},
+        {"id":"seat","type":"text","label":"Asiento","value":"12A","readonly":true},
+        {"id":"price","type":"text","label":"Precio","value":"340€","readonly":true}
+      ],
+      "actions": [
+        {"id":"confirm","label":"Confirmar reserva","style":"primary"},
+        {"id":"modify","label":"Modificar","style":"secondary"},
+        {"id":"cancel","label":"Cancelar","style":"danger"}
+      ]
+    }
+  }
+}
+[/WIRE]
+
+Después del wire, usa el bloque de componente correcto según el tipo:
+
+[RENDER_CARD]
+title: Reserva confirmada
+subtitle: MAD → JFK · 25 mar 2026 · Iberia IB6258
+field: Pasajero | Juan García
+field: Asiento | 12A
+field: Precio | 340€
+badge: Economy | blue
+action: Confirmar reserva | primary
+action: Modificar | secondary
+action: Cancelar | danger
+[/RENDER_CARD]
+
+[RENDER_FORM]
+title: <título>
+field_text: <label> | <placeholder>
+field_select: <label> | <op1,op2,op3>
+action: <label> | primary
+[/RENDER_FORM]
+
+[RENDER_DASHBOARD]
+title: <título>
+metric: <label> | <valor> | <pct>
+[/RENDER_DASHBOARD]
+
+[RENDER_TABLE]
+title: <título>
+headers: <col1> | <col2> | <col3>
+row: <v1> | <v2> | <v3>
+[/RENDER_TABLE]
+
+Usa datos concretos y reales. Responde en español.`,
+
+acp:`Eres el simulador ACP (IBM Research → Linux Foundation, fusionado en A2A ago 2025).
+
+ACP es el patrón local-first. Prioridad máxima. Latencia <1ms in-process.
+Estructura: {protocol:"ACP", version:"1.0", from, to, message_type:"directive|query|result|heartbeat", session_id:"uuid", ttl:30, trajectory:{step,tool_calls:[]}, payload:{...}}
+Lifecycle: INITIALIZING → ACTIVE → DEGRADED → RETIRING → RETIRED
+Heartbeat: 15s → warning | misses>2 → degraded | misses>4 → failed | reconexión → healthy + replay
+
+REGLA: SIEMPRE wire primero, luego componente renderizado.
+
+Wire:
+[WIRE]
+// ACP message: main-agent → worker-agent-1
+{
+  "protocol": "ACP",
+  "version": "1.0",
+  "from": "main-orchestrator-v1",
+  "to": "worker-agent-1",
+  "message_type": "directive",
+  "session_id": "sess_7f3a9b2e",
+  "ttl": 30,
+  "trajectory": {"step": 1, "tool_calls": []},
+  "ring": 0,
+  "petrea_check": "∅",
+  "provenance": "sha256:4d1c8f6a3b9c2d5e",
+  "timestamp": "2026-03-21T10:00:00Z",
+  "source_agent_id": "main-orchestrator-v1",
+  "payload": {"task": "analyze_logs", "params": {"file": "/var/log/app.log"}}
+}
+[/WIRE]
+
+Cluster status:
+[RENDER_CLUSTER]
+agent: main-orchestrator-v1 | healthy | 0.3ms | ACTIVE
+agent: worker-agent-1 | healthy | 0.4ms | ACTIVE
+agent: worker-agent-2 | healthy | 0.5ms | ACTIVE
+agent: analyzer-agent | healthy | 0.6ms | ACTIVE
+agent: memory-agent | healthy | 0.2ms | ACTIVE
+[/RENDER_CLUSTER]
+
+Heartbeat miss:
+[RENDER_HB_MISS]
+agent: analyzer-agent
+miss_count: 3
+new_status: degraded
+action: Iniciando reconexión, tareas en cola para replay
+[/RENDER_HB_MISS]
+
+Lifecycle:
+[RENDER_LIFECYCLE]
+states: INITIALIZING,ACTIVE,DEGRADED,RETIRING,RETIRED
+current: ACTIVE
+agent: worker-agent-1
+[/RENDER_LIFECYCLE]
+
+Responde en español.`,
+
+a2a:`Eres el simulador A2A v0.3 (Google → Linux Foundation). Protocolo para agentes remotos heterogéneos.
+
+A2A usa JSON-RPC 2.0 sobre HTTP+SSE o gRPC. Ring mínimo: 1.
+Agent Cards en /.well-known/agent.json. Task states: submitted → working → [input-required] → completed/failed/canceled.
+Spec 2025-11-25: gRPC v0.3, signed Agent Cards, OAuth 2.1.
+
+REGLA: SIEMPRE wire primero (HTTP request + SSE events), luego componente renderizado.
+
+Wire completo:
+[WIRE]
+// 1. Discovery — GET Agent Card
+GET https://api.acme.com/.well-known/agent.json
+← 200 OK — Agent Card recibido
+
+// 2. Envío de tarea — JSON-RPC 2.0
+POST https://api.acme.com/agents/flights
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "parts": [{"kind":"text","text":"Book MAD→JFK March 25"}],
+      "messageId": "msg-uuid-001"
+    },
+    "configuration": {
+      "acceptedOutputModes": ["text","structured"],
+      "pushNotificationConfig": {"url":"https://my-app.com/webhook/a2a"}
+    }
+  }
+}
+
+← 202 Accepted
+{"task":{"id":"task-7f3a9b2e","status":"submitted","created_at":"2026-03-21T10:00:00Z"}}
+
+// 3. SSE stream
+event: task_status_update
+data: {"taskId":"task-7f3a9b2e","status":"working","progress":0.2}
+
+event: task_status_update
+data: {"taskId":"task-7f3a9b2e","status":"working","progress":0.7}
+
+event: task_status_update
+data: {"taskId":"task-7f3a9b2e","status":"completed","progress":1.0}
+
+event: artifact_ready
+data: {"taskId":"task-7f3a9b2e","artifactId":"booking-result-001"}
+[/WIRE]
+
+Task state:
+[RENDER_TASK]
+task_id: task-7f3a9b2e
+agent: FlightBookingAgent
+state: completed
+progress: 100
+result_field: Vuelo | IB6258 MAD→JFK 25-03-2026
+result_field: PNR | XYZ123
+result_field: Asiento | 12A clase Economy
+result_field: Gate | B22
+[/RENDER_TASK]
+
+Agent Card:
+[RENDER_AGENT_CARD]
+name: FlightBookingAgent
+version: 1.2.0
+url: https://api.acme.com/agents/flights
+skill: book_flight | Books flights between airports
+skill: search_flights | Search available flights
+capability: streaming | true
+capability: pushNotifications | true
+capability: gRPC | true
+auth: openIdConnect | google
+[/RENDER_AGENT_CARD]
+
+Responde en español.`,
+
+mcp:`Eres el simulador MCP spec 2025-11-25 (Anthropic → AAIF/Linux Foundation).
+
+Novedades clave nov 2025: Tasks asíncronas, parallel tool calls, server-side agent loops, OAuth 2.1 RFC 8707, MCP Extensions, MCP Registry.
+JSON-RPC 2.0. Roles: Host, Client, Server.
+Servers: filesystem(stdio), github(HTTP SSE), memory(in-process), fetch(HTTP), sqlite(local), omniverse(HTTP).
+petrea_check: ∅ (R0), OK, BLOCK, REVIEW.
+Sanitización obligatoria para externos: credentials→[SANITIZED:credentials], injection→[SANITIZED:injection_attempt], trust cap 0.70.
+
+REGLA: SIEMPRE wire primero (JSON-RPC messages), luego componente renderizado.
+
+Wire completo:
+[WIRE]
+// MCP initialize
+→ {"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2025-11-25","clientInfo":{"name":"stack-client","version":"1.0"}},"id":"init-1"}
+← {"jsonrpc":"2.0","result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{},"resources":{},"sampling":{},"tasks":{}}},"id":"init-1"}
+
+// tools/call
+→ {
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "read_file",
+      "arguments": {"path": "/etc/config.json"}
+    },
+    "id": "req-001",
+    "_ext": {
+      "ring": 0,
+      "petrea_check": "∅",
+      "provenance": "sha256:4d1c8f6a",
+      "source_agent_id": "main-orchestrator-v1"
+    }
+  }
+← {"jsonrpc":"2.0","result":{"content":[{"type":"text","text":"{\"db_host\":\"localhost\",\"port\":5432}"}]},"id":"req-001"}
+[/WIRE]
+
+Tool result:
+[RENDER_TOOL_RESULT]
+server: filesystem
+transport: stdio
+tool: read_file
+ring: 0
+petrea_check: ∅
+trust: 0.85
+sanitized: false
+result: {"db_host":"localhost","port":5432}
+[/RENDER_TOOL_RESULT]
+
+Para output sanitizado:
+[RENDER_TOOL_RESULT]
+server: fetch
+transport: HTTP
+tool: fetch_url
+ring: 0
+petrea_check: OK
+trust: 0.70
+sanitized: true
+result: {"status":"ok","api_key":"[SANITIZED:credentials]","data":"..."}
+[/RENDER_TOOL_RESULT]
+
+Para servers list:
+[RENDER_SERVERS]
+server: filesystem | stdio | connected | read_file,write_file,list_directory
+server: github | HTTP SSE | connected | list_repos,search_code,create_issue
+server: memory | in-process | connected | store,retrieve,search
+server: fetch | HTTP | connected | fetch_url,post_request
+server: sqlite | local | connected | query,execute,describe_table
+server: omniverse | HTTP | connected | create_scene,render,simulate
+[/RENDER_SERVERS]
+
+Responde en español.`,
+
+anp:`Eres el simulador ANP (W3C AI Agent Protocol Community Group, draft ene 2026).
+
+ANP: 3 capas: 1-Identity(did:wba) 2-Meta-Protocol(negociación lenguaje natural) 3-Application(JSON-LD + RFC 8615).
+Lógica: constitutionHash≠local→QUARANTINE | trustScore<0.65→QUARANTINE | depth>4→REJECT | expiry<now→REJECT | firma inválida→QUARANTINE+alert.
+constitutionHash local del stack: sha256:7f3a9b2e4d1c8f6a3b9c2d5e.
+
+REGLA: SIEMPRE wire primero (DID auth + passport exchange), luego componente renderizado.
+
+Wire:
+[WIRE]
+// 1. DID authentication
+→ GET https://partner-analytics.com/.well-known/agent.json
+← 200 OK — Agent Description Document (JSON-LD)
+{
+  "@context": ["https://schema.org", "https://anp.w3c.org/context/v1"],
+  "@type": "Agent",
+  "nodeId": "did:wba:partner-analytics.com:agents:v1",
+  "capabilities": ["analysis","reporting"],
+  "agentDescriptionUrl": "https://partner-analytics.com/.well-known/agent.json"
+}
+
+// 2. DID verification (ed25519)
+→ Challenge: {"nonce":"c8f6a3b9","timestamp":"2026-03-21T10:00:00Z"}
+← Signature: {"nodeId":"did:wba:partner-analytics.com:agents:v1","signature":"ed25519:abc123...","nonce":"c8f6a3b9"}
+✓ DID signature verified
+
+// 3. Passport exchange
+→ REQUEST passport
+← {
+    "nodeId": "did:wba:partner-analytics.com:agents:v1",
+    "capabilities": ["analysis","reporting","data_viz"],
+    "constitutionHash": "sha256:7f3a9b2e4d1c8f6a3b9c2d5e",
+    "trustScore": 0.87,
+    "expiry": "2026-12-31T00:00:00Z",
+    "signature": "ed25519:xyz789...",
+    "depth": 2,
+    "verifiableCredentials": ["vc:analytics-partner-2026"]
+  }
+
+// 4. Evaluation
+constitutionHash: MATCH ✓
+trustScore: 0.87 ≥ 0.65 ✓
+depth: 2 ≤ 4 ✓
+expiry: valid ✓
+signature: verified ✓
+→ VERDICT: ACCEPT
+[/WIRE]
+
+Passport:
+[RENDER_PASSPORT]
+nodeId: did:wba:partner-analytics.com:agents:v1
+capabilities: analysis,reporting,data_viz
+constitutionHash: sha256:7f3a9b2e4d1c8f6a3b9c2d5e
+trustScore: 0.87
+expiry: 2026-12-31
+depth: 2
+signature: ed25519:xyz789...
+vc: vc:analytics-partner-2026
+verdict: ACCEPT
+[/RENDER_PASSPORT]
+
+Peers:
+[RENDER_PEERS]
+peer: did:wba:partner-analytics.com | trust:0.87 | ACCEPT | analysis,reporting
+peer: did:wba:booking-partner.net | trust:0.78 | ACCEPT | booking,payment
+peer: did:wba:trusted-ml.io | trust:0.71 | ACCEPT | ml,inference
+peer: did:wba:expired-agent.com | trust:0.60 | REJECT | expired
+peer: did:wba:unknown-node.org | trust:0.40 | QUARANTINE | unknown
+[/RENDER_PEERS]
+
+Responde en español.`,
+
+routing:`Eres el motor de routing del protocol stack premium.
+
+PRIORIDAD: ACP > MCP > A2A > ANP
+Árbol: usuario→AG-UI | ui_component→A2UI via AG-UI | local_registry→ACP | remote_registry→A2A(ring≥1) | requires_tool→MCP | federated→ANP
+
+REGLA: SIEMPRE wire de cada decisión, luego route flow renderizado.
+
+Wire de decisión:
+[WIRE]
+// Routing decision log
+input: {target:"worker-agent-1", requires_tool:false, ring:0}
+
+check 1: target=="usuario"? NO
+check 2: target=="ui_component"? NO
+check 3: target in local_agent_registry? YES — worker-agent-1 found
+  heartbeat_ok(worker-agent-1)? YES — latency: 0.4ms
+→ ROUTE: ACP-pattern
+
+// Message dispatched via ACP
+{
+  "protocol": "ACP",
+  "from": "main-orchestrator-v1",
+  "to": "worker-agent-1",
+  "ring": 0,
+  "latency": "<1ms"
+}
+[/WIRE]
+
+Route flow:
+[RENDER_ROUTE]
+step: 1 | AG-UI | usuario | Input del usuario recibido via SSE
+step: 2 | ACP | worker-agent-1 | Agente local — heartbeat OK, latencia 0.4ms
+step: 3 | MCP | filesystem server | Tool read_file requerida, petrea_check ∅
+step: 4 | A2A | FlightBookingAgent | Agente remoto — Agent Card verificado
+step: 5 | AG-UI | usuario | Confirmación Ring 2 requerida antes de ejecutar
+[/RENDER_ROUTE]
+
+Responde en español.`,
+
+security:`Eres el módulo Zero Trust del protocol stack premium.
+
+Rings: R0 solo lectura/sin confirm | R1 HOTL ejecuta+notifica reversible | R2 HITL I_UNDERSTAND antes irreversible.
+petrea_check: ∅(R0) OK BLOCK REVIEW.
+Pipeline sanitización: 1)credentials→[SANITIZED:credentials] 2)injection→[SANITIZED:injection_attempt]+alert(ring=1) 3)lookalike_tool→alert(ring=2,CRITICAL) 4)trust_cap_external=0.70 5)provenance=sha256(output+ts).
+Trust: interno=0.95, MCP_local=0.85, A2A_partner=0.75, external=0.70(cap), ANP_unknown=0.40→quarantine.
+
+REGLA: SIEMPRE wire con campos de seguridad, luego análisis renderizado.
+
+Wire con seguridad:
+[WIRE]
+// Mensaje con campos obligatorios de seguridad
+{
+  "method": "tools/call",
+  "params": {"name": "delete_table", "arguments": {"table": "users_prod"}},
+  "ring": 2,
+  "petrea_check": "REVIEW",
+  "provenance": "sha256:4d1c8f6a3b9c",
+  "timestamp": "2026-03-21T10:00:00Z",
+  "source_agent_id": "main-orchestrator-v1"
+}
+
+// petrea_check → REVIEW → escalate to R2
+// → emit CUSTOM_CONFIRMATION_REQUIRED ring=2
+[/WIRE]
+
+Análisis de seguridad:
+[RENDER_SEC]
+action: delete_table users_prod
+ring: 2
+petrea_check: REVIEW
+trust_required: 0.85
+rationale: Operación destructiva irreversible sobre datos de producción. petrea_check=REVIEW escala a R2.
+[/RENDER_SEC]
+
+Trust scores:
+[RENDER_TRUST]
+source: Agente interno | trust: 0.95
+source: MCP server local | trust: 0.85
+source: A2A partner verificado | trust: 0.75
+source: Tool output externo | trust: 0.70 (cap hard)
+source: ANP partner con VC | trust: 0.80
+source: ANP desconocido | trust: 0.40 → quarantine
+[/RENDER_TRUST]
+
+Responde en español.`,
+};
+
+// ══════════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════════
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function hlJson(code){
+  return esc(code)
+    .replace(/"([^"]+)"(\s*:)/g,'<span class="jk">"$1"</span>$2')
+    .replace(/:\s*"([^"]*)"/g,': <span class="js">"$1"</span>')
+    .replace(/:\s*(\d+\.?\d*)/g,': <span class="jn">$1</span>')
+    .replace(/:\s*(true|false)/g,': <span class="jb">$1</span>')
+    .replace(/:\s*(null)/g,': <span class="jnull">$1</span>');
+}
+
+function getWireCol(proto){return document.getElementById('wire-'+proto)}
+function getRenderCol(proto){return document.getElementById('render-'+proto)}
+
+function scrollBottom(el){if(el)el.scrollTop=el.scrollHeight}
+
+function appendWire(proto, html){
+  const col=getWireCol(proto);
+  if(!col)return;
+  const d=document.createElement('div');
+  d.className='wire-msg';
+  d.innerHTML=html;
+  col.appendChild(d);
+  scrollBottom(col);
+}
+
+function appendRender(proto, html){
+  const col=getRenderCol(proto);
+  if(!col)return;
+  // Remove empty state
+  const empty=col.querySelector('.empty-state');
+  if(empty)empty.remove();
+  const d=document.createElement('div');
+  d.innerHTML=html;
+  col.appendChild(d);
+  scrollBottom(col);
+}
+
+function makeWireEnv(proto, method, id, body, extra){
+  const p=PROTO[proto];
+  return `<div class="wire-env">
+    <div class="wire-env-hd" style="background:${p.bg}">
+      <span class="wire-proto" style="background:${p.bg};border:1px solid ${p.border};color:${p.color}">${p.label}</span>
+      <span class="wire-method">${esc(method)}</span>
+      <span class="wire-id">${esc(id||'')}</span>
+    </div>
+    <div class="wire-body">${hlJson(body)}</div>
+    ${extra||''}
+  </div>`;
+}
+
+function makeSSELine(eventName, data, color){
+  return `<div class="sse-line">
+    <span class="sse-field">event:</span>
+    <span class="sse-event" style="color:${color||'#14b8a6'}">${esc(eventName)}</span>
+    <span class="sse-field">data:</span>
+    <span class="sse-data">${esc(typeof data==='string'?data:JSON.stringify(data))}</span>
+  </div>`;
+}
+
+function makeNote(text, color){
+  return `<div class="wire-note"><div class="wire-note-dot" style="background:${color||'#3a4560'}"></div>${esc(text)}</div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER BLOCK PARSERS — parse model output → wire + UI components
+// ══════════════════════════════════════════════════════════════════
+
+function parseBlocks(text, proto){
+  // [WIRE] ... [/WIRE] → append to wire col
+  text=text.replace(/\[WIRE\]([\s\S]*?)\[\/WIRE\]/g,(_,content)=>{
+    const p=PROTO[proto];
+    appendWire(proto,`<div class="wire-env">
+      <div class="wire-env-hd" style="background:${p.bg}20">
+        <span class="wire-proto" style="background:${p.bg};border:1px solid ${p.border};color:${p.color}">${p.label}</span>
+        <span class="wire-method" style="color:${p.color}">wire format</span>
+      </div>
+      <div class="wire-body">${hlJson(content.trim())}</div>
+    </div>`);
+    return '';
+  });
+
+  // ── RENDER blocks → append to render col ──
+
+  // RENDER_R2
+  text=text.replace(/\[RENDER_R2\]([\s\S]*?)\[\/RENDER_R2\]/g,(_,c)=>{
+    const lines=c.trim().split('\n');
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const action=g('action'),desc=g('description'),timeout=g('timeout');
+    const uid='r2_'+Math.random().toString(36).slice(2,7);
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#f87171;font-size:8.5px;font-weight:700">AG-UI</span><span class="render-frame-t" style="color:#f87171">CUSTOM_CONFIRMATION_REQUIRED</span><span class="render-frame-sub">ring=2 · timeout ${esc(timeout)}s</span></div>
+      <div class="render-body">
+        <div class="r2-box">
+          <div class="r2-title">⚠ Ring 2 — Human in the Loop</div>
+          <div class="r2-action">${esc(action)}</div>
+          <div class="r2-desc">${esc(desc)}</div>
+          <div class="r2-input-row">
+            <input class="r2-input" id="${uid}" placeholder='Escribe "I UNDERSTAND" para confirmar'/>
+            <button class="r2-btn" onclick="confirmR2('${uid}','${esc(action).replace(/'/g,'&#39;')}','${proto}')">Confirmar →</button>
+          </div>
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_CLARIF
+  text=text.replace(/\[RENDER_CLARIF\]([\s\S]*?)\[\/RENDER_CLARIF\]/g,(_,c)=>{
+    const lines=c.trim().split('\n');
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const ia=g('interp_a'),ib=g('interp_b'),bg=g('best_guess'),conf=g('confidence');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#f59e0b;font-size:8.5px;font-weight:700">AG-UI</span><span class="render-frame-t" style="color:#f59e0b">CUSTOM_CLARIFICATION</span><span class="render-frame-sub">best_guess:${esc(bg)} · conf:${esc(conf)}</span></div>
+      <div class="render-body">
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:.5rem">¿A qué te refieres?</div>
+        <div class="clarif-option ${bg==='A'?'best':''}" onclick="pickClarif('${proto}','A','${esc(ia).replace(/'/g,'&#39;')}')">
+          <span class="clarif-tag" style="background:${bg==='A'?'#1e1033':'#1e2535'};border:1px solid ${bg==='A'?'#7c3aed':'#3a4560'};color:${bg==='A'?'#a855f7':'#64748b'}">A ${bg==='A'?'★':''}</span>
+          <span style="color:#e2e8f0">${esc(ia)}</span>
+        </div>
+        <div class="clarif-option ${bg==='B'?'best':''}" onclick="pickClarif('${proto}','B','${esc(ib).replace(/'/g,'&#39;')}')">
+          <span class="clarif-tag" style="background:${bg==='B'?'#1e1033':'#1e2535'};border:1px solid ${bg==='B'?'#7c3aed':'#3a4560'};color:${bg==='B'?'#a855f7':'#64748b'}">B ${bg==='B'?'★':''}</span>
+          <span style="color:#e2e8f0">${esc(ib)}</span>
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_STATE
+  text=text.replace(/\[RENDER_STATE\]([\s\S]*?)\[\/RENDER_STATE\]/g,(_,c)=>{
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#a855f7;font-size:8.5px;font-weight:700">AG-UI</span><span class="render-frame-t" style="color:#a855f7">STATE_SNAPSHOT</span></div>
+      <div class="render-body"><div style="font-family:var(--mono);font-size:10px;color:#94a3b8;white-space:pre;overflow-x:auto;line-height:1.65">${hlJson(c.trim())}</div></div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_CARD
+  text=text.replace(/\[RENDER_CARD\]([\s\S]*?)\[\/RENDER_CARD\]/g,(_,c)=>{
+    const lines=c.trim().split('\n').filter(l=>l.trim());
+    const gAll=k=>lines.filter(l=>l.trim().startsWith(k+':')).map(l=>l.replace(/^[^:]+:/,'').trim());
+    const title=gAll('title')[0]||'',sub=gAll('subtitle')[0]||'';
+    const fields=gAll('field').map(f=>{const[l,v]=(f+'|').split('|');return{l:l.trim(),v:(v||'').trim()}});
+    const badges=gAll('badge').map(f=>{const[t,co]=(f+'|').split('|');return{t:t.trim(),co:(co||'blue').trim()}});
+    const actions=gAll('action').map(f=>{const[l,tp]=(f+'|').split('|');return{l:l.trim(),tp:(tp||'secondary').trim()}});
+    const bcol={green:['#0d2018','#15803d','#22c55e'],amber:['#2d1a00','#b45309','#f59e0b'],red:['#2d0a0a','#dc2626','#f87171'],blue:['#0f1e3d','#1d4ed8','#60a5fa']};
+    const bH=badges.map(b=>{const[bg,bd,tx]=bcol[b.co]||bcol.blue;return`<span class="ui-badge" style="background:${bg};border:1px solid ${bd};color:${tx}">${esc(b.t)}</span>`;}).join('');
+    const fH=fields.map(f=>`<div class="ui-row"><span class="ui-lbl">${esc(f.l)}</span><span class="ui-val">${esc(f.v)}</span></div>`).join('');
+    const aH=actions.map(a=>`<button class="ui-btn ${a.tp}" onclick="alert('${esc(a.l)}')">${esc(a.l)}</button>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#60a5fa;font-size:8.5px;font-weight:700">A2UI</span><span class="render-frame-t" style="color:#60a5fa">card</span><span class="render-frame-sub">frontend rendered</span></div>
+      <div class="render-body">
+        <div class="ui-card">
+          <div class="ui-card-title">${esc(title)}</div>
+          ${sub?`<div class="ui-card-sub">${esc(sub)}</div>`:''}
+          ${bH?`<div class="ui-badges">${bH}</div>`:''}
+          <div class="ui-rows">${fH}</div>
+          ${aH?`<div class="ui-actions">${aH}</div>`:''}
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_FORM
+  text=text.replace(/\[RENDER_FORM\]([\s\S]*?)\[\/RENDER_FORM\]/g,(_,c)=>{
+    const lines=c.trim().split('\n').filter(l=>l.trim());
+    const gAll=k=>lines.filter(l=>l.trim().startsWith(k+':')).map(l=>l.replace(/^[^:]+:/,'').trim());
+    const title=gAll('title')[0]||'Formulario';
+    const texts=gAll('field_text').map(f=>{const[l,p]=(f+'|').split('|');return{l:l.trim(),p:(p||'').trim()}});
+    const sels=gAll('field_select').map(f=>{const[l,o]=(f+'|').split('|');return{l:l.trim(),opts:(o||'').trim().split(',')}});
+    const acts=gAll('action').map(f=>{const[l,tp]=(f+'|').split('|');return{l:l.trim(),tp:(tp||'secondary').trim()}});
+    const tfH=texts.map(f=>`<div class="ui-field"><label>${esc(f.l)}</label><input type="text" placeholder="${esc(f.p)}"/></div>`).join('');
+    const sfH=sels.map(f=>`<div class="ui-field"><label>${esc(f.l)}</label><select>${f.opts.map(o=>`<option>${esc(o.trim())}</option>`).join('')}</select></div>`).join('');
+    const aH=acts.map(a=>`<button class="ui-btn ${a.tp}" onclick="alert('Submit: ${esc(a.l)}')">${esc(a.l)}</button>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#60a5fa;font-size:8.5px;font-weight:700">A2UI</span><span class="render-frame-t" style="color:#60a5fa">form</span><span class="render-frame-sub">frontend rendered</span></div>
+      <div class="render-body">
+        <div class="ui-card"><div class="ui-card-title">${esc(title)}</div>${tfH}${sfH}<div class="ui-actions">${aH}</div></div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_DASHBOARD
+  text=text.replace(/\[RENDER_DASHBOARD\]([\s\S]*?)\[\/RENDER_DASHBOARD\]/g,(_,c)=>{
+    const lines=c.trim().split('\n').filter(l=>l.trim());
+    const title=(lines.find(l=>l.trim().startsWith('title:'))||'').replace(/^[^:]+:/,'').trim();
+    const metrics=lines.filter(l=>l.trim().startsWith('metric:')).map(l=>{
+      const p=l.replace(/^[^:]+:/,'').trim().split('|').map(s=>s.trim());
+      return{lbl:p[0]||'',val:p[1]||'',pct:Math.min(100,Math.max(0,parseInt(p[2]||50)))};
+    });
+    const cols=['#7c3aed','#0d9488','#1d4ed8','#b45309','#15803d','#dc2626'];
+    const mH=metrics.map((m,i)=>`<div class="metric-cell">
+      <div class="metric-val">${esc(m.val)}</div>
+      <div class="metric-lbl">${esc(m.lbl)}</div>
+      <div class="metric-bar"><div class="metric-fill" style="width:${m.pct}%;background:${cols[i%cols.length]}"></div></div>
+    </div>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#60a5fa;font-size:8.5px;font-weight:700">A2UI</span><span class="render-frame-t" style="color:#60a5fa">dashboard</span><span class="render-frame-sub">frontend rendered</span></div>
+      <div class="render-body">
+        <div class="ui-card">
+          ${title?`<div class="ui-card-title" style="margin-bottom:.5rem">${esc(title)}</div>`:''}
+          <div class="metric-grid">${mH}</div>
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_TABLE
+  text=text.replace(/\[RENDER_TABLE\]([\s\S]*?)\[\/RENDER_TABLE\]/g,(_,c)=>{
+    const lines=c.trim().split('\n').filter(l=>l.trim());
+    const title=(lines.find(l=>l.trim().startsWith('title:'))||'').replace(/^[^:]+:/,'').trim();
+    const headers=(lines.find(l=>l.trim().startsWith('headers:'))||'').replace(/^[^:]+:/,'').trim().split('|').map(s=>s.trim());
+    const rows=lines.filter(l=>l.trim().startsWith('row:')).map(l=>l.replace(/^[^:]+:/,'').trim().split('|').map(s=>s.trim()));
+    const thH=headers.map(h=>`<th>${esc(h)}</th>`).join('');
+    const trH=rows.map(r=>`<tr>${r.map(cell=>`<td>${esc(cell)}</td>`).join('')}</tr>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#60a5fa;font-size:8.5px;font-weight:700">A2UI</span><span class="render-frame-t" style="color:#60a5fa">table</span><span class="render-frame-sub">frontend rendered</span></div>
+      <div class="render-body">
+        <div class="ui-card">
+          ${title?`<div class="ui-card-title" style="margin-bottom:.5rem">${esc(title)}</div>`:''}
+          <div style="overflow-x:auto"><table class="ui-table"><thead><tr>${thH}</tr></thead><tbody>${trH}</tbody></table></div>
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_CLUSTER
+  text=text.replace(/\[RENDER_CLUSTER\]([\s\S]*?)\[\/RENDER_CLUSTER\]/g,(_,c)=>{
+    const nodes=c.trim().split('\n').filter(l=>l.trim().startsWith('agent:')).map(l=>{
+      const p=l.replace(/^[^:]+:/,'').trim().split('|').map(s=>s.trim());
+      return{name:p[0],status:p[1]||'healthy',lat:p[2]||'?',lc:p[3]||'ACTIVE'};
+    });
+    const ldCls={healthy:'led-h',degraded:'led-d',failed:'led-f'};
+    const nH=nodes.map(n=>`<div class="agent-node">
+      <div class="agent-led ${ldCls[n.status]||'led-h'}"></div>
+      <div><div class="agent-name">${esc(n.name)}</div><div class="agent-st">${esc(n.status)} · ${esc(n.lc)}</div></div>
+      <div class="agent-lat">${esc(n.lat)}</div>
+    </div>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#14b8a6;font-size:8.5px;font-weight:700">ACP</span><span class="render-frame-t" style="color:#14b8a6">cluster status</span></div>
+      <div class="render-body"><div class="cluster-grid">${nH}</div></div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_HB_MISS
+  text=text.replace(/\[RENDER_HB_MISS\]([\s\S]*?)\[\/RENDER_HB_MISS\]/g,(_,c)=>{
+    const lines=c.trim().split('\n');
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const agent=g('agent'),misses=g('miss_count'),status=g('new_status'),action=g('action');
+    const sc={warning:'#f59e0b',degraded:'#f97316',failed:'#f87171'}[status]||'#f87171';
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#14b8a6;font-size:8.5px;font-weight:700">ACP</span><span class="render-frame-t" style="color:${sc}">heartbeat miss → ${esc(status)}</span></div>
+      <div class="render-body">
+        <div class="ui-card" style="border-color:${sc}">
+          <div class="ui-rows">
+            <div class="ui-row"><span class="ui-lbl">Agente</span><span style="color:#f87171;font-family:var(--mono);font-size:11px">${esc(agent)}</span></div>
+            <div class="ui-row"><span class="ui-lbl">Misses consecutivos</span><span class="ui-val">${esc(misses)}</span></div>
+            <div class="ui-row"><span class="ui-lbl">Estado nuevo</span><span style="color:${sc};font-weight:700">${esc(status).toUpperCase()}</span></div>
+            <div class="ui-row" style="border:none"><span class="ui-lbl">Acción</span><span style="color:#94a3b8;font-size:11px">${esc(action)}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_LIFECYCLE
+  text=text.replace(/\[RENDER_LIFECYCLE\]([\s\S]*?)\[\/RENDER_LIFECYCLE\]/g,(_,c)=>{
+    const lines=c.trim().split('\n');
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const states=g('states').split(','),current=g('current'),agent=g('agent');
+    const lcCols={INITIALIZING:['#0f1e3d','#1d4ed8','#60a5fa'],ACTIVE:['#0d2018','#15803d','#22c55e'],DEGRADED:['#2d1a00','#b45309','#f59e0b'],RETIRING:['#2d0a0a','#c2410c','#f97316'],RETIRED:['#1e2535','#3a4560','#64748b']};
+    const lcH=states.map((s,i)=>{
+      const[bg,bd,tx]=lcCols[s.trim()]||['#1e2535','#3a4560','#64748b'];
+      const isCur=s.trim()===current;
+      return`${i>0?`<span class="lc-arrow">→</span>`:''}
+      <span class="lc-step" style="background:${isCur?bg:'#0d1117'};border-color:${isCur?bd:'#2a3448'};color:${isCur?tx:'#475569'}">${esc(s.trim())}</span>`;
+    }).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#14b8a6;font-size:8.5px;font-weight:700">ACP</span><span class="render-frame-t" style="color:#14b8a6">lifecycle — ${esc(agent)}</span></div>
+      <div class="render-body"><div class="lifecycle-row" style="flex-wrap:wrap">${lcH}</div></div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_TASK
+  text=text.replace(/\[RENDER_TASK\]([\s\S]*?)\[\/RENDER_TASK\]/g,(_,c)=>{
+    const lines=c.trim().split('\n').filter(l=>l.trim());
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const gAll=k=>lines.filter(l=>l.trim().startsWith(k+':')).map(l=>l.replace(/^[^:]+:/,'').trim());
+    const taskId=g('task_id'),agent=g('agent'),state=g('state'),prog=parseInt(g('progress')||0);
+    const results=gAll('result_field').map(f=>{const[l,v]=(f+'|').split('|');return{l:l.trim(),v:(v||'').trim()}});
+    const stCols={submitted:'#60a5fa',working:'#f59e0b','input-required':'#a855f7',completed:'#22c55e',failed:'#f87171',canceled:'#64748b'};
+    const stCol=stCols[state]||'#94a3b8';
+    const rH=results.map(r=>`<div class="ui-row"><span class="ui-lbl">${esc(r.l)}</span><span class="ui-val">${esc(r.v)}</span></div>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#f97316;font-size:8.5px;font-weight:700">A2A</span><span class="render-frame-t" style="color:#f97316">task state</span><span class="render-frame-sub">${esc(taskId)}</span></div>
+      <div class="render-body">
+        <div class="ui-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:.5rem">
+            <span style="font-size:12px;color:#e2e8f0;font-weight:600">${esc(agent)}</span>
+            <span style="font-size:9.5px;padding:2px 8px;border-radius:4px;background:${stCol}22;border:1px solid ${stCol};color:${stCol};font-weight:700">${esc(state)}</span>
+          </div>
+          <div style="margin-bottom:.5rem">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#64748b;margin-bottom:3px"><span>progress</span><span style="color:${stCol}">${prog}%</span></div>
+            <div style="height:4px;background:#2a3448;border-radius:2px;overflow:hidden"><div style="height:100%;width:${prog}%;background:${stCol};border-radius:2px;transition:width 1s"></div></div>
+          </div>
+          ${results.length?`<div class="ui-rows">${rH}</div>`:''}
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_AGENT_CARD
+  text=text.replace(/\[RENDER_AGENT_CARD\]([\s\S]*?)\[\/RENDER_AGENT_CARD\]/g,(_,c)=>{
+    const lines=c.trim().split('\n').filter(l=>l.trim());
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const gAll=k=>lines.filter(l=>l.trim().startsWith(k+':')).map(l=>l.replace(/^[^:]+:/,'').trim());
+    const name=g('name'),ver=g('version'),url=g('url');
+    const skills=gAll('skill').map(f=>{const[id,desc]=(f+'|').split('|');return{id:id.trim(),desc:(desc||'').trim()}});
+    const caps=gAll('capability').map(f=>{const[k,v]=(f+'|').split('|');return{k:k.trim(),v:(v||'').trim()}});
+    const skH=skills.map(s=>`<div class="ui-row"><span class="ui-lbl" style="font-family:var(--mono);font-size:10px;color:#f97316">${esc(s.id)}</span><span style="color:#94a3b8;font-size:11px">${esc(s.desc)}</span></div>`).join('');
+    const cpH=caps.map(cp=>`<div class="ui-row"><span class="ui-lbl">${esc(cp.k)}</span><span style="color:${cp.v==='true'?'#22c55e':'#64748b'};font-family:var(--mono);font-size:10px">${esc(cp.v)}</span></div>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#f97316;font-size:8.5px;font-weight:700">A2A</span><span class="render-frame-t" style="color:#f97316">Agent Card</span><span class="render-frame-sub">v${esc(ver)}</span></div>
+      <div class="render-body">
+        <div class="ui-card">
+          <div class="ui-card-title">${esc(name)}</div>
+          <div style="font-size:10px;color:#64748b;font-family:var(--mono);margin-bottom:.5rem">${esc(url)}</div>
+          ${skills.length?`<div style="font-size:9.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em;margin:.4rem 0 .2rem">Skills</div><div class="ui-rows">${skH}</div>`:''}
+          ${caps.length?`<div style="font-size:9.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em;margin:.4rem 0 .2rem">Capabilities</div><div class="ui-rows">${cpH}</div>`:''}
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_TOOL_RESULT
+  text=text.replace(/\[RENDER_TOOL_RESULT\]([\s\S]*?)\[\/RENDER_TOOL_RESULT\]/g,(_,c)=>{
+    const lines=c.trim().split('\n');
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const server=g('server'),transport=g('transport'),tool=g('tool'),ring=g('ring'),petrea=g('petrea_check'),trust=g('trust'),sanitized=g('sanitized'),result=g('result');
+    const isSan=sanitized==='true'||result.includes('[SANITIZED');
+    const pct=Math.round(Math.min(1,parseFloat(trust||0.7))*100);
+    const tc=pct>=85?'#22c55e':pct>=70?'#f59e0b':'#f87171';
+    const rMap={'0':'rb0','1':'rb1','2':'rb2'};
+    const pClass={'∅':'p-null','OK':'p-ok','BLOCK':'p-block','REVIEW':'p-review'}[petrea]||'p-null';
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#60a5fa;font-size:8.5px;font-weight:700">MCP</span><span class="render-frame-t" style="color:#60a5fa">${esc(server)}:${esc(tool)}</span><span class="render-frame-sub">${esc(transport)}</span></div>
+      <div class="render-body">
+        <div class="ui-card" style="${isSan?'border-color:#b45309':''}">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:.5rem;flex-wrap:wrap">
+            <span class="rb ${rMap[ring]||'rb0'}">R${esc(ring)}</span>
+            <span class="petrea ${pClass}">petrea: ${esc(petrea)}</span>
+            ${isSan?'<span style="font-size:9px;padding:1px 6px;background:#2d1a00;border:1px solid #b45309;color:#f59e0b;border-radius:3px;font-weight:700">⚠ SANITIZED</span>':''}
+          </div>
+          <div style="font-family:var(--mono);font-size:10.5px;color:#94a3b8;background:#0d1117;border:1px solid #2a3448;border-radius:5px;padding:.5rem .65rem;margin-bottom:.4rem;word-break:break-all">${esc(result)}</div>
+          <div class="trust-row">
+            <div class="trust-meta"><span style="color:#475569">trust score</span><span style="color:${tc};font-weight:700">${esc(trust)}</span></div>
+            <div class="trust-bar"><div class="trust-fill" style="width:${pct}%;background:${tc}"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_SERVERS
+  text=text.replace(/\[RENDER_SERVERS\]([\s\S]*?)\[\/RENDER_SERVERS\]/g,(_,c)=>{
+    const servers=c.trim().split('\n').filter(l=>l.trim().startsWith('server:')).map(l=>{
+      const p=l.replace(/^[^:]+:/,'').trim().split('|').map(s=>s.trim());
+      return{name:p[0],transport:p[1]||'',status:p[2]||'connected',tools:(p[3]||'').split(',')};
+    });
+    const trH=servers.map(s=>`<tr>
+      <td style="font-family:var(--mono);color:#60a5fa">${esc(s.name)}</td>
+      <td>${esc(s.transport)}</td>
+      <td><span style="color:${s.status==='connected'?'#22c55e':'#f87171'};font-weight:600">${esc(s.status)}</span></td>
+      <td style="font-size:10px;color:#64748b">${s.tools.map(t=>`<code style="background:#0f1e3d;border:1px solid #1d4ed8;color:#60a5fa;padding:1px 4px;border-radius:3px;font-size:9.5px;margin:1px">${esc(t.trim())}</code>`).join(' ')}</td>
+    </tr>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#60a5fa;font-size:8.5px;font-weight:700">MCP</span><span class="render-frame-t" style="color:#60a5fa">/mcp list</span></div>
+      <div class="render-body">
+        <div style="overflow-x:auto"><table class="ui-table"><thead><tr><th>Server</th><th>Transport</th><th>Status</th><th>Tools</th></tr></thead><tbody>${trH}</tbody></table></div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_PASSPORT
+  text=text.replace(/\[RENDER_PASSPORT\]([\s\S]*?)\[\/RENDER_PASSPORT\]/g,(_,c)=>{
+    const lines=c.trim().split('\n').filter(l=>l.trim());
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const verdict=g('verdict');
+    const isOk=verdict==='ACCEPT',isRej=verdict==='REJECT';
+    const vcol=isOk?'#22c55e':isRej?'#f87171':'#f59e0b';
+    const vbg=isOk?'#0d2018':isRej?'#2d0a0a':'#2d1a00';
+    const flds=['nodeId','capabilities','constitutionHash','trustScore','expiry','depth','signature','vc'];
+    const rH=flds.filter(f=>g(f)).map(f=>`<div class="prow"><span class="pk">${f}</span><span class="pv">${esc(g(f))}</span></div>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#f59e0b;font-size:8.5px;font-weight:700">ANP</span><span class="render-frame-t" style="color:#f59e0b">ANP Passport</span><span style="margin-left:auto;font-size:9px;padding:2px 8px;border-radius:4px;background:${vbg};border:1px solid ${vcol};color:${vcol};font-weight:700">${esc(verdict)}</span></div>
+      <div class="render-body"><div class="passport">${rH}</div></div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_PEERS
+  text=text.replace(/\[RENDER_PEERS\]([\s\S]*?)\[\/RENDER_PEERS\]/g,(_,c)=>{
+    const peers=c.trim().split('\n').filter(l=>l.trim().startsWith('peer:')).map(l=>{
+      const p=l.replace(/^[^:]+:/,'').trim().split('|').map(s=>s.trim());
+      return{did:p[0],trust:p[1]||'',verdict:p[2]||'',caps:p[3]||''};
+    });
+    const trH=peers.map(p=>{
+      const isOk=p.verdict==='ACCEPT';
+      const tNum=parseFloat((p.trust.match(/[\d.]+/)||['0'])[0]);
+      const tc=tNum>=0.75?'#22c55e':tNum>=0.65?'#f59e0b':'#f87171';
+      return`<tr>
+        <td style="font-family:var(--mono);font-size:10px;color:#94a3b8">${esc(p.did)}</td>
+        <td><span style="color:${tc};font-weight:700;font-family:var(--mono);font-size:10px">${esc(p.trust)}</span></td>
+        <td><span style="color:${isOk?'#22c55e':'#f87171'};font-weight:700;font-size:10px">${esc(p.verdict)}</span></td>
+        <td style="font-size:10px;color:#64748b">${esc(p.caps)}</td>
+      </tr>`;
+    }).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#f59e0b;font-size:8.5px;font-weight:700">ANP</span><span class="render-frame-t" style="color:#f59e0b">/anp peers</span></div>
+      <div class="render-body">
+        <div style="overflow-x:auto"><table class="ui-table"><thead><tr><th>DID</th><th>Trust</th><th>Verdict</th><th>Capabilities</th></tr></thead><tbody>${trH}</tbody></table></div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_ROUTE
+  text=text.replace(/\[RENDER_ROUTE\]([\s\S]*?)\[\/RENDER_ROUTE\]/g,(_,c)=>{
+    const steps=c.trim().split('\n').filter(l=>l.trim().startsWith('step:')).map(l=>{
+      const p=l.replace(/^[^:]+:/,'').trim().split('|').map(s=>s.trim());
+      return{n:p[0],proto:(p[1]||'').trim(),target:(p[2]||'').trim(),reason:(p[3]||'').trim()};
+    });
+    const PC={'AG-UI':'#a855f7','A2UI':'#3b82f6','ACP':'#14b8a6','A2A':'#f97316','MCP':'#60a5fa','ANP':'#f59e0b'};
+    const sH=steps.map(s=>{
+      const col=PC[s.proto]||'#94a3b8';
+      return`<div class="route-step">
+        <div class="route-num">${esc(s.n)}</div>
+        <div class="route-content">
+          <span class="route-proto-tag" style="background:${col}18;border-color:${col};color:${col}">${esc(s.proto)}</span>
+          <div class="route-target">→ ${esc(s.target)}</div>
+          <div class="route-reason">${esc(s.reason)}</div>
+        </div>
+      </div>`;
+    }).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#94a3b8;font-size:8.5px;font-weight:700">RTR</span><span class="render-frame-t" style="color:#94a3b8">route flow</span></div>
+      <div class="render-body"><div class="route-flow">${sH}</div></div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_SEC
+  text=text.replace(/\[RENDER_SEC\]([\s\S]*?)\[\/RENDER_SEC\]/g,(_,c)=>{
+    const lines=c.trim().split('\n');
+    const g=k=>(lines.find(l=>l.trim().startsWith(k+':'))||'').replace(/^[^:]+:/,'').trim();
+    const action=g('action'),ring=g('ring'),petrea=g('petrea_check'),trust=g('trust_required'),rationale=g('rationale');
+    const rMap={'0':'rb0','1':'rb1','2':'rb2'};
+    const pClass={'∅':'p-null','OK':'p-ok','BLOCK':'p-block','REVIEW':'p-review'}[petrea]||'p-null';
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#f87171;font-size:8.5px;font-weight:700">ZT</span><span class="render-frame-t" style="color:#f87171">security analysis</span></div>
+      <div class="render-body">
+        <div class="ui-card" style="border-color:#dc2626">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:.5rem;flex-wrap:wrap">
+            <span class="rb ${rMap[ring]||'rb0'}">R${esc(ring)}</span>
+            <span class="petrea ${pClass}">petrea: ${esc(petrea)}</span>
+          </div>
+          <div class="ui-rows">
+            <div class="ui-row"><span class="ui-lbl">Acción</span><span style="font-family:var(--mono);font-size:10.5px;color:#e2e8f0">${esc(action)}</span></div>
+            <div class="ui-row"><span class="ui-lbl">Trust requerido</span><span style="color:#f59e0b;font-family:var(--mono)">${esc(trust)}</span></div>
+            <div class="ui-row" style="border:none"><span class="ui-lbl">Justificación</span><span style="color:#94a3b8;font-size:11px">${esc(rationale)}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`);
+    return '';
+  });
+
+  // RENDER_TRUST
+  text=text.replace(/\[RENDER_TRUST\]([\s\S]*?)\[\/RENDER_TRUST\]/g,(_,c)=>{
+    const rows=c.trim().split('\n').filter(l=>l.trim().startsWith('source:')).map(l=>{
+      const p=l.replace(/^[^:]+:/,'').trim().split('|').map(s=>s.trim());
+      const tStr=p[1]||'';
+      const tNum=parseFloat((tStr.match(/[\d.]+/)||['0'])[0]);
+      const col=tNum>=0.85?'#22c55e':tNum>=0.70?'#f59e0b':'#f87171';
+      return{src:p[0],tStr,col,pct:Math.round(tNum*100)};
+    });
+    const rH=rows.map(r=>`<div style="margin-bottom:7px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span style="color:#94a3b8">${esc(r.src)}</span>
+        <span style="color:${r.col};font-weight:700;font-family:var(--mono);font-size:10px">${esc(r.tStr)}</span>
+      </div>
+      <div class="trust-bar"><div class="trust-fill" style="width:${r.pct}%;background:${r.col}"></div></div>
+    </div>`).join('');
+    appendRender(proto,`<div class="render-frame">
+      <div class="render-frame-hd"><span style="color:#f87171;font-size:8.5px;font-weight:700">ZT</span><span class="render-frame-t" style="color:#f87171">trust defaults</span></div>
+      <div class="render-body"><div class="ui-card" style="border-color:#dc2626">${rH}</div></div>
+    </div>`);
+    return '';
+  });
+
+  return text;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// FORMAT TEXT (non-block content goes to wire col as text)
+// ══════════════════════════════════════════════════════════════════
+function fmtText(text){
+  text=text.replace(/```(\w*)\n?([\s\S]*?)```/g,(_,lang,code)=>`<pre style="font-family:var(--mono);font-size:9.5px;background:#0d1117;border:1px solid #2a3448;border-radius:5px;padding:.5rem .65rem;margin:.3rem 0;overflow-x:auto;line-height:1.65;color:#94a3b8;white-space:pre">${hlJson(code.trim())}</pre>`);
+  text=text.replace(/`([^`\n]+)`/g,'<code style="font-family:var(--mono);font-size:10px;background:#1e2535;padding:1px 5px;border-radius:3px;color:#7dd3fc">$1</code>');
+  text=text.replace(/\*\*([^*]+)\*\*/g,'<strong style="color:#e2e8f0">$1</strong>');
+  text=text.replace(/\n/g,'<br>');
+  return text;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// API CALL
+// ══════════════════════════════════════════════════════════════════
+function addTypingIndicator(proto){
+  const wc=getWireCol(proto);
+  if(!wc)return;
+  const d=document.createElement('div');
+  d.id='typ-'+proto; d.className='wire-msg';
+  d.innerHTML=`<div style="display:flex;align-items:center;gap:6px;padding:.3rem 0;color:#475569;font-size:10px"><div class="tdots"><span></span><span></span><span></span></div> claude-sonnet-4-20250514 generando wire format...</div>`;
+  wc.appendChild(d); scrollBottom(wc);
+}
+
+function removeTyping(proto){const el=document.getElementById('typ-'+proto);if(el)el.remove()}
+
+async function send(proto){
+  const inp=document.getElementById('i-'+proto);
+  const text=inp.value.trim();
+  if(!text||busy[proto])return;
+  busy[proto]=true; inp.value=''; inp.style.height='36px';
+  const btn=inp.parentElement.querySelector('.send-btn'); btn.disabled=true;
+
+  // User message → wire col
+  const p=PROTO[proto];
+  appendWire(proto,`<div class="dir-row"><span class="dir-badge" style="background:#1e2535;border-color:#3a4560;color:#94a3b8">USER</span><span class="dir-arrow">→</span><span class="dir-badge" style="background:${p.bg};border-color:${p.border};color:${p.color}">${p.label}</span></div><div style="font-size:11.5px;color:#94a3b8;padding:.2rem 0">${esc(text)}</div>`);
+  histories[proto].push({role:'user',content:text});
+
+  addTypingIndicator(proto);
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1800,system:SYS[proto],messages:histories[proto]})
+    });
+    const data=await r.json();
+    removeTyping(proto);
+    if(data.error){
+      appendWire(proto,`<div style="color:#f87171;font-size:11px;padding:.3rem 0">✗ Error: ${esc(data.error.message)}</div>`);
+    } else {
+      const reply=data.content?.map(b=>b.text||'').join('')||'Sin respuesta';
+      histories[proto].push({role:'assistant',content:reply});
+      // Parse and split: blocks go to render col, text goes to wire col
+      const remaining=parseBlocks(reply,proto);
+      const cleanText=remaining.replace(/\[WIRE\][\s\S]*?\[\/WIRE\]/g,'').trim();
+      if(cleanText){
+        appendWire(proto,`<div style="font-size:11.5px;color:#94a3b8;line-height:1.6;padding:.2rem 0">${fmtText(cleanText)}</div>`);
+      }
+      appendWire(proto,`<div class="wire-note"><div class="wire-note-dot" style="background:#22c55e"></div>${data.usage?.output_tokens||0} tokens</div>`);
+    }
+  }catch(e){
+    removeTyping(proto);
+    appendWire(proto,`<div style="color:#f87171;font-size:11px">✗ ${esc(e.message)}</div>`);
+  }
+  busy[proto]=false; btn.disabled=false; inp.focus();
+}
+
+function q(proto,text){
+  const inp=document.getElementById('i-'+proto);
+  if(!inp||busy[proto])return;
+  inp.value=text; send(proto);
+}
+function hk(e,proto){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(proto);}
+  const ta=e.target; ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,96)+'px';
+}
+
+// ══════════════════════════════════════════════════════════════════
+// INTERACTIVE
+// ══════════════════════════════════════════════════════════════════
+function confirmR2(uid,action,proto){
+  const inp=document.getElementById(uid);
+  if(!inp)return;
+  if(inp.value.trim()==='I UNDERSTAND'){
+    const box=inp.closest('.r2-box');
+    if(box){
+      box.style.background='#0d2018'; box.style.borderColor='#15803d';
+      box.innerHTML=`<div style="font-size:12px;color:#22c55e;font-weight:700">✓ R2 confirmado — ejecutando</div>
+        <div style="font-family:var(--mono);font-size:10px;color:#f97316;margin-top:3px">${esc(action)}</div>
+        <div style="font-size:10px;color:#475569;margin-top:3px">provenance: sha256:${Math.random().toString(36).slice(2,18)} · audit log actualizado</div>`;
+    }
+    // Wire confirmation event
+    appendWire(proto||'agui',`<div class="dir-row"><span class="dir-badge" style="background:#0d2018;border-color:#15803d;color:#22c55e">R2 CONFIRMED</span></div>
+      <div style="font-size:10.5px;color:#22c55e;font-family:var(--mono);padding:.2rem 0">action: ${esc(action)}<br>response: "I UNDERSTAND" ✓<br>ring: 2 → executing</div>`);
+    setTimeout(()=>q(proto||'agui',`Ring 2 confirmado con "I UNDERSTAND". Ejecuta la acción "${action}" y emite los eventos AG-UI correspondientes.`),400);
+  } else {
+    inp.style.borderColor='#f87171';
+    inp.placeholder='Exactamente: I UNDERSTAND';
+    setTimeout(()=>{inp.style.borderColor='';inp.placeholder='Escribe "I UNDERSTAND" para confirmar';},2500);
+  }
+}
+
+function pickClarif(proto,option,text){
+  appendWire(proto,`<div class="dir-row"><span class="dir-badge" style="background:#1e2535;border-color:#3a4560;color:#94a3b8">USER</span><span class="dir-arrow">→</span><span class="dir-badge" style="background:#1e1033;border-color:#7c3aed;color:#a855f7">AG-UI</span></div>
+    <div style="font-size:11px;color:#94a3b8;padding:.2rem 0">Interpretación ${esc(option)} seleccionada: "${esc(text)}"</div>`);
+  q(proto,`Procede con interpretación ${option}: "${text}". Emite los eventos AG-UI correspondientes.`);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════════
+document.querySelectorAll('.nav-i').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const proto=el.dataset.p;
+    document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
+    el.classList.add('on');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+    document.getElementById('p-'+proto).classList.add('on');
+    const wc=getWireCol(proto);
+    if(wc&&wc.children.length===0) welcome(proto);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════
+// WELCOME MESSAGES
+// ══════════════════════════════════════════════════════════════════
+const WELCOMES={
+  agui:{wire:`// AG-UI protocol — CopilotKit v1.50+
+// Transport: SSE / WebSocket / WebRTC
+// Spec: docs.ag-ui.com
+// 16 event types · 5 categories
+// Ring 0 (auto) | Ring 1 (HOTL) | Ring 2 (HITL)
+//
+// Wire col: eventos SSE/WebSocket exactos
+// Render col: lo que renderiza el frontend`,render:'<div class="empty-state"><div class="empty-icon">⚡</div><div>Usa los botones o escribe una interacción AG-UI</div></div>'},
+  a2ui:{wire:`// A2UI payload — Google dic 2025
+// Viaja dentro de eventos AG-UI TOOL_CALL_START
+// Tipos: card, form, dashboard, table
+// AG-UI = transporte · A2UI = payload UI
+//
+// Wire col: AG-UI envelope + A2UI payload JSON
+// Render col: componente renderizado en frontend`,render:'<div class="empty-state"><div class="empty-icon">🎨</div><div>Pide un componente A2UI para verlo renderizado</div></div>'},
+  acp:{wire:`// ACP local-first pattern
+// Fusionado en A2A (ago 2025) — features heredadas
+// Origin: IBM Research → Linux Foundation
+// Latencia: <1ms in-process
+// Heartbeat: 15s | degraded | failed
+//
+// Wire col: mensajes ACP JSON
+// Render col: cluster status + lifecycle`,render:'<div class="empty-state"><div class="empty-icon">🔗</div><div>Simula mensajes ACP para ver el cluster</div></div>'},
+  a2a:{wire:`// A2A v0.3 — Linux Foundation (LF AI & Data)
+// Origin: Google Cloud Next, abr 2025
+// Transport: HTTP+SSE | gRPC (v0.3)
+// Task states: submitted → working → completed/failed
+// Ring mínimo: 1
+//
+// Wire col: HTTP requests + SSE events
+// Render col: task state + artifacts`,render:'<div class="empty-state"><div class="empty-icon">🌐</div><div>Inicia una tarea A2A para ver el ciclo de vida</div></div>'},
+  mcp:{wire:`// MCP spec 2025-11-25 — AAIF / Linux Foundation
+// Origin: Anthropic nov 2024 → donado dic 2025
+// Transport: stdio | HTTP SSE | HTTP Streamable
+// Nuevo: Tasks async, parallel tools, OAuth 2.1 RFC 8707
+// petrea_check: ∅ | OK | BLOCK | REVIEW
+//
+// Wire col: JSON-RPC 2.0 messages
+// Render col: tool results + sanitización`,render:'<div class="empty-state"><div class="empty-icon">🔧</div><div>Invoca un tool MCP para ver el wire y resultado</div></div>'},
+  anp:{wire:`// ANP — W3C AI Agent Protocol Community Group
+// Origin: Gaowei Chang et al. arXiv:2508.00007
+// Identity: did:wba (Web-Based Agent DID)
+// 3 capas: Identity + Meta-Protocol + Application
+// Draft spec: ene 2026
+//
+// Wire col: DID auth + passport exchange
+// Render col: passport card + veredicto`,render:'<div class="empty-state"><div class="empty-icon">🔏</div><div>Evalúa un passport ANP para ver el wire y veredicto</div></div>'},
+  routing:{wire:`// Motor de routing — ACP > MCP > A2A > ANP
+// Local first. Tools antes que federación.
+// ANP como último recurso.
+//
+// Wire col: decisiones de routing con árbol
+// Render col: route flow visualizado`,render:'<div class="empty-state"><div class="empty-icon">🗺</div><div>Describe un escenario para ver el route flow</div></div>'},
+  security:{wire:`// Zero Trust Security Layer
+// Ring 0: auto, R/O | Ring 1: HOTL | Ring 2: HITL
+// petrea_check en todo mensaje ring 1+
+// Pipeline sanitización obligatorio (externos)
+// Trust cap: externo max 0.70
+//
+// Wire col: mensajes con campos de seguridad
+// Render col: análisis + trust bars`,render:'<div class="empty-state"><div class="empty-icon">🛡</div><div>Prueba una acción para ver el análisis de seguridad</div></div>'},
+};
+
+function welcome(proto){
+  const w=WELCOMES[proto];
+  if(!w)return;
+  appendWire(proto,`<div style="font-family:var(--mono);font-size:9.5px;color:#475569;line-height:1.7;padding:.2rem 0">${esc(w.wire)}</div>`);
+  const rc=getRenderCol(proto);
+  if(rc) rc.innerHTML=w.render;
+}
+
+welcome('agui');
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+\chapter{Model cards de las capas del prototipo}
+\label{cap:anexol}
+
+\section*{L.1. Alcance}
+
+Este anexo documenta las model cards de las capas que intervienen en el prototipo
+\texttt{v0.1.0}. Se incluye la Capa 1 de extraccion determinista de senales, la Capa 2
+de priorizacion interpretable y la Capa 3 de explicacion local mediante Ollama. La
+separacion es relevante porque la prioridad no la decide el LLM: la recomendacion P1--P4
+procede de Capa 2 y la Capa 3 la explica.
+
+\section*{L.2. Model card Capa 1: extractor de senales}
+
+La Capa 1 recibe el texto operativo de un incidente y devuelve variables
+predecisionales estructuradas. En \texttt{v0.1.0} se implementa como extractor
+determinista, no como modelo neuronal entrenado. Su funcion es detectar senales
+relevantes para la priorizacion, como fallecido, herido grave, atrapado, intoxicacion,
+varias llamadas, incendio, accidente de trafico, rescate, meteorologia/inundacion y
+riesgo vital textual.
+
+La salida de Capa 1 alimenta directamente la inferencia de Capa 2 mediante el contrato
+de features permitido. Se han incluido controles simples de negacion para reducir falsos
+positivos en expresiones del tipo ``no hay atrapados'' o ``sin heridos''. Los artefactos
+asociados son \url{artifacts/reports/capa1_v0.1.0.json} y
+\url{artifacts/models/capa1/v0.1.0/deterministic_extractor.json}. Tras la integracion con la
+rama de Capa 1, se ha verificado especificamente el caso ``no hay heridos ni vehiculos
+atrapados'', evitando que la negacion active falsos positivos en la senal de
+atrapamiento.
+
+Sus limitaciones principales son la dependencia de patrones textuales explicitos, la
+ausencia de aprendizaje contextual profundo y la necesidad de ampliacion futura con
+casos linguisticos mas variados. Aun asi, su caracter determinista facilita la auditoria
+y evita introducir una fuente opaca antes de la priorizacion.
+
+\section*{L.3. Datos usados por Capa 2}
+
+El entrenamiento y la evaluacion usan el Registro 112 Castilla y Leon 2008--2022, con
+9.380 registros limpios. La etiqueta objetivo no existe de forma nativa en el dataset:
+se construye como etiqueta academica P1--P4 mediante weak supervision. La calidad de
+estas etiquetas se controla con acuerdo entre fuentes debiles; la ejecucion principal
+alcanza Krippendorff $\alpha = 0.858348$, por encima del umbral aceptable de 0.67.
+
+Los splits usados son versionados y reproducibles:
+
+\begin{itemize}
+    \item Train: 6.511 registros.
+    \item Validacion: 1.414 registros.
+    \item Test: 1.455 registros.
+    \item Test temporal 2022: 735 registros.
+\end{itemize}
+
+\section*{L.4. Features permitidas y anti-leakage}
+
+El modelo seleccionado emplea un conjunto compacto de senales predecisionales:
+
+\begin{itemize}
+    \item \texttt{signal\_fallecido}
+    \item \texttt{signal\_herido\_grave}
+    \item \texttt{signal\_atrapado}
+    \item \texttt{signal\_intoxicacion}
+    \item \texttt{signal\_varias\_llamadas}
+    \item \texttt{signal\_incendio}
+    \item \texttt{signal\_accidente\_trafico}
+    \item \texttt{signal\_rescate}
+    \item \texttt{signal\_meteo\_inundacion}
+    \item \texttt{riesgo\_vital\_textual}
+    \item variables categoricas derivadas de la categoria preliminar:
+    \texttt{cat\_trafico}, \texttt{cat\_incendio}, \texttt{cat\_rescate},
+    \texttt{cat\_sanitario}, \texttt{cat\_meteorologico}, \texttt{cat\_seguridad}
+    y \texttt{cat\_otros}.
+\end{itemize}
+
+Quedan excluidas por leakage las columnas \texttt{MediosMov},
+\texttt{medios\_mov\_limpio}, \texttt{medios\_mov\_uso\_recomendado},
+\texttt{PacientesAten}, \texttt{pacientes\_aten\_limpio},
+\texttt{IncidenteCerrado}, \texttt{ultimaActualizacion},
+\texttt{Enlace al contenido} y \texttt{Unnamed: 13}. Estas variables se conocen
+despues de la decision operativa o son metadatos post-hoc, por lo que no pueden
+alimentar el entrenamiento ni la inferencia.
+
+\section*{L.5. Modelos comparados}
+
+Se comparan tres alternativas:
+
+\begin{enumerate}
+    \item \textbf{Baseline experto}: 16 reglas manuales trazables, documentadas en el
+    Anexo~\ref{cap:anexoe}.
+    \item \textbf{RuleFit-lite}: reglas de arbol poco profundo y capa logistica escasa.
+    Se adopta como aproximacion interpretable eficiente y reproducible.
+    \item \textbf{RuleFit imodels}: \texttt{imodels.RuleFitClassifier} en esquema
+    one-vs-rest para P1--P4. Se ejecuta en Python 3.12 aislado, con configuracion
+    diagnostica reducida por coste de computo local.
+\end{enumerate}
+
+\begin{table}[ht]
+\centering
+\caption{Comparativa de modelos de Capa 2 en test}
+\label{tab:model-card-capa2-comparativa}
+\small
+\begin{tabular}{|l|r|r|r|r|r|r|}
+\hline
+\textbf{Modelo} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} & \textbf{Reglas} & \textbf{Train s} & \textbf{ms/fila} \\ \hline
+Baseline experto & 0.727835 & 0.703932 & 0.998457 & 16 & -- & -- \\ \hline
+RuleFit-lite & 0.881100 & 0.880750 & 0.921296 & 30 & 6.504204 & 0.450127 \\ \hline
+RuleFit imodels & 0.768385 & 0.568239 & 0.902778 & 30 & 13.191647 & 7.496081 \\ \hline
+\end{tabular}
+\end{table}
+
+\section*{L.6. Modelo seleccionado}
+
+El modelo seleccionado para Capa 2 v0.1.0 es \textbf{RuleFit-lite}. La decision se
+justifica por cuatro razones:
+
+\begin{itemize}
+    \item obtiene la mejor macro-F1 reproducible en test: 0.880750;
+    \item mantiene recall P1 de 0.921296, por encima del objetivo minimo de 0.85;
+    \item respeta el limite de 30 reglas activas exportadas;
+    \item presenta menor latencia de inferencia que la ejecucion diagnostica con
+    \texttt{imodels}.
+\end{itemize}
+
+La eleccion no invalida \texttt{imodels}; al contrario, lo mantiene como referencia
+canonica para experimentos futuros con mayor presupuesto de computo. En esta version,
+sin embargo, RuleFit-lite ofrece mejor equilibrio entre rendimiento, interpretabilidad,
+coste y reproducibilidad.
+
+\section*{L.7. Evaluacion temporal y trazabilidad}
+
+La evaluacion final se consolida mediante \texttt{scripts/run\_evaluation.py}. Este
+script genera \texttt{artifacts/reports/evaluation\_v0.1.0.json} y su version
+\texttt{.md}, junto con tablas por provincia, ano y categoria, figuras SVG y el listado
+de falsos negativos P1. Sobre el test temporal de 2022, RuleFit-lite alcanza accuracy
+0.884354, macro-F1 0.877594 y recall P1 0.928767. La estabilidad respecto al test
+estratificado apoya la seleccion del modelo, aunque no sustituye una validacion
+prospectiva con datos operativos nuevos.
+
+El mismo informe identifica 51 falsos negativos P1 en el test estratificado: 32 casos
+P1--P2, 19 casos P1--P3 y ningun caso P1--P4. Estos casos alimentan la plantilla de
+validacion interna documentada en \texttt{resources/internal\_validation}.
+
+\section*{L.8. Model card Capa 3: explicacion con Ollama}
+
+La Capa 3 recibe la recomendacion de Capa 2, las probabilidades P1--P4, reglas o senales
+activadas y evidencias recuperadas. Su salida es una explicacion estructurada para
+revision humana. En \texttt{v0.1.0} se ejecuta localmente mediante Ollama con el modelo
+\texttt{llama3.1:8b-instruct-q4\_K\_M}. El prompt del sistema fuerza una respuesta
+estructurada y recuerda que el LLM no decide la prioridad.
+
+El componente mantiene un modo degradado determinista si Ollama no esta disponible o si
+la respuesta no cumple el contrato esperado. Este modo conserva la prioridad y las
+probabilidades de Capa 2, evitando que un fallo generativo bloquee la recomendacion.
+
+\section*{L.8.1. Validacion integrada Capa 1--Capa 2--Capa 3}
+
+Como control de integracion posterior al merge de la rama de Capa 1, se regenera el
+informe \url{artifacts/reports/capa1_capa2_e2e_v0.1.0.json} junto con su version
+\url{artifacts/reports/capa1_capa2_e2e_v0.1.0.md}. La prueba ejecuta cinco escenarios
+curados y comprueba que las senales extraidas por Capa 1 llegan correctamente a Capa 2,
+que RuleFit esta disponible y que Capa 3 conserva la trazabilidad minima en modo
+degradado.
+
+\begin{table}[ht]
+\centering
+\caption{Resumen de validacion integrada Capa 1--Capa 2--Capa 3}
+\label{tab:model-card-e2e-capa1-capa2}
+\small
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Indicador} & \textbf{Valor} \\ \hline
+Casos curados & 5 \\ \hline
+Casos correctos & 5 \\ \hline
+Casos fallidos & 0 \\ \hline
+Modelo Capa 2 observado & \texttt{RULEFIT} \\ \hline
+Precision micro Capa 1 & 0.846154 \\ \hline
+Recall micro Capa 1 & 1.000000 \\ \hline
+F1 micro Capa 1 & 0.916667 \\ \hline
+Latencia media Capa 1 & 0.31106 ms \\ \hline
+Latencia media Capa 2 & 347.0036 ms \\ \hline
+Latencia media Capa 3 degradada & 0.30772 ms \\ \hline
+\end{tabular}
+\end{table}
+
+El resultado 5/5 permite afirmar que, tras integrar los cambios de Ancor en Capa 1, el
+flujo texto del incidente, extraccion de senales, priorizacion RuleFit-lite y explicacion
+degradada funciona de forma consistente. Esta validacion no sustituye al smoke test con
+Ollama ni a la evaluacion offline de Capa 2, pero aporta evidencia de compatibilidad
+entre capas.
+
+\begin{table}[ht]
+\centering
+\caption{Smoke test integrado Capa 1--Capa 2--Capa 3}
+\label{tab:model-card-prototipo-smoke}
+\small
+\begin{tabular}{|l|c|c|r|c|}
+\hline
+\textbf{Caso} & \textbf{Esperada} & \textbf{Obtenida} & \textbf{Prob. dominante} & \textbf{Modo} \\ \hline
+Incendio con atrapados & P1 & P1 & 97.35\% & Ollama \\ \hline
+Fuga de gas sin heridos & P2 & P2 & 92.21\% & Ollama \\ \hline
+Arbol en calzada & P3 & P3 & 93.71\% & Ollama \\ \hline
+Consulta vecinal sin riesgo & P4 & P4 & 98.54\% & Ollama \\ \hline
+\end{tabular}
+\end{table}
+
+El smoke test integrado alcanza 4/4 casos correctos, con RuleFit activo, Capa 3 no
+degradada y latencia media de 4.897,888 ms. Sus artefactos son
+\url{artifacts/reports/prototype_v0.1.0_smoke_test.json} y
+\url{artifacts/reports/prototype_v0.1.0_smoke_test.md}. La principal limitacion
+es que se trata de una prueba tecnica pequena, no de una validacion de aceptacion con
+operadores.
+
+\section*{L.9. Fidelidad de explicaciones}
+
+La Capa 3 se evalua sobre los 111 casos de validacion interna mediante
+\url{scripts/evaluate_explanation_fidelity.py}. La ejecucion v0.1.0 usa un juez
+determinista offline sobre explicaciones en modo degradado, con seis criterios:
+prioridad mencionada, reglas trazables, cobertura de senales, citas legales en P1/P2,
+ausencia de contradiccion y disclaimer. El resultado global es pass rate 1.000000,
+fidelidad media 0.958747 y fidelidad minima 0.925000. En falsos negativos P1, la
+fidelidad media es 0.951176. La evaluacion LLM-as-Judge independiente queda como
+extension futura sobre la misma muestra.
+
+El cierre de la evaluacion queda indexado en
+\url{artifacts/reports/final_evaluation_traceability_v0.1.0.json}, que vincula
+este anexo con el Capitulo~\ref{cap:9}, el Anexo~\ref{cap:anexod}, el Capitulo~\ref{cap:10}
+y los artefactos principales de metricas, sesgo, validacion interna y fidelidad.
+
+\section*{L.10. Limitaciones}
+
+\begin{itemize}
+    \item La variable objetivo es una etiqueta academica debil, no una prioridad
+    operativa oficial.
+    \item La evaluacion de \texttt{imodels} se ha realizado con una configuracion
+    diagnostica reducida, debido al coste temporal observado en el entorno local.
+    \item El objetivo ECE $\leq 0.10$ queda reservado para una pasada final de
+    calibracion cuando el modelo sea congelado.
+    \item El rendimiento debe interpretarse dentro del alcance v0.1.0, sin variables
+    externas diferidas como AEMET historico, SNCZI o Seveso.
+    \item Las pruebas integradas con Ollama y con Capa 3 degradada validan el flujo
+    completo, pero todavia no miden utilidad percibida ni impacto real en sala.
+\end{itemize}

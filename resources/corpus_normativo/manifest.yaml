@@ -1,0 +1,202 @@
+# Corpus normativo Castilla y León — manifest oficial v0.1.0
+# Consumido por scripts/download_corpus.py para poblar el RAG (Capa 3).
+# Cada entrada se identifica por el `norma_id` exacto del enum contracts.enums.NormaID.
+#
+# Convención por entrada:
+#   norma_id:           identificador estable (debe coincidir con el enum)
+#   titulo:             título legal completo
+#   jerarquia:          ue | estatal_organica | estatal_ordinaria | estatal_reglamentaria
+#                       | autonomica_ley | autonomica_decreto | autonomica_acuerdo | dataset
+#   ambito:             ue | estado | castilla_y_leon | trasnsversal
+#   ano:                año de publicación oficial
+#   fuente:             BOE | BOCYL | DOUE | datos.gob.es
+#   identificador:      identificador oficial (BOE-A-XXXX-YYYY, ELI, etc.) si se conoce
+#   url_pdf:            URL del PDF consolidado oficial (consolidado preferido)
+#   url_html:           URL del HTML consolidado si existe
+#   licencia:           reutilización (CC BY 4.0, dominio público, etc.) si aplica
+#   verified:           true si la URL ha sido validada manualmente, false si requiere revisión
+#   notes:              observaciones (e.g., requiere verificación, etc.)
+
+contracts_version: "0.1.0"
+generated: "2026-05-24"
+defer_to_v020:
+  - RD_840_2015_SEVESO
+  - MPCYL_ACUERDO_3_2008
+
+normas:
+
+  - norma_id: LEY_17_2015
+    titulo: "Ley 17/2015, de 9 de julio, del Sistema Nacional de Protección Civil"
+    jerarquia: estatal_ordinaria
+    ambito: estado
+    ano: 2015
+    fuente: BOE
+    identificador: BOE-A-2015-7730
+    url_pdf: "https://www.boe.es/buscar/pdf/2015/BOE-A-2015-7730-consolidado.pdf"
+    url_html: "https://www.boe.es/buscar/act.php?id=BOE-A-2015-7730"
+    verified: true
+    notes: "Norma marco SNPC."
+
+  - norma_id: RD_524_2023
+    titulo: "Real Decreto 524/2023, de 20 de junio, por el que se modifica la Norma Básica de Protección Civil"
+    jerarquia: estatal_reglamentaria
+    ambito: estado
+    ano: 2023
+    fuente: BOE
+    identificador: BOE-A-2023-14679
+    url_pdf: "https://www.boe.es/buscar/pdf/2023/BOE-A-2023-14679-consolidado.pdf"
+    url_html: "https://www.boe.es/buscar/act.php?id=BOE-A-2023-14679"
+    verified: true
+    notes: "OJO: este RD aprueba la Norma Básica de Protección Civil, NO el PLEGEM. ELI: https://www.boe.es/eli/es/rd/2023/06/20/524/con"
+
+  - norma_id: PLEGEM
+    titulo: "Plan Estatal General de Emergencias de Protección Civil (PLEGEM) — Resolución 16/12/2020"
+    jerarquia: estatal_reglamentaria
+    ambito: estado
+    ano: 2020
+    fuente: BOE
+    identificador: BOE-A-2020-16349
+    url_pdf: "https://www.boe.es/boe/dias/2020/12/17/pdfs/BOE-A-2020-16349.pdf"
+    url_html: "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2020-16349"
+    verified: true
+    notes: "Resolución 16/12/2020 de la Subsecretaría (Interior) publica el Acuerdo del Consejo de Ministros de 15/12/2020. BOE núm. 328 pp. 115705-115734. Instrumento DISTINTO del RD 524/2023."
+
+  - norma_id: LEY_4_2007_CYL
+    titulo: "Ley 4/2007, de 28 de marzo, de Protección Ciudadana de Castilla y León"
+    jerarquia: autonomica_ley
+    ambito: castilla_y_leon
+    ano: 2007
+    fuente: BOE
+    identificador: BOE-A-2007-9097
+    url_pdf: "https://www.boe.es/buscar/pdf/2007/BOE-A-2007-9097-consolidado.pdf"
+    url_html: "https://www.boe.es/buscar/act.php?id=BOE-A-2007-9097"
+    verified: true
+    notes: "Modificada por Ley 2/2019 (BOE-A-2019-2865)."
+
+  - norma_id: PLANCAL_DEC_4_2019
+    titulo: "Decreto 4/2019, de 7 de febrero, por el que se aprueba el Plan Territorial de Protección Civil de Castilla y León (PLANCAL)"
+    jerarquia: autonomica_decreto
+    ambito: castilla_y_leon
+    ano: 2019
+    fuente: BOCYL
+    identificador: "BOCYL-D-11022019-1"
+    url_pdf: "https://bocyl.jcyl.es/boletines/2019/02/11/pdf/BOCYL-D-11022019-1.pdf"
+    url_html: "https://bocyl.jcyl.es/boletin.do?fechaBoletin=11/02/2019"
+    verified: false
+    notes: "PRINCIPAL — ancla del etiquetado P1-P4 según ADR-0002. Verificar fecha y código BOCYL-D exacto."
+
+  - norma_id: INFOCAL_DEC_6_2025
+    titulo: "Decreto 6/2025, de 27 de marzo, Plan Especial de Protección Civil ante Emergencias por Incendios Forestales en CyL (INFOCAL)"
+    jerarquia: autonomica_decreto
+    ambito: castilla_y_leon
+    ano: 2025
+    fuente: BOCYL
+    identificador: "BOCYL-D-31032025-2"
+    url_pdf: "https://bocyl.jcyl.es/boletines/2025/03/31/pdf/BOCYL-D-31032025-2.pdf"
+    url_html: "https://bocyl.jcyl.es/html/2025/03/31/html/BOCYL-D-31032025-2.do"
+    verified: true
+    notes: "BOCYL núm. 62, 31/03/2025. Consejería de Medio Ambiente, Vivienda y Ordenación del Territorio."
+
+  - norma_id: INUNCYL
+    titulo: "Acuerdo 19/2010, de 25 de febrero, Plan de Protección Civil ante el Riesgo de Inundaciones en Castilla y León (INUNCYL)"
+    jerarquia: autonomica_acuerdo
+    ambito: castilla_y_leon
+    ano: 2010
+    fuente: BOCYL
+    identificador: "BOCYL-D-03032010-14"
+    url_pdf: "https://bocyl.jcyl.es/boletines/2010/03/03/pdf/BOCYL-D-03032010-14.pdf"
+    url_html: "https://bocyl.jcyl.es/boletin.do?fechaBoletin=03/03/2010"
+    verified: true
+    notes: "BOCYL núm. 42, 03/03/2010. Consejería de Interior y Justicia. Sufijo -14 confirmado vía Perplexity 2026-05-25. V08-V11 diferidas a v0.2.0 (R-13); en v0.1.0 se indexa si se obtiene PDF."
+
+  - norma_id: MPCYL_ACUERDO_3_2008
+    titulo: "Acuerdo 3/2008, de 17 de enero, Plan de Protección Civil ante el Riesgo de Transportes de Mercancías Peligrosas en CyL (MPCyL)"
+    jerarquia: autonomica_acuerdo
+    ambito: castilla_y_leon
+    ano: 2008
+    fuente: BOCYL
+    identificador: "BOCYL-D-23012008-8"
+    url_pdf: "https://bocyl.jcyl.es/boletines/2008/01/23/pdf/BOCYL-D-23012008-8.pdf"
+    url_html: "https://bocyl.jcyl.es/boletin.do?fechaBoletin=23/01/2008"
+    verified: true
+    notes: "BOCYL núm. 15, 23/01/2008. Sufijo -8 confirmado vía Perplexity 2026-05-25. ⚠️ BOCYL-D-23012008-8 es solo el decreto de aprobación, no el texto técnico completo. Para evitar falsear cobertura, MPCYL se difiere a v0.2.0 hasta localizar fuente oficial completa del plan con anexos."
+
+  - norma_id: LEY_11_2022
+    titulo: "Ley 11/2022, de 28 de junio, General de Telecomunicaciones"
+    jerarquia: estatal_ordinaria
+    ambito: estado
+    ano: 2022
+    fuente: BOE
+    identificador: BOE-A-2022-10757
+    url_pdf: "https://www.boe.es/buscar/pdf/2022/BOE-A-2022-10757-consolidado.pdf"
+    url_html: "https://www.boe.es/buscar/act.php?id=BOE-A-2022-10757"
+    verified: true
+    notes: "Relevante por obligaciones del 112 (art. 76)."
+
+  - norma_id: REGISTRO_112_CYL
+    titulo: "Registro de emergencias del 112 — Castilla y León (datosabiertos.jcyl.es)"
+    jerarquia: dataset
+    ambito: castilla_y_leon
+    ano: 2022
+    fuente: datosabiertos.jcyl.es
+    identificador: "emergencias-ultimo-ano-1285074931225"
+    url_pdf: null
+    url_html: "https://datosabiertos.jcyl.es/web/jcyl/set/es/sector-publico/emergencias-ultimo-ano/1285074931225"
+    url_csv_historico: "https://datosabiertos.jcyl.es/web/jcyl/risp/es/sector-publico/emergencias-ultimo-ano/1285074931225-2.csv"
+    url_json_historico: "https://datosabiertos.jcyl.es/web/jcyl/risp/es/sector-publico/emergencias-ultimo-ano/1285074931225-2.json"
+    url_csv_actualidad: "https://datosabiertos.jcyl.es/web/jcyl/risp/es/sector-publico/emergencias-ultimo-ano/1285074931225-1.csv"
+    url_json_actualidad: "https://datosabiertos.jcyl.es/web/jcyl/risp/es/sector-publico/emergencias-ultimo-ano/1285074931225-1.json"
+    licencia: "CC BY 4.0"
+    verified: true
+    notes: "Publicado 09/07/2021, actualización cada 4 horas. No hay endpoint CKAN/DKAN; sólo enlaces estáticos. Tramo 2008-2022 = sufijo -2; 2023-actualidad = sufijo -1. URLs confirmadas vía Perplexity 2026-05-25."
+
+
+  - norma_id: RGPD
+    titulo: "Reglamento (UE) 2016/679, General de Protección de Datos"
+    jerarquia: ue
+    ambito: ue
+    ano: 2016
+    fuente: DOUE
+    identificador: CELEX:32016R0679
+    url_pdf: "https://eur-lex.europa.eu/legal-content/ES/TXT/PDF/?uri=CELEX:32016R0679"
+    url_html: "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32016R0679"
+    verified: true
+    notes: "Texto consolidado en EUR-Lex."
+
+  - norma_id: LOPDGDD
+    titulo: "Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales"
+    jerarquia: estatal_organica
+    ambito: estado
+    ano: 2018
+    fuente: BOE
+    identificador: BOE-A-2018-16673
+    url_pdf: "https://www.boe.es/buscar/pdf/2018/BOE-A-2018-16673-consolidado.pdf"
+    url_html: "https://www.boe.es/buscar/act.php?id=BOE-A-2018-16673"
+    verified: true
+    notes: ""
+
+  - norma_id: REG_UE_2024_1689
+    titulo: "Reglamento (UE) 2024/1689 del Parlamento Europeo y del Consejo, por el que se establecen normas armonizadas en materia de inteligencia artificial (Reglamento de IA)"
+    jerarquia: ue
+    ambito: ue
+    ano: 2024
+    fuente: DOUE
+    identificador: CELEX:32024R1689
+    url_pdf: "https://eur-lex.europa.eu/legal-content/ES/TXT/PDF/?uri=CELEX:32024R1689"
+    url_html: "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32024R1689"
+    verified: true
+    notes: "Indexar especialmente el Anexo III (sistemas de alto riesgo) — ADR-0005."
+
+  # --- Diferidas a v0.2.0 ---
+
+  - norma_id: RD_840_2015_SEVESO
+    titulo: "Real Decreto 840/2015, por el que se aprueban medidas de control de los riesgos inherentes a los accidentes graves en los que intervengan sustancias peligrosas (Seveso III)"
+    jerarquia: estatal_reglamentaria
+    ambito: estado
+    ano: 2015
+    fuente: BOE
+    identificador: BOE-A-2015-10905
+    url_pdf: "https://www.boe.es/buscar/pdf/2015/BOE-A-2015-10905-consolidado.pdf"
+    url_html: "https://www.boe.es/buscar/act.php?id=BOE-A-2015-10905"
+    verified: true
+    notes: "RESERVADA v0.2.0 — no se indexa en el RAG v0.1.0."

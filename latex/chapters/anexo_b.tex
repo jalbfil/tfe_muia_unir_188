@@ -1,120 +1,101 @@
-\chapter{Matriz detallada de variables de priorización}
+\chapter{Variables V01--V15 de priorizacion}
 \label{cap:anexob}
 
 \section*{B.1. Finalidad del anexo}
 
-% Este anexo constituye la especificación maestra de las variables que utiliza el motor de priorización del sistema. Su finalidad es triple: documentar con precisión cada variable para garantizar la trazabilidad metodológica del motor, proporcionar al tribunal una referencia completa que permita verificar la coherencia entre el diseño analítico (Capítulo~6), el diseño de datos (Capítulo~7) y la implementación del prototipo (Capítulo~8), y servir como guía de implementación para la codificación de cada variable en el sistema.
+Este anexo especifica las variables V01--V15 utilizadas como marco comun entre datos,
+weak labels, Capa 2, explicacion y validacion humana. La matriz no debe interpretarse
+como un formulario operativo oficial, sino como una representacion academica de factores
+relevantes para priorizar incidentes 112 en Castilla y Leon.
 
-% El contenido de este anexo despliega con mayor nivel de detalle técnico lo ya establecido en la Tabla~6.2 del Capítulo~6. No introduce variables nuevas ni modifica la lógica del motor.
+La version v0.1.0 distingue entre variables implementadas de forma reproducible con el
+Registro 112 CyL y variables previstas para v0.2.0. Esta distincion es clave para evitar
+fuga de informacion y para no atribuir al modelo datos contextuales que todavia no se
+han integrado.
 
-\section*{B.2. Criterios de selección de variables}
+\section*{B.2. Matriz de variables}
 
-% La selección de las quince variables de entrada se ha guiado por cuatro criterios: respaldo normativo u oficial, impacto esperado sobre la prioridad, viabilidad de obtención en los primeros minutos y no redundancia.
+\begin{table}[ht]
+\centering
+\caption{Variables V01--V15 del prototipo}
+\label{tab:anexob-variables}
+\scriptsize
+\begin{tabularx}{\textwidth}{|p{1.0cm}|p{3.0cm}|p{2.1cm}|X|p{2.1cm}|}
+\hline
+\textbf{ID} & \textbf{Variable} & \textbf{Tipo} & \textbf{Funcion en el sistema} & \textbf{Estado v0.1.0} \\ \hline
+V01 & Riesgo vital inmediato & Binaria & Captura fallecido, inconsciente, herido grave, atrapado critico o riesgo vital textual. & Implementada por senales \\ \hline
+V02 & Victimas confirmadas o probables & Ordinal & Aproxima magnitud humana inicial cuando el texto permite inferir afectados. & Parcial por texto \\ \hline
+V03 & Tipo de dano principal & Categorica & Diferencia dano a personas, bienes, medioambiente o incidente menor. & Implementada indirecta \\ \hline
+V04 & Tipo de incidente & Categorica & Mapea el incidente a la taxonomia del Anexo~\ref{cap:anexoa}. & Implementada \\ \hline
+V05 & Poblacion vulnerable & Binaria & Identifica menores, mayores, dependientes o colectivos especialmente expuestos. & Parcial por texto \\ \hline
+V06 & Personas en riesgo estimadas & Ordinal & Representa exposicion potencial mas alla de victimas confirmadas. & Parcial \\ \hline
+V07 & Emplazamiento critico & Categorica & Hospitales, residencias, centros educativos, infraestructuras o lugares sensibles. & Parcial por texto \\ \hline
+V08 & Nivel de aviso AEMET & Ordinal & Contexto meteorologico oficial para elevar riesgo cuando sea pertinente. & Diferida v0.2.0 \\ \hline
+V09 & Fenomeno meteorologico activo & Categorica & Lluvia, nieve, viento, tormenta, temperatura u otro fenomeno coherente. & Diferida v0.2.0 \\ \hline
+V10 & Peligrosidad por inundacion & Binaria & Cruce territorial con zonas inundables SNCZI. & Diferida v0.2.0 \\ \hline
+V11 & Proximidad Seveso & Binaria & Identifica instalaciones sujetas a RD 840/2015 o riesgo tecnologico. & Diferida v0.2.0 \\ \hline
+V12 & Tendencia del incidente & Ordinal & Estable, agravamiento, mejora o desconocida; orienta escalado. & Parcial por texto \\ \hline
+V13 & Fiabilidad del informador & Ordinal & Modula confianza, no gravedad. & No disponible directa \\ \hline
+V14 & Numero de avisos simultaneos & Ordinal & Varias llamadas elevan confianza y posible impacto. & Implementada por senal \\ \hline
+V15 & Accesibilidad al punto & Ordinal & Dificultad de acceso, entorno rural, montana o rescate complejo. & Parcial por texto \\ \hline
+\end{tabularx}
+\end{table}
 
-% Se distingue de forma rigurosa entre \textbf{variables de entrada} (datos que el sistema recibe o consulta) y \textbf{variables derivadas} (resultados intermedios calculados por el motor). Esta distinción evita circularidades en la lógica del sistema.
+\section*{B.3. Variables implementadas en Capa 2 v0.1.0}
 
-\section*{B.3. Matriz detallada de variables de entrada}
+El modelo RuleFit-lite seleccionado no consume directamente todas las variables V01--V15
+como campos completos. Consume un conjunto compacto de senales predecisionales derivadas
+del texto y de la categoria preliminar:
 
-% A continuación se presentan las fichas de las quince variables de entrada, organizadas por grupo funcional.
+\begin{itemize}
+    \item \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave},
+    \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion};
+    \item \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio},
+    \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate},
+    \texttt{signal\_meteo\_inundacion};
+    \item \texttt{riesgo\_vital\_textual};
+    \item variables \texttt{cat\_*} derivadas de la taxonomia.
+\end{itemize}
 
-\subsection*{B.3.1. Grupo: Gravedad inmediata (V01--V03)}
+Esta decision mantiene reproducibilidad y evita introducir variables contextuales
+incompletas. Las variables V08--V11 se conservan en el dise\~no porque son relevantes
+para una version futura, pero no se contabilizan como evidencia ya disponible en la
+evaluacion v0.1.0.
 
-% \begin{description}
-%     \item[\textbf{V01. Riesgo vital inmediato.}] \textit{Tipo:} binaria. \textit{Valores:} Sí / No. \textit{Fuente:} comunicación inicial. \textit{Papel:} regla dura (RD1: V01=Sí → P1 fija). \textit{Justificación:} principio de protección de la vida (Ley~17/2015 art.~1; Ley~4/2024 art.~3). Variable con mayor impacto en el motor. Su activación impide cualquier rebaja de prioridad.
-    
-%     \item[\textbf{V02. Víctimas confirmadas o probables.}] \textit{Tipo:} ordinal. \textit{Valores:} 0 / 1--2 / 3--10 / >10. \textit{Fuente:} comunicación inicial. \textit{Papel:} regla dura + scoring (RD2: $\geq$3 → P2~mín.; RD5: >10 → P1~mín.). \textit{Justificación:} lógica AMV y criterios de escalado del PLATEAR. La codificación en rangos permite operar con información imprecisa.
-    
-%     \item[\textbf{V03. Tipo de daño principal.}] \textit{Tipo:} categórica. \textit{Valores:} Personas / Bienes / Medioambiente / Sin~daño. \textit{Fuente:} comunicación inicial. \textit{Papel:} scoring (jerarquía Personas > Bienes > Medioambiente > Sin daño). \textit{Justificación:} Ley~17/2015 art.~1; Ley~4/2024 art.~3.
-% \end{description}
+\section*{B.4. Columnas prohibidas por leakage}
 
-\subsection*{B.3.2. Grupo: Escalado y evolución (V04, V12)}
+El sistema excluye cualquier columna que refleje decisiones tomadas despues de la
+primera valoracion o informacion administrativa posterior. En particular, no se usan:
 
-% \begin{description}
-%     \item[\textbf{V04. Tipo de incidente.}] \textit{Tipo:} categórica. \textit{Valores:} taxonomía operativa (Anexo~A). \textit{Papel:} activación de contexto + scoring (determina variables contextuales y reglas aplicables). \textit{Justificación:} catálogo de riesgos RD~524/2023; planes especiales. Variable estructural: no puntúa gravedad directamente sino que condiciona el contexto.
-    
-%     \item[\textbf{V12. Tendencia del incidente.}] \textit{Tipo:} ordinal. \textit{Valores:} Mejoría / Estable / Agravamiento / Desconocida. \textit{Fuente:} comunicación / actualizaciones. \textit{Papel:} scoring (agravamiento incrementa; desconocida aplica precaución moderada). \textit{Justificación:} PLATEAR: evolución condiciona criterios de escalado.
-% \end{description}
+\begin{itemize}
+    \item \texttt{MediosMov} y derivados de medios movilizados;
+    \item \texttt{PacientesAten} y derivados de pacientes atendidos;
+    \item \texttt{IncidenteCerrado};
+    \item \texttt{ultimaActualizacion};
+    \item enlaces, identificadores tecnicos no predictivos o columnas sin semantica
+    operativa.
+\end{itemize}
 
-\subsection*{B.3.3. Grupo: Vulnerabilidad y exposición (V05--V07)}
+Estas columnas pueden describir la gestion final del incidente, pero no estaban
+disponibles como entrada valida para una primera decision. Usarlas elevaria
+artificialmente las metricas y debilitaria la validez academica del TFM.
 
-% \begin{description}
-%     \item[\textbf{V05. Población vulnerable.}] \textit{Tipo:} binaria. \textit{Valores:} Sí / No. \textit{Fuente:} comunicación / contexto (INE, cartografía). \textit{Papel:} scoring; activa RD6 combinado con búsqueda. \textit{Justificación:} Ley~4/2024 art.~6.2 (atención especial a colectivos vulnerables).
-    
-%     \item[\textbf{V06. Personas en riesgo estimadas.}] \textit{Tipo:} ordinal. \textit{Valores:} 0 / 1--10 / 11--100 / >100. \textit{Fuente:} comunicación / INE, ICEARAGON. \textit{Papel:} scoring (perspectiva prospectiva que complementa V02). \textit{Justificación:} PLATEAR: afectación potencial como indicador de magnitud.
-    
-%     \item[\textbf{V07. Emplazamiento crítico.}] \textit{Tipo:} categórica. \textit{Valores:} Sanitario / Educativo / Residencia / Infraestructura / Otro / No. \textit{Fuente:} comunicación / cartografía. \textit{Papel:} scoring (incremento diferenciado por tipo). \textit{Justificación:} PLATEAR cap.~2; Ley~4/2024 (protección de servicios esenciales).
-% \end{description}
+\section*{B.5. Ausencia de datos}
 
-\subsection*{B.3.4. Grupo: Amenaza contextual (V08--V11)}
+La ausencia de una variable no debe rellenarse con informacion posterior. Cuando el dato
+no esta disponible, el sistema debe:
 
-% \begin{description}
-%     \item[\textbf{V08. Nivel de aviso AEMET.}] \textit{Tipo:} ordinal. \textit{Valores:} Verde / Amarillo / Naranja / Rojo. \textit{Fuente:} AEMET OpenData (API). \textit{Papel:} regla dura + scoring (RD3: rojo + coherencia → P2~mín.; RD8: naranja/rojo + IUF → P2~mín.). \textit{Justificación:} PROCIFEMAR; Directriz Básica de Inundaciones. Solo activa como regla dura con coherencia de tipo.
-    
-%     \item[\textbf{V09. Fenómeno meteorológico activo.}] \textit{Tipo:} categórica. \textit{Valores:} Viento / Lluvia / Nieve / Temperatura / Tormenta / Ninguno. \textit{Fuente:} AEMET OpenData. \textit{Papel:} scoring condicionado (solo cuando coherente con V04 y V08). \textit{Justificación:} PROCIFEMAR; PROCINAR.
-    
-%     \item[\textbf{V10. Peligrosidad por inundación.}] \textit{Tipo:} binaria. \textit{Valores:} Sí / No. \textit{Fuente:} SNCZI/MITECO. \textit{Papel:} scoring (incremento cuando V10=Sí y tipo hidrológico). \textit{Justificación:} Directriz Básica de Inundaciones; PROCINAR. Peligrosidad histórica, no estado en tiempo real.
-    
-%     \item[\textbf{V11. Presencia de instalación Seveso.}] \textit{Tipo:} binaria. \textit{Valores:} Sí / No. \textit{Fuente:} Registro Seveso (datos.gob.es). \textit{Papel:} regla dura + scoring (RD4: Seveso + afectación directa → P1~mín.). \textit{Justificación:} RD~840/2015 (Seveso~III). RD4 exige afectación directa, no solo proximidad.
-% \end{description}
+\begin{itemize}
+    \item emitir la recomendacion con las senales presentes;
+    \item reducir o matizar la confianza cuando falten variables relevantes;
+    \item mostrar la ausencia en la explicacion si afecta a la interpretacion;
+    \item registrar el caso para revision si la ausencia coincide con un error critico.
+\end{itemize}
 
-\subsection*{B.3.5. Grupo: Calidad de la información (V13--V14)}
+\section*{B.6. Limitaciones}
 
-% \begin{description}
-%     \item[\textbf{V13. Fiabilidad del informador.}] \textit{Tipo:} ordinal. \textit{Valores:} Alta / Media / Baja. \textit{Papel:} confianza (no puntúa scoring; modula el nivel de confianza de la recomendación). Un incidente grave reportado por fuente anónima mantiene su prioridad con confianza reducida.
-    
-%     \item[\textbf{V14. Número de avisos simultáneos.}] \textit{Tipo:} numérica agrupada. \textit{Valores:} 1 / 2--3 / >3. \textit{Papel:} confianza (múltiples avisos independientes elevan la confianza). No participa en el scoring.
-% \end{description}
-
-\subsection*{B.3.6. Grupo: Contexto operativo (V15)}
-
-% \begin{description}
-%     \item[\textbf{V15. Accesibilidad al punto.}] \textit{Tipo:} ordinal. \textit{Valores:} Fácil / Moderada / Difícil / Muy~difícil. \textit{Fuente:} comunicación / cartografía (ICEARAGON). \textit{Papel:} scoring (dificultad de acceso incrementa urgencia de la decisión). \textit{Justificación:} PLATEAR: accesibilidad como factor de planificación. No modifica gravedad intrínseca pero sí urgencia práctica.
-% \end{description}
-
-\section*{B.4. Matriz detallada de variables derivadas}
-
-% Las cuatro variables derivadas son resultados intermedios calculados a partir de variables de entrada. Tratarlas como entradas introduciría circularidad.
-
-% \begin{description}
-%     \item[\textbf{D01. Necesidad de coordinación multiagencia.}] \textit{Tipo derivada:} binaria. \textit{Calculada a partir de:} V02, V04, V06, V08, V11. \textit{Papel:} salida intermedia; alimenta D02 y D03 y contribuye a la explicación. \textit{Justificación:} PLATEAR; PLEGEM.
-
-%     \item[\textbf{D02. Necesidad estimada de PMA.}] \textit{Tipo derivada:} binaria. \textit{Calculada a partir de:} D01, V02, V06, V12. \textit{Papel:} orientación no vinculante para el operador; no altera la prioridad P1--P4. \textit{Justificación:} PLATEAR; Ley~4/2024.
-
-%     \item[\textbf{D03. Situación operativa sugerida.}] \textit{Tipo derivada:} ordinal (0--3). \textit{Calculada a partir de:} prioridad resultante, D01, V02, V06. \textit{Papel:} salida orientativa; presentada siempre con advertencia de que la declaración formal corresponde a la autoridad competente. \textit{Justificación:} RD~524/2023 (define situaciones operativas 0--3); PLEGEM.
-
-%     \item[\textbf{D04. Plan activable recomendado.}] \textit{Tipo derivada:} categórica. \textit{Valores:} PLATEAR / Plan especial / Ninguno. \textit{Calculada a partir de:} V04, V08, V10, V11 y taxonomía. \textit{Papel:} sugerencia orientativa; la activación formal corresponde a la autoridad competente.
-% \end{description}
-
-% \noindent\textit{Fuente: elaboración propia. Coherente con el apartado~6.4 del Capítulo~6.}
-
-\section*{B.5. Reglas de tratamiento de ausencia de datos}
-
-% El motor produce recomendaciones con información incompleta, conforme al requisito RNF5. Se rigen por tres principios: precaución razonable (no asumir ni el peor ni el mejor escenario), transparencia (ausencias registradas en la explicación y reductoras de confianza) y no bloqueo (la ausencia nunca impide emitir recomendación).
-
-% \begin{table}[ht]
-% \centering
-% \caption{Reglas de tratamiento de ausencia de datos por variable}
-% \label{tab:b5}
-% \small
-% \begin{tabularx}{\textwidth}{|l|l|X|X|X|}
-% \hline
-% \textbf{Variable} & \textbf{Criticidad} & \textbf{Valor por defecto} & \textbf{Justificación} & \textbf{Efecto confianza} \\ \hline
-% V01 & Crítica & No & Riesgo vital requiere confirmación activa & Reducida \\ \hline
-% V02 & Alta & 0 & Sin mención, se asume ausencia & Reducida \\ \hline
-% V03 & Media & Sin daño & Valor conservador neutro & Reducida \\ \hline
-% V04 & Crítica & No clasificado & Sin tipología: no se activan reglas de tipo & Significativamente reducida \\ \hline
-% V05 & Media & No & Se asume ausencia salvo indicación & Reducida \\ \hline
-% V06 & Media & 0 & Sin estimación: sin exposición declarada & Reducida \\ \hline
-% V07 & Media & No & Sin localización: no se verifica emplazamiento & Reducida \\ \hline
-% V08 & Alta (meteo) & Verde & Sin AEMET: condición favorable asumida & Reducida (incidentes meteo) \\ \hline
-% V09 & Media & Ninguno & Sin fenómeno disponible & Reducida si V08 ausente \\ \hline
-% V10 & Media & No & Sin cruce geoespacial & Reducida (hidrológicos) \\ \hline
-% V11 & Alta (industrial) & No & Sin cruce: ausencia asumida & Reducida (químicos) \\ \hline
-% V12 & Media & Desconocida & Precaución moderada & Reducida \\ \hline
-% V13 & Baja & Baja & Sin id. informador: mínima fiabilidad & Reducida \\ \hline
-% V14 & Baja & 1 & Sin info adicional: aviso único & Sin efecto adicional \\ \hline
-% V15 & Media & Moderada & Valor intermedio conservador & Reducida \\ \hline
-% \end{tabularx}
-% \end{table}
-
-% \noindent\textit{Fuente: elaboración propia. Coherente con el requisito RNF5 (Capítulo~5) y la capa de confianza del baseline (Anexo~E).}
+La matriz V01--V15 es mas amplia que la implementacion v0.1.0. Esta diferencia es
+deliberada: permite que la memoria documente el dise\~no completo sin fingir que todas
+las fuentes externas ya estan integradas. La evaluacion final reportada en el
+Capitulo~\ref{cap:9} se interpreta, por tanto, como rendimiento del nucleo reproducible
+actual, no como rendimiento de una version enriquecida con AEMET, SNCZI y Seveso.

@@ -1,0 +1,90 @@
+\chapter{Declaracion de uso de herramientas de inteligencia artificial generativa}
+\label{cap:anexoh}
+
+\section*{H.1. Contexto y alcance}
+
+De conformidad con las instrucciones para la elaboracion del Trabajo Fin de Estudios
+de la Universidad Internacional de La Rioja (UNIR), la presente memoria declara
+explicitamente el uso de herramientas de inteligencia artificial generativa durante
+su elaboracion. El uso descrito ha sido informado al director del TFE, Dr. Andres
+Soto Villaverde, quien ha valorado su adecuacion al marco etico y academico de la
+universidad.
+
+El uso de estas herramientas ha sido auxiliar y supervisado: las decisiones tecnicas,
+metodologicas y academicas son responsabilidad del equipo de trabajo. Los modelos de
+IA no tomaron decisiones autonomas sobre el contenido del sistema ni sobre los
+resultados reportados. Los artefactos del prototipo son reproducibles de forma
+independiente a partir del codigo fuente versionado y los scripts del repositorio.
+
+\section*{H.2. Herramientas utilizadas}
+
+\subsection*{H.2.1. GitHub Copilot (Microsoft~/ GitHub, 2023--2026)}
+
+GitHub Copilot es un asistente de programacion basado en modelos de lenguaje
+de gran tamano, integrado en Visual Studio Code mediante una extension oficial
+\cite{GitHubCopilot2023}. Se ha utilizado para:
+
+\begin{itemize}
+    \item Sugerencias de completado de codigo en Python (contratos Pydantic,
+    scripts de entrenamiento, tests).
+    \item Revision y refactorizacion de funciones en \texttt{src/} bajo
+    supervision del autor responsable de cada modulo.
+    \item Asistencia en la redaccion de comentarios y docstrings.
+    \item Modo agente (Copilot Chat) para consultas tecnicas, diagnostico de
+    errores y revision de coherencia documental.
+\end{itemize}
+
+\subsection*{H.2.2. GitHub Spec Kit (GitHub, 2024--2026)}
+
+El GitHub Spec Kit es un marco de desarrollo controlado por especificaciones que
+permite estructurar proyectos de software mediante especificaciones formales,
+contratos y trazabilidad de tareas \cite{GitHubSpecKit2024}. Se ha utilizado para:
+
+\begin{itemize}
+    \item Definicion de la especificacion del sistema en \texttt{specs/001-priorizacion-112-cyl/}.
+    \item Gestion de tareas trazables (archivo \texttt{tasks.md}) vinculadas a la
+    constitucion del proyecto.
+    \item Coordinacion del desarrollo iterativo entre los tres integrantes del equipo.
+\end{itemize}
+
+\subsection*{H.2.3. Docker Desktop MCP Toolkit (Docker Inc., 2024--2026)}
+
+Docker Desktop incluye un servidor MCP (Model Context Protocol) que expone
+herramientas para asistentes de IA. Se han utilizado dos herramientas de este
+kit durante la investigacion bibliografica y de estado del arte:
+
+\begin{itemize}
+    \item \textbf{paper-search}: busqueda semantica de articulos academicos en
+    bases de datos (arXiv, Crossref, Semantic Scholar), utilizada para verificar
+    autores, fechas y DOI de las referencias bibliograficas del Capitulo~\ref{cap:2}.
+    \item \textbf{duckduckgo}: busqueda web para localizar fuentes normativas
+    oficiales (BOE, BOCYL) y documentacion tecnica de herramientas empleadas en
+    el prototipo.
+\end{itemize}
+
+\section*{H.3. Limite del uso declarado}
+
+Las siguientes actividades se realizaron sin asistencia de IA generativa:
+
+\begin{itemize}
+    \item El dise\~no de la arquitectura de tres capas y las decisiones de alcance.
+    \item El entrenamiento, validacion y evaluacion de los modelos (scripts
+    reproducibles en \texttt{scripts/}).
+    \item La auditoria del dataset 112 CyL y la construccion de weak labels.
+    \item Los resultados numericos reportados en el Capitulo~\ref{cap:9}.
+    \item Las decisiones de rechazo de alternativas documentadas en el estado
+    del arte y en los ADR del proyecto.
+\end{itemize}
+
+\section*{H.4. Trazabilidad}
+
+El historial de uso de herramientas de asistencia queda trazado implicitamente
+en el registro de commits del repositorio Git del proyecto:
+
+\begin{center}
+\url{https://github.com/bripedev-source/tfe_muia_unir_188}
+\end{center}
+
+Cada commit referencia la tarea de la especificacion que lo motiva y el autor
+responsable. La presencia de IA como auxiliar no altera la autoria del trabajo:
+el codigo, los modelos, los datos de evaluacion y la memoria son obra del equipo.

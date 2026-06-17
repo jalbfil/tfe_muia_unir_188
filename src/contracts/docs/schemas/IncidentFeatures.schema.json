@@ -1,0 +1,274 @@
+{
+  "$contractsVersion": "0.1.0",
+  "$defs": {
+    "Accesibilidad": {
+      "enum": [
+        "ALTA",
+        "MEDIA",
+        "BAJA",
+        "DESCONOCIDA"
+      ],
+      "title": "Accesibilidad",
+      "type": "string"
+    },
+    "AvisoAEMET": {
+      "enum": [
+        "VERDE",
+        "AMARILLO",
+        "NARANJA",
+        "ROJO",
+        "NO_DISPONIBLE"
+      ],
+      "title": "AvisoAEMET",
+      "type": "string"
+    },
+    "BoolWithConfidence": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "value": {
+          "title": "Value",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "value",
+        "confidence"
+      ],
+      "title": "BoolWithConfidence",
+      "type": "object"
+    },
+    "CategoriaPreliminar": {
+      "enum": [
+        "ACCIDENTE_TRAFICO",
+        "INCENDIO_FORESTAL",
+        "INCENDIO_URBANO",
+        "INCIDENCIA_VIA",
+        "METEOROLOGIA",
+        "QUIMICO_NRBQ",
+        "RESCATE",
+        "SANITARIO",
+        "SEGURIDAD_CIUDADANA",
+        "SUMINISTROS",
+        "OTROS",
+        "DESCONOCIDA"
+      ],
+      "title": "CategoriaPreliminar",
+      "type": "string"
+    },
+    "GravedadLesiones": {
+      "enum": [
+        "NINGUNA",
+        "LEVE",
+        "MODERADA",
+        "GRAVE",
+        "CRITICA",
+        "DESCONOCIDA"
+      ],
+      "title": "GravedadLesiones",
+      "type": "string"
+    },
+    "IntWithConfidence": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "value": {
+          "minimum": -1,
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "value",
+        "confidence"
+      ],
+      "title": "IntWithConfidence",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "accesibilidad_recursos": {
+      "$ref": "#/$defs/Accesibilidad"
+    },
+    "aviso_aemet_nivel": {
+      "$ref": "#/$defs/AvisoAEMET",
+      "default": "NO_DISPONIBLE"
+    },
+    "avisos_simultaneos_zona": {
+      "minimum": 0,
+      "title": "Avisos Simultaneos Zona",
+      "type": "integer"
+    },
+    "condicion_meteorologica_adversa": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BoolWithConfidence"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "emplazamiento_critico": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "en_zona_inundable_snczi": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "En Zona Inundable Snczi"
+    },
+    "extractor_warnings": {
+      "items": {
+        "maxLength": 200,
+        "type": "string"
+      },
+      "title": "Extractor Warnings",
+      "type": "array"
+    },
+    "gravedad_lesiones": {
+      "$ref": "#/$defs/GravedadLesiones"
+    },
+    "gravedad_lesiones_confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Gravedad Lesiones Confidence",
+      "type": "number"
+    },
+    "incident_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "inference_latency_ms": {
+      "minimum": 0.0,
+      "title": "Inference Latency Ms",
+      "type": "number"
+    },
+    "inference_timestamp": {
+      "format": "date-time",
+      "title": "Inference Timestamp",
+      "type": "string"
+    },
+    "model_version_capa1": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Model Version Capa1",
+      "type": "string"
+    },
+    "multirriesgo": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "numero_llamadas": {
+      "minimum": 1,
+      "title": "Numero Llamadas",
+      "type": "integer"
+    },
+    "numero_victimas_estimado": {
+      "$ref": "#/$defs/IntWithConfidence"
+    },
+    "poblacion_vulnerable": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "proximo_instalacion_seveso_km": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Proximo Instalacion Seveso Km"
+    },
+    "riesgo_propagacion": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "riesgo_vital": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "riesgo_vital_textual": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_accidente_trafico": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_atrapado": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_fallecido": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_herido_grave": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_incendio": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_intoxicacion": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_meteo_inundacion": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_rescate": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "signal_varias_llamadas": {
+      "$ref": "#/$defs/BoolWithConfidence"
+    },
+    "tipo_incidente_normalizado": {
+      "$ref": "#/$defs/CategoriaPreliminar"
+    }
+  },
+  "required": [
+    "incident_id",
+    "riesgo_vital",
+    "numero_victimas_estimado",
+    "gravedad_lesiones",
+    "gravedad_lesiones_confidence",
+    "tipo_incidente_normalizado",
+    "poblacion_vulnerable",
+    "numero_llamadas",
+    "emplazamiento_critico",
+    "riesgo_propagacion",
+    "multirriesgo",
+    "avisos_simultaneos_zona",
+    "accesibilidad_recursos",
+    "signal_fallecido",
+    "signal_herido_grave",
+    "signal_atrapado",
+    "signal_intoxicacion",
+    "signal_varias_llamadas",
+    "signal_incendio",
+    "signal_accidente_trafico",
+    "signal_rescate",
+    "signal_meteo_inundacion",
+    "riesgo_vital_textual",
+    "model_version_capa1",
+    "inference_timestamp",
+    "inference_latency_ms"
+  ],
+  "title": "IncidentFeatures",
+  "type": "object"
+}

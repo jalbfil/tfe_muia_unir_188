@@ -1,0 +1,12 @@
+{
+  "model_name": "capa1_deterministic_signal_extractor",
+  "model_version_capa1": "0.1.0",
+  "type": "deterministic_regex_feature_extractor",
+  "source_files": [
+    "src/capa1_nlp/extraction/signal_extractor.py",
+    "src/capa1_nlp/inference/feature_extractor.py"
+  ],
+  "llm_dependency": "none",
+  "transformer_checkpoint": null,
+  "created_at": "2026-06-17T15:28:15.185531+00:00"
+}

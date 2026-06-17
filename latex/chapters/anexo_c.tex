@@ -1,178 +1,114 @@
-\chapter{Guía de etiquetado completa}
+\chapter{Guia de etiquetado P1--P4}
 \label{cap:anexoc}
 
 \section*{C.1. Finalidad del anexo}
 
-% Este anexo desarrolla la guía de etiquetado del sistema de priorización, cuya versión resumida se presenta en el apartado~6.6 del Capítulo~6. La guía define cómo asignar una prioridad de referencia a cada caso del dataset piloto y cumple cuatro funciones complementarias: reducir la subjetividad, asegurar la consistencia interna, justificar la construcción del dataset y proporcionar el estándar de evaluación (\textit{ground truth}) para el Capítulo~9.
+Este anexo documenta la guia usada para construir la etiqueta academica P1--P4 mediante
+supervision debil. La guia no pretende reemplazar una prioridad oficial del 112, porque
+el Registro 112 Castilla y Leon no contiene dicha etiqueta. Su funcion es definir un
+criterio reproducible para entrenar, comparar y evaluar la Capa 2 dentro del alcance
+academico del TFM.
 
-\section*{C.2. Principios generales de etiquetado}
+La version operativa se corresponde con
+\texttt{resources/labeling\_guide\_p1p4.md} y con la decision metodologica de tratar
+P1--P4 como escala academica, no juridica ni institucional.
 
-% \paragraph{C.2.1. La prioridad es urgencia operativa relativa.}
-% La prioridad mide la necesidad de atención temprana, no la importancia abstracta del suceso ni la gravedad final horas después.
+\section*{C.2. Principios generales}
 
-% \paragraph{C.2.2. El etiquetado se realiza en el momento de la primera decisión.}
-% La prioridad debe reflejar la urgencia con la información disponible en el instante inicial, no con el conocimiento posterior de la evolución.
+\begin{enumerate}
+    \item \textbf{Momento de primera decision.} La etiqueta debe reflejar la urgencia
+    con la informacion disponible al inicio, no con el desenlace final del incidente.
+    \item \textbf{Prioridad como urgencia relativa.} P1--P4 ordena necesidad de
+    atencion temprana; no equivale a declaracion formal de situacion operativa.
+    \item \textbf{Precaucion razonable.} Ante informacion incompleta, se evita tanto
+    minimizar se\~nales criticas como asumir siempre el peor caso.
+    \item \textbf{Trazabilidad.} Toda etiqueta debe poder vincularse a texto,
+    categoria, senales, variables o reglas.
+    \item \textbf{Independencia anti-\textit{leakage}.} No se usan medios movilizados,
+    pacientes atendidos, cierre ni informacion posterior para etiquetar la primera
+    decision.
+\end{enumerate}
 
-% \paragraph{C.2.3. Precaución razonable, no dramatización.}
-% Cuando la información sea incompleta, asumir un escenario moderadamente desfavorable, sin sistematizar el peor caso posible.
+\section*{C.3. Definicion de niveles}
 
-% \paragraph{C.2.4. Toda asignación debe ser justificable.}
-% El etiquetador debe poder vincular su decisión a variables concretas, reglas duras o criterios operativos trazables.
+\begin{table}[ht]
+\centering
+\caption{Definicion academica de prioridades P1--P4}
+\label{tab:anexoc-prioridades}
+\small
+\begin{tabularx}{\textwidth}{|p{1.0cm}|p{2.5cm}|X|X|}
+\hline
+\textbf{Nivel} & \textbf{Nombre} & \textbf{Criterio operativo} & \textbf{Ejemplos de senales} \\ \hline
+P1 & Critica & Riesgo vital confirmado o altamente probable, fallecido, atrapamiento grave, multiples victimas o evolucion potencialmente critica. & fallecido, inconsciente, herido grave, atrapado critico, intoxicacion grave \\ \hline
+P2 & Alta & Gravedad relevante o potencial de escalado sin riesgo vital inmediato confirmado. Requiere atencion rapida y seguimiento. & herido, atrapado no critico, incendio en vivienda, rescate, varias llamadas \\ \hline
+P3 & Media & Incidente que requiere gestion activa, pero sin se\~nales claras de riesgo vital ni escalado alto. & accidente leve, incendio contenido, incidencia viaria, meteo limitada \\ \hline
+P4 & Baja & Consulta, incidencia menor, asistencia diferible o caso sin urgencia operativa aparente. & consulta, informacion, incidencia tecnica menor, sin senales criticas \\ \hline
+\end{tabularx}
+\end{table}
 
-% \paragraph{C.2.5. Independencia entre casos.}
-% Cada caso se etiqueta de forma independiente. La distribución del dataset se logra mediante el diseño de los casos, no ajustando el etiquetado.
+\section*{C.4. Reglas de etiquetado}
 
-\section*{C.3. Reglas maestras}
+Las reglas siguientes orientan la asignacion academica. No se presentan como reglas
+oficiales del 112, sino como criterios reproducibles para weak supervision:
 
-% \subsection*{C.3.1. Definición operativa de cada nivel de prioridad}
+\begin{table}[ht]
+\centering
+\caption{Reglas principales para etiquetado debil}
+\label{tab:anexoc-reglas}
+\scriptsize
+\begin{tabularx}{\textwidth}{|p{2.8cm}|p{1.2cm}|X|}
+\hline
+\textbf{Regla} & \textbf{Nivel minimo} & \textbf{Criterio} \\ \hline
+R-P1-FALLECIDO & P1 & El texto menciona fallecido, muerto, cadaver o equivalente. \\ \hline
+R-P1-RIESGO-VITAL & P1 & Riesgo vital textual, inconsciencia, parada, herido muy grave o situacion critica. \\ \hline
+R-P1-ATRAPADO-CRITICO & P1 & Atrapamiento con indicios de gravedad, rescate urgente o imposibilidad de salida. \\ \hline
+R-P2-HERIDO-GRAVE & P2 & Herido grave sin confirmacion suficiente para P1. \\ \hline
+R-P2-INTOXICACION & P2 & Intoxicacion, humo o exposicion a sustancias con posible afectacion personal. \\ \hline
+R-P2-INCENDIO-HABITADO & P2 & Incendio en vivienda, edificio, local habitado o entorno con personas expuestas. \\ \hline
+R-P2-RESCATE & P2 & Rescate o salvamento sin se\~nal P1 confirmada. \\ \hline
+R-P3-TRAFICO & P3 & Accidente de trafico sin se\~nales criticas ni heridos graves. \\ \hline
+R-P3-INCENDIO-SIN-VICTIMAS & P3 & Incendio sin victimas ni atrapados descritos. \\ \hline
+R-P4-SIN-URGENCIA & P4 & Consulta, informacion o incidencia menor sin senales operativas de gravedad. \\ \hline
+\end{tabularx}
+\end{table}
 
-% \begin{table}[ht]
-% \centering
-% \caption{Definición operativa de los niveles de prioridad para el etiquetado}
-% \label{tab:c1}
-% \small
-% \begin{tabularx}{\textwidth}{|l|l|X|X|}
-% \hline
-% \textbf{Nivel} & \textbf{Denominación} & \textbf{Significado} & \textbf{Criterio orientativo} \\ \hline
-% P1 & Prioridad crítica & Riesgo vital confirmado o altamente probable, o escalada extremadamente rápida previsible. & Riesgo vital, atrapados, AMV, inundación con aislados, fuga tóxica en zona habitada. \\ \hline
-% P2 & Prioridad alta & Gravedad significativa o potencial de escalado relevante, sin riesgo vital inmediato confirmado. & Incendio IUF + AEMET naranja/rojo, víctimas no críticas, proximidad Seveso, búsqueda menor. \\ \hline
-% P3 & Prioridad media & Gestión activa sin urgencia vital ni escalado elevado a corto plazo. Controlable con medios ordinarios. & Accidente sin víctimas graves, incendio contenido, incidencia meteorológica limitada. \\ \hline
-% P4 & Prioridad baja & Incidente menor, consulta o gestión diferida, sin urgencia operativa. & Consultas informativas, verificaciones rutinarias. \\ \hline
-% \end{tabularx}
-% \end{table}
+\section*{C.5. Resolucion de conflictos}
 
-% \noindent\textit{Fuente: elaboración propia. Coherente con la Tabla~6.1 y los apartados~6.2.1--6.2.4 del Capítulo~6.}
+Cuando varias senales sugieren prioridades diferentes, se aplica la prioridad mas alta
+compatible con la informacion inicial. La incertidumbre no debe rebajar una prioridad:
+debe reflejarse como menor confianza o como caso para revision humana. Si la evidencia
+solo permite una lectura ambigua entre dos niveles, se selecciona el nivel superior
+cuando existan senales de personas afectadas, vulnerabilidad o posible escalado.
 
-% \paragraph{C.3.2. Regla del momento de la decisión.}
-% Preguntarse: «con la información que tengo en este instante, ¿qué nivel de urgencia requeriría este incidente?». No incorporar información disponible horas después.
+Los conflictos mas relevantes son:
 
-% \paragraph{C.3.3. Regla de no retroactividad.}
-% Si un incidente etiquetado inicialmente como P3 resultó ser finalmente grave, la etiqueta correcta sigue siendo P3 si la información inicial no sugería mayor urgencia.
+\begin{itemize}
+    \item \textbf{P1/P2}: se decide por la presencia de riesgo vital, fallecido,
+    atrapamiento critico o gravedad personal extrema.
+    \item \textbf{P2/P3}: se decide por potencial de escalado, personas expuestas,
+    varias llamadas, incendio habitado o necesidad de rescate.
+    \item \textbf{P3/P4}: se decide por existencia de gestion activa frente a consulta
+    o incidencia menor.
+\end{itemize}
 
-% \paragraph{C.3.4. Regla de la explicación mínima.}
-% Cada etiqueta debe justificarse en una o dos frases. Si el etiquetador no puede formular esa justificación, debe revisar la asignación.
+\section*{C.6. Fuentes debiles y acuerdo}
 
-\section*{C.4. Reglas duras aplicables al etiquetado}
+La etiqueta final no procede de un unico criterio manual. Se construye combinando varias
+fuentes debiles: reglas textuales, categoria operativa, senales de gravedad y criterios
+de consistencia. El acuerdo entre fuentes se mide para verificar que la etiqueta no sea
+puramente arbitraria. En la ejecucion v0.1.0, Krippendorff
+\(\alpha = 0.858348\), y la ablacion sin reglas heuristicas mantiene
+\(\alpha = 0.834155\).
 
-% Si un caso cumple la condición de una regla dura, la prioridad asignada no puede ser inferior a la establecida por esa regla, salvo justificación explícita y documentada. El procedimiento es: primero verificar reglas duras; si se activa una regla fija, la prioridad está determinada; si es mínima, la prioridad puede ser igual o superior al mínimo; si no se activa ninguna, la prioridad se determina por valoración de variables.
+Estos valores no convierten la etiqueta en prioridad oficial, pero si justifican su uso
+como objetivo academico reproducible para entrenar y evaluar RuleFit-lite.
 
-% \begin{table}[ht]
-% \centering
-% \caption{Reglas duras aplicables al etiquetado}
-% \label{tab:c2}
-% \small
-% \begin{tabularx}{\textwidth}{|l|X|l|X|}
-% \hline
-% \textbf{ID} & \textbf{Condición} & \textbf{Prioridad} & \textbf{Instrucción para el etiquetador} \\ \hline
-% RD1 & V01 = Sí (riesgo vital confirmado) & P1 fija & P1 sin excepción. No importa si faltan otras variables. \\ \hline
-% RD2 & V02 $\geq$ 3 & P2 mín. & Puede elevarse a P1 si concurren otros factores. \\ \hline
-% RD3 & AEMET rojo + coherencia con tipo & P2 mín. & Verificar pertinencia del fenómeno para el incidente. \\ \hline
-% RD4 & Seveso + afectación directa confirmada & P1 mín. & No basta proximidad: debe haber evidencia directa. \\ \hline
-% RD5 & V02 > 10 & P1 mín. & Subsume a RD2. \\ \hline
-% RD6 & Búsqueda de menor o persona vulnerable & P2 mín. & Ambas condiciones (búsqueda + vulnerabilidad) deben cumplirse. \\ \hline
-% RD7 & Inundación con personas aisladas o atrapadas & P1 fija & Riesgo vital aunque el alertante no use esa expresión. \\ \hline
-% RD8 & Incendio IUF + AEMET $\geq$ naranja & P2 mín. & IUF es el factor clave, no incendio forestal puro. \\ \hline
-% \end{tabularx}
-% \end{table}
+\section*{C.7. Limitaciones}
 
-% \noindent\textit{Fuente: elaboración propia. Coherente con la Tabla~6.3 del Capítulo~6 y el Anexo~E.}
+La guia reduce subjetividad, pero no elimina la necesidad de revision humana. Los 51
+falsos negativos P1 detectados en test estratificado se incorporan a la muestra del
+Anexo~\ref{cap:anexod} precisamente porque la etiqueta debil y la recomendacion del
+modelo deben revisarse cuando el error potencial afecta a seguridad.
 
-\section*{C.5. Criterios de resolución de conflictos}
-
-% \paragraph{C.5.1. Prevalencia de la señal de mayor urgencia.}
-% Cuando diferentes variables sugieren prioridades distintas, prevalece la señal de mayor urgencia compatible con la información disponible.
-
-% \paragraph{C.5.2. Las reglas duras prevalecen sobre la valoración global.}
-% Si una regla dura fija una prioridad mínima, ningún conjunto de variables favorables puede rebajar la prioridad por debajo de ese mínimo.
-
-% \paragraph{C.5.3. La gravedad inmediata pesa más que el contexto.}
-% En conflicto entre variables de gravedad inmediata (V01, V02, V03) y variables contextuales, prevalece la gravedad inmediata.
-
-% \paragraph{C.5.4. La incertidumbre no rebaja la prioridad.}
-% La incertidumbre se refleja en el nivel de confianza, no en la prioridad. Un incidente con posibles víctimas no confirmadas se etiqueta con la prioridad que correspondería al escenario plausible.
-
-% \paragraph{C.5.5. El contexto solo eleva, no rebaja.}
-% Las variables de amenaza contextual pueden elevar la prioridad cuando son pertinentes, pero su ausencia no rebaja una prioridad ya justificada por gravedad o vulnerabilidad.
-
-% \paragraph{C.5.6. Documentación del conflicto.}
-% Cuando se resuelva un conflicto, anotar brevemente qué variables entraron en conflicto y cuál fue el criterio de resolución.
-
-\section*{C.6. Etiquetado del nivel de confianza}
-
-% \begin{table}[ht]
-% \centering
-% \caption{Niveles de confianza del etiquetado}
-% \label{tab:c3}
-% \small
-% \begin{tabularx}{\textwidth}{|l|X|X|}
-% \hline
-% \textbf{Nivel} & \textbf{Condiciones} & \textbf{Significado} \\ \hline
-% Alto & Variables críticas (V01, V02, V04) informadas. Comunicación coherente. Sin dudas significativas. & Etiqueta fiable. Desacuerdo con el motor indica problema del motor. \\ \hline
-% Medio & Alguna variable relevante ausente o ambigua. Precaución razonable aplicada. Prioridad podría variar en un nivel. & Etiqueta razonable pero no definitiva. Desacuerdo puede atribuirse a motor o dato. \\ \hline
-% Bajo & Variables críticas ausentes. Información fragmentaria o contradictoria. & Valor orientativo. No penalizar al motor por discrepancias. \\ \hline
-% \end{tabularx}
-% \end{table}
-
-% \noindent\textit{Fuente: elaboración propia. Coherente con el apartado~6.6.4 del Capítulo~6.}
-
-% \paragraph{C.6.2. Criterios para asignar la confianza.}
-% Tres dimensiones: completitud de variables (variables críticas pesan más), coherencia interna y fiabilidad de la fuente (V13).
-
-% \paragraph{C.6.3. Independencia de confianza y prioridad.}
-% Un incidente puede ser P1 con confianza baja (reporte de riesgo vital por fuente anónima con información fragmentaria). No rebajar prioridad para compensar baja confianza.
-
-\section*{C.7. Casos frontera y criterios de desempate}
-
-% \paragraph{C.7.1. Frontera P1/P2.}
-% Pregunta clave: ¿existe riesgo vital inminente o es solo potencial? Si la probabilidad de riesgo vital es alta (indicios fuertes pero no confirmados): P1 con confianza media. Si es moderada: P2 con confianza media.
-
-% \paragraph{C.7.2. Frontera P2/P3.}
-% Pregunta clave: ¿requiere respuesta rápida coordinada o es gestionable con medios ordinarios? Factores hacia P2: potencial de escalado, vulnerabilidad, complejidad de coordinación, señales contextuales. Criterio de desempate: si al menos dos factores significativos empujan a P2 y ninguna variable descarta el escalado, asignar P2 con confianza media.
-
-% \paragraph{C.7.3. Frontera P3/P4.}
-% Si el incidente implica daño, desplazamiento de servicios o afecta a vía pública: P3. Si es consulta informativa, verificación rutinaria o incidente ya resuelto: P4.
-
-% \paragraph{C.7.4. Ejemplo frontera P2/P3: incendio con persona mayor no localizada.}
-
-% \begin{table}[ht]
-% \centering
-% \caption{Ficha caso frontera P2/P3}
-% \label{tab:c4}
-% \small
-% \begin{tabularx}{\textwidth}{|l|X|}
-% \hline
-% \textbf{Descripción} & Incendio urbano en edificio residencial con humo visible en escalera. Persona mayor en planta alta no responde al timbre. Sin confirmación de atrapamiento. \\ \hline
-% V01 & No confirmado \\ \hline
-% V02 & 0 \\ \hline
-% V05 & Sí (persona mayor) \\ \hline
-% V12 & Desconocida \\ \hline
-% Reglas duras & Ninguna \\ \hline
-% Análisis & Humo en escalera + persona mayor no localizada + tendencia desconocida = dos factores hacia P2. \\ \hline
-% Prioridad & P2 \\ \hline
-% Confianza & Medio \\ \hline
-% Justificación & Precaución razonable: persona vulnerable en entorno de riesgo con evolución incierta. \\ \hline
-% \end{tabularx}
-% \end{table}
-
-% \paragraph{C.7.5. Ejemplo caso claro P1: inundación con aislados.}
-% V01=Sí, V08=Naranja, V10=Sí, V12=Agravamiento, V14=>3. RD1 + RD7 activas. P1 fija. Confianza alto. Sin ambigüedad.
-
-% \paragraph{C.7.6. Ejemplo caso claro P4: consulta informativa.}
-% V04=N2.6.3 (consulta). V01=No. V02=0. Sin reglas duras. P4 con confianza alto.
-
-\section*{C.8. Observaciones metodológicas}
-
-% \paragraph{C.8.1. Procedimiento de etiquetado.}
-% Seis pasos: (1) lectura del caso, (2) verificación de reglas duras, (3) valoración de variables por jerarquía, (4) asignación de prioridad, (5) asignación de confianza, (6) redacción de justificación.
-
-% \paragraph{C.8.2. Revisión cruzada.}
-% Cada caso es etiquetado por un miembro del equipo y revisado por al menos otro. Las discrepancias se resuelven con los criterios de esta guía o se documenta la discrepancia con confianza baja.
-
-% \paragraph{C.8.3. Tratamiento de información incompleta.}
-% Aplicar el valor por defecto del Anexo~B, reducir la confianza proporcionalmente a la criticidad de la variable ausente y documentar la ausencia en la justificación.
-
-% \paragraph{C.8.4. Coherencia con el baseline.}
-% El etiquetador no debe intentar replicar el cálculo del motor. El etiquetado aplica juicio operativo guiado por esta guía; la evaluación mide la distancia entre ambos enfoques.
-
-% \paragraph{C.8.5. Limitaciones.}
-% La guía reduce la subjetividad del etiquetado, pero no la elimina. No ha sido validada por un panel externo amplio de operadores expertos del 112. Esta limitación se reconoce en el Capítulo~7 y en las conclusiones.
+La validacion externa con operadores del 112 queda como trabajo futuro. Hasta entonces,
+P1--P4 debe citarse siempre como escala academica del prototipo.
