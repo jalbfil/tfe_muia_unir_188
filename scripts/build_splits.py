@@ -139,11 +139,11 @@ def write_report(report: dict[str, Any], json_path: Path, md_path: Path) -> None
         f"- Semilla: {report['seed']}",
         f"- Nota formato: {report['output_format_note']}",
         "",
-        "## Tamanios",
+        "## Tamaños",
         "",
     ]
     lines.extend(f"- {name}: {count}" for name, count in report["split_sizes"].items())
-    lines.extend(["", "## Distribucion por etiqueta", ""])
+    lines.extend(["", "## Distribución por etiqueta", ""])
     for split_name, labels in report["label_distribution"].items():
         compact = ", ".join(f"{label}={count}" for label, count in labels.items())
         lines.append(f"- {split_name}: {compact}")

@@ -8,8 +8,11 @@ Si el índice no existe, devuelve lista vacía (no falla — modo degradado sopo
 """
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 _CHROMA_DIR = REPO_ROOT / "artifacts" / "rag" / "chroma"
@@ -55,7 +58,9 @@ def search_normative(query: str, n: int = 5) -> list[dict]:
 
     Returns:
         Lista de dicts con keys: ``norma_id``, ``articulo``, ``año``,
-        ``jerarquia``, ``chunk_index``, ``text``, ``score``.
+        ``jerarquia``, ``chunk_index``, ``excerpt``, ``text``, ``score``.
+        ``excerpt`` es un fragmento limpio y recortado, citable para el operador;
+        ``text`` es el chunk completo ya saneado de ruido de maquetación.
         Lista vacía si el índice no está disponible.
     """
     n = max(1, min(n, 20))
@@ -65,12 +70,29 @@ def search_normative(query: str, n: int = 5) -> list[dict]:
     except (FileNotFoundError, ImportError):
         return []
 
-    vec = embedder.encode([query]).tolist()
-    results = collection.query(
-        query_embeddings=vec,
-        n_results=n,
-        include=["documents", "metadatas", "distances"],
-    )
+    # El RAG es complementario: si el embedding o ChromaDB fallan (p. ej. por
+    # incompatibilidad de versiones de sentence-transformers/chromadb), se
+    # degrada SOLO el RAG devolviendo [], sin arrastrar la explicación LLM
+    # completa a modo degradado.
+    try:
+        vec = embedder.encode([query]).tolist()
+        results = collection.query(
+            query_embeddings=vec,
+            n_results=n,
+            include=["documents", "metadatas", "distances"],
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("RAG no disponible (search_normative degradado): %s", exc)
+        return []
+
+    try:
+        from capa3_llm_mcp.rag.ingestion import citable_excerpt, clean_normative_text
+    except ImportError:  # pragma: no cover - fallback if ingestion unavailable
+        def clean_normative_text(text: str) -> str:  # type: ignore[misc]
+            return text
+
+        def citable_excerpt(text: str, max_chars: int = 280) -> str:  # type: ignore[misc]
+            return text[:max_chars]
 
     chunks: list[dict] = []
     docs = results.get("documents", [[]])[0]
@@ -78,6 +100,7 @@ def search_normative(query: str, n: int = 5) -> list[dict]:
     distances = results.get("distances", [[]])[0]
 
     for doc, meta, dist in zip(docs, metas, distances, strict=False):
+        clean_text = clean_normative_text(doc)
         chunks.append(
             {
                 "norma_id": meta.get("norma_id", ""),
@@ -85,8 +108,16 @@ def search_normative(query: str, n: int = 5) -> list[dict]:
                 "año": meta.get("año", ""),
                 "jerarquia": meta.get("jerarquia", ""),
                 "chunk_index": meta.get("chunk_index", 0),
-                "text": doc,
+                "excerpt": citable_excerpt(clean_text),
+                "text": clean_text,
                 "score": round(1.0 - dist, 4),  # cosine similarity
             }
         )
     return chunks
+
+
+def reset_rag_cache() -> None:
+    """Restablece la caché global de la colección y embedder (crucial para evitar corrupción de hilos en tests)."""
+    global _collection, _embedder  # noqa: PLW0603
+    _collection = None
+    _embedder = None

@@ -62,6 +62,15 @@ async def predict_stream(incident: IncidentInput, request: Request) -> Streaming
     Compatible con A2A task lifecycle (submitted → working → completed).
     """
     llm = getattr(request.app.state, "llm", None)
+    if llm is None:
+        try:
+            from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper
+            wrapper = QwenWrapper()
+            if wrapper.is_available():
+                request.app.state.llm = wrapper
+                llm = wrapper
+        except Exception:
+            pass
 
     async def event_generator():
         # ── Capa 1 ─────────────────────────────────────────────────────────

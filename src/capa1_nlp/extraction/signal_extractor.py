@@ -27,14 +27,14 @@ class SignalExtractor:
         self.patterns = {
             "signal_fallecido": re.compile(
                 r"\b(muert[oa]s?|fallecid[oa]s?|cad[aá]ver(es)?|difunt[oa]s?|[oó]bitos?|"
-                r"finad[oa]s?|muerte|decesos?|pcr|parada\s+cardio|fallece(n)?|"
+                r"finad[oa]s?|muerte|decesos?|pcr|parada\s+cardio\w*|cardiorrespiratori[oa]|fallece(n)?|"
                 r"dead|death|deceased|corpse|fatal|killed|casualt(y|ies))\b",
                 re.IGNORECASE,
             ),
             "signal_herido_grave": re.compile(
-                r"\b(grave(s)?|cr[ií]tic[oa]s?|inconsciente?s?|hemorragia\s+masiva|amputaci[oó]n(es)?|"
-                r"fractura\s+abierta|infarto|dolor\s+pecho|ahogamiento|asfixia|quemadura\s+grave|coma|"
-                r"no\s+respira|inconsciencia|critical|heavy\s+bleeding|amputation|open\s+fracture|"
+                r"\b(grave(s)?|cr[ií]tic[oa]s?|inconsciente?s?|inconsiente?s?|hemorragia\s+masiva|amputaci[oó]n(es)?|"
+                r"fractura\s+abierta|infarto|angina|dolor\s+pecho|ahogamiento|ahogad[oa]|asfixia|quemadura\s+grave|coma|"
+                r"no\s+respira|inconsciencia|inconsistencia|soporte\s+vital|cardiorrespiratori[oa]|hipotermia\s+severa|critical|heavy\s+bleeding|amputation|open\s+fracture|"
                 r"heart\s+attack|chest\s+pain|asphyxia|severe\s+burn|not\s+breathing|unconscious(ness)?|severe\s+injur(y|ies))\b",
                 re.IGNORECASE,
             ),
@@ -65,14 +65,14 @@ class SignalExtractor:
             ),
             "signal_accidente_trafico": re.compile(
                 r"\b(accidentes?|coches?|colisi[oó]n(es)?|choques?|atropellos?|vuelcos?|cami[oó]n(es)?|"
-                r"motos?|veh[ií]culos?|calzada|carreteras?|autov[ií]as?|accident(s)?|car(s)?|"
+                r"motos?|veh[ií]culos?|calzada|carreteras?|autov[ií]as?|descarrila\w*|tren(es)?|ferrocarril|accident(s)?|car(s)?|"
                 r"collision(s)?|crash(es)?|run\s+over|rollover|truck(s)?|motorcycle(s)?|"
                 r"vehicle(s)?|road(s)?|highway(s)?)\b",
                 re.IGNORECASE,
             ),
             "signal_rescate": re.compile(
                 r"\b(rescates?|rescatar|auxilios?|socorros?|evacuaci[oó]n(es)?|b[uú]squedas?|"
-                r"atrapado\s+monta[ñn]a|atrapado\s+r[ií]o|helic[oó]pteros?|salvamentos?|"
+                r"atrapado\s+monta[ñn]a|atrapado\s+r[ií]o|helic[oó]pteros?|salvamentos?|derrumbe|colapso|desprendimiento|"
                 r"rescue(s)?|help|aid|evacuation(s)?|search|helicopter(s)?|salvage)\b",
                 re.IGNORECASE,
             ),
@@ -84,7 +84,7 @@ class SignalExtractor:
             ),
             "riesgo_vital_textual": re.compile(
                 r"\b(riesgo\s+vital|peligro\s+muerte|se\s+muere|parada\s+respiratoria|no\s+responde|"
-                r"asfixi[aá]ndose|ahog[aá]ndose|c[oó]digo\s+rojo|cr[ií]tico|vida\s+peligro|"
+                r"asfixi[aá]ndose|ahog[aá]ndose|c[oó]digo\s+rojo|cr[ií]tico|vida\s+peligro|soporte\s+vital|cardiorrespiratori[oa]|"
                 r"life\s+risk|life-threatening|danger\s+of\s+death|dying|respiratory\s+arrest|"
                 r"not\s+responding|suffocating|drowning|code\s+red)\b",
                 re.IGNORECASE,
@@ -172,6 +172,42 @@ class SignalExtractor:
             re.IGNORECASE
         )
 
+    def _normalize_typos(self, text: str) -> str:
+        """Normaliza errores ortográficos y abreviaturas comunes en partes de emergencia."""
+        if not text:
+            return ""
+        text_lower = text.lower()
+        replacements = {
+            r"\bchoke\b": "choque",
+            r"\batrpado\b": "atrapado",
+            r"\batrpada\b": "atrapada",
+            r"\batrpados\b": "atrapados",
+            r"\batrpadas\b": "atrapadas",
+            r"\binconsiente\b": "inconsciente",
+            r"\binconsientes\b": "inconscientes",
+            r"\binconsistencia\b": "inconsciencia",
+            r"\berido\b": "herido",
+            r"\beridos\b": "heridos",
+            r"\berida\b": "herida",
+            r"\beridas\b": "heridas",
+            r"\bgrae\b": "grave",
+            r"\bgravs\b": "graves",
+            r"\bcndusctor\b": "conductor",
+            r"\bctra\b": "carretera",
+            r"\brekusos\b": "recursos",
+            r"\bacc\b": "accidente",
+            r"\btraf\b": "trafico",
+            r"\bp\.k\.\b": "punto kilometrico",
+            r"\bpk\b": "punto kilometrico",
+            r"\bcahe\b": "caida",
+            r"\binfecio\b": "incendio",
+            r"\bherids\b": "heridos",
+            r"\bgravs\b": "graves",
+        }
+        for pattern, repl in replacements.items():
+            text_lower = re.sub(pattern, repl, text_lower)
+        return text_lower
+
     def _has_non_negated_match(self, regex: re.Pattern[str], text: str) -> bool:
         """Return True when a pattern match is not locally negated."""
         for match in regex.finditer(text):
@@ -190,11 +226,35 @@ class SignalExtractor:
             Un diccionario con las 10 señales como instancias de BoolWithConfidence.
         """
         results = {}
-        cleaned_text = text.strip() if text else ""
+        normalized_text = self._normalize_typos(text)
+        cleaned_text = normalized_text.strip() if normalized_text else ""
+
+        # Supresión semántica por broma
+        is_prank = False
+        if cleaned_text:
+            is_prank = any(
+                term in cleaned_text for term in ("broma", "falsa alarma", "simulacro", "simulado")
+            )
+
+        # Supresión por incidencia de animales sin víctimas humanas
+        is_animal_only = False
+        if cleaned_text:
+            animal_terms = ("perro", "gato", "animal", "mascota", "caballo", "vaca", "oveja", "canino", "felino")
+            human_terms = ("persona", "herido", "conductor", "peatón", "niño", "hombre", "mujer", "pasajero", "ocupante", "gente", "víctima", "victima", "herid")
+            has_animal = any(term in cleaned_text for term in animal_terms)
+            has_human = any(term in cleaned_text for term in human_terms)
+            if has_animal and not has_human:
+                is_animal_only = True
 
         for signal_name, regex in self.patterns.items():
             if cleaned_text and self._has_non_negated_match(regex, cleaned_text):
-                results[signal_name] = BoolWithConfidence(value=True, confidence=1.0)
+                # Suppress signals based on filters
+                if is_prank:
+                    results[signal_name] = BoolWithConfidence(value=False, confidence=1.0)
+                elif is_animal_only and signal_name in ("signal_herido_grave", "signal_atrapado", "signal_fallecido", "riesgo_vital_textual"):
+                    results[signal_name] = BoolWithConfidence(value=False, confidence=1.0)
+                else:
+                    results[signal_name] = BoolWithConfidence(value=True, confidence=1.0)
             else:
                 results[signal_name] = BoolWithConfidence(value=False, confidence=1.0)
 
@@ -209,7 +269,8 @@ class SignalExtractor:
         Returns:
             BoolWithConfidence validado.
         """
-        if text and self.vuln_pattern.search(text):
+        normalized_text = self._normalize_typos(text)
+        if normalized_text and self.vuln_pattern.search(normalized_text):
             return BoolWithConfidence(value=True, confidence=0.90)
         return BoolWithConfidence(value=False, confidence=0.50)
 
@@ -222,7 +283,8 @@ class SignalExtractor:
         Returns:
             BoolWithConfidence validado.
         """
-        if text and self.critical_loc_pattern.search(text):
+        normalized_text = self._normalize_typos(text)
+        if normalized_text and self.critical_loc_pattern.search(normalized_text):
             return BoolWithConfidence(value=True, confidence=0.90)
         return BoolWithConfidence(value=False, confidence=0.50)
 
@@ -235,14 +297,15 @@ class SignalExtractor:
         Returns:
             Tupla (Accesibilidad, confianza).
         """
-        if not text:
+        normalized_text = self._normalize_typos(text)
+        if not normalized_text:
             return Accesibilidad.DESCONOCIDA, 0.50
 
-        if self.access_low_pattern.search(text):
+        if self.access_low_pattern.search(normalized_text):
             return Accesibilidad.BAJA, 0.90
-        elif self.access_medium_pattern.search(text):
+        elif self.access_medium_pattern.search(normalized_text):
             return Accesibilidad.MEDIA, 0.80
-        elif self.access_high_pattern.search(text):
+        elif self.access_high_pattern.search(normalized_text):
             return Accesibilidad.ALTA, 0.80
         
         return Accesibilidad.DESCONOCIDA, 0.50
@@ -257,7 +320,8 @@ class SignalExtractor:
         Returns:
             BoolWithConfidence validado.
         """
-        has_prop_keywords = bool(text and self.propagation_pattern.search(text))
+        normalized_text = self._normalize_typos(text)
+        has_prop_keywords = bool(normalized_text and self.propagation_pattern.search(normalized_text))
         
         if is_incendio:
             # En un incendio, la presencia de palabras de propagación da una confianza absoluta
@@ -278,12 +342,13 @@ class SignalExtractor:
         Returns:
             IntWithConfidence con el número estimado de víctimas (-1 si es desconocido).
         """
-        if not text:
+        normalized_text = self._normalize_typos(text)
+        if not normalized_text:
             return IntWithConfidence(value=1 if has_fatal_or_injured else -1, confidence=0.50)
 
         # 1. Intentar buscar patrones de proximidad: "3 heridos" o "dos fallecidos"
         for pattern in self.victim_count_patterns:
-            for match in pattern.finditer(text):
+            for match in pattern.finditer(normalized_text):
                 # Extraer el grupo numérico
                 for val in match.groups():
                     if not val:
@@ -299,7 +364,7 @@ class SignalExtractor:
                         return IntWithConfidence(value=self.number_mapping[cleaned_val], confidence=0.85)
 
         # 2. Si se encuentran palabras vagas como "varios heridos" o "múltiples personas"
-        if self.several_pattern.search(text):
+        if self.several_pattern.search(normalized_text):
             return IntWithConfidence(value=3, confidence=0.75)  # Estimación representativa razonable para Castilla y León
 
         # 3. Fallback: si hay señales deterministas de heridos o fallecidos, estimar al menos 1

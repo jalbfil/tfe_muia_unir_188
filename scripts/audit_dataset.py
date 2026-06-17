@@ -168,36 +168,36 @@ def audit_dataset(input_csv: Path) -> dict[str, Any]:
 def write_markdown(report: dict[str, Any], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        "# Auditoria del dataset limpio 112 CyL",
+        "# Auditoría del dataset limpio 112 CyL",
         "",
         f"- Fichero: `{report['input_csv']}`",
         f"- Registros: {report['rows']}",
         f"- Columnas: {report['columns']}",
-        f"- Rango temporal valido: {report['date_range']['min']} a {report['date_range']['max']}",
-        f"- Fechas invalidas: {report['date_range']['invalid_count']}",
+        f"- Rango temporal válido: {report['date_range']['min']} a {report['date_range']['max']}",
+        f"- Fechas inválidas: {report['date_range']['invalid_count']}",
         f"- Identificadores duplicados: {report['duplicate_identifiers']['affected_ids']}",
         f"- Cobertura de coordenadas: {report['coordinates']['coverage_ratio']:.2%}",
         "",
-        "## Distribucion por anio",
+        "## Distribución por año",
         "",
     ]
     lines.extend(f"- {year}: {count}" for year, count in report["distribution_by_year"].items())
-    lines.extend(["", "## Distribucion por provincia inferida", ""])
+    lines.extend(["", "## Distribución por provincia inferida", ""])
     lines.extend(
         f"- {province}: {count}"
         for province, count in report["distribution_by_province_inferred"].items()
     )
-    lines.extend(["", "## Categorias operativas preliminares", ""])
+    lines.extend(["", "## Categorías operativas preliminares", ""])
     lines.extend(
         f"- {category}: {count}"
         for category, count in report["distribution_by_categoria_operativa_preliminar"].items()
     )
-    lines.extend(["", "## Seniales textuales", ""])
+    lines.extend(["", "## Señales textuales", ""])
     lines.extend(f"- {signal}: {count}" for signal, count in report["signal_true_counts"].items())
     lines.extend(["", "## Columnas prohibidas por leakage", ""])
-    lines.append("Se documentan para auditoria, pero quedan excluidas de weak labels y training.")
+    lines.append("Se documentan para auditoría, pero quedan excluidas de weak labels y training.")
     lines.extend(
-        f"- {col}: {count} valores no vacios"
+        f"- {col}: {count} valores no vacíos"
         for col, count in report["prohibited_columns"]["non_empty_counts"].items()
     )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

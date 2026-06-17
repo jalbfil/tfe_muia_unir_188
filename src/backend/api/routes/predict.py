@@ -1,4 +1,4 @@
-"""POST /predict - Clasifica un incidente y devuelve la recomendacion."""
+"""POST /predict - Clasifica un incidente y devuelve la recomendación."""
 
 from __future__ import annotations
 
@@ -119,9 +119,18 @@ def _build_explanation_context(capa2_output: Any) -> ExplanationContext:
 
 @router.post("/predict", response_model=PredictResponse)
 def predict(incident: IncidentInput, request: Request) -> PredictResponse:
-    """Clasifica el incidente y genera la recomendacion con explicacion."""
+    """Clasifica el incidente y genera la recomendación con explicación."""
     logger = request.app.state.logger
     llm = getattr(request.app.state, "llm", None)
+    if llm is None:
+        try:
+            from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper
+            wrapper = QwenWrapper()
+            if wrapper.is_available():
+                request.app.state.llm = wrapper
+                llm = wrapper
+        except Exception:
+            pass
 
     recommendation, log = run_pipeline(incident, llm=llm)
     priority_details = _build_priority_details(log.capa2_output)

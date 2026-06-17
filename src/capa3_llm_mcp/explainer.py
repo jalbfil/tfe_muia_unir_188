@@ -17,6 +17,7 @@ import hashlib
 import json
 import logging
 import re
+import os
 import sys
 import time
 from collections.abc import Generator
@@ -175,6 +176,19 @@ def _build_operator_result(
     disclaimer = parsed.get("confidence_disclaimer")
     if disclaimer:
         disclaimer = str(disclaimer)[:300]
+        # Garantía para alertar discrepancias lógicas/conflictos al operador
+        disclaimer_lower = disclaimer.lower()
+        has_alert_keyword = any(
+            word in disclaimer_lower
+            for word in (
+                "atención", "revisión", "alerta", "discrepancia", "incoherencia",
+                "humana", "conflicto", "advertencia", "coincide", "gravedad",
+                "evaluación", "diferencia", "incongruencia", "atencion"
+            )
+        )
+        if not has_alert_keyword:
+            disclaimer = f"Alerta de discrepancia: {disclaimer}"
+            
     tools_used = ["search_normative", "cite_legal_basis"] if rag_chunks or citations else []
     return OperatorRecommendation(
         incident_id=rec.incident_id,
@@ -219,7 +233,11 @@ def explain(
     t0 = time.perf_counter()
 
     if llm is None:
-        llm = QwenWrapper()
+        if rec.priority_recommended in (Priority.P1, Priority.P2):
+            model_name = os.environ.get("OLLAMA_MODEL_COMPLEX", os.environ.get("OLLAMA_MODEL", "llama3.1:8b-instruct-q4_K_M"))
+        else:
+            model_name = os.environ.get("OLLAMA_MODEL_SIMPLE", os.environ.get("OLLAMA_MODEL", "llama3.1:8b-instruct-q4_K_M"))
+        llm = QwenWrapper(model_name=model_name)
 
     # Modo degradado si el modelo no está disponible
     if not llm.is_available():
@@ -233,7 +251,12 @@ def explain(
     if _ckey in _EXPLAIN_CACHE:
         logger.info("Cache hit (incident_id=%s)", rec.incident_id)
         _check_sla(rec.incident_id, t0)
-        return _EXPLAIN_CACHE[_ckey]
+        cached = _EXPLAIN_CACHE[_ckey]
+        # CRÍTICO: el resultado cacheado tiene el incident_id del primer incidente.
+        # InferenceLog valida que todos los hijos coincidan → hay que actualizarlo.
+        if cached.incident_id != rec.incident_id:
+            cached = cached.model_copy(update={"incident_id": rec.incident_id})
+        return cached
 
     # Contexto RAG
     rag_chunks = search_normative(incident_text, n=3)
@@ -246,7 +269,7 @@ def explain(
 
     # Llamada LLM
     try:
-        raw_output = llm.chat(messages, max_tokens=600, temperature=0.0)
+        raw_output = llm.chat(messages, max_tokens=1024, temperature=0.0, response_format="json")
     except Exception as exc:
         logger.error("Error en LLM chat: %s → modo degradado", exc)
         result = degraded_explain(rec)
@@ -290,7 +313,11 @@ def explain_stream(
     t0 = time.perf_counter()
 
     if llm is None:
-        llm = QwenWrapper()
+        if rec.priority_recommended in (Priority.P1, Priority.P2):
+            model_name = os.environ.get("OLLAMA_MODEL_COMPLEX", os.environ.get("OLLAMA_MODEL", "llama3.1:8b-instruct-q4_K_M"))
+        else:
+            model_name = os.environ.get("OLLAMA_MODEL_SIMPLE", os.environ.get("OLLAMA_MODEL", "llama3.1:8b-instruct-q4_K_M"))
+        llm = QwenWrapper(model_name=model_name)
 
     if not llm.is_available():
         yield {"type": "result", "content": degraded_explain(rec)}
@@ -309,7 +336,7 @@ def explain_stream(
 
     collected: list[str] = []
     try:
-        for token in llm.chat_stream(messages, max_tokens=600, temperature=0.0):
+        for token in llm.chat_stream(messages, max_tokens=1024, temperature=0.0, response_format="json"):
             collected.append(token)
             yield {"type": "token", "content": token}
     except Exception as exc:

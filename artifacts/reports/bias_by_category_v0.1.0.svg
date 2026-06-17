@@ -2,16 +2,16 @@
 <rect width="100%" height="100%" fill="white"/>
 <text x="24" y="34" font-family="Arial" font-size="20" font-weight="700">Macro-F1 por categoria</text>
 <text x="24" y="58" font-family="Arial" font-size="12" fill="#555">Grupos con menor macro-F1 en test estratificado</text>
-<text x="24" y="100" font-family="Arial" font-size="13">incendio</text>
+<text x="24" y="100" font-family="Arial" font-size="13">sanitario</text>
 <rect x="170" y="82" width="620" height="20" fill="#eef2f7"/>
-<rect x="170" y="82" width="458" height="20" fill="#4f46e5"/>
-<text x="802" y="97" font-family="Arial" font-size="12">0.740</text>
-<text x="24" y="134" font-family="Arial" font-size="13">sanitario</text>
+<rect x="170" y="82" width="491" height="20" fill="#4f46e5"/>
+<text x="802" y="97" font-family="Arial" font-size="12">0.793</text>
+<text x="24" y="134" font-family="Arial" font-size="13">incendio</text>
 <rect x="170" y="116" width="620" height="20" fill="#eef2f7"/>
-<rect x="170" y="116" width="508" height="20" fill="#4f46e5"/>
-<text x="802" y="131" font-family="Arial" font-size="12">0.821</text>
+<rect x="170" y="116" width="534" height="20" fill="#4f46e5"/>
+<text x="802" y="131" font-family="Arial" font-size="12">0.862</text>
 <text x="24" y="168" font-family="Arial" font-size="13">trafico</text>
 <rect x="170" y="150" width="620" height="20" fill="#eef2f7"/>
-<rect x="170" y="150" width="552" height="20" fill="#4f46e5"/>
-<text x="802" y="165" font-family="Arial" font-size="12">0.892</text>
+<rect x="170" y="150" width="579" height="20" fill="#4f46e5"/>
+<text x="802" y="165" font-family="Arial" font-size="12">0.935</text>
 </svg>

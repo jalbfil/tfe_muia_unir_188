@@ -108,7 +108,7 @@ def _activated_rules(row: dict[str, Any]) -> list[ActivatedRule]:
             ActivatedRule(
                 rule_id=f"RF-{row['case_id']}-FALLBACK",
                 human_text=str(row.get("reglas_o_senales_mostradas", ""))[:200]
-                or "Senales textuales predecisionales compatibles con prioridad alta",
+                or "Señales textuales predecisionales compatibles con prioridad alta",
                 weight=0.1,
                 normative_anchors=anchors,
             )
@@ -198,6 +198,45 @@ def _judge(row: dict[str, Any], rec: Any) -> dict[str, Any]:
     }
 
 
+_JUDGE_DIMENSIONS = (
+    "priority_alignment",
+    "rule_traceability",
+    "signal_coverage",
+    "legal_traceability",
+    "no_contradiction",
+    "confidence_disclaimer",
+)
+
+
+def _expected_signals(row: dict[str, Any]) -> list[str]:
+    blob = str(row.get("reglas_o_senales_mostradas", ""))
+    return [signal for signal in SIGNAL_KEYWORDS if signal in blob]
+
+
+def _judge_case_context(row: dict[str, Any], rec: Any) -> dict[str, Any]:
+    return {
+        "priority_recommended": str(row["recomendacion_sistema"]),
+        "probabilities": {
+            "P1": float(row["prob_p1"]),
+            "P2": float(row["prob_p2"]),
+            "P3": float(row["prob_p3"]),
+            "P4": float(row["prob_p4"]),
+        },
+        "rules_summary": list(rec.activated_rules_summary),
+        "expected_signals": _expected_signals(row),
+        "legal_citations_count": len(rec.legal_citations),
+        "requires_human_attention": str(row.get("sample_type", ""))
+        == "critical_p1_false_negative",
+    }
+
+
+def _judge_llm(row: dict[str, Any], rec: Any, judge: Any) -> dict[str, Any]:
+    result = judge.score(_judge_case_context(row, rec), rec.explanation_text)
+    failed = [name for name in _JUDGE_DIMENSIONS if float(result.get(name, 0.0)) < 0.5]
+    result["failed_checks"] = ";".join(failed)
+    return result
+
+
 def _write_cases(rows: list[dict[str, Any]], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
@@ -230,7 +269,7 @@ def _summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _write_markdown(summary: dict[str, Any], report: dict[str, Any], path: Path) -> None:
     lines = [
-        "# T113 - Evaluacion de fidelidad de explicaciones",
+        "# T113 - Evaluación de fidelidad de explicaciones",
         "",
         f"Generado: `{report['generated_at']}`",
         "",
@@ -239,7 +278,7 @@ def _write_markdown(summary: dict[str, Any], report: dict[str, Any], path: Path)
         f"- Casos evaluados: {summary['rows']}",
         f"- Pass rate: {summary['pass_rate']}",
         f"- Fidelidad media: {summary['mean_fidelity']}",
-        f"- Fidelidad minima: {summary['min_fidelity']}",
+        f"- Fidelidad mínima: {summary['min_fidelity']}",
         "",
         "## Por tipo de muestra",
         "",
@@ -255,9 +294,9 @@ def _write_markdown(summary: dict[str, Any], report: dict[str, Any], path: Path)
             "",
             "## Checks",
             "",
-            "- priority_alignment: la explicacion menciona la prioridad recomendada por Capa 2.",
+            "- priority_alignment: la explicación menciona la prioridad recomendada por Capa 2.",
             "- rule_traceability: incluye resumen de reglas cuando procede.",
-            "- signal_coverage: cubre las senales textuales principales.",
+            "- signal_coverage: cubre las señales textuales principales.",
             "- legal_traceability: P1/P2 incluyen citas legales.",
             "- no_contradiction: no menciona otra prioridad incompatible.",
             "- confidence_disclaimer: comunica cautela o modo degradado.",
@@ -271,20 +310,60 @@ def _write_markdown(summary: dict[str, Any], report: dict[str, Any], path: Path)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def _suffix_path(path: Path, suffix: str) -> Path:
+    if not suffix:
+        return path
+    return path.with_name(f"{path.stem}{suffix}{path.suffix}")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sample-csv", type=Path, default=DEFAULT_SAMPLE)
     parser.add_argument("--output-json", type=Path, default=DEFAULT_OUTPUT_JSON)
     parser.add_argument("--output-md", type=Path, default=DEFAULT_OUTPUT_MD)
     parser.add_argument("--cases-csv", type=Path, default=DEFAULT_CASES_CSV)
+    parser.add_argument("--judge", choices=("deterministic", "llm"), default="deterministic")
+    parser.add_argument("--judge-provider", default=None)
+    parser.add_argument("--judge-model", default=None)
+    parser.add_argument(
+        "--output-suffix",
+        default=None,
+        help="Suffix for artifact names. Defaults to '_judge_llm' when --judge llm.",
+    )
     args = parser.parse_args(argv)
+
+    judge_obj = None
+    judge_mode = "deterministic_offline_proxy"
+    judge_public: dict[str, Any] = {}
+    if args.judge == "llm":
+        from capa3_llm_mcp.fidelity_judge import LLMJudge
+
+        judge_obj = LLMJudge(provider=args.judge_provider, model=args.judge_model)
+        if not judge_obj.is_available():
+            print(
+                "[ERROR] Judge LLM no disponible. Revisa endpoint/credenciales "
+                f"({judge_obj.public_config})."
+            )
+            return 2
+        judge_mode = "independent_llm_judge"
+        judge_public = judge_obj.public_config
+
+    suffix = args.output_suffix
+    if suffix is None:
+        suffix = "_judge_llm" if args.judge == "llm" else ""
+    output_json = _suffix_path(args.output_json, suffix)
+    output_md = _suffix_path(args.output_md, suffix)
+    cases_csv = _suffix_path(args.cases_csv, suffix)
 
     sample = pd.read_csv(args.sample_csv)
     rows = []
     for source_row in sample.to_dict(orient="records"):
         priority_rec = _priority_recommendation(source_row)
         operator_rec = degraded_explain(priority_rec)
-        judge = _judge(source_row, operator_rec)
+        if judge_obj is None:
+            judge = _judge(source_row, operator_rec)
+        else:
+            judge = _judge_llm(source_row, operator_rec, judge_obj)
         rows.append(
             {
                 "case_id": source_row["case_id"],
@@ -301,30 +380,32 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     summary = _summarize(rows)
+    summary["parse_errors"] = sum(bool(row.get("parse_error")) for row in rows)
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "scope": "T113 offline explanation fidelity over internal validation sample",
-        "judge_mode": "deterministic_offline_proxy",
+        "scope": "T113 explanation fidelity over internal validation sample",
+        "judge_mode": judge_mode,
+        "judge_config": judge_public,
         "model_evaluated": "degraded-static-v0.1.0",
         "sample_csv": _rel(args.sample_csv),
         "summary": summary,
         "artifacts": {
-            "json": _rel(args.output_json),
-            "markdown": _rel(args.output_md),
-            "cases_csv": _rel(args.cases_csv),
+            "json": _rel(output_json),
+            "markdown": _rel(output_md),
+            "cases_csv": _rel(cases_csv),
         },
         "limitations": [
-            "This is a deterministic proxy judge, not an external LLM-as-Judge run.",
-            "It verifies fidelity to Capa 2 outputs and rule evidence, not linguistic quality.",
-            "A future run can replace the judge with an independent local LLM over the same cases.",
+            "The deterministic judge is the canonical, reproducible gate.",
+            "The independent LLM judge is non-deterministic; it provides external corroboration only.",
+            "Per-case raw judge JSON is stored for audit.",
         ],
     }
-    args.output_json.parent.mkdir(parents=True, exist_ok=True)
-    args.output_json.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    _write_cases(rows, args.cases_csv)
-    _write_markdown(summary, report, args.output_md)
+    output_json.parent.mkdir(parents=True, exist_ok=True)
+    output_json.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    _write_cases(rows, cases_csv)
+    _write_markdown(summary, report, output_md)
     print(
-        "[OK] Explanation fidelity evaluated "
+        f"[OK] Explanation fidelity evaluated (judge={args.judge}) "
         f"rows={summary['rows']} pass_rate={summary['pass_rate']} "
         f"mean={summary['mean_fidelity']}"
     )

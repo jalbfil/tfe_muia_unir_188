@@ -30,6 +30,35 @@ interfaz. Tras integrar la rama de Capa 1, se ha regenerado ademas una validacio
 reproducible Capa 1--Capa 2--Capa 3 que supera 5/5 escenarios curados y confirma que el
 flujo integrado no rompe los resultados de la Capa 2.
 
+\section{Trazabilidad de objetivos especificos}
+
+Para evidenciar el grado de consecucion del trabajo, la
+Tabla~\ref{tab:trazabilidad-oe} enlaza cada objetivo especifico definido en el
+Capitulo~\ref{cap:4} con su resultado y la evidencia que lo respalda. Todos los
+objetivos planteados se consideran alcanzados dentro del alcance academico v0.1.0.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|p{1.0cm}|p{1.4cm}|p{6.6cm}|p{3.4cm}|}
+\hline
+\textbf{OE} & \textbf{Estado} & \textbf{Grado de consecucion} & \textbf{Evidencia} \\ \hline
+OE1 & Logrado & Se analiza el problema de priorizacion temprana 112, necesidades del operador, restricciones de informacion y riesgos de automatizacion. & Caps.~\ref{cap:1}, \ref{cap:2} \\ \hline
+OE2 & Logrado & Se revisa el marco normativo estatal y autonomico CyL y se construye la tabla de trazabilidad norma--criterio--variable--regla. & Cap.~\ref{cap:3} \\ \hline
+OE3 & Logrado & Se define la taxonomia operativa, la escala academica P1--P4 y las variables V01--V15 con separacion anti-\textit{leakage}. & Anexos~\ref{cap:anexoa}, \ref{cap:anexob}, \ref{cap:anexoc} \\ \hline
+OE4 & Logrado & Se audita el Registro 112 CyL (9.380 registros limpios) y se generan etiquetas P1--P4 por supervision debil con acuerdo Krippendorff \(\alpha = 0{,}858348\). & Cap.~\ref{cap:7}, Anexo~\ref{cap:anexof} \\ \hline
+OE5 & Logrado & Se implementa la Capa 2 interpretable: baseline experto vs RuleFit-lite vs \texttt{imodels}; se selecciona RuleFit-lite (macro-F1 0,880750; recall P1 0,921296). & Cap.~\ref{cap:9}, Anexos~\ref{cap:anexoe}, \ref{cap:anexol} \\ \hline
+OE6 & Logrado & Se dise\~na la Capa 3 de explicacion con LLM local, RAG normativo y MCP, sin delegar la decision de prioridad en el LLM. & Cap.~\ref{cap:8}, Anexos~\ref{cap:anexoj}, \ref{cap:anexok} \\ \hline
+OE7 & Logrado & Se integran las capas con contratos versionados, backend auditable, modo degradado y registro de inferencia y feedback humano. & Cap.~\ref{cap:8} \\ \hline
+OE8 & Logrado & Se evalua con split estratificado y temporal, anti-\textit{leakage}, errores P1 (51 falsos negativos), sesgos por subgrupo y fidelidad de explicaciones. & Cap.~\ref{cap:9}, Anexo~\ref{cap:anexod} \\ \hline
+\end{tabular}
+\caption{Trazabilidad entre objetivos especificos, grado de consecucion y evidencia.}
+\label{tab:trazabilidad-oe}
+\end{table}
+
+\noindent\textit{Fuente: elaboracion propia.}
+
 \section{Principales contribuciones}
 
 El trabajo realizado aporta siete contribuciones principales.
@@ -44,8 +73,8 @@ El trabajo realizado aporta siete contribuciones principales.
     \item \textbf{Etiqueta academica P1--P4 mediante supervision debil.} Ante la
     ausencia de prioridad oficial en el dataset, se construye una etiqueta academica
     con cuatro fuentes debiles. El acuerdo alcanza Krippendorff
-    \(\alpha = 0{,}858348\), y la ablacion sin reglas heuristicas mantiene
-    \(\alpha = 0{,}834155\).
+    \(\alpha = 0{,}858348\) (\texttt{weak\_labels\_report.json}), y la ablacion sin reglas heuristicas mantiene
+    \(\alpha = 0{,}834155\) (\texttt{weak\_labels\_ablation\_no\_rules.json}).
     \item \textbf{Modelo interpretable seleccionado.} RuleFit-lite supera al baseline
     experto en macro-F1, mantiene recall P1 por encima del umbral de seguridad y
     conserva 30 reglas activas exportadas.

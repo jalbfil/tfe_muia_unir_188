@@ -24,6 +24,9 @@ uv sync                    # crea .venv/ desde uv.lock
 
 # 2. Descargar el modelo LLM (~4.7 GB)
 ollama pull llama3.1:8b-instruct-q4_K_M
+
+# 3. (Opcional) Transcripción de voz con Whisper local
+pip install faster-whisper
 ```
 
 > `uv sync` instala desde `uv.lock` (reproducible). Si modificas `pyproject.toml`, ejecuta `uv lock` para regenerar el lock.
@@ -34,7 +37,34 @@ ollama pull llama3.1:8b-instruct-q4_K_M
 
 ---
 
-## 2 · Arranque rápido (3 terminales)
+## 2 · Arranque rápido — Gestor de servicios (recomendado)
+
+```bash
+python scripts/services.py
+```
+
+Menú interactivo que **detecta cualquier servicio en curso** (incluso los arrancados en sesiones previas de terminal) y permite arrancarlos, detenerlos y ver sus logs.
+
+| Opción | Acción |
+|--------|--------|
+| `4` | Arrancar Ollama + Backend + UI en orden |
+| `8` | Detener todos (funciona con procesos externos) |
+| `l` | Ver logs de cualquier servicio |
+| `r` | Refrescar estado |
+| `q` | Salir (los servicios siguen corriendo) |
+
+Estado de ejemplo tras arrancar:
+```
+  [ollama]   Ollama LLM            ● CORRIENDO (:11434 · pid 4872)
+  [backend]  Backend FastAPI       ● CORRIENDO (:8000  · pid 6120)
+  [ui]       Streamlit UI          ● CORRIENDO (:8501  · pid 7340)
+```
+
+> Si vuelves a abrir el terminal y los servicios ya están activos, el gestor los detecta como **ACTIVO (externo)** y puedes pararlos igualmente con las opciones 5/6/7/8.
+
+---
+
+## 3 · Arranque manual (3 terminales)
 
 Abre **3 terminales** desde la raíz del repo. Cada uno mantiene un servicio vivo.
 
@@ -63,7 +93,7 @@ Abre automáticamente <http://localhost:8501>.
 
 ---
 
-## 3 · Verificación E2E (2 min)
+## 4 · Verificación E2E (2 min)
 
 1. Abre la UI en <http://localhost:8501>.
 2. Sidebar debe mostrar **LLM: ✅ online** y **RAG: ✅ disponible** (si está en modo degradado, revisa Troubleshooting).
@@ -79,7 +109,7 @@ Abre automáticamente <http://localhost:8501>.
 
 ---
 
-## 4 · Tests
+## 5 · Tests
 
 ```bash
 uv run pytest -q                              # toda la suite
@@ -89,9 +119,14 @@ uv run pytest -m "not slow"                   # rápidos
 
 ---
 
-## 5 · Apagado limpio
+## 6 · Apagado limpio
 
-En cada terminal: `Ctrl+C`. Si Ollama queda colgado:
+Opción recomendada (funciona con servicios externos):
+```bash
+python scripts/services.py   # → opción 8 (detener todos)
+```
+
+Manual en cada terminal: `Ctrl+C`. Si Ollama queda colgado:
 ```bash
 # Windows
 taskkill /F /IM ollama.exe
@@ -104,11 +139,16 @@ pkill -f "ollama serve"
 ## Troubleshooting
 
 ### UI en "modo degradado"
-- **Síntoma**: Sidebar muestra `LLM: ⚠️ offline`.
-- **Causa**: Ollama no responde en `localhost:11434`.
-- **Fix**: arranca el Terminal 1 (`ollama serve`) y espera 5 s. La UI revalida cada 60 s.
+- **Síntoma**: Advertencia amarilla en el dashboard.
+- **Causa**: Ollama no responde o tarda en cargar el modelo (~5 GB, puede tomar 10–20 s).
+- **Fix**: espera unos segundos tras `ollama serve`. La UI revalida por petición (no en bucle fijo).
 
 ### `Port 8000 already in use`
+Usa el gestor de servicios:
+```bash
+python scripts/services.py   # → opción 6 (detener Backend)
+```
+O directamente:
 ```bash
 # Windows
 netstat -ano | findstr :8000
@@ -139,10 +179,11 @@ uv pip install -e .         # reinstala el paquete en modo editable
 
 ---
 
-## 6 · Comandos útiles
+## 7 · Comandos útiles
 
 | Acción | Comando |
-|--------|---------|
+|--------|--------|
+| **Gestionar servicios** | `python scripts/services.py` |
 | Añadir dependencia | `uv add <paquete>` |
 | Añadir dev dep | `uv add --dev <paquete>` |
 | Regenerar lock | `uv lock` |
@@ -150,10 +191,13 @@ uv pip install -e .         # reinstala el paquete en modo editable
 | Ejecutar script | `uv run python scripts/<archivo>.py` |
 | Linter + formateador | `uv run ruff check . && uv run ruff format .` |
 | Type-check | `uv run mypy src/contracts` |
+| Reindexar RAG | `python scripts/build_rag_index.py --reset` |
+| Evaluar fidelidad | `python scripts/evaluate_explanation_fidelity.py` |
+| Fidelidad (juez LLM) | `python scripts/evaluate_explanation_fidelity.py --judge llm` |
 
 ---
 
-## 7 · Estructura de servicios
+## 8 · Estructura de servicios
 
 ```
 ┌─────────────────┐   HTTP    ┌──────────────────┐  OpenAI API  ┌──────────┐
@@ -170,4 +214,4 @@ uv pip install -e .         # reinstala el paquete en modo editable
 
 ---
 
-**Última revisión**: 2026-05-27 · Mantiene: equipo TFE MUIA UNIR 188.
+**Última revisión**: 2026-06-15 · Mantiene: equipo TFE MUIA UNIR 188.

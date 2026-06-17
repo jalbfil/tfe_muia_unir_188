@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-05T18:13:19.861215+00:00",
+  "generated_at": "2026-06-16T23:20:56.093560+00:00",
   "model": "rulefit_lite_ruleset",
   "model_version_capa2": "0.1.0",
   "feature_names": [
@@ -34,9 +34,9 @@
   },
   "fit_rows": 3000,
   "engine": "lite",
-  "training_seconds": 5.030908,
+  "training_seconds": 4.415806,
   "model_size_bytes": 14575,
-  "mean_inference_ms_per_row": 0.269125,
+  "mean_inference_ms_per_row": 0.241316,
   "active_rule_count_total": 30,
   "active_rule_count_exported": 30,
   "artifacts": {

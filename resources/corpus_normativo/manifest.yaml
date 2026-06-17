@@ -21,6 +21,7 @@ contracts_version: "0.1.0"
 generated: "2026-05-24"
 defer_to_v020:
   - RD_840_2015_SEVESO
+  - MPCYL_ACUERDO_3_2008
 
 normas:
 
@@ -118,7 +119,7 @@ normas:
     url_pdf: "https://bocyl.jcyl.es/boletines/2008/01/23/pdf/BOCYL-D-23012008-8.pdf"
     url_html: "https://bocyl.jcyl.es/boletin.do?fechaBoletin=23/01/2008"
     verified: true
-    notes: "BOCYL núm. 15, 23/01/2008. Sufijo -8 confirmado vía Perplexity 2026-05-25. ⚠️ CONFIRMADO 2026-05-25: BOCYL-D-23012008-8 es solo el decreto de aprobación, NO el plan completo. El PDF del plan con anexos técnicos no está localizado en BOCYL; buscar en https://www.jcyl.es/web/es/administracionpublica/proteccion-civil/planificacion-proteccion-civil.html. T064 bloqueado hasta resolver."
+    notes: "BOCYL núm. 15, 23/01/2008. Sufijo -8 confirmado vía Perplexity 2026-05-25. ⚠️ BOCYL-D-23012008-8 es solo el decreto de aprobación, no el texto técnico completo. Para evitar falsear cobertura, MPCYL se difiere a v0.2.0 hasta localizar fuente oficial completa del plan con anexos."
 
   - norma_id: LEY_11_2022
     titulo: "Ley 11/2022, de 28 de junio, General de Telecomunicaciones"

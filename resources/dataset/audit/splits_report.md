@@ -4,14 +4,14 @@
 - Semilla: 42
 - Nota formato: CSV generated without optional parquet dependencies.
 
-## Tamanios
+## Tamaños
 
-- train: 6511
-- val: 1414
-- test: 1455
+- train: 6512
+- val: 1415
+- test: 1453
 
-## Distribucion por etiqueta
+## Distribución por etiqueta
 
-- train: P1=2939, P2=1477, P3=1837, P4=258
-- val: P1=625, P2=329, P3=406, P4=54
-- test: P1=648, P2=336, P3=397, P4=74
+- train: P1=3049, P2=1504, P3=1701, P4=258
+- val: P1=658, P2=329, P3=374, P4=54
+- test: P1=655, P2=349, P3=375, P4=74

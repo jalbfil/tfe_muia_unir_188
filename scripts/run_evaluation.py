@@ -277,7 +277,7 @@ def _write_markdown(report: dict[str, Any], path: Path) -> None:
     temporal = report["evaluation"]["temporal_test"]
     critical = stratified["critical_errors"]
     lines = [
-        "# Evaluacion Capa 2 v0.1.0",
+        "# Evaluación Capa 2 v0.1.0",
         "",
         f"Generado: `{report['generated_at']}`",
         "",
@@ -296,7 +296,7 @@ def _write_markdown(report: dict[str, Any], path: Path) -> None:
             f"{temporal['metrics']['recall_p1']} |"
         ),
         "",
-        "## Matriz de confusion test estratificado",
+        "## Matriz de confusión test estratificado",
         "",
         _format_cm(stratified["metrics"]),
         "",

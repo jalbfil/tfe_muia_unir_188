@@ -1,4 +1,5 @@
 \chapter{Introduccion}
+\label{cap:1}
 
 \section{Contexto general del trabajo}
 
@@ -12,7 +13,7 @@ El presente TFM se situa en la interseccion entre gestion de emergencias e intel
 
 La saturacion informativa en emergencias aparece cuando el volumen, la velocidad o la heterogeneidad de la informacion supera la capacidad del operador para procesarla con seguridad. Este fenomeno es especialmente critico en situaciones con multiples incidentes simultaneos, avisos incompletos o informacion contradictoria. En esos escenarios, una priorizacion deficiente puede retrasar la atencion a incidentes graves, sobredimensionar sucesos menores o dificultar la justificacion posterior de la decision adoptada.
 
-El problema abordado por este TFM puede formularse asi: dado un conjunto de incidentes 112 descritos mediante texto libre y datos operativos parciales, ?como puede un sistema inteligente ayudar a estructurar la informacion, extraer variables relevantes, recomendar una prioridad P1--P4 y explicar esa recomendacion de forma comprensible y auditable?
+El problema abordado por este TFM puede formularse asi: dado un conjunto de incidentes 112 descritos mediante texto libre y datos operativos parciales, ¿como puede un sistema inteligente ayudar a estructurar la informacion, extraer variables relevantes, recomendar una prioridad P1--P4 y explicar esa recomendacion de forma comprensible y auditable?
 
 La respuesta propuesta se apoya en una arquitectura de tres capas. La Capa 1 extrae variables operativas V01--V15 y se\~nales textuales desde el incidente. La Capa 2 recomienda prioridad mediante RuleFit-lite, manteniendo un nucleo interpretable y comparandolo con un baseline experto y una ejecucion diagnostica con \texttt{imodels}. La Capa 3 genera una explicacion normativa mediante un LLM local, recuperacion aumentada sobre corpus CyL y herramientas MCP.
 
@@ -30,7 +31,7 @@ La contribucion principal del TFM no consiste en entrenar un modelo opaco para m
 
 La aportacion de IA se concreta en cinco elementos. Primero, la extraccion NLP de variables operativas desde texto libre en espa\~nol. Segundo, la generacion de etiquetas P1--P4 mediante varios anotadores debiles y medicion de acuerdo. Tercero, el uso de RuleFit-lite como nucleo interpretable de Capa 2, con reglas activas exportables y probabilidades por clase. Cuarto, la comparacion contra un baseline experto y una ejecucion \texttt{imodels}, separando la alternativa seleccionada de los experimentos diagnosticos. Quinto, la generacion de explicaciones mediante LLM local, RAG normativo y MCP, manteniendo la decision final en manos del operador.
 
-Esta combinacion permite que cada recomendacion pueda vincularse con entrada, variables extraidas, reglas activadas, probabilidad, confianza, citas legales, version de modelo y decision humana final. Esa trazabilidad constituye la diferencia entre un simple clasificador y un sistema de apoyo a la decision defendible en un TFM de IA aplicada.
+Esta combinacion permite que cada recomendacion pueda vincularse con entrada, variables extraidas, reglas activadas, probabilidad, confianza, citas legales, version de modelo y decision humana final. Esa trazabilidad constituye la diferencia entre un simple clasificador y un sistema de apoyo a la decision.
 
 \section{Finalidad y alcance del sistema propuesto}
 

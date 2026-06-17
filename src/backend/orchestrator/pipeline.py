@@ -5,10 +5,13 @@ modelos entrenados y validados del monorepo.
 """
 from __future__ import annotations
 
+import logging
 import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # inserta src/ → contracts/backend importables
 
@@ -82,7 +85,12 @@ def run_pipeline(
                 llm=llm,
                 chroma_dir=_CHROMA_DIR,
             )
-        except Exception:
+        except Exception as exc:  # pragma: no cover
+            logger.error(
+                "Error en Capa 3 explain() → modo degradado (incident_id=%s): %s: %s",
+                incident.incident_id, type(exc).__name__, exc,
+                exc_info=True,
+            )
             capa3_output = None
 
     if capa3_output is None and _CAPA3_AVAILABLE:
@@ -153,7 +161,7 @@ def _build_minimal_recommendation(
                 norma_id=NormaID.LEY_17_2015,
                 articulo_o_seccion="Art. 4",
                 texto_relevante="Sistema de protección civil en situaciones de riesgo vital.",
-                url_oficial="https://www.boe.es/buscar/act.php?id=BOE-A-2015-8268",
+                url_oficial="https://www.boe.es/buscar/act.php?id=BOE-A-2015-7730",
             )
         ]
 

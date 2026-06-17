@@ -39,7 +39,7 @@ Requisitos: `PyYAML` (`pip install pyyaml`, import `yaml`) y conexión a
 | 5 | `PLANCAL_DEC_4_2019` | BOCYL | TBD verificar |
 | 6 | `INFOCAL_DEC_6_2025` | BOCYL | **TBD localizar** |
 | 7 | `INUNCYL` | BOCYL | **TBD localizar** |
-| 8 | `MPCYL_ACUERDO_3_2008` | BOCYL | **TBD localizar** |
+| 8 | `MPCYL_ACUERDO_3_2008` | BOCYL | **Diferida v0.2.0 (fuente técnica no localizada)** |
 | 9 | `LEY_11_2022` | BOE | verified |
 | 10 | `REGISTRO_112_CYL` | datos.gob.es | TBD verificar |
 | 11 | `RGPD` | DOUE (EUR-Lex) | verified |
@@ -49,6 +49,7 @@ Requisitos: `PyYAML` (`pip install pyyaml`, import `yaml`) y conexión a
 ## Diferidas a v0.2.0
 
 - `RD_840_2015_SEVESO` — cartografía industrial CyL no consolidada (R-13).
+- `MPCYL_ACUERDO_3_2008` — solo decreto de aprobación localizado; sin texto técnico completo.
 
 ## Procedimiento de actualización
 

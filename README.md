@@ -18,12 +18,17 @@ Director: Dr. Andrés Soto Villaverde
 ## Arranque rápido
 
 ```bash
-uv sync                                # entorno reproducible
-ollama pull llama3.1:8b-instruct-q4_K_M  # LLM local (una vez, ~4.7 GB)
+uv sync                                   # entorno reproducible
+ollama pull llama3.1:8b-instruct-q4_K_M   # LLM local (una vez, ~4.7 GB)
+pip install faster-whisper                # transcripción de voz (opcional)
 ```
 
-Luego, en 3 terminales (o `VS Code → Tasks: Run Task → Up: All`):
+**Opción A — Gestor interactivo (recomendado):**
+```bash
+python scripts/services.py   # menú para arrancar/detener/ver logs
+```
 
+**Opción B — Manual (3 terminales):**
 ```bash
 ollama serve                                                       # T1
 uv run uvicorn src.backend.api.main:app --reload --port 8000       # T2

@@ -181,12 +181,12 @@ def _write_summary(rows: list[dict[str, Any]], path: Path, output_csv: Path) -> 
     supplement = frame[frame["sample_type"].str.startswith("balanced_")]
     supplement_by_label = supplement["weak_label_p1p4"].value_counts().reindex(LABELS, fill_value=0)
     lines = [
-        "# Muestra de validacion interna v0.1.0",
+        "# Muestra de validación interna v0.1.0",
         "",
         f"Generado: `{datetime.now(timezone.utc).isoformat()}`",
         f"CSV: `{_rel(output_csv)}`",
         "",
-        "## Composicion",
+        "## Composición",
         "",
         f"- Casos totales: {len(rows)}",
         f"- Falsos negativos P1 incluidos: {int(by_type.get('critical_p1_false_negative', 0))}",
@@ -194,9 +194,9 @@ def _write_summary(rows: list[dict[str, Any]], path: Path, output_csv: Path) -> 
             "- Muestra equilibrada adicional por clase: "
             + ", ".join(f"{label}={int(supplement_by_label[label])}" for label in LABELS)
         ),
-        f"- Distribucion total por weak label: {', '.join(f'{label}={int(by_label[label])}' for label in LABELS)}",
+        f"- Distribución total por weak label: {', '.join(f'{label}={int(by_label[label])}' for label in LABELS)}",
         "",
-        "## Distribucion por tipo de muestra",
+        "## Distribución por tipo de muestra",
         "",
     ]
     for sample_type, count in by_type.items():

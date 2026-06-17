@@ -71,26 +71,26 @@ INCIDENTS = [
         title="Fuga de gas en nave industrial",
         description=(
             "Aviso por fuga de gas y olor fuerte en nave. Hay trabajadores mareados "
-            "por posible intoxicacion e inhalacion de humo, con dificultad respiratoria "
+            "por posible intoxicación e inhalación de humo, con dificultad respiratoria "
             "y riesgo vital."
         ),
         category="QUIMICO_NRBQ",
         province="VALLADOLID",
         locality="Valladolid",
-        rationale="Riesgo quimico con intoxicacion y necesidad de recursos especializados.",
+        rationale="Riesgo químico con intoxicación y necesidad de recursos especializados.",
     ),
     SmokeIncident(
         expected_priority="P3",
         incident_id="SMOKE-P3-ARBOL-CALZADA",
-        title="Arbol caido en carretera secundaria",
+        title="Árbol caído en carretera secundaria",
         description=(
-            "Arbol caido ocupa parcialmente un carril. No hay heridos ni vehiculos "
-            "atrapados. Trafico lento en la zona."
+            "Árbol caído ocupa parcialmente un carril. No hay heridos ni vehículos "
+            "atrapados. Tráfico lento en la zona."
         ),
         category="INCIDENCIA_VIA",
         province="SORIA",
         locality="Soria",
-        rationale="Incidencia vial sin victimas que requiere evaluacion y gestion ordinaria.",
+        rationale="Incidencia vial sin víctimas que requiere evaluación y gestión ordinaria.",
     ),
     SmokeIncident(
         expected_priority="P4",
@@ -98,12 +98,12 @@ INCIDENTS = [
         title="Aviso informativo sin riesgo",
         description=(
             "Consulta vecinal por ruido y molestias leves. No hay heridos, no hay fuego, "
-            "no hay personas atrapadas y no se requiere intervencion urgente."
+            "no hay personas atrapadas y no se requiere intervención urgente."
         ),
         category="OTROS",
         province="SORIA",
         locality="Soria",
-        rationale="Aviso ordinario sin senales de riesgo vital ni urgencia operativa.",
+        rationale="Aviso ordinario sin señales de riesgo vital ni urgencia operativa.",
     ),
 ]
 

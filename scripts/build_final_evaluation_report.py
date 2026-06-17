@@ -117,7 +117,7 @@ def _write_markdown(report: dict[str, Any], path: Path) -> None:
     summary = report["summary"]
     artifacts = report["artifact_inventory"]
     lines = [
-        "# Reporte final de evaluacion y trazabilidad v0.1.0",
+        "# Reporte final de evaluación y trazabilidad v0.1.0",
         "",
         f"Generado: `{report['generated_at']}`",
         "",
@@ -144,7 +144,7 @@ def _write_markdown(report: dict[str, Any], path: Path) -> None:
             f"P1->P4={summary['critical_errors']['p1_to_p4']})."
         ),
         (
-            "- Validacion interna: "
+            "- Validación interna: "
             f"{summary['internal_validation']['sample_rows']} casos, con "
             f"{summary['internal_validation']['p1_false_negatives_included']} P1 falsos negativos "
             f"y {summary['internal_validation']['balanced_extra_cases']} casos equilibrados."
@@ -153,15 +153,15 @@ def _write_markdown(report: dict[str, Any], path: Path) -> None:
             "- Fidelidad explicativa offline: "
             f"pass rate {summary['explanation_fidelity']['pass_rate']}, "
             f"media {summary['explanation_fidelity']['mean_fidelity']}, "
-            f"minima {summary['explanation_fidelity']['min_fidelity']}."
+            f"mínima {summary['explanation_fidelity']['min_fidelity']}."
         ),
         "",
         "## Trazabilidad documental",
         "",
-        "| Documento | Papel en la evaluacion |",
+        "| Documento | Papel en la evaluación |",
         "|---|---|",
-        "| `latex/chapters/chap9.tex` | Narrativa academica de resultados, sesgo, errores P1, validacion y fidelidad. |",
-        "| `latex/chapters/anexo_d.tex` | Plantilla y muestra real de validacion interna. |",
+        "| `latex/chapters/chap9.tex` | Narrativa académica de resultados, sesgo, errores P1, validación y fidelidad. |",
+        "| `latex/chapters/anexo_d.tex` | Plantilla y muestra real de validación interna. |",
         "| `latex/chapters/anexo_l.tex` | Model card de Capa 2 y fidelidad de Capa 3. |",
         "| `latex/chapters/chap10.tex` | Conclusiones, limitaciones y trabajo futuro. |",
         "",
@@ -177,9 +177,9 @@ def _write_markdown(report: dict[str, Any], path: Path) -> None:
             "",
             "## Cierre",
             "",
-            "Este reporte es el indice maestro de evaluacion v0.1.0. La conformidad UE-IA extendida "
+            "Este reporte es el índice maestro de evaluación v0.1.0. La conformidad UE-IA extendida "
             "queda reservada para el Anexo M/T115, pero este documento ya enlaza los artefactos "
-            "necesarios de metricas, sesgo, errores criticos, validacion interna y fidelidad explicativa.",
+            "necesarios de métricas, sesgo, errores críticos, validación interna y fidelidad explicativa.",
         ]
     )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

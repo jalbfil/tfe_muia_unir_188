@@ -19,8 +19,11 @@ logger = logging.getLogger(__name__)
 _OLLAMA_CHAT_URL = "http://localhost:11434/api/chat"
 _OLLAMA_TAGS_URL = "http://localhost:11434/api/tags"
 _DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1:8b-instruct-q4_K_M")
-_TIMEOUT_AVAIL = 2.0
-_TIMEOUT_CHAT = 120.0
+# Cold-start tolerante: cargar un modelo cuantizado de ~5 GB en memoria puede
+# superar los 2 s. Un umbral demasiado bajo provoca falsos negativos en
+# is_available() y degradacion innecesaria de la Capa 3. Configurable por entorno.
+_TIMEOUT_AVAIL = float(os.environ.get("OLLAMA_AVAIL_TIMEOUT", "10.0"))
+_TIMEOUT_CHAT = float(os.environ.get("OLLAMA_CHAT_TIMEOUT", "120.0"))
 
 
 class QwenWrapper:
@@ -80,6 +83,7 @@ class QwenWrapper:
         *,
         max_tokens: int = 600,
         temperature: float = 0.0,
+        response_format: str | None = None,
     ) -> str:
         """Generate a complete chat response."""
 
@@ -89,14 +93,18 @@ class QwenWrapper:
         if model is None:
             raise RuntimeError(f"Modelo Ollama no disponible: {self._model_name}")
 
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "options": {"temperature": temperature, "num_predict": max_tokens},
+        }
+        if response_format:
+            payload["format"] = response_format
+
         response = httpx.post(
             _OLLAMA_CHAT_URL,
-            json={
-                "model": model,
-                "messages": messages,
-                "stream": False,
-                "options": {"temperature": temperature, "num_predict": max_tokens},
-            },
+            json=payload,
             timeout=_TIMEOUT_CHAT,
         )
         response.raise_for_status()
@@ -108,6 +116,7 @@ class QwenWrapper:
         *,
         max_tokens: int = 600,
         temperature: float = 0.0,
+        response_format: str | None = None,
     ) -> Generator[str, None, None]:
         """Yield incremental text chunks from Ollama streaming."""
 
@@ -117,15 +126,19 @@ class QwenWrapper:
         if model is None:
             raise RuntimeError(f"Modelo Ollama no disponible: {self._model_name}")
 
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": True,
+            "options": {"temperature": temperature, "num_predict": max_tokens},
+        }
+        if response_format:
+            payload["format"] = response_format
+
         with httpx.stream(
             "POST",
             _OLLAMA_CHAT_URL,
-            json={
-                "model": model,
-                "messages": messages,
-                "stream": True,
-                "options": {"temperature": temperature, "num_predict": max_tokens},
-            },
+            json=payload,
             timeout=_TIMEOUT_CHAT,
         ) as response:
             response.raise_for_status()

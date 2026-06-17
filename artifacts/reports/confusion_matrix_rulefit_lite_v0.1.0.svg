@@ -11,29 +11,29 @@
 <text x="371" y="78" font-family="Arial" font-size="13">P4</text>
 <text x="86" y="344" font-family="Arial" font-size="13">P4</text>
 <rect x="130" y="86" width="68" height="68" fill="#2563eb" opacity="0.900"/>
-<text x="156" y="126" font-family="Arial" font-size="15" fill="#111">597</text>
-<rect x="202" y="86" width="68" height="68" fill="#2563eb" opacity="0.162"/>
-<text x="228" y="126" font-family="Arial" font-size="15" fill="#111">32</text>
-<rect x="274" y="86" width="68" height="68" fill="#2563eb" opacity="0.145"/>
-<text x="300" y="126" font-family="Arial" font-size="15" fill="#111">19</text>
-<rect x="346" y="86" width="68" height="68" fill="#2563eb" opacity="0.120"/>
-<text x="372" y="126" font-family="Arial" font-size="15" fill="#111">0</text>
-<rect x="130" y="158" width="68" height="68" fill="#2563eb" opacity="0.170"/>
-<text x="156" y="198" font-family="Arial" font-size="15" fill="#111">38</text>
-<rect x="202" y="158" width="68" height="68" fill="#2563eb" opacity="0.483"/>
-<text x="228" y="198" font-family="Arial" font-size="15" fill="#111">278</text>
-<rect x="274" y="158" width="68" height="68" fill="#2563eb" opacity="0.137"/>
-<text x="300" y="198" font-family="Arial" font-size="15" fill="#111">13</text>
-<rect x="346" y="158" width="68" height="68" fill="#2563eb" opacity="0.129"/>
-<text x="372" y="198" font-family="Arial" font-size="15" fill="#111">7</text>
+<text x="156" y="126" font-family="Arial" font-size="15" fill="#111">596</text>
+<rect x="202" y="86" width="68" height="68" fill="#2563eb" opacity="0.164"/>
+<text x="228" y="126" font-family="Arial" font-size="15" fill="#111">34</text>
+<rect x="274" y="86" width="68" height="68" fill="#2563eb" opacity="0.144"/>
+<text x="300" y="126" font-family="Arial" font-size="15" fill="#111">18</text>
+<rect x="346" y="86" width="68" height="68" fill="#2563eb" opacity="0.129"/>
+<text x="372" y="126" font-family="Arial" font-size="15" fill="#111">7</text>
+<rect x="130" y="158" width="68" height="68" fill="#2563eb" opacity="0.168"/>
+<text x="156" y="198" font-family="Arial" font-size="15" fill="#111">37</text>
+<rect x="202" y="158" width="68" height="68" fill="#2563eb" opacity="0.515"/>
+<text x="228" y="198" font-family="Arial" font-size="15" fill="#111">302</text>
+<rect x="274" y="158" width="68" height="68" fill="#2563eb" opacity="0.133"/>
+<text x="300" y="198" font-family="Arial" font-size="15" fill="#111">10</text>
+<rect x="346" y="158" width="68" height="68" fill="#2563eb" opacity="0.120"/>
+<text x="372" y="198" font-family="Arial" font-size="15" fill="#111">0</text>
 <rect x="130" y="230" width="68" height="68" fill="#2563eb" opacity="0.120"/>
 <text x="156" y="270" font-family="Arial" font-size="15" fill="#111">0</text>
-<rect x="202" y="230" width="68" height="68" fill="#2563eb" opacity="0.198"/>
-<text x="228" y="270" font-family="Arial" font-size="15" fill="#111">60</text>
-<rect x="274" y="230" width="68" height="68" fill="#2563eb" opacity="0.555"/>
-<text x="300" y="270" font-family="Arial" font-size="15" fill="#111">333</text>
-<rect x="346" y="230" width="68" height="68" fill="#2563eb" opacity="0.125"/>
-<text x="372" y="270" font-family="Arial" font-size="15" fill="#111">4</text>
+<rect x="202" y="230" width="68" height="68" fill="#2563eb" opacity="0.161"/>
+<text x="228" y="270" font-family="Arial" font-size="15" fill="#111">31</text>
+<rect x="274" y="230" width="68" height="68" fill="#2563eb" opacity="0.566"/>
+<text x="300" y="270" font-family="Arial" font-size="15" fill="#111">341</text>
+<rect x="346" y="230" width="68" height="68" fill="#2563eb" opacity="0.124"/>
+<text x="372" y="270" font-family="Arial" font-size="15" fill="#111">3</text>
 <rect x="130" y="302" width="68" height="68" fill="#2563eb" opacity="0.120"/>
 <text x="156" y="342" font-family="Arial" font-size="15" fill="#111">0</text>
 <rect x="202" y="302" width="68" height="68" fill="#2563eb" opacity="0.120"/>

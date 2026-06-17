@@ -123,7 +123,7 @@ El baseline experto obtiene un recall P1 muy alto (0.998457), como cabia esperar
 su diseno conservador, pero su macro-F1 queda en 0.703932. RuleFit-lite mejora
 claramente la macro-F1 hasta 0.880750, manteniendo un recall P1 de 0.921296, por
 encima del umbral minimo de 0.85. RuleFit \texttt{imodels}, en la ejecucion diagnostica
-disponible, no supera a RuleFit-lite y presenta mayor latencia de inferencia.
+disponible, no supera a RuleFit-lite y presenta mayor latencia de inferencia.\footnote{Las metricas de RuleFit-lite proceden del reporte canonico \texttt{evaluation\_v0.1.0.json} (run 26-may 18:05~UTC). El artefacto \texttt{capa2\_model\_selection\_v0.1.0} refleja un run previo (17:32~UTC) con valores ligeramente distintos (acc~0.885911, F1~0.884163, recall~P1~0.938272); la presente tabla usa la evaluacion final sobre splits fijos.}
 
 La decision experimental es seleccionar \textbf{RuleFit-lite} como modelo Capa 2
 v0.1.0. La seleccion se basa en cuatro criterios: mejor macro-F1 reproducible en test,
@@ -201,8 +201,8 @@ incendios, casos sanitarios y provincias con menor soporte o peor macro-F1.
 \section{Interpretabilidad}
 
 RuleFit-lite exporta 30 reglas activas, cumpliendo el requisito de parsimonia. Las
-reglas combinan seniales legibles, por ejemplo riesgo vital textual, accidente de
-trafico, rescate, incendio o ausencia de seniales criticas. Esta forma de salida
+reglas combinan señales legibles, por ejemplo riesgo vital textual, accidente de
+trafico, rescate, incendio o ausencia de señales criticas. Esta forma de salida
 facilita su uso posterior por la Capa 3, que puede transformar reglas activadas en una
 explicacion normativa y operacional.
 
@@ -263,7 +263,34 @@ casos se obtiene pass rate 1.000000, fidelidad media 0.958747 y fidelidad minima
 Estos resultados no prueban calidad linguistica ni aceptacion por operadores, pero si
 aportan una garantia importante: incluso en modo degradado, las explicaciones no
 contradicen la salida de Capa 2 y conservan la trazabilidad minima exigida. Una
-evaluacion futura con LLM-as-Judge independiente puede reutilizar los mismos 111 casos.
+evaluacion futura con LLM-as-Judge independiente, en la linea propuesta por
+\citeA{Zheng2023LLMJudge}, puede reutilizar los mismos 111 casos.
+
+\section{Posicionamiento frente a trabajos relacionados}
+
+La Tabla~\ref{tab:9-comparativa-autores} contrasta el enfoque propuesto con los trabajos relacionados del estado del arte, siguiendo la recomendacion de presentar resultados propios frente a otros autores.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparativa del enfoque propuesto frente a trabajos relacionados}
+\label{tab:9-comparativa-autores}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{|p{2.6cm}|p{1.8cm}|p{1.8cm}|p{1.5cm}|p{1.4cm}|p{1.5cm}|p{2.0cm}|}
+\hline
+\textbf{Enfoque} & \textbf{Datos reales} & \textbf{Interp.} & \textbf{Expl. norm.} & \textbf{On-prem.} & \textbf{Superv.} & \textbf{Metrica clave} \\ \hline
+AIDR~\cite{Imran2014AIDR} & Redes sociales & No (DNN) & No & No & Fuerte & Acc. multi-label \\ \hline
+CrisisTransformers~\cite{Lamsal2024} & Crisis real & No (transformer) & No & Parcial & Fuerte & F1 clasificacion \\ \hline
+TREC-IS~\cite{TRECIS2021} & Twitter & No (ensemble) & No & No & Fuerte & Benchmarks \\ \hline
+Baseline experto (este TFM) & 112 CyL & Si (reglas) & Parcial & Si & Debil & F1 0{,}704; P1 recall 0{,}998 \\ \hline
+\textbf{RuleFit-lite~+~Capa~3} & \textbf{112 CyL} & \textbf{Si} & \textbf{Si} & \textbf{Si} & \textbf{Debil} & \textbf{F1 0{,}881; P1 0{,}921} \\ \hline
+\end{tabular}
+\end{table}
+
+\noindent\textit{Fuente: elaboracion propia a partir de los trabajos citados.}
+
+\smallskip
+Las ventajas diferenciales del enfoque son: (1)~datos empiricos reales del 112 CyL frente a redes sociales; (2)~nucleo interpretable con reglas auditables; (3)~explicacion normativa local sin APIs externas; y (4)~supervision debil que evita la dependencia de etiquetado manual masivo. La limitacion principal es la etiqueta academica P1--P4, no validada por personal operativo.
 
 \section{Smoke test integrado del prototipo}
 
@@ -346,7 +373,7 @@ La evaluacion presenta seis limitaciones principales:
     por coste computacional local; una ejecucion completa podria modificar sus
     resultados.
     \item El objetivo ECE $\leq 0.10$ queda reservado para una pasada final de
-    calibracion si el modelo se congela para demostracion.
+    calibracion \cite{Guo2017Calibration} si el modelo se congela para demostracion.
     \item Las variables externas diferidas en v0.1.0 (AEMET historico, SNCZI y Seveso)
     no participan en esta evaluacion.
     \item Las pruebas integradas demuestran funcionamiento tecnico P1--P4 y validacion

@@ -35,17 +35,22 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.logger = InferenceLogger(db_path=_DB_PATH, jsonl_path=_JSONL_PATH)
     app.state.log_cache: dict[str, str] = {}
 
-    # Inicializar wrapper LLM — si Ollama no está disponible, queda en None (modo degradado)
+    # Inicializar wrapper LLM. No se "congela" la disponibilidad en el arranque:
+    # se guarda siempre el wrapper y cada petición decide vía explain(), que ya
+    # aplica fallback degradado. Así el sistema se auto-recupera si Ollama tarda
+    # en cargar el modelo o arranca después que el backend.
     try:
         from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper  # type: ignore[import]
 
         wrapper = QwenWrapper()
+        app.state.llm = wrapper
         if wrapper.is_available():
-            app.state.llm = wrapper
-            _log.info("LLM disponible: Qwen2.5-7B-Instruct vía Ollama")
+            _log.info("LLM disponible al arranque: %s vía Ollama", wrapper.model_name)
         else:
-            app.state.llm = None
-            _log.warning("Ollama no disponible → modo degradado")
+            _log.warning(
+                "Ollama no disponible al arranque; se reintentará por petición "
+                "(degradado temporal hasta que el modelo cargue)."
+            )
     except Exception as exc:
         app.state.llm = None
         _log.warning("Error al inicializar LLM: %s → modo degradado", exc)

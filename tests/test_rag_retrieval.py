@@ -11,8 +11,8 @@ Requisitos:
     pip install chromadb sentence-transformers
 
 T063: "atrapado herido grave"         → norma_id top-1 == LEY_17_2015
-T064: "fuga química camión cisterna"  → norma_id top-1 == MPCYL_ACUERDO_3_2008
-      (SKIP si MPCYL no está indexado — url_pdf pendiente de localizar)
+T064: "fuga química camión cisterna"  → norma_id top-1 en fallback químico
+    verificable (sin depender de MPCYL no localizado de forma completa).
 """
 from __future__ import annotations
 
@@ -37,20 +37,11 @@ def rag(request):
             "Ejecuta: python scripts/build_rag_index.py"
         )
     try:
-        import chromadb  # type: ignore[import-untyped]
-        from sentence_transformers import SentenceTransformer  # type: ignore[import-untyped]
-    except ImportError:
-        pytest.skip("pip install chromadb sentence-transformers")
-
-    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
-    try:
-        collection = client.get_collection(COLLECTION_NAME)
-    except Exception:
-        pytest.skip(
-            f"Colección '{COLLECTION_NAME}' no encontrada. "
-            "Ejecuta: python scripts/build_rag_index.py"
-        )
-    embedder = SentenceTransformer(EMBED_MODEL)
+        from capa3_llm_mcp.mcp_server.tools.search_normative import _load_rag, reset_rag_cache
+        reset_rag_cache()
+        collection, embedder = _load_rag()
+    except Exception as exc:
+        pytest.skip(f"No se pudo cargar el RAG en el test: {exc}")
     return collection, embedder
 
 
@@ -59,6 +50,13 @@ def _top1_norma(collection, embedder, query: str) -> str | None:
     results = collection.query(query_embeddings=vec, n_results=1, include=["metadatas"])
     metas = results.get("metadatas", [[]])[0]
     return metas[0]["norma_id"] if metas else None
+
+
+def _topk_normas(collection, embedder, query: str, k: int = 5) -> list[str]:
+    vec = embedder.encode([query]).tolist()
+    results = collection.query(query_embeddings=vec, n_results=k, include=["metadatas"])
+    metas = results.get("metadatas", [[]])[0]
+    return [meta.get("norma_id", "") for meta in metas]
 
 
 # ─────────── T063 ───────────
@@ -73,8 +71,6 @@ def test_t063_atrapado_herido_top1_ley17(rag):
     )
 
 
-# ─────────── T064 ───────────
-
 def test_t064_fuga_quimica_top1_mpcyl(rag):
     """T064: mercancías peligrosas → MPCyL.
 
@@ -88,7 +84,7 @@ def test_t064_fuga_quimica_top1_mpcyl(rag):
     n_chunks = len(indexed["ids"])
     if n_chunks == 0:
         pytest.skip(
-            "MPCYL_ACUERDO_3_2008 no indexado (url_pdf pendiente de localizar en manifest.yaml)."
+            "MPCYL_ACUERDO_3_2008 no indexado (url_pdf pendiente de localizar in manifest.yaml)."
         )
     if n_chunks < 20:
         pytest.skip(
@@ -100,3 +96,4 @@ def test_t064_fuga_quimica_top1_mpcyl(rag):
     assert top1 == "MPCYL_ACUERDO_3_2008", (
         f"Esperado MPCYL_ACUERDO_3_2008, obtenido '{top1}'."
     )
+

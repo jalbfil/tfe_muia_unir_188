@@ -1,26 +1,26 @@
-# Evaluacion Capa 2 v0.1.0
+# Evaluación Capa 2 v0.1.0
 
-Generado: `2026-05-26T18:05:26.252274+00:00`
+Generado: `2026-06-17T15:28:22.840997+00:00`
 
 ## Resumen
 
 | Split | Filas | Accuracy | Macro-F1 | Recall P1 |
 |---|---:|---:|---:|---:|
-| Test estratificado | 1455 | 0.8811 | 0.88075 | 0.921296 |
+| Test estratificado | 1453 | 0.903648 | 0.905604 | 0.909924 |
 | Test temporal | 735 | 0.884354 | 0.877594 | 0.928767 |
 
-## Matriz de confusion test estratificado
+## Matriz de confusión test estratificado
 
 | Referencia / Prediccion | P1 | P2 | P3 | P4 |
 |---|---:|---:|---:|---:|
-| P1 | 597 | 32 | 19 | 0 |
-| P2 | 38 | 278 | 13 | 7 |
-| P3 | 0 | 60 | 333 | 4 |
+| P1 | 596 | 34 | 18 | 7 |
+| P2 | 37 | 302 | 10 | 0 |
+| P3 | 0 | 31 | 341 | 3 |
 | P4 | 0 | 0 | 0 | 74 |
 
 ## Falsos negativos P1
 
-Total: 51; P1->P2: 32; P1->P3: 19; P1->P4: 0.
+Total: 59; P1->P2: 34; P1->P3: 18; P1->P4: 7.
 
 ## Artefactos
 

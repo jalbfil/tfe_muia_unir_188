@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-05-27T10:24:45.151342+00:00",
+  "generated_at": "2026-06-17T15:32:07.068751+00:00",
   "scope": "T116 final evaluation traceability report",
   "summary": {
     "selected_model": "RuleFit-lite",
     "stratified_test": {
-      "rows": 1455,
-      "accuracy": 0.8811,
-      "macro_f1": 0.88075,
-      "recall_p1": 0.921296
+      "rows": 1453,
+      "accuracy": 0.903648,
+      "macro_f1": 0.905604,
+      "recall_p1": 0.909924
     },
     "temporal_test": {
       "rows": 735,
@@ -16,21 +16,21 @@
       "recall_p1": 0.928767
     },
     "critical_errors": {
-      "p1_false_negatives": 51,
-      "p1_to_p2": 32,
-      "p1_to_p3": 19,
-      "p1_to_p4": 0
+      "p1_false_negatives": 59,
+      "p1_to_p2": 34,
+      "p1_to_p3": 18,
+      "p1_to_p4": 7
     },
     "internal_validation": {
-      "sample_rows": 111,
-      "p1_false_negatives_included": 51,
+      "sample_rows": 119,
+      "p1_false_negatives_included": 59,
       "balanced_extra_cases": 60
     },
     "explanation_fidelity": {
-      "rows": 111,
+      "rows": 119,
       "pass_rate": 1.0,
-      "mean_fidelity": 0.958747,
-      "min_fidelity": 0.925,
+      "mean_fidelity": 0.957367,
+      "min_fidelity": 0.933333,
       "judge_mode": "deterministic_offline_proxy"
     }
   },
@@ -44,92 +44,92 @@
     "evaluation_json": {
       "path": "artifacts\\reports\\evaluation_v0.1.0.json",
       "exists": true,
-      "bytes": 11607
+      "bytes": 11606
     },
     "evaluation_markdown": {
       "path": "artifacts\\reports\\evaluation_v0.1.0.md",
       "exists": true,
-      "bytes": 1301
+      "bytes": 1306
     },
     "explanation_fidelity_json": {
       "path": "artifacts\\reports\\explanation_fidelity_v0.1.0.json",
       "exists": true,
-      "bytes": 1642
+      "bytes": 1641
     },
     "explanation_fidelity_markdown": {
       "path": "artifacts\\reports\\explanation_fidelity_v0.1.0.md",
       "exists": true,
-      "bytes": 1146
+      "bytes": 1154
     },
     "explanation_fidelity_cases": {
       "path": "artifacts\\reports\\explanation_fidelity_cases_v0.1.0.csv",
       "exists": true,
-      "bytes": 49756
+      "bytes": 53644
     },
     "internal_validation_sample": {
       "path": "resources\\internal_validation\\casos_revision_v0.1.0.csv",
       "exists": true,
-      "bytes": 113125
+      "bytes": 121018
     },
     "internal_validation_summary": {
       "path": "resources\\internal_validation\\casos_revision_v0.1.0.md",
       "exists": true,
-      "bytes": 2388
+      "bytes": 2379
     },
     "internal_validation_protocol": {
       "path": "resources\\internal_validation\\protocolo_validacion_interna.md",
       "exists": true,
-      "bytes": 3472
+      "bytes": 3548
     },
     "p1_error_analysis": {
       "path": "artifacts\\reports\\p1_error_analysis_v0.1.0.csv",
       "exists": true,
-      "bytes": 21854
+      "bytes": 25302
     },
     "bias_by_province": {
       "path": "artifacts\\reports\\bias_by_province_v0.1.0.csv",
       "exists": true,
-      "bytes": 539
+      "bytes": 536
     },
     "bias_by_year": {
       "path": "artifacts\\reports\\bias_by_year_v0.1.0.csv",
       "exists": true,
-      "bytes": 784
+      "bytes": 783
     },
     "bias_by_category": {
       "path": "artifacts\\reports\\bias_by_category_v0.1.0.csv",
       "exists": true,
-      "bytes": 245
+      "bytes": 246
     },
     "capitulo_9": {
       "path": "latex\\chapters\\chap9.tex",
       "exists": true,
-      "bytes": 14688
+      "bytes": 21359
     },
     "anexo_d": {
       "path": "latex\\chapters\\anexo_d.tex",
       "exists": true,
-      "bytes": 6647
+      "bytes": 6784
     },
     "anexo_l": {
       "path": "latex\\chapters\\anexo_l.tex",
       "exists": true,
-      "bytes": 6427
+      "bytes": 11759
     },
     "capitulo_10": {
       "path": "latex\\chapters\\chap10.tex",
       "exists": true,
-      "bytes": 8146
+      "bytes": 13880
     },
     "final_traceability_json": {
       "path": "artifacts\\reports\\final_evaluation_traceability_v0.1.0.json",
       "exists": true,
-      "bytes": 3729
+      "bytes": 3737
     },
     "final_traceability_markdown": {
       "path": "artifacts\\reports\\final_evaluation_traceability_v0.1.0.md",
       "exists": true,
-      "bytes": 2809
+      "bytes": 2829
     }
   },
   "open_items": [

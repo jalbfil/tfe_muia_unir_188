@@ -1,29 +1,29 @@
-# T113 - Evaluacion de fidelidad de explicaciones
+# T113 - Evaluación de fidelidad de explicaciones
 
-Generado: `2026-05-26T18:46:54.631816+00:00`
+Generado: `2026-06-17T15:32:01.046211+00:00`
 
 ## Resultado global
 
-- Casos evaluados: 111
+- Casos evaluados: 119
 - Pass rate: 1.0
-- Fidelidad media: 0.958747
-- Fidelidad minima: 0.925
+- Fidelidad media: 0.957367
+- Fidelidad mínima: 0.933333
 
 ## Por tipo de muestra
 
 | Tipo | Casos | Pass rate | Fidelidad media |
 |---|---:|---:|---:|
-| balanced_p1 | 15 | 1.0 | 0.97381 |
-| balanced_p2 | 15 | 1.0 | 0.956191 |
-| balanced_p3 | 15 | 1.0 | 0.959302 |
+| balanced_p1 | 15 | 1.0 | 0.964286 |
+| balanced_p2 | 15 | 1.0 | 0.956032 |
+| balanced_p3 | 15 | 1.0 | 0.956889 |
 | balanced_p4 | 15 | 1.0 | 0.971429 |
-| critical_p1_false_negative | 51 | 1.0 | 0.951176 |
+| critical_p1_false_negative | 59 | 1.0 | 0.952494 |
 
 ## Checks
 
-- priority_alignment: la explicacion menciona la prioridad recomendada por Capa 2.
+- priority_alignment: la explicación menciona la prioridad recomendada por Capa 2.
 - rule_traceability: incluye resumen de reglas cuando procede.
-- signal_coverage: cubre las senales textuales principales.
+- signal_coverage: cubre las señales textuales principales.
 - legal_traceability: P1/P2 incluyen citas legales.
 - no_contradiction: no menciona otra prioridad incompatible.
 - confidence_disclaimer: comunica cautela o modo degradado.

@@ -1,30 +1,31 @@
 {
-  "generated_at": "2026-05-26T18:46:54.631816+00:00",
-  "scope": "T113 offline explanation fidelity over internal validation sample",
+  "generated_at": "2026-06-17T15:32:01.046211+00:00",
+  "scope": "T113 explanation fidelity over internal validation sample",
   "judge_mode": "deterministic_offline_proxy",
+  "judge_config": {},
   "model_evaluated": "degraded-static-v0.1.0",
   "sample_csv": "resources\\internal_validation\\casos_revision_v0.1.0.csv",
   "summary": {
-    "rows": 111,
-    "passed": 111,
+    "rows": 119,
+    "passed": 119,
     "pass_rate": 1.0,
-    "mean_fidelity": 0.958747,
-    "min_fidelity": 0.925,
+    "mean_fidelity": 0.957367,
+    "min_fidelity": 0.933333,
     "by_sample_type": {
       "balanced_p1": {
         "rows": 15,
         "pass_rate": 1.0,
-        "mean_fidelity": 0.97381
+        "mean_fidelity": 0.964286
       },
       "balanced_p2": {
         "rows": 15,
         "pass_rate": 1.0,
-        "mean_fidelity": 0.956191
+        "mean_fidelity": 0.956032
       },
       "balanced_p3": {
         "rows": 15,
         "pass_rate": 1.0,
-        "mean_fidelity": 0.959302
+        "mean_fidelity": 0.956889
       },
       "balanced_p4": {
         "rows": 15,
@@ -32,12 +33,13 @@
         "mean_fidelity": 0.971429
       },
       "critical_p1_false_negative": {
-        "rows": 51,
+        "rows": 59,
         "pass_rate": 1.0,
-        "mean_fidelity": 0.951176
+        "mean_fidelity": 0.952494
       }
     },
-    "failed_checks": {}
+    "failed_checks": {},
+    "parse_errors": 0
   },
   "artifacts": {
     "json": "artifacts\\reports\\explanation_fidelity_v0.1.0.json",
@@ -45,8 +47,8 @@
     "cases_csv": "artifacts\\reports\\explanation_fidelity_cases_v0.1.0.csv"
   },
   "limitations": [
-    "This is a deterministic proxy judge, not an external LLM-as-Judge run.",
-    "It verifies fidelity to Capa 2 outputs and rule evidence, not linguistic quality.",
-    "A future run can replace the judge with an independent local LLM over the same cases."
+    "The deterministic judge is the canonical, reproducible gate.",
+    "The independent LLM judge is non-deterministic; it provides external corroboration only.",
+    "Per-case raw judge JSON is stored for audit."
   ]
 }

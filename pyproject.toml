@@ -22,13 +22,24 @@ classifiers = [
 ]
 
 # Dependencias mínimas comunes. Cada capa añade las suyas en su propio pyproject.
+# NOTA: chromadb 0.5.x usa np.float_ eliminado en NumPy 2.0 → numpy<2 fijado.
+# chroma-hnswlib 0.7.5 tiene wheels precompilados para Windows (sin MSVC).
 dependencies = [
     "pydantic>=2.7,<3",
     "python-ulid>=2.2",
     "fastapi[standard]>=0.111",
     "httpx>=0.27",
-    "streamlit>=1.35",
+    "streamlit>=1.38",
     "pandas>=2.2",
+    # NumPy <2 requerido por chromadb 0.5.x (np.float_ fue eliminado en NumPy 2.0)
+    "numpy>=1.24,<2",
+    # Capa 3 — RAG semántico: corpus normativo CyL (T061-T062)
+    # Pin exacto: chromadb 0.5.4 → chroma-hnswlib 0.7.5 (wheel Windows disponible)
+    # NO subir a 0.5.5+ (requieren chroma-hnswlib 0.7.6 que necesita MSVC)
+    "chromadb==0.5.4",
+    "sentence-transformers>=3.0,<4",
+    "matplotlib>=3.10.9",
+    "seaborn>=0.13.2",
 ]
 
 [project.optional-dependencies]
@@ -37,6 +48,15 @@ capa2 = [
     "joblib>=1.5,<2",
     "pandas>=2.2,<4",
     "scikit-learn==1.7.2",
+]
+# capa3 queda como alias docúdmentado; chromadb y sentence-transformers
+# ya están en las dependencias principales.
+capa3 = []
+audio = [
+    # Transcripción local de audio → texto. Usa CTranslate2 (sin PyTorch requerido
+    # para CPU; con CUDA acelera en GPU como RTX 5070).
+    # Modelos disponibles: tiny | base | small | medium | large-v3
+    "faster-whisper>=1.0,<2",
 ]
 dev = [
     "ruff>=0.5",
@@ -61,8 +81,11 @@ packages = ["src/contracts/contracts"]
 
 # ─────────────────────────── uv ────────────────────────────────────────────────
 [tool.uv]
-# Asegura que el grupo dev se instala por defecto con `uv sync`.
-default-groups = ["dev"]
+# Instala dev + audio con `uv sync` (sin flags adicionales).
+default-groups = ["dev", "audio"]
+# Prohíbe compilar chroma-hnswlib desde fuente (requiere MSVC en Windows).
+# Sólo se usará el wheel precompilado de chroma-hnswlib==0.7.5.
+no-build-package = ["chroma-hnswlib"]
 
 [dependency-groups]
 dev = [
@@ -73,6 +96,19 @@ dev = [
     "pytest-cov>=5",
     "polyfactory>=2.16",
     "pre-commit>=3.7",
+    # Requerido por scripts/build_rag_index.py para leer los PDFs del corpus normativo.
+    # Siempre debe instalarse para garantizar reproducibilidad del índice RAG.
+    "pdfplumber>=0.11,<1",
+    # Requerido por src/capa3_llm_mcp/mcp_server/server.py (FastMCP).
+    # Permite exponer search_normative, cite_legal_basis y get_rule_details
+    # como tools MCP consumibles desde clientes externos (agentes, IDEs).
+    "mcp>=1.0",
+]
+audio = [
+    # Transcripción local de audio → texto para la UI Streamlit.
+    # Usa CTranslate2 (CPU o GPU CUDA). Sin él la sección de voz muestra un banner.
+    # Modelos: tiny | base | small (default) | medium | large-v3
+    "faster-whisper>=1.0,<2",
 ]
 
 # ─────────────────────────── Ruff ──────────────────────────────────────────────
@@ -148,6 +184,7 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests", "src/contracts/tests", "src/capa3_llm_mcp/tests"]
+pythonpath = [".", "src"]
 addopts = "-q --strict-markers --strict-config"
 markers = [
     "slow: tests lentos (entrenamiento, inferencia LLM)",

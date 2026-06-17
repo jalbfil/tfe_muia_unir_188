@@ -1,4 +1,4 @@
-"""Baseline experto P1-P4 basado en seniales predecisionales.
+"""Baseline experto P1-P4 basado en señales predecisionales.
 
 No depende de Pydantic para poder evaluarse sobre CSV en entornos minimos. El
 adaptador de `rules.py` convierte estos resultados al contrato oficial.
@@ -94,7 +94,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P1",
         3.8,
         "signal_fallecido",
-        "Fallecimiento indicado en el texto o seniales lexicas",
+        "Fallecimiento indicado en el texto o señales léxicas",
         ("LEY_17_2015", "PLANCAL_DEC_4_2019"),
         lambda row: _bool(row, "signal_fallecido") or "fallece" in _text(row),
     ),
@@ -103,7 +103,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P1",
         3.4,
         "riesgo_vital or riesgo_vital_textual",
-        "Riesgo vital explicito requiere maxima prioridad academica",
+        "Riesgo vital explícito requiere máxima prioridad académica",
         ("LEY_17_2015", "PLANCAL_DEC_4_2019"),
         lambda row: _bool(row, "riesgo_vital") or _bool(row, "riesgo_vital_textual"),
     ),
@@ -112,7 +112,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P1",
         2.7,
         "signal_herido_grave and signal_atrapado",
-        "Herido grave atrapado combina dano personal y rescate urgente",
+        "Herido grave atrapado combina daño personal y rescate urgente",
         ("LEY_17_2015", "PLANCAL_DEC_4_2019"),
         lambda row: _bool(row, "signal_herido_grave") and _bool(row, "signal_atrapado"),
     ),
@@ -121,7 +121,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P1",
         2.5,
         "numero_victimas_estimado >= 3 and riesgo_vital",
-        "Multiples victimas con riesgo vital elevan el incidente a P1",
+        "Múltiples víctimas con riesgo vital elevan el incidente a P1",
         ("LEY_17_2015", "PLANCAL_DEC_4_2019"),
         lambda row: _int(row, "numero_victimas_estimado") >= 3 and _bool(row, "riesgo_vital"),
     ),
@@ -139,7 +139,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P2",
         2.0,
         "signal_atrapado",
-        "Persona atrapada exige coordinacion operativa prioritaria",
+        "Persona atrapada exige coordinación operativa prioritaria",
         ("PLANCAL_DEC_4_2019",),
         lambda row: _bool(row, "signal_atrapado"),
     ),
@@ -148,7 +148,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P2",
         1.9,
         "signal_intoxicacion",
-        "Intoxicacion o riesgo NRBQ requiere escalado preventivo",
+        "Intoxicación o riesgo NRBQ requiere escalado preventivo",
         ("MPCYL_ACUERDO_3_2008", "PLANCAL_DEC_4_2019"),
         lambda row: _bool(row, "signal_intoxicacion") or "intoxic" in _text(row),
     ),
@@ -156,11 +156,13 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "EXP-P2-INCENDIO-VIVIENDA",
         "P2",
         1.8,
-        "signal_incendio and (sanitario or urbano or vivienda)",
-        "Incendio en entorno habitado puede evolucionar rapidamente",
+        "signal_incendio and (sanitario or urbano or vivienda) and not extinguido",
+        "Incendio en entorno habitado puede evolucionar rápidamente",
         ("PLANCAL_DEC_4_2019", "LEY_4_2007_CYL"),
         lambda row: _bool(row, "signal_incendio") and any(
             term in _text(row) for term in ("vivienda", "urbano", "sanitario", "edificio")
+        ) and not any(
+            term in _text(row) for term in ("sofocado", "apagado", "extinguido", "controlado")
         ),
     ),
     ExpertRule(
@@ -168,7 +170,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P2",
         1.7,
         "signal_rescate",
-        "Rescate implica complejidad tecnica y coordinacion de recursos",
+        "Rescate implica complejidad técnica y coordinación de recursos",
         ("PLANCAL_DEC_4_2019",),
         lambda row: _bool(row, "signal_rescate"),
     ),
@@ -177,7 +179,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P2",
         1.6,
         "signal_accidente_trafico and signal_herido_grave",
-        "Accidente de trafico con heridos graves requiere respuesta prioritaria",
+        "Accidente de tráfico con heridos graves requiere respuesta prioritaria",
         ("LEY_17_2015", "REGISTRO_112_CYL"),
         lambda row: _bool(row, "signal_accidente_trafico") and _bool(row, "signal_herido_grave"),
     ),
@@ -186,7 +188,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P2",
         1.4,
         "signal_meteo_inundacion and signal_varias_llamadas",
-        "Inundacion o meteorologia adversa con varias llamadas sugiere impacto zonal",
+        "Inundación o meteorología adversa con varias llamadas sugiere impacto zonal",
         ("INUNCYL", "PLANCAL_DEC_4_2019"),
         lambda row: _bool(row, "signal_meteo_inundacion") and _bool(row, "signal_varias_llamadas"),
     ),
@@ -195,7 +197,7 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "P3",
         1.0,
         "signal_accidente_trafico",
-        "Accidente de trafico sin senial critica conserva prioridad de seguimiento",
+        "Accidente de tráfico sin señal crítica conserva prioridad de seguimiento",
         ("REGISTRO_112_CYL",),
         lambda row: _bool(row, "signal_accidente_trafico"),
     ),
@@ -212,26 +214,59 @@ EXPERT_RULES: tuple[ExpertRule, ...] = (
         "EXP-P3-INCENDIO-SIN-VICTIMAS",
         "P3",
         0.9,
-        "signal_incendio",
-        "Incendio sin victimas explicitas requiere vigilancia y recursos",
+        "signal_incendio and not menor",
+        "Incendio sin víctimas explícitas requiere vigilancia y recursos",
         ("LEY_4_2007_CYL", "PLANCAL_DEC_4_2019"),
-        lambda row: _bool(row, "signal_incendio"),
+        lambda row: _bool(row, "signal_incendio") and not any(
+            term in _text(row) for term in ("contenedor", "basura", "papelera", "vertedero")
+        ),
+    ),
+    ExpertRule(
+        "EXP-P3-SANITARIO-ORDINARIO",
+        "P3",
+        1.2,
+        "categoria de traslado o ambulancia ordinaria",
+        "Petición de ambulancia o traslado sanitario ordinario sin riesgos vitales",
+        ("REGISTRO_112_CYL",),
+        lambda row: _category(row, "sanitario") or "ambulancia" in _text(row),
     ),
     ExpertRule(
         "EXP-P3-METEO-INUNDACION",
         "P3",
         0.8,
         "signal_meteo_inundacion",
-        "Incidente meteorologico o inundacion requiere seguimiento territorial",
+        "Incidente meteorológico o inundación requiere seguimiento territorial",
         ("INUNCYL",),
         lambda row: _bool(row, "signal_meteo_inundacion"),
+    ),
+    ExpertRule(
+        "EXP-P4-INCENDIO-MENOR",
+        "P4",
+        1.5,
+        "signal_incendio and (contenedor or basura or papelera)",
+        "Incendio menor (contenedor, papelera, basura) sin riesgos asociados",
+        ("REGISTRO_112_CYL",),
+        lambda row: _bool(row, "signal_incendio") and any(
+            term in _text(row) for term in ("contenedor", "basura", "papelera")
+        ),
+    ),
+    ExpertRule(
+        "EXP-P4-ACCIDENTE-MENOR",
+        "P4",
+        1.5,
+        "signal_accidente_trafico and sin heridos",
+        "Accidente menor sin heridos ni atrapamientos",
+        ("REGISTRO_112_CYL",),
+        lambda row: _bool(row, "signal_accidente_trafico") and any(
+            term in _text(row) for term in ("sin heridos", "daños materiales", "solo chapa", "leve", "raspado")
+        ),
     ),
     ExpertRule(
         "EXP-P4-SIN-SENALES-CRITICAS",
         "P4",
         0.8,
         "no critical signals and numero_llamadas == 1",
-        "Ausencia de seniales criticas y llamada unica sugiere prioridad baja",
+        "Ausencia de señales críticas y llamada única sugiere prioridad baja",
         ("REGISTRO_112_CYL",),
         lambda row: not any(
             _bool(row, key)

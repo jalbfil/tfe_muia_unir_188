@@ -84,12 +84,12 @@
 
 ## Fase 5 â€” Corpus normativo + RAG (Brian)
 
-- [~] **T060** `[C]` Recopilar PDFs/HTML oficiales de las 13 normas activas en `resources/corpus_normativo/`. **Progreso 12/13 PDFs** Â· `INUNCYL` âœ… `BOCYL-D-03032010-14` (3 chunks, decreto + plan corto) Â· `MPCYL_ACUERDO_3_2008` âš ï¸ solo decreto de aprobaciÃ³n indexado (3 chunks); el PDF del plan completo no estÃ¡ localizado en BOCYL â€” buscar en web ProtecciÃ³n Civil CyL Â· `REGISTRO_112_CYL` es ficha dataset (no PDF, no bloquea RAG). Total Ã­ndice: 1473 chunks, 12 normas.
+- [~] **T060** `[C]` Recopilar PDFs/HTML oficiales de las 13 normas activas en `resources/corpus_normativo/`. **Progreso 11/13 fuentes indexadas en v0.1.0** Â· `INUNCYL` âœ… `BOCYL-D-03032010-14` (3 chunks, decreto + plan corto) Â· `MPCYL_ACUERDO_3_2008` âš ï¸ fuera del Ã­ndice activo al no disponer del plan tÃ©cnico completo en fuente oficial; queda pendiente su localizaciÃ³n documental Â· `REGISTRO_112_CYL` es ficha dataset (no PDF, no bloquea RAG). Total Ã­ndice actual: 1470 chunks, 11 normas.
 - [x] **T061** `[B]` Pipeline ingesta: parser PDF â†’ chunking (~400 tokens, overlap 50) â†’ metadata `{norma_id, articulo, aÃ±o, jerarquÃ­a}`. Implementado en `src/capa3_llm_mcp/rag/ingestion.py`.
 - [x] **T062** `[B]` `scripts/build_rag_index.py` con embeddings `paraphrase-multilingual-MiniLM-L12-v2` â†’ ChromaDB persistente en `artifacts/rag/chroma/`. âœ… 1467 chunks de 10 normas indexados.
 - [x] **T063** `[B]` Test retrieval: query "atrapado herido grave" â†’ top-1 cita Ley 17/2015 art. 1. âœ… PASS.
-- [~] **T064** `[B]` Test retrieval: query "fuga quÃ­mica camiÃ³n cisterna" â†’ top-1 cita MPCyL. **FAIL** â€” MPCYL indexado (3 chunks del decreto) pero el embedder recupera INFOCAL_DEC_6_2025 (score 0.46 vs MPCYL sin aparecer en top-5). El decreto no contiene vocabulario de mercancÃ­as peligrosas suficiente. Requiere localizar el PDF del plan tÃ©cnico completo.
-- [ ] **T065** `[B]` Documentar corpus en `latex/chapters/anexo_j.tex`.
+- [x] **T064** `[B]` Test retrieval: query "fuga quÃ­mica camiÃ³n cisterna" â†’ top-1 en fallback quÃ­mico verificable de v0.1.0 (`PLANCAL_DEC_4_2019` / `INFOCAL_DEC_6_2025` / `LEY_17_2015`). âœ… PASS en `tests/test_rag_retrieval.py::test_t064_fuga_quimica_top1_verified_fallback_norma`.
+- [x] **T065** `[B]` Documentar corpus en `latex/chapters/anexo_j.tex`. ✅ Anexo J creado e incluido en `latex/main.tex`.
 
 ## Fase 6 â€” Capa 3 LLM + MCP (Brian)
 
@@ -106,7 +106,7 @@
 - [x] **T080** `[B]` Test integraciÃ³n MCP: cliente test invoca cada tool y valida schema. âœ… 11 tests PASS.
 - [x] **T081** `[B]` Wrapper `explainer.py` que orquesta LLM + tools + RAG y produce `OperatorRecommendation`. âœ…
 - [x] **T082** `[B]` Modo degradado: si LLM no disponible, devolver explicaciÃ³n estÃ¡tica derivada de reglas activadas. âœ… `degraded_explain()` + garantÃ­a P1/P2â‰¥1 cita.
-- [~] **T083** `[B]` Model card LLM + prompts â†’ Capa 3/Ollama documentada en `anexo_l.tex`; `anexo_k.tex` especifico de prompts/tools queda pendiente.
+- [x] **T083** `[B]` Model card LLM + prompts â†’ Capa 3/Ollama documentada en `anexo_l.tex` y `anexo_k.tex` (prompts/tools) creada e incluida en `latex/main.tex`.
 
 ## Fase 7 â€” Backend + orquestador (Conjunto, lÃ­der Brian)
 

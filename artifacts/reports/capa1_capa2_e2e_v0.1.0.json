@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-02T17:57:47.544128+00:00",
+  "generated_at": "2026-06-17T15:28:15.185531+00:00",
   "scope": "T040-T049/T091 compatibility validation without LLM installation",
   "environment": {
-    "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "python_version": "3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 15:03:56) [MSC v.1929 64 bit (AMD64)]",
     "rulefit_model_path": "artifacts\\models\\capa2\\v0.1.0\\rulefit.joblib",
     "rulefit_model_available": true,
     "llm_installed": false,
@@ -15,9 +15,9 @@
     "capa2_models_used": [
       "RULEFIT"
     ],
-    "mean_capa1_latency_ms": 0.42244,
-    "mean_capa2_latency_ms": 220.93672,
-    "mean_capa3_degraded_latency_ms": 0.0984
+    "mean_capa1_latency_ms": 0.74972,
+    "mean_capa2_latency_ms": 285.82126,
+    "mean_capa3_degraded_latency_ms": 0.04788
   },
   "capa1_signal_metrics": {
     "signals": {
@@ -169,14 +169,14 @@
       },
       "confidence_level": "HIGH",
       "model_used_capa2": "RULEFIT",
-      "activated_rules_count": 6,
+      "activated_rules_count": 1,
       "capa3_model": "degraded-static-v0.1.0",
       "capa3_citations": 1,
-      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido > 0.500; s",
+      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: signal_intoxicacion > 0.500 & signal_varias_llamadas > 0.500.",
       "latency_ms": {
-        "capa1": 0.2659,
-        "capa2": 1101.215,
-        "capa3_degraded": 0.2478
+        "capa1": 1.1114,
+        "capa2": 1427.1465,
+        "capa3_degraded": 0.1011
       },
       "passed": true
     },
@@ -232,12 +232,12 @@
       "model_used_capa2": "RULEFIT",
       "activated_rules_count": 6,
       "capa3_model": "degraded-static-v0.1.0",
-      "capa3_citations": 1,
-      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido > 0.500; s",
+      "capa3_citations": 3,
+      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: Riesgo vital explícito requiere máxima prioridad académica; Herido grave atrapado combina daño personal y rescate urgente; Herido grave sin fallecimiento mantiene prioridad ",
       "latency_ms": {
-        "capa1": 0.4768,
-        "capa2": 1.0743,
-        "capa3_degraded": 0.0899
+        "capa1": 0.6855,
+        "capa2": 0.5714,
+        "capa3_degraded": 0.0569
       },
       "passed": true
     },
@@ -280,24 +280,24 @@
         "P1",
         "P2"
       ],
-      "priority_recommended": "P2",
+      "priority_recommended": "P1",
       "priority_ok": true,
       "probabilities": {
-        "P1": 0.02742,
-        "P2": 0.922129,
-        "P3": 0.050327,
-        "P4": 0.000124
+        "P1": 0.97,
+        "P2": 0.01,
+        "P3": 0.01,
+        "P4": 0.01
       },
       "confidence_level": "HIGH",
       "model_used_capa2": "RULEFIT",
-      "activated_rules_count": 12,
+      "activated_rules_count": 3,
       "capa3_model": "degraded-static-v0.1.0",
-      "capa3_citations": 1,
-      "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico > 0.500 & signal_i",
+      "capa3_citations": 2,
+      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: Puerta de seguridad: Presencia de fallecido, riesgo vital inminente o soporte vital detectado.; signal_intoxicacion > 0.500 & signal_varias_llamadas <= 0.500 & cat_incendio ",
       "latency_ms": {
-        "capa1": 0.548,
-        "capa2": 0.9347,
-        "capa3_degraded": 0.0691
+        "capa1": 0.7275,
+        "capa2": 0.4379,
+        "capa3_degraded": 0.0318
       },
       "passed": true
     },
@@ -351,14 +351,14 @@
       },
       "confidence_level": "HIGH",
       "model_used_capa2": "RULEFIT",
-      "activated_rules_count": 12,
+      "activated_rules_count": 2,
       "capa3_model": "degraded-static-v0.1.0",
       "capa3_citations": 1,
-      "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: riesgo_vital_textual <= 0.500 & signal_meteo_inundacion <= 0.500 & signal_varias_llamadas <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico > 0.500 & signal_i",
+      "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: signal_intoxicacion <= 0.500 & signal_meteo_inundacion > 0.500 & riesgo_vital_textual <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico <= 0.500 & cat_incendi",
       "latency_ms": {
-        "capa1": 0.4002,
-        "capa2": 0.8016,
-        "capa3_degraded": 0.058
+        "capa1": 0.5525,
+        "capa2": 0.383,
+        "capa3_degraded": 0.0233
       },
       "passed": true
     },
@@ -412,14 +412,14 @@
       },
       "confidence_level": "HIGH",
       "model_used_capa2": "RULEFIT",
-      "activated_rules_count": 7,
+      "activated_rules_count": 1,
       "capa3_model": "degraded-static-v0.1.0",
-      "capa3_citations": 0,
-      "explanation_excerpt": "Incidente clasificado como URGENCIA MEDIA (P3). Reglas activadas: signal_accidente_trafico <= 0.500 & riesgo_vital_textual <= 0.500 & signal_rescate > 0.500; riesgo_vital_textual > 0.500 & cat_sanitario <= 0.500 & signal_fallecido <= 0.500;",
+      "capa3_citations": 1,
+      "explanation_excerpt": "Incidente clasificado como URGENCIA MEDIA (P3). Reglas activadas: Accidente de tráfico sin señal crítica conserva prioridad de seguimiento.",
       "latency_ms": {
-        "capa1": 0.4213,
-        "capa2": 0.658,
-        "capa3_degraded": 0.0272
+        "capa1": 0.6717,
+        "capa2": 0.5675,
+        "capa3_degraded": 0.0263
       },
       "passed": true
     }

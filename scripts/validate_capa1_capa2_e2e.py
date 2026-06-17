@@ -255,12 +255,12 @@ def _write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.extend(
         [
             "",
-            "## Interpretacion",
+            "## Interpretación",
             "",
-            "Esta prueba no sustituye la evaluacion offline de Capa 2 sobre el dataset completo. "
+            "Esta prueba no sustituye la evaluación offline de Capa 2 sobre el dataset completo. "
             "Su objetivo es comprobar que la salida real de Capa 1 alimenta correctamente el "
-            "motor de priorizacion y que la explicacion degradada de Capa 3 conserva la "
-            "trazabilidad minima sin instalar el LLM.",
+            "motor de priorización y que la explicación degradada de Capa 3 conserva la "
+            "trazabilidad mínima sin instalar el LLM.",
         ]
     )
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -67,16 +67,22 @@ def norm_text(row: dict[str, str]) -> str:
 def score_from_row(row: dict[str, str], *, include_category: bool = True) -> int:
     text = norm_text(row)
     score = 0
-    if truthy(row, "signal_fallecido") or re.search(
-        r"\bfallece[n]?\b|\bfallecid[oa]s?\b|\bmuert[oa]s?\b|\bmuerte\b", text
-    ):
-        score += 5
-    if truthy(row, "signal_herido_grave") or ("herid" in text and "grave" in text):
+    
+    is_fallecido = truthy(row, "signal_fallecido") or re.search(
+        r"\bfallece[n]?\b|\bfallecid[oa]s?\b|\bmuert[oa]s?\b|\bmuerte\b|\bcardiorrespiratori[oa]\b", text
+    )
+    is_herido_grave = truthy(row, "signal_herido_grave") or ("herid" in text and "grave" in text) or "inconsciente" in text or "infarto" in text
+    is_atrapado = truthy(row, "signal_atrapado") or "atrapad" in text
+    is_intoxicacion = truthy(row, "signal_intoxicacion") or "intoxic" in text
+
+    # Base gravity score
+    if is_fallecido:
+        score += 7
+    elif is_herido_grave:
         score += 4
-    if truthy(row, "signal_atrapado") or "atrapad" in text:
+    elif is_atrapado or is_intoxicacion:
         score += 3
-    if truthy(row, "signal_intoxicacion") or "intoxic" in text:
-        score += 3
+
     if truthy(row, "signal_incendio") or "incendio" in text:
         score += 2
     if truthy(row, "signal_accidente_trafico") or "accidente" in text:
@@ -97,6 +103,15 @@ def score_from_row(row: dict[str, str], *, include_category: bool = True) -> int
             "sanitario": 1,
             "meteorologico": 1,
         }.get(category, 0)
+
+    # Apply minimum floor thresholds for gravity signals
+    if is_fallecido:
+        score = max(score, 7)
+    elif is_herido_grave:
+        score = max(score, 5)
+    elif is_atrapado or is_intoxicacion:
+        score = max(score, 4)
+
     return score
 
 
@@ -298,11 +313,11 @@ def write_report(report: dict[str, Any], report_json: Path, report_md: Path) -> 
         f"- Confianza media label model: {report['mean_confidence']}",
         f"- Acuerdo medio por item: {report['mean_agreement_score']}",
         "",
-        "## Distribucion final",
+        "## Distribución final",
         "",
     ]
     lines.extend(f"- {label}: {count}" for label, count in report["final_label_distribution"].items())
-    lines.extend(["", "## Politica anti-leakage", ""])
+    lines.extend(["", "## Política anti-leakage", ""])
     lines.append(report["prohibited_columns_policy"])
     lines.append(report["output_format_note"])
     report_md.write_text("\n".join(lines) + "\n", encoding="utf-8")

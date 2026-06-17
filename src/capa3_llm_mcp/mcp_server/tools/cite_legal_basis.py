@@ -67,8 +67,9 @@ _CITAS: dict[str, dict] = {
     "MPCYL_ACUERDO_3_2008": {
         "articulo": "art. 1",
         "texto_relevante": (
-            "Plan de Protección Civil ante Transportes de Mercancías Peligrosas en CyL: "
-            "protocolos de actuación ante derrames, fugas y explosiones en red viaria."
+            "Acuerdo de aprobación del plan MPCyL para riesgo en transportes de "
+            "mercancías peligrosas; el texto técnico completo del plan requiere "
+            "fuente oficial adicional a este decreto de aprobación."
         ),
         "url_oficial": "https://bocyl.jcyl.es/boletines/2008/01/23/pdf/BOCYL-D-23012008-8.pdf",
     },

@@ -24,6 +24,15 @@ class VersionResponse(BaseModel):
 @router.get("/healthz", response_model=HealthResponse)
 def healthz(request: Request) -> HealthResponse:
     llm = getattr(request.app.state, "llm", None)
+    if llm is None:
+        try:
+            from capa3_llm_mcp.llm.qwen_wrapper import QwenWrapper
+            wrapper = QwenWrapper()
+            if wrapper.is_available():
+                request.app.state.llm = wrapper
+                llm = wrapper
+        except Exception:
+            pass
     return HealthResponse(
         status="ok",
         version=_API_VERSION,
