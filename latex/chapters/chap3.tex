@@ -43,7 +43,9 @@ Los planes especiales de Castilla y Leon aportan criterios sectoriales que enriq
 
 INUNCYL, plan de proteccion civil ante el riesgo de inundaciones en Castilla y Leon, aporta el marco conceptual para valorar episodios de inundacion, avenidas, desbordamientos y afectacion territorial \cite{INUNCYL}. En la version v0.1.0 del proyecto, las variables de enriquecimiento meteorologico e hidrologico asociadas a INUNCYL se difieren a v0.2.0, pero la norma permanece en el marco teorico y en el corpus RAG porque justifica una linea natural de extension.
 
-MPCyL, plan de proteccion civil ante el riesgo de transportes de mercancias peligrosas, es relevante para incidentes con sustancias quimicas, cisternas, fugas, intoxicaciones o riesgos tecnologicos en transporte \cite{MPCYL_ACUERDO_3_2008}. En v0.1.0 se utiliza principalmente como anclaje normativo de reglas asociadas a \texttt{signal\_intoxicacion} y a escenarios de mercancias peligrosas. La planificacion reconoce una limitacion practica: el corpus dispone del decreto de aprobacion y la localizacion del plan tecnico completo queda pendiente, por lo que esta fuente debe documentarse con cautela en la evaluacion del RAG.
+MPCyL, plan de proteccion civil ante el riesgo de transportes de mercancias peligrosas, es relevante para incidentes con sustancias quimicas, cisternas, fugas, intoxicaciones o riesgos tecnologicos en transporte \cite{MPCYL_ACUERDO_3_2008}. En v0.1.0 se utiliza principalmente como anclaje normativo de reglas asociadas a \texttt{signal\_intoxicacion} y a escenarios de mercancias peligrosas. La planificacion reconoce una limitacion practica: el corpus dispone del decreto de aprobacion del plan, pero no del documento tecnico completo del MPCyL. Por tanto, esta fuente se documenta como limitacion especifica del RAG.
+
+Para mitigar parcialmente esta carencia, el prototipo incorpora una inyeccion sintetica controlada de anclajes normativos asociados a mercancias peligrosas. Esta tecnica no sustituye al texto tecnico completo ni se presenta como fuente juridica autonoma; su funcion es mantener trazabilidad minima entre las reglas de Capa 2, los riesgos quimicos o de transporte y el decreto de aprobacion disponible. La incorporacion del plan tecnico completo queda como tarea prioritaria para una version posterior del corpus normativo.
 
 \section{Normativa de datos, comunicaciones e inteligencia artificial}
 
@@ -86,7 +88,7 @@ La Tabla~\ref{tab:cap3_fuentes} resume el rol de las fuentes principales en el s
 Registro 112 CyL & Fuente empirica real & Ingesta, limpieza, texto libre, coordenadas, se\~nales operativas y validacion del pipeline \\ \hline
 Ley 17/2015 y RD 524/2023 & Marco estatal & Conceptos de riesgo, emergencia, planificacion, catalogo de riesgos y gradacion de respuesta \\ \hline
 Ley 4/2007 CyL y PLANCAL & Marco autonomico & Coordinacion, inmediatez, guia de etiquetado P1--P4 y trazabilidad territorial \\ \hline
-INFOCAL, INUNCYL, MPCyL & Riesgos especificos & Incendios forestales, inundaciones y mercancias peligrosas; reglas y citas normativas \\ \hline
+INFOCAL, INUNCYL, MPCyL & Riesgos especificos & Incendios forestales, inundaciones y mercancias peligrosas; en MPCyL solo consta el decreto de aprobacion y queda pendiente el plan tecnico completo \\ \hline
 RGPD, LOPDGDD, Ley 11/2022 & Datos y comunicaciones & Minimizacion, localizacion, seguridad, logs y exclusion de variables sensibles o no necesarias \\ \hline
 Reglamento UE 2024/1689 & IA responsable & Supervision humana, transparencia, trazabilidad, gestion del riesgo y robustez \\ \hline
 \end{tabular}
@@ -115,7 +117,7 @@ Ley 4/2007 CyL & Coordinacion, inmediatez y capacidad de respuesta & V07, V15 & 
 PLANCAL & Fases, situaciones y logica territorial de respuesta & Escala P1--P4 academica & Guia de etiquetado y explicacion \\ \hline
 INFOCAL & Incendio forestal y propagacion & V12, \texttt{signal\_incendio} & Reglas P2/P1 segun riesgo de propagacion \\ \hline
 INUNCYL & Inundacion y riesgo territorial & V09, V10, \texttt{signal\_meteo\_inundacion} & Anclaje v0.2.0; contexto RAG en v0.1.0 \\ \hline
-MPCyL & Mercancias peligrosas y riesgo quimico & \texttt{signal\_intoxicacion} & Regla de alta prioridad para fuga, intoxicacion o cisterna \\ \hline
+MPCyL & Mercancias peligrosas y riesgo quimico & \texttt{signal\_intoxicacion} & Regla de alta prioridad para fuga, intoxicacion o cisterna; anclaje limitado por ausencia del plan tecnico completo \\ \hline
 Registro 112 CyL & Incidentes reales y texto operativo & Titulo, descripcion, fecha, provincia, coordenadas & Fuente empirica; no contiene etiqueta P1--P4 \\ \hline
 RGPD y LOPDGDD & Minimizacion y proteccion de datos & Politica de exclusion & Logs, hashes, retencion y no reidentificacion \\ \hline
 Reglamento UE 2024/1689 & Supervision humana y trazabilidad & Arquitectura HITL, logs, explicaciones & Recomendacion no vinculante y auditoria \\ \hline
@@ -129,6 +131,8 @@ Reglamento UE 2024/1689 & Supervision humana y trazabilidad & Arquitectura HITL,
 La excelencia del proyecto depende tanto de lo que se incluye como de lo que se decide diferir. En v0.1.0 se prioriza un nucleo evaluable: variables textuales y operativas centrales, RuleFit como motor interpretable, explicacion con LLM local, RAG normativo, backend auditable y supervision humana. Esta version activa las variables V01--V07 y V12--V15, junto con las se\~nales textuales necesarias para detectar riesgo vital, heridos, atrapamiento, intoxicacion, incendio, rescate, accidente de trafico, varias llamadas y riesgo meteorologico textual.
 
 Quedan diferidas a v0.2.0 las variables que requieren integraciones contextuales mas costosas: avisos AEMET, condicion meteorologica adversa, zonas inundables SNCZI y proximidad a instalaciones Seveso. Estas variables mantienen su anclaje normativo en el capitulo y en el modelo de datos, pero no forman parte del nucleo entrenado y evaluado en v0.1.0. Esta decision es metodologicamente prudente: evita introducir fuentes geoespaciales o historicas que podrian debilitar la reproducibilidad del TFM, sin renunciar a una linea clara de evolucion futura.
+
+La exclusion temporal de AEMET, SNCZI y Seveso es tambien una decision de dise\~no orientada a preservar el aislamiento del entrenamiento local del modelo base. Incorporar dichas fuentes exigiria sincronizar servicios externos, resolver coberturas territoriales, transformar coordenadas, versionar capas geograficas y documentar criterios de vigencia temporal. En una primera version academica, priorizar variables textuales y operativas disponibles en el Registro 112 CyL permite comparar baseline experto, RuleFit-lite e \texttt{imodels} bajo condiciones reproducibles. El principal riesgo de esta decision es que la priorizacion automatica pueda ser menos sensible ante inundaciones, meteorologia adversa o riesgos tecnologicos especificos; por ello, estas integraciones se declaran formalmente como extension v0.2.0.
 
 \section{Conclusiones del capitulo}
 

@@ -48,10 +48,10 @@ OE1 & Logrado & Se analiza el problema de priorizacion temprana 112, necesidades
 OE2 & Logrado & Se revisa el marco normativo estatal y autonomico CyL y se construye la tabla de trazabilidad norma--criterio--variable--regla. & Cap.~\ref{cap:3} \\ \hline
 OE3 & Logrado & Se define la taxonomia operativa, la escala academica P1--P4 y las variables V01--V15 con separacion anti-\textit{leakage}. & Anexos~\ref{cap:anexoa}, \ref{cap:anexob}, \ref{cap:anexoc} \\ \hline
 OE4 & Logrado & Se audita el Registro 112 CyL (9.380 registros limpios) y se generan etiquetas P1--P4 por supervision debil con acuerdo Krippendorff \(\alpha = 0{,}858348\). & Cap.~\ref{cap:7}, Anexo~\ref{cap:anexof} \\ \hline
-OE5 & Logrado & Se implementa la Capa 2 interpretable: baseline experto vs RuleFit-lite vs \texttt{imodels}; se selecciona RuleFit-lite (macro-F1 0,880750; recall P1 0,921296). & Cap.~\ref{cap:9}, Anexos~\ref{cap:anexoe}, \ref{cap:anexol} \\ \hline
+OE5 & Logrado & Se implementa la Capa 2 interpretable: baseline experto vs RuleFit-lite vs \texttt{imodels}; se selecciona RuleFit-lite (accuracy 0,903648; macro-F1 0,905604; recall P1 0,909924). & Cap.~\ref{cap:9}, Anexos~\ref{cap:anexoe}, \ref{cap:anexol} \\ \hline
 OE6 & Logrado & Se dise\~na la Capa 3 de explicacion con LLM local, RAG normativo y MCP, sin delegar la decision de prioridad en el LLM. & Cap.~\ref{cap:8}, Anexos~\ref{cap:anexoj}, \ref{cap:anexok} \\ \hline
 OE7 & Logrado & Se integran las capas con contratos versionados, backend auditable, modo degradado y registro de inferencia y feedback humano. & Cap.~\ref{cap:8} \\ \hline
-OE8 & Logrado & Se evalua con split estratificado y temporal, anti-\textit{leakage}, errores P1 (51 falsos negativos), sesgos por subgrupo y fidelidad de explicaciones. & Cap.~\ref{cap:9}, Anexo~\ref{cap:anexod} \\ \hline
+OE8 & Logrado & Se evalua con split estratificado y temporal, anti-\textit{leakage}, errores P1 (59 falsos negativos), sesgos por subgrupo y fidelidad de explicaciones sobre 119 casos. & Cap.~\ref{cap:9}, Anexo~\ref{cap:anexod} \\ \hline
 \end{tabular}
 \caption{Trazabilidad entre objetivos especificos, grado de consecucion y evidencia.}
 \label{tab:trazabilidad-oe}
@@ -87,16 +87,16 @@ El trabajo realizado aporta siete contribuciones principales.
     ha validado la integracion reproducible Capa 1--Capa 2--Capa 3 sobre cinco
     escenarios curados, con RuleFit activo y salida coherente en todos los casos.
     \item \textbf{Trazabilidad, validacion interna y fidelidad explicativa.} Se
-    documenta un procedimiento de revision humana con 111 casos revisables, incluyendo
-    los 51 falsos negativos P1 detectados en el test estratificado, y se evalua la
+    documenta un procedimiento de revision humana con 119 casos revisables, incluyendo
+    los 59 falsos negativos P1 detectados en el test estratificado, y se evalua la
     fidelidad de las explicaciones de Capa 3 sobre esa misma muestra.
 \end{enumerate}
 
 \section{Resultados principales}
 
 La evaluacion confirma que RuleFit-lite es la alternativa mas equilibrada para la Capa
-2 v0.1.0. En el conjunto de test estratificado alcanza accuracy 0.881100, macro-F1
-0.880750 y recall P1 0.921296. Estos valores superan claramente al baseline experto en
+2 v0.1.0. En el conjunto de test estratificado alcanza accuracy 0.903648, macro-F1
+0.905604 y recall P1 0.909924. Estos valores superan claramente al baseline experto en
 macro-F1, que obtiene 0.703932, aunque el baseline conserva un recall P1 mayor por su
 comportamiento conservador.
 
@@ -105,22 +105,27 @@ La prueba temporal sobre registros de 2022 mantiene resultados estables: accurac
 prospectiva en produccion, pero reduce el riesgo de que el resultado dependa solo de un
 split estratificado favorable.
 
-El analisis de errores identifica 51 falsos negativos P1: 32 clasificados como P2 y 19
-como P3. No se detectan errores P1 clasificados como P4. Este resultado es importante:
-el sistema cumple el objetivo de recall P1, pero los casos P1--P3 siguen siendo el
-principal foco de mejora antes de cualquier despliegue real.
+El analisis de errores identifica 59 falsos negativos P1: 34 clasificados como P2, 18
+como P3 y 7 como P4. Este resultado es importante: el sistema cumple el objetivo de
+recall P1, pero los casos P1--P4 constituyen el foco de riesgo mas delicado y deben
+analizarse individualmente antes de cualquier validacion operativa externa.
 
 La evaluacion de fidelidad de explicaciones aporta una garantia complementaria. Sobre
-los 111 casos de validacion interna, el juez determinista offline obtiene pass rate
-1.000000, fidelidad media 0.958747 y fidelidad minima 0.925000. En los 51 falsos
-negativos P1, la fidelidad media es 0.951176. Esto no equivale a una evaluacion externa
+los 119 casos de validacion interna, el juez determinista offline obtiene pass rate
+1.000000, fidelidad media 0.957367 y fidelidad minima 0.933333. En los 59 falsos
+negativos P1, la fidelidad media es 0.952494. Esto no equivale a una evaluacion externa
 de calidad linguistica, pero si demuestra que las explicaciones generadas en modo
 degradado no contradicen la recomendacion de Capa 2 y conservan trazabilidad minima.
 
 El cierre documental de la evaluacion se recoge en
 \texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.json}, que actua como
 indice maestro de metricas, artefactos, muestra de validacion interna, fidelidad
-explicativa y capitulos/anexos que sostienen los resultados.
+explicativa y capitulos/anexos que sostienen los resultados. Los artefactos principales
+de reproducibilidad son \texttt{artifacts/reports/evaluation\_v0.1.0.json},
+\texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.json},
+\texttt{artifacts/reports/explanation\_fidelity\_v0.1.0.json},
+\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.json} y
+\texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.json}.
 
 Como comprobacion integrada del prototipo, el smoke test P1--P4 obtiene 4 aciertos en
 4 casos representativos: incendio con atrapados como P1, fuga de gas sin heridos como
@@ -180,7 +185,7 @@ La continuacion natural del proyecto se organiza en siete lineas.
     \item \textbf{Validacion externa con personal del 112.} Revisar una muestra de
     casos con operadores o responsables expertos, comparando etiqueta academica,
     recomendacion del sistema y criterio profesional.
-    \item \textbf{Cierre de la validacion interna.} Completar la revision de los 111
+    \item \textbf{Cierre de la validacion interna.} Completar la revision de los 119
     casos generados en el Anexo~\ref{cap:anexod}, calcular acuerdo local entre autores
     y documentar patrones de divergencia.
     \item \textbf{Calibracion probabilistica.} Evaluar ECE y aplicar calibracion si el
@@ -190,7 +195,11 @@ La continuacion natural del proyecto se organiza en siete lineas.
     anti-\textit{leakage}.
     \item \textbf{Evaluacion de explicaciones con juez independiente.} Ampliar la
     evaluacion T113 con un LLM-as-Judge local e independiente, usando la misma muestra
-    de 111 casos y comparando sus puntuaciones con el juez determinista offline.
+    de 119 casos. El juez deberia ejecutarse de forma ciega respecto a la rubrica
+    determinista offline, valorar alineacion con prioridad, reglas, probabilidades y
+    evidencias normativas, y comparar posteriormente sus puntuaciones con el juez
+    determinista para detectar discrepancias, sesgos o explicaciones formalmente
+    correctas pero poco utiles para un operador.
     \item \textbf{Optimizacion del prototipo integrado.} Reducir la latencia del LLM
     local mediante prompts mas compactos, respuesta en streaming, cuantizacion o
     ejecucion acelerada, y ampliar el smoke test con mas casos frontera.

@@ -30,7 +30,33 @@ El objetivo general se descompone en ocho objetivos especificos:
     \item[OE8.] Evaluar el prototipo con splits estratificado y temporal, analisis anti-\textit{leakage}, estudio de errores P1, sesgos por subgrupo, muestra de validacion interna y fidelidad de explicaciones.
 \end{enumerate}
 
+En relacion con OE5, la Capa 2 queda preparada para su consumo por Capa 3 mediante una salida explicable que incluye prioridad recomendada, reglas activadas, detalles de decision y contexto estructurado para explicacion. Esta salida, materializada en campos como \texttt{priority\_details} y \texttt{explanation\_context}, permite que Capa 3 genere una explicacion operativa sin recalcular ni sustituir la prioridad asignada por el modelo interpretable.
+
+En relacion con OE8, la validacion interna se apoya en una muestra revisable de 119 casos, compuesta por 59 falsos negativos P1 y 60 casos equilibrados adicionales. Esta muestra permite auditar errores criticos, revisar decisiones y preparar una validacion externa posterior con personal experto, sin afirmar todavia una validacion operativa real en sala 112.
+
 Esta secuencia mantiene una progresion logica: primero se delimita el dominio, despues se construye una base empirica defendible, a continuacion se implementa el modelo interpretable y finalmente se evalua su comportamiento desde una perspectiva tecnica, explicativa y humana.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{|p{1.1cm}|p{4.4cm}|p{4.9cm}|p{3.2cm}|}
+\hline
+\textbf{Obj.} & \textbf{Evidencia principal} & \textbf{Artefacto o ubicacion} & \textbf{Criterio de cumplimiento} \\ \hline
+OE1 & Planteamiento del problema, usuario y riesgos de automatizacion & Capitulos 1 y 4 & Dominio, alcance y supervision humana delimitados \\ \hline
+OE2 & Marco estatal, autonomico y europeo & Capitulo 3; Tabla de fuentes normativas & Normas vinculadas a variables, reglas y limites \\ \hline
+OE3 & Taxonomia, variables V01--V15 y politica anti-\textit{leakage} & Anexos A y B; Capitulo 7 & Variables disponibles y prohibidas documentadas \\ \hline
+OE4 & Dataset limpio, auditoria, splits y weak labels & Capitulo 7; Anexo C; scripts de dataset & Dataset reproducible y etiqueta academica trazable \\ \hline
+OE5 & Baseline experto, RuleFit-lite, comparativa \texttt{imodels} y handoff & \texttt{artifacts/reports/capa2\_model\_selection\_v0.1.0.md}; \texttt{capa2\_for\_capa3\_handoff\_v0.1.0.md} & Modelo seleccionado y salida consumible por Capa 3 \\ \hline
+OE6 & Explicacion con LLM local, RAG, MCP y modo degradado & Capitulos 6 y 8; Anexo L & Capa 3 explica sin recalcular prioridad \\ \hline
+OE7 & Integracion Capa 1--Capa 2--Capa 3 y smoke test & \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}; \texttt{prototype\_v0.1.0\_smoke\_test.md} & 5/5 escenarios integrados y 4/4 casos con Ollama \\ \hline
+OE8 & Evaluacion final, errores P1, validacion interna y fidelidad explicativa & \texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.md} & 59 FN P1, 119 casos revisables y resultados trazables \\ \hline
+\end{tabular}
+\caption{Relacion entre objetivos especificos, evidencias y criterios de cumplimiento.}
+\label{tab:objetivos-evidencias-cumplimiento}
+\end{table}
+
+\noindent\textit{Fuente: elaboracion propia a partir de los artefactos reproducibles del proyecto.}
 
 \section{Preguntas de investigacion}
 
@@ -55,7 +81,7 @@ La eleccion de RuleFit-lite no se presenta como dogma. Se justifica porque mejor
 
 \section{Contribuciones individuales}
 
-La organizacion del equipo responde a la arquitectura del sistema. Juan Carlos Albert Fillol asume la Capa 2 y el bloque de evaluacion: dataset CyL, auditoria, weak labels, anti-\textit{leakage}, baseline experto, RuleFit-lite, comparativa, metricas, errores P1, validacion interna y coherencia de resultados. Brian Mathias Pesci Juliani asume la Capa 3 y la integracion backend: RAG normativo, LLM local, MCP, logs, orquestacion y modo degradado. Ancor Gonzalez Carballo asume la Capa 1 y la experiencia de uso: extraccion de variables desde texto, se\~nales operativas, interfaz, visualizacion y soporte a la supervision humana.
+La organizacion del equipo responde a la arquitectura del sistema y al reparto final de archivos. La aportacion de Juan Carlos se centra en la construccion metodologica y experimental de Capa 2: preparacion del dataset, generacion de etiquetas debiles, dise\~no del baseline experto, seleccion y evaluacion de RuleFit-lite, analisis de errores P1, validacion interna y preparacion de los anexos C, D y E. Esta contribucion se integra con Capa 1 y Capa 3 mediante contratos de entrada y salida, pero no sustituye las responsabilidades tecnicas asignadas al resto de miembros.
 
 \begin{table}[htbp]
 \centering
@@ -64,9 +90,9 @@ La organizacion del equipo responde a la arquitectura del sistema. Juan Carlos A
 \begin{tabular}{|p{2.7cm}|p{3.8cm}|p{4.3cm}|p{3.3cm}|}
 \hline
 \textbf{Integrante} & \textbf{Subproblema de IA} & \textbf{Contribucion principal} & \textbf{Evidencia} \\ \hline
-Juan Carlos Albert Fillol & Priorizacion interpretable & Weak supervision, RuleFit-lite, baseline experto, evaluacion, errores P1 y validacion interna & Caps. 6, 7, 9, 10 y Anexos D, E, L \\ \hline
-Brian Mathias Pesci Juliani & Explicacion normativa & LLM local, RAG, MCP, backend, logs, contratos y modo degradado & Caps. 6, 8, 9 y Anexos J, K, L \\ \hline
-Ancor Gonzalez Carballo & Extraccion y supervision & Capa 1 NLP, variables V01--V15, UI, visualizacion y feedback del operador & Caps. 6, 7, 8, 9 y Anexos A, B \\ \hline
+Juan Carlos Albert Fillol & Priorizacion interpretable & Weak supervision, RuleFit-lite, baseline experto, evaluacion, errores P1 y validacion interna & Cap. 0, 1, 4, 7, 9 y Anexos C, D, E \\ \hline
+Brian Mathias Pesci Juliani & Explicacion normativa & LLM local, RAG, MCP, backend, logs, contratos, modo degradado y model card & Cap. 2, 6, 8 y Anexos F, H, J, K, L; bibliografia \\ \hline
+Ancor Gonzalez Carballo & Extraccion y supervision & Capa 1 determinista, variables V01--V15, requisitos, conclusiones, guia de uso y soporte a la supervision humana & Cap. 3, 5, 10 y Anexos A, B, G, I \\ \hline
 \end{tabular}
 \caption{Contribuciones individuales vinculadas al componente inteligente del sistema.}
 \label{tab:contribuciones-ia-chap4}
@@ -79,6 +105,8 @@ Ancor Gonzalez Carballo & Extraccion y supervision & Capa 1 NLP, variables V01--
 El desarrollo sigue un enfoque iterativo e incremental adaptado a un TFM grupal. El equipo ha trabajado por bloques trazables: definicion del dominio, datos, arquitectura, Capa 2, Capa 3, integracion, evaluacion y redaccion. Este enfoque permite corregir decisiones cuando la evidencia tecnica lo aconseja, por ejemplo al sustituir una formulacion inicial basada solo en reglas por una comparativa real entre baseline experto, RuleFit-lite e \texttt{imodels}.
 
 La metodologia no se presenta como Scrum formal. No hay roles ceremoniales ni sprints cerrados en sentido industrial. Se adopta, en cambio, la logica incremental: cada bloque genera un artefacto verificable, se contrasta con el capitulo correspondiente y se integra en la planificacion de tareas. Esta forma de trabajo resulta especialmente adecuada porque el TFM combina investigacion aplicada, desarrollo software y redaccion academica.
+
+La metodologia seguida prioriza evidencia reproducible frente a afirmaciones operativas no verificadas. Cada decision tecnica se vincula con un artefacto concreto: dataset limpio, guia de etiquetado, splits, baseline experto, modelo RuleFit-lite, reportes de evaluacion, pruebas integradas, smoke test y anexos de validacion. Los reportes generados el 17/06/2026 se adoptan como fuente de verdad documental para la evaluacion v0.1.0, de modo que las cifras de falsos negativos P1, validacion interna y pruebas integradas no se mezclen con ejecuciones preliminares.
 
 \section{Fases de desarrollo}
 

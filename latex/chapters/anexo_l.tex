@@ -43,9 +43,9 @@ alcanza Krippendorff $\alpha = 0.858348$, por encima del umbral aceptable de 0.6
 Los splits usados son versionados y reproducibles:
 
 \begin{itemize}
-    \item Train: 6.511 registros.
-    \item Validacion: 1.414 registros.
-    \item Test: 1.455 registros.
+    \item Train: 6.512 registros.
+    \item Validacion: 1.415 registros.
+    \item Test: 1.453 registros.
     \item Test temporal 2022: 735 registros.
 \end{itemize}
 
@@ -101,7 +101,7 @@ Se comparan tres alternativas:
 \hline
 \textbf{Modelo} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} & \textbf{Reglas} & \textbf{Train s} & \textbf{ms/fila} \\ \hline
 Baseline experto & 0.727835 & 0.703932 & 0.998457 & 16 & -- & -- \\ \hline
-RuleFit-lite & 0.881100 & 0.880750 & 0.921296 & 30 & 6.504204 & 0.450127 \\ \hline
+RuleFit-lite & 0.903648 & 0.905604 & 0.909924 & 30 & 6.504204 & 0.450127 \\ \hline
 RuleFit imodels & 0.768385 & 0.568239 & 0.902778 & 30 & 13.191647 & 7.496081 \\ \hline
 \end{tabular}
 \end{table}
@@ -112,8 +112,8 @@ El modelo seleccionado para Capa 2 v0.1.0 es \textbf{RuleFit-lite}. La decision 
 justifica por cuatro razones:
 
 \begin{itemize}
-    \item obtiene la mejor macro-F1 reproducible en test: 0.880750;
-    \item mantiene recall P1 de 0.921296, por encima del objetivo minimo de 0.85;
+    \item obtiene la mejor macro-F1 reproducible en test: 0.905604;
+    \item mantiene recall P1 de 0.909924, por encima del objetivo minimo de 0.85;
     \item respeta el limite de 30 reglas activas exportadas;
     \item presenta menor latencia de inferencia que la ejecucion diagnostica con
     \texttt{imodels}.
@@ -123,6 +123,16 @@ La eleccion no invalida \texttt{imodels}; al contrario, lo mantiene como referen
 canonica para experimentos futuros con mayor presupuesto de computo. En esta version,
 sin embargo, RuleFit-lite ofrece mejor equilibrio entre rendimiento, interpretabilidad,
 coste y reproducibilidad.
+
+La marcada diferencia de rendimiento en test entre RuleFit-lite (macro-F1 de 0.905604)
+y la libreria canonica \texttt{imodels} (macro-F1 de 0.568239) se debe a que la version
+simplificada del prototipo aprovecha un entrenamiento adaptado al problema multiclase y
+a las variables predecisionales estructuradas del 112 CyL. En contraste, la ejecucion de
+\texttt{imodels.RuleFitClassifier} se configuro de forma restrictiva para evitar tiempos
+de computo inmanejables en el entorno local, usando un esquema one-vs-rest binario que
+redujo su capacidad de generalizacion en clases minoritarias. Este resultado confirma la
+viabilidad academica de construir una variante optimizada para el dominio especifico de
+emergencias.
 
 \section*{L.7. Evaluacion temporal y trazabilidad}
 
@@ -134,9 +144,10 @@ de falsos negativos P1. Sobre el test temporal de 2022, RuleFit-lite alcanza acc
 estratificado apoya la seleccion del modelo, aunque no sustituye una validacion
 prospectiva con datos operativos nuevos.
 
-El mismo informe identifica 51 falsos negativos P1 en el test estratificado: 32 casos
-P1--P2, 19 casos P1--P3 y ningun caso P1--P4. Estos casos alimentan la plantilla de
-validacion interna documentada en \texttt{resources/internal\_validation}.
+El mismo informe identifica 59 falsos negativos P1 en el test estratificado: 34 casos
+P1--P2, 18 casos P1--P3 y 7 casos P1--P4. Estos casos alimentan la plantilla de
+validacion interna documentada en \texttt{resources/internal\_validation}; los P1--P4 se
+tratan como foco prioritario de revision por representar infrapriorizaciones criticas.
 
 \section*{L.8. Model card Capa 3: explicacion con Ollama}
 
@@ -210,13 +221,13 @@ operadores.
 
 \section*{L.9. Fidelidad de explicaciones}
 
-La Capa 3 se evalua sobre los 111 casos de validacion interna mediante
+La Capa 3 se evalua sobre los 119 casos de validacion interna mediante
 \url{scripts/evaluate_explanation_fidelity.py}. La ejecucion v0.1.0 usa un juez
 determinista offline sobre explicaciones en modo degradado, con seis criterios:
 prioridad mencionada, reglas trazables, cobertura de senales, citas legales en P1/P2,
 ausencia de contradiccion y disclaimer. El resultado global es pass rate 1.000000,
-fidelidad media 0.958747 y fidelidad minima 0.925000. En falsos negativos P1, la
-fidelidad media es 0.951176. La evaluacion LLM-as-Judge independiente queda como
+fidelidad media 0.957367 y fidelidad minima 0.933333. En falsos negativos P1, la
+fidelidad media es 0.952494. La evaluacion LLM-as-Judge independiente queda como
 extension futura sobre la misma muestra.
 
 El cierre de la evaluacion queda indexado en

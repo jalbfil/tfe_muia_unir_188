@@ -87,3 +87,12 @@ Las familias tecnologica, meteorologica avanzada e inundacion completa se benefi
 de integrar AEMET historico, SNCZI y Seveso en v0.2.0. En v0.1.0 se documentan como
 linea futura para evitar sobrerrepresentar informacion que todavia no esta disponible
 de forma reproducible.
+
+En consecuencia, las familias asociadas a riesgos meteorologicos o industriales
+complejos actuan en v0.1.0 de forma pasiva: pueden influir cuando aparecen como senales
+en el texto operativo, pero no mediante enriquecimiento automatico con fuentes externas.
+Esta decision reduce falsos positivos derivados de contexto no verificado. El mapeo del
+tipo de incidente a la taxonomia se apoya en un analizador textual optimizado para
+senales predecisionales, pero los incidentes multirriesgo, por ejemplo una colision con
+incendio y heridos, requieren revision manual para confirmar que la familia dominante no
+oculta otros riesgos relevantes.

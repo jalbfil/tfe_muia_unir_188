@@ -81,7 +81,7 @@ tfe_muia_unir_188/
 
 ### Clonar el repositorio
 ```bash
-git clone https://github.com/bripedev-source/tfe_muia_unir_188.git
+git clone https://github.com/jalbfil/tfe_muia_unir_188.git
 cd tfe_muia_unir_188
 ```
 

@@ -58,7 +58,7 @@ La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del da
 
 \subsection{Auditoria inicial}
 
-La auditoria del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la version v0.1.0 esta tarea queda materializada en \texttt{scripts/audit\_dataset.py} y en los informes de \texttt{resources/dataset/audit}. El dataset limpio contiene 9.380 registros, 41 columnas, rango temporal valido entre 2008-07-28 y 2022-12-31, 0 fechas invalidas, 0 identificadores duplicados y una cobertura de coordenadas del 99,24\%.
+La auditoria del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la version v0.1.0 esta tarea queda materializada en \texttt{scripts/audit\_dataset.py} y en los informes de \texttt{resources/dataset/audit}. El dataset final utilizado en v0.1.0 conserva 9.380 registros validos, 41 columnas, cobertura temporal entre 2008-07-28 y 2022-12-31, ausencia de fechas invalidas, 0 identificadores duplicados y cobertura de coordenadas del 99,24\%. Estos datos constituyen la base reproducible del entrenamiento y evaluacion, siempre diferenciando los datos reales del Registro 112 CyL de la etiqueta academica P1--P4 generada mediante supervision debil.
 
 \begin{table}[htbp]
 \centering
@@ -159,6 +159,8 @@ La supervision debil introduce un riesgo: que el modelo aprenda simplemente a re
 
 El \textit{leakage} es uno de los riesgos metodologicos mas graves del proyecto. Se produce cuando el modelo utiliza informacion que no estaria disponible en el momento de la primera decision. En el Registro 112 CyL existen campos que pueden reflejar actuaciones posteriores o resultados finales. La Tabla~\ref{tab:leakage-cap7} resume las columnas prohibidas.
 
+El sistema excluye de forma explicita variables que no estarian disponibles en el momento de la primera decision, como recursos movilizados, pacientes atendidos, estado de cierre o informacion posterior al desarrollo del incidente. Esta decision evita \textit{leakage} y mantiene la evaluacion alineada con el objetivo de apoyo a la primera decision.
+
 \begin{table}[htbp]
 \centering
 \small
@@ -181,13 +183,42 @@ El \textit{leakage} es uno de los riesgos metodologicos mas graves del proyecto.
 
 Estas columnas pueden conservarse en zonas controladas de auditoria o evaluacion ex post, siempre separadas del entrenamiento e inferencia. El repositorio incluye un test de leakage que escanea los modulos de Capa 1 y Capa 2 para impedir referencias no permitidas.
 
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabular}{|p{3.4cm}|p{4.6cm}|p{5.1cm}|}
+\hline
+\textbf{Grupo} & \textbf{Columnas o variables} & \textbf{Uso permitido} \\ \hline
+Texto inicial & \texttt{Titulo}, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extraccion de se\~nales \\ \hline
+Contexto predecisional & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalizacion, taxonomia, analisis temporal y territorial \\ \hline
+Variables derivadas permitidas & V01--V07, V12--V15 y se\~nales textuales & Entrada de Capa 2 y explicabilidad \\ \hline
+Identificadores & \texttt{Identificador} & Trazabilidad, splits y auditoria; no como predictor \\ \hline
+Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} y derivados & Solo auditoria o analisis ex post; nunca entrenamiento ni inferencia \\ \hline
+\end{tabular}
+\caption{Columnas permitidas y prohibidas segun disponibilidad en la primera decision.}
+\label{tab:permitidas-prohibidas-leakage-cap7}
+\end{table}
+
 \section{Splits train, validation y test}
 
 La division de datos debe impedir que el modelo vea en entrenamiento informacion demasiado parecida a la de test. Se plantean dos estrategias complementarias.
 
 \subsection{Split estratificado}
 
-El split principal divide el dataset en train, validation y test preservando la distribucion por prioridad, a\~no y provincia, con semilla fija 42. La version ejecutada queda versionada en \texttt{resources/dataset/splits/}: 6.511 registros en train, 1.414 en validacion y 1.455 en test. La distribucion de etiquetas en test es P1=648, P2=336, P3=397 y P4=74.
+El split principal divide el dataset en train, validation y test preservando la distribucion por prioridad, a\~no y provincia, con semilla fija 42. Los splits deben documentarse conforme a la ejecucion final adoptada como fuente unica. Al utilizar los artefactos del 17/06/2026 como cierre v0.1.0, el conjunto de test estratificado contiene 1.453 registros con soporte P1=655, P2=349, P3=375 y P4=74. Esta informacion procede de la matriz de confusion del reporte \texttt{artifacts/reports/evaluation\_v0.1.0.md} y debe coincidir exactamente con el Capitulo~\ref{cap:9} y los anexos de validacion.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{|p{3.2cm}|p{3.0cm}|p{5.4cm}|}
+\hline
+\textbf{Split} & \textbf{Filas} & \textbf{Distribucion P1--P4} \\ \hline
+Test estratificado & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
+Test temporal 2022 & 735 & Evaluacion de estabilidad fuera del periodo principal \\ \hline
+\end{tabular}
+\caption{Distribucion final de los conjuntos de test adoptados como fuente v0.1.0.}
+\label{tab:splits-final-cap7}
+\end{table}
 
 \subsection{Split temporal}
 
@@ -201,7 +232,9 @@ El dataset resultante alimenta tres usos distintos: pruebas de extraccion de Cap
 
 \section{Limitaciones del dataset}
 
-Las limitaciones deben quedar explicitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. La segunda es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del nucleo v0.1.0. La quinta es que la validacion externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoria.
+Las limitaciones deben quedar explicitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas debiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construccion academica trazable y reproducible. Cualquier cambio en la guia de etiquetado, en los splits o en el dataset limpio obliga a repetir la evaluacion.
+
+La segunda limitacion es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del nucleo v0.1.0. La quinta es que la validacion externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoria.
 
 \section{Conclusiones}
 

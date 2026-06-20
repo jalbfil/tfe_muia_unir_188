@@ -62,6 +62,14 @@ incompletas. Las variables V08--V11 se conservan en el dise\~no porque son relev
 para una version futura, pero no se contabilizan como evidencia ya disponible en la
 evaluacion v0.1.0.
 
+Por tanto, en v0.1.0 las variables V01, V04 y V14 se consideran funcionales mediante
+senales textuales o categoria preliminar; V02, V03, V05, V06, V07, V12 y V15 operan de
+forma parcial cuando el texto contiene evidencia suficiente; V13 no esta disponible de
+forma directa; y V08--V11 quedan diferidas a v0.2.0 por requerir integracion externa
+con AEMET, SNCZI y bases Seveso. Esta clasificacion evita presentar como implementadas
+variables que forman parte del diseno metodologico, pero no del nucleo reproducible
+evaluado.
+
 \section*{B.4. Columnas prohibidas por leakage}
 
 El sistema excluye cualquier columna que refleje decisiones tomadas despues de la
@@ -79,6 +87,19 @@ primera valoracion o informacion administrativa posterior. En particular, no se 
 Estas columnas pueden describir la gestion final del incidente, pero no estaban
 disponibles como entrada valida para una primera decision. Usarlas elevaria
 artificialmente las metricas y debilitaria la validez academica del TFM.
+
+La exclusion se fundamenta en una restriccion temporal: el modelo solo puede observar
+informacion disponible antes o durante la primera valoracion. Variables como medios
+movilizados, pacientes atendidos o cierre del incidente incorporan decisiones humanas,
+recursos finalmente asignados o resultados posteriores. Si se incluyeran, el modelo
+aprenderia atajos del proceso administrativo en lugar de senales tempranas del texto,
+produciendo sobreaprendizaje y una estimacion optimista no transferible a un escenario
+real de despacho.
+
+Ademas, el tratamiento de texto operativo y coordenadas se realiza bajo un criterio de
+minimizacion y confidencialidad compatible con RGPD y LOPDGDD: se evita incorporar datos
+personales innecesarios a la evaluacion, se trabaja con identificadores tecnicos y se
+mantiene la finalidad estrictamente academica del procesamiento.
 
 \section*{B.5. Ausencia de datos}
 

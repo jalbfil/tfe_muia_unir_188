@@ -45,10 +45,10 @@ El sistema debe exponer informacion sobre confianza o incertidumbre asociada a l
 La Capa 3 debe generar una explicacion breve y trazable que conecte la prioridad recomendada con reglas, probabilidades, evidencias disponibles y, cuando proceda, citas normativas recuperadas del corpus CyL. El LLM no decide la prioridad: explica la salida de Capa 2.
 
 \paragraph{RF8. Validacion humana}
-El sistema debe permitir que una persona revise la recomendacion y registre una decision: aceptar, modificar o rechazar. Este feedback debe conservarse para analisis posterior, mejora del modelo y validacion interna.
+El sistema debe permitir que una persona revise la recomendacion y registre una decision: aceptar, modificar o rechazar. Este feedback debe conservarse para analisis posterior, mejora del modelo y validacion interna. La supervision humana se garantiza a nivel de contrato mediante \texttt{OperatorDecision}, que obliga a persistir la prioridad recomendada, la prioridad finalmente asignada por el operador, el motivo de divergencia cuando proceda, el identificador del operador y la marca temporal.
 
 \paragraph{RF9. Registro auditable}
-Cada inferencia debe quedar asociada a entrada, variables, modelo, version, prioridad, probabilidades, explicacion, evidencias, decision humana si existe y marca temporal. Esta trazabilidad sostiene la auditoria tecnica y la defensa academica.
+Cada inferencia debe quedar asociada a entrada, variables, modelo, version, prioridad, probabilidades, explicacion, evidencias, decision humana si existe y marca temporal. Esta trazabilidad sostiene la auditoria tecnica y la defensa academica. Cuando el operador confirma o modifica la prioridad, el contrato \texttt{OperatorDecision} debe persistirse en el log de auditoria, de modo que la supervision humana no sea solo un elemento visual de la interfaz, sino un registro verificable.
 
 \paragraph{RF10. Reevaluacion}
 El sistema debe poder reevaluar un incidente cuando cambien los datos de entrada, conservando el historial de recomendaciones para reconstruir la evolucion del caso.
@@ -85,6 +85,10 @@ La primera restriccion es que se trabaja con un prototipo academico, no con un s
 
 La cuarta restriccion es que algunas variables contextuales de alto interes, como AEMET historico, inundabilidad SNCZI y proximidad Seveso, quedan diferidas a v0.2.0. La quinta es que la evaluacion no mide reduccion real del tiempo de decision en sala, sino rendimiento tecnico, estabilidad temporal, errores criticos, fidelidad explicativa y trazabilidad documental.
 
+Desde el punto de vista software, el funcionamiento completo de la Capa 3 depende de la disponibilidad local de Ollama con el modelo \texttt{llama3.1:8b-instruct-q4\_K\_M} o equivalente configurado. Si el servicio local no responde, el sistema debe activar el modo degradado determinista, manteniendo la recomendacion de Capa 2 y generando una explicacion basada en reglas y plantillas. Este supuesto evita depender de APIs externas, pero implica que la latencia y disponibilidad pueden verse condicionadas por el hardware local, especialmente si no existe GPU suficiente o memoria compartida adecuada para ejecutar el modelo.
+
+El segundo supuesto tecnico es el uso de contratos Pydantic como frontera estricta entre capas. Las entradas, salidas y logs se tipan mediante contratos versionados, de forma que la Capa 1, la Capa 2, la Capa 3 y el backend intercambien estructuras verificables. Esta decision reduce errores de integracion y facilita la auditoria, pero obliga a mantener sincronizados los contratos cuando evolucione el prototipo.
+
 Estas restricciones no invalidan el trabajo. Lo delimitan y evitan prometer mas de lo que el prototipo puede demostrar. La excelencia del TFM se apoya precisamente en reconocer esas fronteras y en dejar un camino verificable para ampliarlas.
 
 \section{Trazabilidad entre requisitos y componentes}
@@ -102,9 +106,9 @@ RF3 & Anti-\textit{leakage} & Pipeline y Capa 2 & Columnas prohibidas excluidas 
 RF4 & Weak labels P1--P4 & Supervision debil & Acuerdo y ablacion \\ \hline
 RF5 & Prioridad P1--P4 & RuleFit-lite & Modelo, reglas y metricas \\ \hline
 RF6 & Confianza & Capa 2 e inferencia & Probabilidades por clase \\ \hline
-RF7 & Explicacion & Capa 3 LLM+RAG+MCP & Explicacion y citas \\ \hline
-RF8 & Validacion humana & UI y feedback & Muestra de revision interna \\ \hline
-RF9 & Registro auditable & Backend y logs & \texttt{InferenceLog} \\ \hline
+RF7 & Explicacion & Capa 3 LLM+RAG+MCP & Explicacion, citas y modo degradado \\ \hline
+RF8 & Validacion humana & UI, feedback y contrato \texttt{OperatorDecision} & Decision humana persistida \\ \hline
+RF9 & Registro auditable & Backend, logs, \texttt{InferenceLog} y \texttt{OperatorDecision} & Auditoria completa de inferencia y feedback \\ \hline
 RF10 & Reevaluacion & Orquestador & Historial de inferencias \\ \hline
 \end{tabular}
 \caption{Trazabilidad entre requisitos y componentes del sistema.}

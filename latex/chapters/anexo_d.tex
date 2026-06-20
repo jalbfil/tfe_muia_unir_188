@@ -22,12 +22,12 @@ El artefacto principal es
 un resumen en \texttt{casos\_revision\_v0.1.0.md}. La seleccion combina dos criterios:
 
 \begin{itemize}
-    \item inclusion de los 51 falsos negativos P1 detectados en el test estratificado;
+    \item inclusion de los 59 falsos negativos P1 detectados en el test estratificado;
     \item inclusion de una muestra equilibrada adicional de 60 casos, con 15 casos por
     clase P1, P2, P3 y P4.
 \end{itemize}
 
-El total resultante es de 111 casos revisables. Esta cifra cubre el minimo de 30 casos
+El total resultante es de 119 casos revisables. Esta cifra cubre el minimo de 30 casos
 exigido para la validacion interna y deja preparada una base superior a 100 casos para
 la evaluacion de fidelidad de explicaciones de T113. En v0.1.0 esta evaluacion se
 ejecuta con un juez determinista offline sobre explicaciones de Capa 3 en modo
@@ -41,12 +41,12 @@ degradado.
 \begin{tabular}{|l|r|}
 \hline
 \textbf{Tipo de caso} & \textbf{Numero de casos} \\ \hline
-Falsos negativos P1 & 51 \\ \hline
+Falsos negativos P1 & 59 \\ \hline
 Muestra equilibrada P1 & 15 \\ \hline
 Muestra equilibrada P2 & 15 \\ \hline
 Muestra equilibrada P3 & 15 \\ \hline
 Muestra equilibrada P4 & 15 \\ \hline
-\textbf{Total} & \textbf{111} \\ \hline
+\textbf{Total} & \textbf{119} \\ \hline
 \end{tabular}
 \end{table}
 
@@ -73,6 +73,7 @@ campos reservados para la decision humana.
 \texttt{prob\_p1}--\texttt{prob\_p4} & Distribucion de probabilidad normalizada \\ \hline
 \texttt{agreement\_score} & Acuerdo local entre fuentes debiles \\ \hline
 \texttt{reglas\_o\_senales\_mostradas} & Se\~nales activas y reglas principales de la clase predicha \\ \hline
+\texttt{explanation\_context} & Contexto estructurado de explicacion: prioridad, margen, evidencias y avisos usados por Capa 3 \\ \hline
 \texttt{accion\_revisor} & Aceptar, modificar o rechazar la recomendacion \\ \hline
 \texttt{prioridad\_asignada\_revisor} & Prioridad final asignada por el revisor interno \\ \hline
 \texttt{motivo\_divergencia} & Justificacion obligatoria si se modifica o rechaza \\ \hline
@@ -95,17 +96,17 @@ de revision.
 \hline
 \textbf{Caso} & \textbf{Tipo} & \textbf{Incidente} & \textbf{Weak label} & \textbf{Sistema} & \textbf{Conf.} & \textbf{Categoria} \\ \hline
 REV-001 & Equilibrado P1 & 1241431594407 & P1 & P1 & 1.000000 & trafico \\ \hline
-REV-016 & Equilibrado P2 & 1270037480664 & P2 & P2 & 0.785233 & sanitario \\ \hline
-REV-031 & Equilibrado P3 & 1265032481550 & P3 & P3 & 0.937136 & trafico \\ \hline
-REV-046 & Equilibrado P4 & 1229077240791 & P4 & P4 & 0.985624 & sanitario \\ \hline
-REV-061 & FN P1 & 1223038406360 & P1 & P3 & 0.953758 & sanitario \\ \hline
-REV-062 & FN P1 & 1230985085280 & P1 & P2 & 0.977769 & sanitario \\ \hline
-REV-063 & FN P1 & 1262861277427 & P1 & P3 & 0.937136 & trafico \\ \hline
-REV-064 & FN P1 & 1270553790106 & P1 & P2 & 0.579315 & trafico \\ \hline
-REV-065 & FN P1 & 1279643085448 & P1 & P3 & 0.937136 & trafico \\ \hline
-REV-066 & FN P1 & 1284151389430 & P1 & P2 & 0.970592 & incendio \\ \hline
-REV-067 & FN P1 & 1284174794047 & P1 & P2 & 0.864290 & sanitario \\ \hline
-REV-068 & FN P1 & 1284192281005 & P1 & P2 & 0.769939 & trafico \\ \hline
+REV-016 & Equilibrado P2 & 1264142203135 & P2 & P2 & 0.673363 & sanitario \\ \hline
+REV-031 & Equilibrado P3 & 1284166925456 & P3 & P3 & 0.943535 & sanitario \\ \hline
+REV-046 & Equilibrado P4 & 1270383505564 & P4 & P4 & 0.969164 & sanitario \\ \hline
+REV-061 & FN P1 & 1223038406360 & P1 & P3 & 0.943535 & sanitario \\ \hline
+REV-062 & FN P1 & 1230985085280 & P1 & P2 & 0.995748 & sanitario \\ \hline
+REV-064 & FN P1 critico & 1255644701359 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-068 & FN P1 critico & 1279887542362 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-069 & FN P1 critico & 1284166596701 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-080 & FN P1 critico & 1284268940694 & P1 & P4 & 0.857180 & sanitario \\ \hline
+REV-098 & FN P1 critico & 1284746951651 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-118 & FN P1 critico & 1285206245620 & P1 & P4 & 0.985624 & sanitario \\ \hline
 \end{tabular}
 \end{table}
 
@@ -126,8 +127,11 @@ decision se registra en tres valores posibles:
 
 Las divergencias de dos o mas niveles se marcan como auditoria especial. En particular,
 los casos P1 clasificados como P3 o P4 deben analizarse antes de congelar el modelo,
-porque representan infraestimaciones relevantes. En la version evaluada no aparecen
-casos P1--P4, pero si 19 casos P1--P3.
+porque representan infraestimaciones relevantes. En la version evaluada aparecen 7
+casos P1--P4, que requieren especial atencion por representar infrapriorizaciones
+criticas. Su analisis debe comprobar si el error procede de la guia de etiquetado, de
+una extraccion incompleta de senales, de la ponderacion del modelo o de una falta de
+evidencia explicita en el texto operativo.
 
 \section*{D.6. Limitaciones}
 

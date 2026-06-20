@@ -71,6 +71,29 @@ El resultado confirma el comportamiento esperado: recall P1 muy elevado, precisi
 moderada en clases intermedias y macro-F1 suficiente como referencia exigente. En el
 conjunto de test, el baseline alcanza macro-F1 de 0.703932 y recall P1 de 0.998457.
 
+El baseline experto alcanza un recall P1 muy elevado, coherente con su diseno
+conservador orientado a no infrapriorizar incidentes criticos. Este resultado no debe
+interpretarse como una debilidad del baseline, sino como evidencia de que la comparacion
+se realiza frente a una referencia exigente construida con conocimiento experto. Sin
+embargo, su macro-F1 es inferior al modelo RuleFit-lite seleccionado. En la evaluacion
+final, el baseline obtiene macro-F1 de 0.703932 y recall P1 de 0.998457, mientras que
+RuleFit-lite alcanza macro-F1 de 0.905604 y recall P1 de 0.909924. Esta comparacion
+muestra que RuleFit-lite ofrece un equilibrio mas adecuado entre rendimiento global,
+sensibilidad ante P1 e interpretabilidad.
+
+\begin{table}[ht]
+\centering
+\caption{Comparacion resumida entre baseline experto y RuleFit-lite}
+\label{tab:baseline-vs-rulefit-lite}
+\small
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Modelo} & \textbf{Macro-F1 test} & \textbf{Recall P1 test} \\ \hline
+Baseline experto & 0.703932 & 0.998457 \\ \hline
+RuleFit-lite & 0.905604 & 0.909924 \\ \hline
+\end{tabular}
+\end{table}
+
 \section*{E.4. Limitaciones}
 
 \begin{itemize}
@@ -84,6 +107,13 @@ conjunto de test, el baseline alcanza macro-F1 de 0.703932 y recall P1 de 0.9984
     atendidos o cierre administrativo, para evitar leakage.
 \end{itemize}
 
-Este baseline queda, por tanto, como referencia interpretable minima: una Capa 2
-aprendida solo resulta metodologicamente aceptable si mejora su macro-F1 sin degradar
-de forma sustancial la deteccion de P1.
+El baseline experto debe entenderse como referencia comparativa y no como solucion
+descartada por falta de calidad. Su tendencia conservadora puede sobreactivar P1 y
+reducir la discriminacion entre clases intermedias. Por ello, el modelo seleccionado no
+busca unicamente maximizar recall P1, sino mantener un comportamiento interpretable y
+mas equilibrado en el conjunto de clases P1--P4.
+
+RuleFit-lite no compite contra una referencia debil, sino contra un baseline disenado
+con conocimiento experto. La mejora obtenida en macro-F1, manteniendo un recall P1 alto,
+refuerza la idoneidad del modelo seleccionado para un sistema academico de apoyo a la
+decision.
