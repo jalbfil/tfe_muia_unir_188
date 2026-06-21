@@ -1,14 +1,14 @@
-\chapter{Capturas previstas del prototipo}
+\chapter{Capturas del prototipo}
 \label{cap:anexog}
 
 \section*{G.1. Finalidad del anexo}
 
-Este anexo deja preparada la documentacion visual del prototipo software v0.1.0. En la
-version actual no se incorporan capturas de pantalla definitivas, porque estas deben
-tomarse sobre una ejecucion estable del backend, la interfaz y Ollama local. El objetivo
-es fijar que evidencias visuales deben anadirse, que debe mostrar cada una y como se
-relacionan con los resultados descritos en los Capitulos~\ref{cap:8}, \ref{cap:9} y
-\ref{cap:10}.
+Este anexo incorpora la documentacion visual del prototipo software v0.1.0, obtenida
+sobre una ejecucion local estable del backend, la interfaz Streamlit y Ollama local. El
+objetivo es mostrar evidencias visuales del flujo descrito en los
+Capitulos~\ref{cap:8}, \ref{cap:9} y \ref{cap:10}: entrada manual y por voz,
+extraccion de senales, priorizacion RuleFit-lite, explicacion local, probabilidades
+P1--P4 y registro de feedback humano.
 
 Las capturas no sustituyen a los artefactos reproducibles ni a las metricas. Su funcion
 es facilitar la defensa del TFM mostrando que la arquitectura no se queda en una
@@ -16,9 +16,9 @@ descripcion abstracta, sino que existe una interfaz capaz de ejecutar el flujo c
 entrada textual, extraccion de senales, priorizacion RuleFit-lite, explicacion local,
 probabilidades P1--P4 y registro de feedback humano.
 
-\section*{G.2. Criterios para incorporar capturas}
+\section*{G.2. Criterios aplicados}
 
-Las imagenes que se incorporen a este anexo deben cumplir los siguientes criterios:
+Las imagenes incorporadas cumplen los siguientes criterios:
 
 \begin{itemize}
     \item proceder de una ejecucion local del prototipo v0.1.0;
@@ -28,7 +28,7 @@ Las imagenes que se incorporen a este anexo deben cumplir los siguientes criteri
     sensible de personas reales;
     \item usar incidentes sinteticos o casos anonimizados;
     \item mostrar claramente la prioridad recomendada, la distribucion de confianza y
-    la explicacion generada;
+    la explicacion generada cuando la vista de resultados lo permite;
     \item permitir verificar que Capa 2 decide la prioridad y que Capa 3 solo la
     explica;
     \item estar alineadas con el smoke test P1--P4 documentado en
@@ -37,14 +37,15 @@ Las imagenes que se incorporen a este anexo deben cumplir los siguientes criteri
     \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}.
 \end{itemize}
 
-\section*{G.3. Capturas previstas}
+\section*{G.3. Capturas incorporadas}
 
-La Tabla~\ref{tab:anexo-g-capturas-previstas} resume las capturas que conviene anadir
-cuando se cierre la version visual del prototipo.
+La Tabla~\ref{tab:anexo-g-capturas-previstas} resume las capturas incorporadas a la
+memoria. Algunos resultados se dividen en dos imagenes para preservar legibilidad sin
+forzar escalados excesivos.
 
 \begin{table}[ht]
 \centering
-\caption{Capturas previstas para documentar el prototipo}
+\caption{Capturas incorporadas para documentar el prototipo}
 \label{tab:anexo-g-capturas-previstas}
 \small
 \begin{tabular}{|l|p{5.2cm}|p{5.1cm}|}
@@ -53,61 +54,87 @@ cuando se cierre la version visual del prototipo.
 G.1. Entrada de incidente & Formulario de la interfaz con titulo, descripcion,
 provincia, municipio y texto operativo. & Demuestra que el prototipo acepta entrada
 manual controlada y permite reproducir incidentes sinteticos. \\ \hline
-G.2. Resultado P1 & Incidente critico, prioridad P1, probabilidades P1--P4,
+G.2. Entrada por voz & Modulo experimental de captura o transcripcion de voz. &
+Evidencia la capacidad de inicializar el formulario a partir de entrada oral simulada.
+\\ \hline
+G.3. Resultado P1 & Incidente critico, prioridad P1, probabilidades P1--P4,
 reglas/senales activadas y explicacion local. & Muestra el comportamiento esperado ante
 riesgo vital, atrapados, inconscientes, fallecidos o incendio grave. \\ \hline
-G.3. Resultado P2 & Incidente relevante sin criticidad vital inmediata, prioridad P2 y
-explicacion asociada. & Ilustra la separacion entre emergencia critica y caso relevante
-con potencial de deterioro. \\ \hline
-G.4. Resultado P3/P4 & Caso ordinario o consulta de baja urgencia con distribucion de
-confianza coherente. & Evidencia que el sistema no eleva todos los incidentes a P1/P2 y
-mantiene gradacion de prioridad. \\ \hline
-G.5. Variables Capa 1 & Panel desplegable con senales extraidas, numero de victimas,
-gravedad, riesgo vital, multirriesgo, accesibilidad y metadatos de inferencia. &
-Permite comprobar que la Capa 1 alimenta la Capa 2 con variables predecisionales y que
-las negaciones no activan falsos positivos. \\ \hline
+G.4. Resultado P3 & Incidencia viaria ordinaria sin personas afectadas. & Evidencia que
+el sistema mantiene una prioridad intermedia cuando hay afectacion de via pero no riesgo
+vital. \\ \hline
+G.5. Resultado P4 & Consulta o molestia vecinal sin riesgo para personas ni bienes. &
+Demuestra que el sistema no sobreeleva casos sin urgencia ni indicios criticos. \\ \hline
 G.6. Feedback humano & Formulario de decision del operador con prioridad final,
 aceptacion o discrepancia motivada. & Documenta supervision humana, trazabilidad y
 registro de divergencias. \\ \hline
 \end{tabular}
 \end{table}
 
-\section*{G.4. Plantilla LaTeX para insertar las figuras}
+\section*{G.4. Figuras del MVP}
 
-Cuando se disponga de las imagenes definitivas, deben guardarse en
-\texttt{latex/figures/} con nombres estables y sustituir los bloques comentados por
-figuras activas. Se recomienda usar formato PNG, anchura maxima
-\texttt{0.92\textbackslash textwidth} y pies de figura descriptivos pero breves.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g01_entrada_incidente.png}
+    \caption{Entrada manual de un incidente sintetico en el prototipo}
+    \label{fig:g01-entrada-incidente}
+\end{figure}
 
-\begin{verbatim}
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g1_entrada_incidente.png}
-%     \caption{Entrada manual de un incidente sintetico en el prototipo}
-%     \label{fig:g1-entrada-incidente}
-% \end{figure}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g02_entrada_voz.png}
+    \caption{Entrada por voz y apoyo a la cumplimentacion del incidente}
+    \label{fig:g02-entrada-voz}
+\end{figure}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g2_resultado_p1.png}
-%     \caption{Priorizacion P1, probabilidades y explicacion local}
-%     \label{fig:g2-resultado-p1}
-% \end{figure}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g03_resultado_p1_a.png}
+    \caption{Resultado P1 para colision frontal con herido grave atrapado, vista superior}
+    \label{fig:g03-resultado-p1-a}
+\end{figure}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g4_variables_capa1.png}
-%     \caption{Variables y senales extraidas por Capa 1 para alimentar RuleFit-lite}
-%     \label{fig:g4-variables-capa1}
-% \end{figure}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g03_resultado_p1_b.png}
+    \caption{Resultado P1 para colision frontal con herido grave atrapado, detalle de explicacion}
+    \label{fig:g03-resultado-p1-b}
+\end{figure}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g5_feedback_humano.png}
-%     \caption{Registro de feedback humano y decision final del operador}
-%     \label{fig:g5-feedback-humano}
-% \end{figure}
-\end{verbatim}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g04_resultado_p3_a.png}
+    \caption{Resultado P3 para arbol caido en arcen sin personas afectadas, vista superior}
+    \label{fig:g04-resultado-p3-a}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g04_resultado_p3_b.png}
+    \caption{Resultado P3 para arbol caido en arcen sin personas afectadas, detalle de explicacion}
+    \label{fig:g04-resultado-p3-b}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g05_resultado_p4_a.png}
+    \caption{Resultado P4 para consulta vecinal sin riesgo, vista superior}
+    \label{fig:g05-resultado-p4-a}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g05_resultado_p4_b.png}
+    \caption{Resultado P4 para consulta vecinal sin riesgo, detalle de explicacion}
+    \label{fig:g05-resultado-p4-b}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/prototype_v0_1_0/g06_feedback_humano.png}
+    \caption{Registro de feedback humano y decision final del operador}
+    \label{fig:g06-feedback-humano}
+\end{figure}
 
 \section*{G.5. Relacion con la evidencia experimental}
 
@@ -119,5 +146,5 @@ explicativa. La captura de variables de Capa 1 debe servir especialmente para co
 la interfaz con la validacion \texttt{capa1\_capa2\_e2e\_v0.1.0}, donde el flujo
 integrado supera 5/5 escenarios curados tras el saneamiento de negaciones.
 
-Por tanto, este anexo queda preparado para completar la memoria con soporte visual una
-vez se seleccionen las capturas definitivas de la interfaz.
+Por tanto, este anexo completa la memoria con soporte visual del MVP y conecta la
+implementacion ejecutable con la evaluacion experimental y la trazabilidad humana.
