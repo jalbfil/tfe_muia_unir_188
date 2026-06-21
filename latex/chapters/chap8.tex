@@ -63,6 +63,15 @@ Las capturas incorporadas en el Anexo~\ref{cap:anexog} documentan visualmente es
 ejecucion local del MVP, incluyendo entrada manual, entrada por voz, resultados P1, P3
 y P4, explicacion generada y registro de feedback humano.
 
+Para facilitar una evaluacion exploratoria con participantes externos, el equipo preparo
+tambien un acceso de prueba mediante un cuaderno en Google Colab. Este acceso no se
+plantea como despliegue productivo ni como integracion con sistemas 112, sino como
+entorno reproducible de demostracion: permite lanzar el prototipo, ejecutar casos
+sinteticos y recoger respuestas mediante un cuestionario estructurado. La finalidad es
+obtener valoracion preliminar de utilidad, comprensibilidad, confianza, trazabilidad y
+claridad de la supervision humana sin exponer datos reales ni depender de una sala de
+operaciones.
+
 La integracion con LLM se realiza mediante Ollama con el modelo
 \texttt{llama3.1:8b-instruct-q4\_K\_M}. El LLM no decide la prioridad: recibe la
 recomendacion ya calculada por RuleFit-lite y la convierte en una explicacion

@@ -47,7 +47,7 @@ objetivos planteados se consideran alcanzados dentro del alcance academico v0.1.
 OE1 & Logrado & Se analiza el problema de priorizacion temprana 112, necesidades del operador, restricciones de informacion y riesgos de automatizacion. & Caps.~\ref{cap:1}, \ref{cap:2} \\ \hline
 OE2 & Logrado & Se revisa el marco normativo estatal y autonomico CyL y se construye la tabla de trazabilidad norma--criterio--variable--regla. & Cap.~\ref{cap:3} \\ \hline
 OE3 & Logrado & Se define la taxonomia operativa, la escala academica P1--P4 y las variables V01--V15 con separacion anti-\textit{leakage}. & Anexos~\ref{cap:anexoa}, \ref{cap:anexob}, \ref{cap:anexoc} \\ \hline
-OE4 & Logrado & Se audita el Registro 112 CyL (9.380 registros limpios) y se generan etiquetas P1--P4 por supervision debil con acuerdo Krippendorff \(\alpha = 0{,}858348\). & Cap.~\ref{cap:7}, Anexo~\ref{cap:anexof} \\ \hline
+OE4 & Logrado & Se audita el Registro 112 CyL (9.380 registros limpios) y se generan etiquetas P1--P4 por supervision debil con acuerdo Krippendorff \(\alpha = 0{,}858348\). & Cap.~\ref{cap:7}, Anexos~\ref{cap:anexob}, \ref{cap:anexoc} \\ \hline
 OE5 & Logrado & Se implementa la Capa 2 interpretable: baseline experto vs RuleFit-lite vs \texttt{imodels}; se selecciona RuleFit-lite (accuracy 0,903648; macro-F1 0,905604; recall P1 0,909924). & Cap.~\ref{cap:9}, Anexos~\ref{cap:anexoe}, \ref{cap:anexol} \\ \hline
 OE6 & Logrado & Se dise\~na la Capa 3 de explicacion con LLM local, RAG normativo y MCP, sin delegar la decision de prioridad en el LLM. & Cap.~\ref{cap:8}, Anexos~\ref{cap:anexoj}, \ref{cap:anexok} \\ \hline
 OE7 & Logrado & Se integran las capas con contratos versionados, backend auditable, modo degradado y registro de inferencia y feedback humano. & Cap.~\ref{cap:8} \\ \hline
@@ -141,6 +141,17 @@ negaciones explicitas que antes podia provocar falsos positivos de atrapamiento.
 latencias medias son 0.31106 ms en Capa 1, 347.0036 ms en Capa 2 y 0.30772 ms en Capa
 3 degradada.
 
+Finalmente, se realizo una evaluacion exploratoria del MVP con nueve participantes
+externos mediante un enlace de prueba basado en Google Colab y un cuestionario
+estructurado. Los perfiles se organizaron en tres grupos: profesionales vinculados a
+puestos de mando, comunicaciones criticas y emergencias; usuarios tecnicos
+familiarizados con IA; y usuarios no especializados en IA. La media global fue positiva
+en prioridad recomendada razonable (4.14), explicacion clara (4.04), confianza aportada
+por senales/reglas (4.04) y claridad de la decision humana (4.63). Estos resultados no
+equivalen a validacion operativa, pero refuerzan la utilidad percibida del MVP como
+demostrador academico y senalan una mejora clara: simplificar la presentacion de
+probabilidades y reglas para perfiles no tecnicos.
+
 \section{Cumplimiento de principios de dise\~no}
 
 El prototipo respeta la linea de trabajo definida desde los capitulos iniciales. La
@@ -162,8 +173,9 @@ Las limitaciones del trabajo son claras y no deben ocultarse.
 \begin{enumerate}
     \item La etiqueta P1--P4 es academica y debil; no existe una prioridad oficial
     equivalente en el Registro 112 CyL.
-    \item La validacion realizada es interna. No se ha contado todavia con un panel
-    externo de operadores o responsables del 112.
+    \item La validacion principal es interna. La evaluacion exploratoria con nueve
+    participantes externos aporta utilidad percibida, pero no sustituye a un panel
+    formal de operadores o responsables del 112.
     \item La ejecucion \texttt{imodels} se ha limitado a una configuracion diagnostica
     por coste computacional local.
     \item La calibracion ECE queda pendiente de una pasada final si el modelo se
@@ -172,9 +184,9 @@ Las limitaciones del trabajo son claras y no deben ocultarse.
     proximidad Seveso, permanecen diferidas para v0.2.0.
     \item El prototipo no mide impacto operativo real sobre tiempos de decision,
     coordinacion de recursos o carga cognitiva en sala.
-    \item Las pruebas integradas tienen tamano reducido: cuatro casos con Ollama y
-    cinco escenarios reproducibles Capa 1--Capa 2--Capa 3. No equivalen a una
-    evaluacion de aceptacion con usuarios reales.
+    \item Las pruebas integradas tienen tamano reducido: cuatro casos con Ollama,
+    cinco escenarios reproducibles Capa 1--Capa 2--Capa 3 y una evaluacion
+    exploratoria con nueve participantes. No equivalen a una evaluacion operativa real.
 \end{enumerate}
 
 \section{Trabajo futuro}
@@ -203,9 +215,9 @@ La continuacion natural del proyecto se organiza en siete lineas.
     \item \textbf{Optimizacion del prototipo integrado.} Reducir la latencia del LLM
     local mediante prompts mas compactos, respuesta en streaming, cuantizacion o
     ejecucion acelerada, y ampliar el smoke test con mas casos frontera.
-    \item \textbf{Piloto controlado.} Integrar el prototipo en un entorno de prueba
-    controlado para medir utilidad percibida, carga cognitiva, tiempo de revision y
-    aceptacion de recomendaciones.
+    \item \textbf{Piloto controlado.} Ampliar la evaluacion exploratoria inicial con
+    un piloto formal en entorno de prueba, incorporando mas casos, medicion de carga
+    cognitiva, tiempo de revision y aceptacion de recomendaciones.
 \end{enumerate}
 
 \section{Cierre}

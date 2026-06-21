@@ -195,7 +195,7 @@ Los 7 casos P1 clasificados como P4 constituyen el principal riesgo detectado en
 evaluacion. Aunque el rendimiento global del modelo es alto, estos errores representan
 infrapriorizaciones criticas y deben tratarse como prioridad de revision humana,
 analisis de causas y mejora futura del sistema. El resto de falsos negativos P1 se
-distribuye en 34 casos P1--P2 y 18 casos P1--P3. La figura
+distribuye en 34 casos P1--P2 y 18 casos P1--P3. El artefacto
 \texttt{artifacts/reports/confusion\_matrix\_rulefit\_lite\_v0.1.0.svg} conserva la
 representacion grafica versionada de esta matriz.
 
@@ -382,6 +382,68 @@ Inundacion en garajes & P2 & Si & meteo/inundacion \\ \hline
 Arbol caido en carretera secundaria & P3 & Si & trafico, sin falso atrapamiento \\ \hline
 \end{tabular}
 \end{table}
+
+\section{Evaluacion exploratoria de usabilidad, confianza y utilidad percibida}
+
+Como complemento a la evaluacion tecnica del modelo y a las pruebas integradas del
+prototipo, se realizo una evaluacion exploratoria del MVP con nueve participantes
+externos. La prueba se distribuyo mediante un enlace de acceso al prototipo preparado en
+Google Colab y se acompano de un cuestionario estructurado. El objetivo no fue validar
+el sistema para uso operativo real en un servicio 112, sino recoger evidencia preliminar
+sobre comprensibilidad, utilidad percibida, confianza, trazabilidad y claridad de la
+supervision humana.
+
+La muestra se organizo en tres grupos de tres participantes: perfiles profesionales
+vinculados a puestos de mando, comunicaciones criticas y emergencias; usuarios tecnicos
+familiarizados con herramientas de IA; y usuarios no especializados en IA. Para preservar
+la privacidad, los participantes se codificaron como A1--A3, B1--B3 y C1--C3,
+describiendo unicamente su perfil funcional. Los perfiles detallados y los comentarios
+abiertos se recogen en el Anexo~\ref{cap:anexod}.
+
+Cada participante reviso el MVP mediante casos sinteticos y respondio a cuatro
+dimensiones en escala Likert de 1 a 5: razonabilidad de la prioridad recomendada,
+claridad de la explicacion, confianza aportada por senales/reglas y claridad de la
+decision humana final. La Tabla~\ref{tab:9-evaluacion-exploratoria} resume los
+resultados agregados por grupo.
+
+\begin{table}[ht]
+\centering
+\caption{Resultados medios de la evaluacion exploratoria del MVP}
+\label{tab:9-evaluacion-exploratoria}
+\small
+\begin{tabular}{|p{4.6cm}|c|c|c|c|}
+\hline
+\textbf{Dimension evaluada} & \textbf{Grupo A} & \textbf{Grupo B} & \textbf{Grupo C} & \textbf{Media global} \\ \hline
+Prioridad recomendada razonable & 4.47 & 4.13 & 3.83 & 4.14 \\ \hline
+Explicacion clara & 4.17 & 4.37 & 3.60 & 4.04 \\ \hline
+Senales/reglas aumentan confianza & 4.50 & 4.23 & 3.40 & 4.04 \\ \hline
+Decision humana clara & 4.93 & 4.43 & 4.53 & 4.63 \\ \hline
+\end{tabular}
+\end{table}
+
+Los resultados muestran una valoracion global positiva del MVP, con medias superiores a
+4 en tres de las cuatro dimensiones evaluadas. La dimension mejor valorada fue la
+claridad de la decision humana, con una media global de 4.63, lo que refuerza que el
+prototipo transmite adecuadamente que la recomendacion del sistema no sustituye al
+criterio profesional. Tambien obtienen valoraciones positivas la razonabilidad de la
+prioridad recomendada y la claridad de la explicacion generada.
+
+El Grupo A, formado por perfiles vinculados a puestos de mando, comunicaciones criticas
+y emergencias, valoro especialmente la trazabilidad y la supervision humana. El Grupo B,
+compuesto por usuarios tecnicos familiarizados con IA, otorgo la puntuacion mas alta a
+la claridad de la explicacion, probablemente por su mayor familiaridad con herramientas
+generativas y sistemas automatizados. El Grupo C, integrado por usuarios no
+especializados en IA, presento puntuaciones mas bajas en la dimension relativa a senales
+y reglas, lo que sugiere que la interfaz deberia simplificar aun mas la presentacion de
+probabilidades, reglas activadas y evidencias para perfiles no tecnicos.
+
+Esta evaluacion tiene caracter exploratorio. El tamano muestral es reducido y la
+seleccion de participantes no permite extraer conclusiones estadisticamente
+generalizables. Ademas, aunque algunos perfiles estan vinculados a puestos de mando,
+comunicaciones criticas, emergencias o seguridad publica, la prueba no equivale a una
+validacion formal con operadores del 112 ni a una evaluacion en entorno operativo real.
+Los resultados deben interpretarse como evidencia preliminar de aceptacion,
+comprensibilidad y utilidad percibida del MVP.
 
 \section{Limitaciones}
 

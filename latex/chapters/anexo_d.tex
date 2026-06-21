@@ -133,9 +133,68 @@ criticas. Su analisis debe comprobar si el error procede de la guia de etiquetad
 una extraccion incompleta de senales, de la ponderacion del modelo o de una falta de
 evidencia explicita en el texto operativo.
 
-\section*{D.6. Limitaciones}
+\section*{D.6. Evaluacion exploratoria del MVP con participantes externos}
+
+Ademas de la revision interna de casos, se realizo una evaluacion exploratoria del MVP
+con nueve participantes externos. La prueba se distribuyo mediante un enlace de acceso
+al prototipo preparado en Google Colab y se acompano de un cuestionario estructurado. La
+finalidad fue valorar comprensibilidad, utilidad percibida, confianza, trazabilidad y
+claridad de la supervision humana, no validar el sistema para uso operativo real.
+
+Para preservar la privacidad, no se recogen nombres, unidades concretas ni datos
+personales. Cada participante se identifica mediante un codigo A1--C3 y una descripcion
+funcional suficiente para interpretar su aportacion. La Tabla~\ref{tab:anexod-participantes}
+resume la composicion de la muestra.
+
+\begin{table}[ht]
+\centering
+\caption{Perfiles participantes en la evaluacion exploratoria del MVP}
+\label{tab:anexod-participantes}
+\scriptsize
+\begin{tabularx}{\textwidth}{|p{0.9cm}|p{3.2cm}|X|p{3.9cm}|}
+\hline
+\textbf{Codigo} & \textbf{Grupo} & \textbf{Perfil funcional} & \textbf{Rol en la evaluacion} \\ \hline
+A1 & PM/CIS/emergencias & Perfil de transmisiones, comunicaciones y sistemas CIS con experiencia en coordinacion de puestos de mando. & Coherencia operativa, flujo de informacion y trazabilidad. \\ \hline
+A2 & PM/CIS/emergencias & Perfil vinculado al montaje de puestos de mando en emergencias. & Utilidad en contexto de emergencia y claridad de prioridad critica. \\ \hline
+A3 & PM/CIS/emergencias & Perfil de informatica y redes en puestos de mando. & Trazabilidad tecnica, continuidad y comprension del sistema. \\ \hline
+B1 & Tecnico IA & Tecnico de telecomunicaciones radio, usuario habitual de IA. & Claridad tecnica y utilidad en comunicaciones radio. \\ \hline
+B2 & Tecnico IA & Tecnico de telecomunicaciones satelite, usuario habitual de IA. & Claridad en conectividad y sistemas distribuidos. \\ \hline
+B3 & Tecnico IA & Ingeniero informatico y desarrollador, usuario habitual de IA. & Arquitectura, separacion de capas y reproducibilidad. \\ \hline
+C1 & No especializado IA & Tecnico de montaje de puestos de mando, sin uso tecnico habitual de IA. & Comprension desde perfil tecnico no IA. \\ \hline
+C2 & No especializado IA & Usuario no tecnico, sin uso habitual de IA. & Comprensibilidad general. \\ \hline
+C3 & No especializado IA & Perfil de seguridad publica, usuario no tecnico de IA. & Percepcion desde seguridad publica y supervision humana. \\ \hline
+\end{tabularx}
+\end{table}
+
+La Tabla~\ref{tab:anexod-comentarios} sintetiza los temas recurrentes detectados en las
+respuestas abiertas. Estos comentarios se usan como orientacion cualitativa para mejorar
+la interfaz y la explicacion, no como evidencia estadistica generalizable.
+
+\begin{table}[ht]
+\centering
+\caption{Temas recurrentes en los comentarios abiertos}
+\label{tab:anexod-comentarios}
+\small
+\begin{tabularx}{\textwidth}{|p{4cm}|X|}
+\hline
+\textbf{Tema identificado} & \textbf{Interpretacion} \\ \hline
+Valor de la trazabilidad & Varios participantes destacaron la utilidad de registrar prioridad, explicacion y decision humana. \\ \hline
+Claridad de prioridad critica & Los perfiles operativos valoraron que los casos P1 mostrasen senales criticas visibles. \\ \hline
+Necesidad de lenguaje menos tecnico & Los usuarios no especializados indicaron dificultad para interpretar probabilidades, reglas o senales. \\ \hline
+Separacion modelo-explicacion & Los usuarios tecnicos de IA pidieron distinguir claramente que parte prioriza, que parte explica y que parte registra. \\ \hline
+Supervision humana & Los tres grupos valoraron positivamente que el sistema no decida de forma autonoma y que la persona mantenga la decision final. \\ \hline
+\end{tabularx}
+\end{table}
+
+\section*{D.7. Limitaciones}
 
 La muestra procede de etiquetas academicas generadas por supervision debil. Por tanto,
 la revision interna puede detectar incoherencias del sistema o de la propia etiqueta,
 pero no certifica validez operativa. La validacion externa con personal del 112 sigue
 siendo una linea prioritaria de trabajo futuro.
+
+La evaluacion exploratoria del MVP comparte esta prudencia metodologica. Aunque los
+perfiles participantes aportan perspectivas utiles sobre puestos de mando, comunicaciones
+criticas, IA y comprensibilidad general, el tamano muestral es reducido y no permite
+extraer conclusiones estadisticamente generalizables. Por ello, sus resultados se
+interpretan como evidencia preliminar de aceptacion, claridad y utilidad percibida.
