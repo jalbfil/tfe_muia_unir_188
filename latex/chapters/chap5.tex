@@ -45,10 +45,10 @@ El sistema debe exponer informacion sobre confianza o incertidumbre asociada a l
 La Capa 3 debe generar una explicacion breve y trazable que conecte la prioridad recomendada con reglas, probabilidades, evidencias disponibles y, cuando proceda, citas normativas recuperadas del corpus CyL. El LLM no decide la prioridad: explica la salida de Capa 2.
 
 \paragraph{RF8. Validacion humana}
-El sistema debe permitir que una persona revise la recomendacion y registre una decision: aceptar, modificar o rechazar. Este feedback debe conservarse para analisis posterior, mejora del modelo y validacion interna.
+El sistema debe permitir que una persona (operador del 112) revise la recomendacion del DSS y registre una decision explicita (aceptacion, modificacion o rechazo). Esta intervencion humana (HITL) debe ser obligatoria para cerrar el caso y guardarse a nivel de base de datos mediante la persistencia del contrato estructurado \texttt{OperatorDecision}, vinculando la prioridad asignada y la justificacion de cualquier discrepancia.
 
 \paragraph{RF9. Registro auditable}
-Cada inferencia debe quedar asociada a entrada, variables, modelo, version, prioridad, probabilidades, explicacion, evidencias, decision humana si existe y marca temporal. Esta trazabilidad sostiene la auditoria tecnica y la defensa academica.
+Cada inferencia debe quedar registrada de forma inalterable y asociada a su entrada original, variables extraidas por la Capa 1, modelo de Capa 2 y su version, prioridad recomendada, probabilidades calculadas, explicacion de Capa 3, y la decision humana final (\texttt{OperatorDecision}) si ya fue registrada. Esta persistencia garantiza la trazabilidad exigida por las normativas de IA de alto riesgo \cite{EUAIAct2024}, sustentando la auditoria tecnica y la defensa academica.
 
 \paragraph{RF10. Reevaluacion}
 El sistema debe poder reevaluar un incidente cuando cambien los datos de entrada, conservando el historial de recomendaciones para reconstruir la evolucion del caso.
@@ -81,11 +81,17 @@ El prototipo debe priorizar ejecucion local y evitar dependencias cloud para dat
 
 \section{Restricciones y supuestos}
 
+\subsection{Restricciones metodologicas y del prototipo}
 La primera restriccion es que se trabaja con un prototipo academico, no con un sistema certificado ni desplegado en una sala 112 real. La segunda es que el Registro 112 Castilla y Leon no contiene prioridad oficial P1--P4, por lo que la evaluacion se realiza contra una etiqueta academica de supervision debil. La tercera es que no se dispone todavia de validacion externa con operadores del 112; por eso se prepara una muestra de validacion interna y se documenta como paso previo.
 
 La cuarta restriccion es que algunas variables contextuales de alto interes, como AEMET historico, inundabilidad SNCZI y proximidad Seveso, quedan diferidas a v0.2.0. La quinta es que la evaluacion no mide reduccion real del tiempo de decision en sala, sino rendimiento tecnico, estabilidad temporal, errores criticos, fidelidad explicativa y trazabilidad documental.
 
 Estas restricciones no invalidan el trabajo. Lo delimitan y evitan prometer mas de lo que el prototipo puede demostrar. La excelencia del TFM se apoya precisamente en reconocer esas fronteras y en dejar un camino verificable para ampliarlas.
+
+\subsection{Supuestos y dependencias tecnologicas}
+El funcionamiento y la viabilidad operativa del prototipo v0.1.0 dependen de varios supuestos tecnologicos especificos de ejecucion local. En primer lugar, se asume el tipado estricto y la validacion automatica en tiempo de ejecucion mediante contratos de datos desarrollados con la libreria \texttt{Pydantic}, lo que garantiza que los datos fluyan sin corrupcion entre las capas. En segundo lugar, se asume la disponibilidad y correcta ejecucion local de la suite de inferencia \texttt{Ollama} cargando el modelo compacto \texttt{Llama 3.1:8B} (o su equivalente configurado \texttt{Qwen 2.5:7B-instruct}) para la generacion de explicaciones textuales coherentes y sin alucinaciones.
+
+Existe un riesgo tecnologico relevante asociado a la latencia y la disponibilidad: si el hardware del puesto de trabajo local carece de una GPU dedicada o compartida suficiente para albergar y ejecutar Ollama, el tiempo de inferencia del LLM puede aumentar significativamente o fallar, comprometiendo la disponibilidad del DSS en entornos de alta presion de despacho, lo que obliga al sistema a recurrir de forma segura a su modo de operacion degradado (basado en plantillas deterministas).
 
 \section{Trazabilidad entre requisitos y componentes}
 
