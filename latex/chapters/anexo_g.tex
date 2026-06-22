@@ -18,21 +18,14 @@ probabilidades P1--P4 y registro de feedback humano.
 
 \section*{G.2. Criterios para incorporar capturas}
 
-Las imagenes que se incorporen a este anexo deben cumplir los siguientes criterios:
+Las pantallas del frontend Streamlit se capturaron sobre una ejecucion local estable empleando datos simulados sinteticos para evitar la exposicion de datos del Registro 112 CyL. Las imagenes que se incorporan a este anexo cumplen con los siguientes criterios:
 
 \begin{itemize}
-    \item proceder de una ejecucion local del prototipo v0.1.0;
-    \item no contener datos personales, telefonos, direcciones completas ni informacion
-    sensible de personas reales;
-    \item usar incidentes sinteticos o casos anonimizados;
-    \item mostrar claramente la prioridad recomendada, la distribucion de confianza y
-    la explicacion generada;
-    \item permitir verificar que Capa 2 decide la prioridad y que Capa 3 solo la
-    explica;
-    \item estar alineadas con el smoke test P1--P4 documentado en
-    \texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md} y con la validacion
-    reproducible Capa 1--Capa 2--Capa 3 documentada en
-    \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}.
+    \item Proceder de una ejecucion local del prototipo v0.1.0 sobre hardware local.
+    \item No contener datos personales, telefonos, direcciones completas ni informacion sensible de personas reales.
+    \item Mostrar claramente la prioridad recomendada, la distribucion de confianza y la explicacion generada.
+    \item Permitir verificar que Capa 2 decide la prioridad y que Capa 3 solo la explica, de acuerdo con los principios de diseño de la tesis.
+    \item Estar alineadas con el smoke test P1--P4 documentado en el reporte de pruebas \texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md} y con la validacion integrada Capa 1--Capa 2--Capa 3 documentada en \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}.
 \end{itemize}
 
 \section*{G.3. Capturas previstas}
@@ -70,52 +63,61 @@ registro de divergencias. \\ \hline
 \end{tabular}
 \end{table}
 
-\section*{G.4. Plantilla LaTeX para insertar las figuras}
+\section*{G.4. Galeria de capturas del prototipo}
 
-Cuando se disponga de las imagenes definitivas, deben guardarse en
-\texttt{latex/figures/} con nombres estables y sustituir los bloques comentados por
-figuras activas. Se recomienda usar formato PNG, anchura maxima
-\texttt{0.92\textbackslash textwidth} y pies de figura descriptivos pero breves.
+A continuacion se presentan las capturas reales de la interfaz del prototipo \texttt{v0.1.0} ejecutandose localmente sobre datos sinteticos controlados.
 
-\begin{verbatim}
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g1_entrada_incidente.png}
-%     \caption{Entrada manual de un incidente sintetico en el prototipo}
-%     \label{fig:g1-entrada-incidente}
-% \end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/g1_entrada_incidente.png}
+    \caption{Entrada de un incidente sintetico en el formulario del prototipo Streamlit.}
+    \label{fig:g1-entrada-incidente}
+\end{figure}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g2_resultado_p1.png}
-%     \caption{Priorizacion P1, probabilidades y explicacion local}
-%     \label{fig:g2-resultado-p1}
-% \end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/g2_resultado_p1.png}
+    \caption{Recomendacion de prioridad P1 en color rojo HSL, probabilidades y explicacion local.}
+    \label{fig:fig-g2-resultado-p1}
+\end{figure}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g4_variables_capa1.png}
-%     \caption{Variables y senales extraidas por Capa 1 para alimentar RuleFit-lite}
-%     \label{fig:g4-variables-capa1}
-% \end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/g3_resultado_p2.png}
+    \caption{Recomendacion de prioridad P2 en color naranja HSL ante escenarios sin criticidad vital inmediata.}
+    \label{fig:g3-resultado-p2}
+\end{figure}
 
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[width=0.92\textwidth]{figures/g5_feedback_humano.png}
-%     \caption{Registro de feedback humano y decision final del operador}
-%     \label{fig:g5-feedback-humano}
-% \end{figure}
-\end{verbatim}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/g4_resultado_p3_p4.png}
+    \caption{Recomendacion de prioridad P4 ante consultas o incidentes ordinarios de baja urgencia.}
+    \label{fig:g4-resultado-p3-p4}
+\end{figure}
 
-\section*{G.5. Relacion con la evidencia experimental}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/g5_variables_capa1.png}
+    \caption{Variables operativas y senales extraidas en tiempo real por la Capa 1 NLP.}
+    \label{fig:g5-variables-capa1}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figures/g6_feedback_humano.png}
+    \caption{Modulo de validacion, intervencion humana (HITL) y registro de decisiones en base de datos.}
+    \label{fig:g6-feedback-humano}
+\end{figure}
+
+\section*{G.5. Relacion con la evidencia experimental y riesgos}
 
 Las capturas deben interpretarse como evidencia de usabilidad y ejecucion del prototipo,
 no como evaluacion cuantitativa. La evaluacion principal sigue siendo la del
 Capitulo~\ref{cap:9}: comparativa baseline experto, RuleFit-lite e \texttt{imodels},
 recall P1, test temporal, control anti-\textit{leakage}, validacion interna y fidelidad
 explicativa. La captura de variables de Capa 1 debe servir especialmente para conectar
-la interfaz con la validacion \texttt{capa1\_capa2\_e2e\_v0.1.0}, donde el flujo
-integrado supera 5/5 escenarios curados tras el saneamiento de negaciones.
+la interfaz con la validacion \texttt{capa1\_capa2\_e2e\_v0.1.0.md}, donde el flujo
+integrado supera 5/5 escenarios curados tras el saneamiento de negaciones. Asimismo, se
+pueden cotejar las pantallas con la traza de ejecucion en \texttt{prototype\_v0.1.0\_smoke\_test.md}.
 
-Por tanto, este anexo queda preparado para completar la memoria con soporte visual una
-vez se seleccionen las capturas definitivas de la interfaz.
+Existe el riesgo de que la interfaz grafica cambie ligeramente de estilo antes del cierre definitivo de la memoria, desalineando visualmente las imagenes integradas en este anexo. Sin embargo, este riesgo es bajo y no invalida el soporte visual aportado, el cual garantiza que todos los componentes estan desarrollados y operativos.
