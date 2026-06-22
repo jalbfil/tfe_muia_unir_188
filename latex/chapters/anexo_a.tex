@@ -76,14 +76,15 @@ Otros & consulta, asistencia, animal, incidencia tecnica & Normalmente P3/P4 sal
 \end{tabularx}
 \end{table}
 
-\section*{A.5. Limitaciones}
+\section*{A.5. Limitaciones y riesgos}
 
-La taxonomia es una herramienta academica y funcional. No sustituye la codificacion
-interna de un servicio 112 ni agota toda la casuistica real. Algunos incidentes pueden
-pertenecer a varias familias; en esos casos se priorizan las senales de mayor urgencia
-para Capa 2 y se conservan las evidencias relevantes para la explicacion.
+La taxonomia propuesta es una herramienta academica y funcional. No sustituye la codificacion oficial del servicio 112 ni agota toda la casuistica real. Entre las limitaciones principales de la version v0.1.0 se identifican las siguientes:
 
-Las familias tecnologica, meteorologica avanzada e inundacion completa se beneficiarian
-de integrar AEMET historico, SNCZI y Seveso en v0.2.0. En v0.1.0 se documentan como
-linea futura para evitar sobrerrepresentar informacion que todavia no esta disponible
-de forma reproducible.
+\begin{itemize}
+    \item \textbf{Caracter pasivo de riesgos complejos}: Dado que las variables enriquecidas por fuentes externas estan diferidas, las familias asociadas a riesgos meteorológicos (\texttt{CAT-MET}) e industriales o tecnologicos complejos (\texttt{CAT-TEC}) actuan de manera pasiva en la v0.1.0, basando su deteccion exclusivamente en el analisis de se\~nales presentes en el texto operativo y no en integraciones activas en tiempo real.
+    \item \textbf{Mapeo textual e incidentes multirriesgo}: El mapeo actual del tipo de incidente a la taxonomia previene falsos positivos al utilizar un analizador textual optimizado. Sin embargo, requiere una revision manual por parte del operador ante incidentes multirriesgo (por ejemplo, una colision de trafico que deriva en incendio y atrapados), donde el solapamiento de familias operativas puede dificultar la determinacion automatica de una unica categoria.
+    \item \textbf{Riesgo de solapamiento en la categorizacion}: Existe el riesgo de que la asignacion rigida de prioridades intermedias se vea alterada ante eventos concurrentes que involucren multiples familias (ej. un incendio forestal que amenaza una via de trafico y causa heridos). La resolucion de estos solapamientos se delega en la supervision humana (HITL) y en la logica determinista de la puerta de seguridad.
+\end{itemize}
+
+La justificacion de las familias de incendio e inundacion se fundamenta directamente en las directrices sectoriales de la comunidad, como la directiva del plan \texttt{INFOCAL} \cite{INFOCAL_DEC_6_2025} y el plan \texttt{INUNCYL} \cite{INUNCYL}, que establecen la clasificacion de riesgos y la gradacion de la respuesta.
+
