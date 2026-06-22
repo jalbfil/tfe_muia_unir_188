@@ -62,23 +62,21 @@ incompletas. Las variables V08--V11 se conservan en el dise\~no porque son relev
 para una version futura, pero no se contabilizan como evidencia ya disponible en la
 evaluacion v0.1.0.
 
-\section*{B.4. Columnas prohibidas por leakage}
+\section*{B.4. Columnas prohibidas por leakage y politicas de privacidad}
 
-El sistema excluye cualquier columna que refleje decisiones tomadas despues de la
-primera valoracion o informacion administrativa posterior. En particular, no se usan:
+El sistema excluye rigurosamente del entrenamiento e inferencia cualquier variable o columna que refleje decisiones ex post o informacion administrativa y clinica posterior a la primera decision de despacho. En particular, queda prohibido el uso de:
 
 \begin{itemize}
-    \item \texttt{MediosMov} y derivados de medios movilizados;
-    \item \texttt{PacientesAten} y derivados de pacientes atendidos;
-    \item \texttt{IncidenteCerrado};
-    \item \texttt{ultimaActualizacion};
-    \item enlaces, identificadores tecnicos no predictivos o columnas sin semantica
-    operativa.
+    \item \texttt{MediosMov} y derivados de recursos reales movilizados.
+    \item \texttt{PacientesAten} y registros de atencion sanitaria o traslados.
+    \item \texttt{IncidenteCerrado} y estado final de resolucion del caso.
+    \item \texttt{ultimaActualizacion} y marcas de tiempo de modificacion del log central.
+    \item Enlaces, identificadores de despacho y metadatos ex post.
 \end{itemize}
 
-Estas columnas pueden describir la gestion final del incidente, pero no estaban
-disponibles como entrada valida para una primera decision. Usarlas elevaria
-artificialmente las metricas y debilitaria la validez academica del TFM.
+La exclusion de estas columnas ex post posee una justificacion metodologica critica: si el modelo RuleFit tuviera acceso a variables como el numero de ambulancias movilizadas o el estado de cierre del incidente, aprenderia a deducir la prioridad directamente de estas consecuencias operativas en lugar de identificar las se\~nales tempranas de riesgo. Esto provocaria un sobreaprendizaje destructivo (target leakage), invalidando la utilidad del sistema como apoyo en tiempo real cuando el operador aun no ha movilizado ningun recurso.
+
+Asimismo, en cumplimiento del Reglamento General de Proteccion de Datos (RGPD) \cite{RGPD} y de la Ley Organica 3/2018 (LOPDGDD) \cite{LOPDGDD}, el sistema aplica politicas estrictas de anonimizacion y minimizacion de datos. Las coordenadas geograficas exactas (latitud y longitud) del Registro 112 CyL se procesan de forma restringida (por ejemplo, truncando decimales para conservar solo la precision municipal) para evitar la reidentificacion de personas o domicilios, garantizando el tratamiento confidencial y seguro del texto operativo.
 
 \section*{B.5. Ausencia de datos}
 
@@ -92,10 +90,8 @@ no esta disponible, el sistema debe:
     \item registrar el caso para revision si la ausencia coincide con un error critico.
 \end{itemize}
 
-\section*{B.6. Limitaciones}
+\section*{B.6. Limitaciones y riesgos}
 
-La matriz V01--V15 es mas amplia que la implementacion v0.1.0. Esta diferencia es
-deliberada: permite que la memoria documente el dise\~no completo sin fingir que todas
-las fuentes externas ya estan integradas. La evaluacion final reportada en el
-Capitulo~\ref{cap:9} se interpreta, por tanto, como rendimiento del nucleo reproducible
-actual, no como rendimiento de una version enriquecida con AEMET, SNCZI y Seveso.
+La matriz V01--V15 es mas amplia que la implementacion v0.1.0, lo cual es una decision deliberada de diseño para documentar la evolucion futura hacia v0.2.0 sin sesgar la evaluacion del nucleo reproducible actual (excluyendo AEMET, SNCZI y Seveso).
+
+Existe un riesgo critico de leakage residual si en el futuro se introducen nuevas variables o integraciones del sistema de despacho sin verificar rigurosamente su disponibilidad temporal en la llamada de entrada. Cualquier campo que se incorpore al modelo debe someterse a una auditoria de linea de tiempo para asegurar que se genera en los primeros instantes de la llamada del ciudadano y no durante la posterior coordinacion de la emergencia.
