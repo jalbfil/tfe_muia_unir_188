@@ -1,119 +1,124 @@
-\chapter{Guia de etiquetado P1--P4}
+\chapter{Guía de etiquetado P1--P4}
 \label{cap:anexoc}
 
 Este anexo expone de forma pormenorizada las directrices metodológicas utilizadas para la asignación de los niveles de prioridad P1--P4. A través de este manual conceptual, se establecen los límites de cada categoría y se definen las heurísticas de acuerdo aplicadas a las etiquetas. Con este protocolo se busca consolidar un criterio homogéneo que guíe tanto el etiquetado probabilístico como la revisión manual.
 
 \section*{C.1. Finalidad del anexo}
 
-Este anexo documenta la guia usada para construir la etiqueta academica P1--P4 mediante
-supervision debil. La guia no pretende reemplazar una prioridad oficial del 112, porque
-el Registro 112 Castilla y Leon no contiene dicha etiqueta. Su funcion es definir un
-criterio reproducible para entrenar, comparar y evaluar la Capa 2 dentro del alcance
-academico del TFM.
+Este anexo documenta la guía empleada para construir mediante supervisión débil
+la escala académica P1--P4. El Registro 112 Castilla y León no contiene una
+prioridad oficial equivalente; por ello, la guía define un criterio reproducible para
+entrenar, comparar y evaluar la Capa 2 sin atribuir validez institucional a la etiqueta.
 
-La versión operativa se corresponde con el archivo \texttt{resources/labeling\_guide\_p1p4.md} y con la decisión metodológica de tratar P1--P4 como escala académica, no jurídica ni institucional. Dicha guía detalla los ejemplos de incidentes y las palabras clave asignadas a cada prioridad. A través de este documento, el equipo unifica criterios de etiquetado manual y automático.
-
-La guia P1--P4 constituye la fuente metodologica de la supervision debil empleada en el
-prototipo. Su finalidad es generar una etiqueta academica reproducible para
-entrenamiento y evaluacion, no sustituir el criterio operativo del 112 ni definir una
-prioridad oficial. La revision humana posterior se documenta en el
+La versión operativa se corresponde con
+\texttt{resources/labeling\_guide\_p1p4.md} y con la decisión metodológica de tratar
+P1--P4 como escala académica, no jurídica ni institucional.
+La muestra preparada para una futura revisión humana se documenta en el
 Anexo~\ref{cap:anexod}.
 
 \section*{C.2. Principios generales}
 
 \begin{enumerate}
-    \item \textbf{Momento de primera decision.} La etiqueta debe reflejar la urgencia
-    con la informacion disponible al inicio, no con el desenlace final del incidente.
+    \item \textbf{Momento de primera decisión.} La etiqueta debe reflejar la urgencia
+    con la información disponible al inicio, no con el desenlace final del incidente.
     \item \textbf{Prioridad como urgencia relativa.} P1--P4 ordena necesidad de
-    atencion temprana; no equivale a declaracion formal de situacion operativa.
-    \item \textbf{Precaucion razonable.} Ante informacion incompleta, se evita tanto
+    atención temprana; no equivale a declaración formal de situación operativa.
+    \item \textbf{Precaución razonable.} Ante información incompleta, se evita tanto
     minimizar señales críticas como asumir siempre el peor caso.
     \item \textbf{Trazabilidad.} Toda etiqueta debe poder vincularse a texto,
-    categoria, senales, variables o reglas.
+    categoría, señales, variables o reglas.
     \item \textbf{Independencia anti-\textit{leakage}.} No se usan medios movilizados,
-    pacientes atendidos, cierre ni informacion posterior para etiquetar la primera
-    decision.
+    pacientes atendidos, cierre ni información posterior para etiquetar la primera
+    decisión.
 \end{enumerate}
 
-\section*{C.3. Definicion de niveles}
+\section*{C.3. Definición de niveles}
 
 \begin{table}[ht]
 \centering
-\caption{Definicion academica de prioridades P1--P4}
+\caption{Definición académica de prioridades P1--P4}
 \label{tab:anexoc-prioridades}
 \small
 \begin{tabularx}{\textwidth}{|p{1.0cm}|p{2.5cm}|X|X|}
 \hline
-\textbf{Nivel} & \textbf{Nombre} & \textbf{Criterio operativo} & \textbf{Ejemplos de senales} \\ \hline
-P1 & Critica & Riesgo vital confirmado o altamente probable, fallecido, atrapamiento grave, multiples victimas o evolucion potencialmente critica. & fallecido, inconsciente, herido grave, atrapado critico, intoxicacion grave \\ \hline
-P2 & Alta & Gravedad relevante o potencial de escalado sin riesgo vital inmediato confirmado. Requiere atencion rapida y seguimiento. & herido, atrapado no critico, incendio en vivienda, rescate, varias llamadas \\ \hline
+\textbf{Nivel} & \textbf{Nombre} & \textbf{Criterio operativo} & \textbf{Ejemplos de señales} \\ \hline
+P1 & Crítica & Riesgo vital confirmado o altamente probable, fallecido, atrapamiento grave, múltiples víctimas o evolución potencialmente crítica. & fallecido, inconsciente, herido grave, atrapado crítico, intoxicación grave \\ \hline
+P2 & Alta & Gravedad relevante o potencial de escalado sin riesgo vital inmediato confirmado. Requiere atención rápida y seguimiento. & herido, atrapado no crítico, incendio en vivienda, rescate, varias llamadas \\ \hline
 P3 & Media & Incidente que requiere gestión activa, pero sin señales claras de riesgo vital ni escalado alto. & accidente leve, incendio contenido, incidencia viaria, meteo limitada \\ \hline
-P4 & Baja & Consulta, incidencia menor, asistencia diferible o caso sin urgencia operativa aparente. & consulta, informacion, incidencia tecnica menor, sin senales criticas \\ \hline
+P4 & Baja & Consulta, incidencia menor, asistencia diferible o caso sin urgencia operativa aparente. & consulta, información, incidencia técnica menor, sin señales críticas \\ \hline
 \end{tabularx}
 \end{table}
 
 \section*{C.4. Reglas de etiquetado}
 
-Las reglas siguientes orientan la asignación académica. No se presentan como reglas oficiales del 112, sino como criterios reproducibles para la supervisión débil. Este conjunto de heurísticas inicializa el cálculo probabilístico del agregador de votos. Con ello se reduce la variabilidad subjetiva de los anotadores automáticos.
+Las reglas siguientes orientan la asignación académica. No se presentan como reglas
+oficiales del 112, sino como criterios reproducibles de supervisión débil:
 
 \begin{table}[ht]
 \centering
-\caption{Reglas principales para etiquetado debil}
+\caption{Reglas principales para etiquetado débil}
 \label{tab:anexoc-reglas}
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{2.8cm}|p{1.2cm}|X|}
 \hline
-\textbf{Regla} & \textbf{Nivel minimo} & \textbf{Criterio} \\ \hline
-R-P1-FALLECIDO & P1 & El texto menciona fallecido, muerto, cadaver o equivalente. \\ \hline
-R-P1-RIESGO-VITAL & P1 & Riesgo vital textual, inconsciencia, parada, herido muy grave o situacion critica. \\ \hline
+\textbf{Regla} & \textbf{Nivel mínimo} & \textbf{Criterio} \\ \hline
+R-P1-FALLECIDO & P1 & El texto menciona fallecido, muerto, cadáver o equivalente. \\ \hline
+R-P1-RIESGO-VITAL & P1 & Riesgo vital textual, inconsciencia, parada, herido muy grave o situación crítica. \\ \hline
 R-P1-ATRAPADO-CRITICO & P1 & Atrapamiento con indicios de gravedad, rescate urgente o imposibilidad de salida. \\ \hline
-R-P2-HERIDO-GRAVE & P2 & Herido grave sin confirmacion suficiente para P1. \\ \hline
-R-P2-INTOXICACION & P2 & Intoxicacion, humo o exposicion a sustancias con posible afectacion personal. \\ \hline
+R-P2-HERIDO-GRAVE & P2 & Herido grave sin confirmación suficiente para P1. \\ \hline
+R-P2-INTOXICACION & P2 & Intoxicación, humo o exposición a sustancias con posible afectación personal. \\ \hline
 R-P2-INCENDIO-HABITADO & P2 & Incendio en vivienda, edificio, local habitado o entorno con personas expuestas. \\ \hline
 R-P2-RESCATE & P2 & Rescate o salvamento sin señal P1 confirmada. \\ \hline
 R-P3-TRAFICO & P3 & Accidente de tráfico sin señales críticas ni heridos graves. \\ \hline
-R-P3-INCENDIO-SIN-VICTIMAS & P3 & Incendio sin victimas ni atrapados descritos. \\ \hline
-R-P4-SIN-URGENCIA & P4 & Consulta, informacion o incidencia menor sin senales operativas de gravedad. \\ \hline
+R-P3-INCENDIO-SIN-VICTIMAS & P3 & Incendio sin víctimas ni atrapados descritos. \\ \hline
+R-P4-SIN-URGENCIA & P4 & Consulta, información o incidencia menor sin señales operativas de gravedad. \\ \hline
 \end{tabularx}
 \end{table}
 
 \section*{C.5. Resolucion de conflictos}
 
-Cuando varias senales sugieren prioridades diferentes, se aplica la prioridad mas alta
-compatible con la informacion inicial. La incertidumbre no debe rebajar una prioridad:
-debe reflejarse como menor confianza o como caso para revision humana. Si la evidencia
+Cuando varias señales sugieren prioridades diferentes, se aplica la prioridad más alta
+compatible con la información inicial. La incertidumbre no debe rebajar una prioridad:
+debe reflejarse como menor confianza o como caso para revisión humana. Si la evidencia
 solo permite una lectura ambigua entre dos niveles, se selecciona el nivel superior
-cuando existan senales de personas afectadas, vulnerabilidad o posible escalado.
+cuando existan señales de personas afectadas, vulnerabilidad o posible escalado.
 
-Los conflictos mas relevantes son:
+Los conflictos más relevantes son:
 
 \begin{itemize}
     \item \textbf{P1/P2}: se decide por la presencia de riesgo vital, fallecido,
-    atrapamiento critico o gravedad personal extrema.
+    atrapamiento crítico o gravedad personal extrema.
     \item \textbf{P2/P3}: se decide por potencial de escalado, personas expuestas,
     varias llamadas, incendio habitado o necesidad de rescate.
-    \item \textbf{P3/P4}: se decide por existencia de gestion activa frente a consulta
+    \item \textbf{P3/P4}: se decide por existencia de gestión activa frente a consulta
     o incidencia menor.
 \end{itemize}
 
-\section*{C.6. Fuentes debiles y acuerdo}
+\section*{C.6. Funciones de etiquetado, agregación y acuerdo}
 
-La etiqueta final no procede de un unico criterio manual. Se construye combinando varias
-fuentes debiles: reglas textuales, categoria operativa, senales de gravedad y criterios
-de consistencia. El acuerdo entre fuentes se mide para verificar que la etiqueta no sea
-puramente arbitraria. En la ejecucion v0.1.0, Krippendorff
-\(\alpha = 0.858348\), y la ablacion sin reglas heuristicas mantiene
-\(\alpha = 0.834155\).
+La etiqueta final combina cuatro funciones deterministas: reglas heurísticas,
+señales e intensificadores, un proxy de agrupación semántica y un proxy de
+anotador LLM. Los dos últimos nombres describen la función experimental prevista,
+pero en v0.1.0 no ejecutan un agrupamiento vectorial ni invocan un modelo generativo.
 
-Estos valores no convierten la etiqueta en prioridad oficial, pero sí justifican su uso como objetivo académico reproducible para entrenar y evaluar RuleFit-lite. Al disponer de una métrica de acuerdo inter-etiquetador alta, se valida la solidez de la base de datos de entrenamiento. De esta forma, las conclusiones obtenidas sobre las particiones de test resultan defendibles.
+Los votos se agregan mediante suma ponderada. Los pesos son \(0{,}85\), \(1{,}00\),
+\(0{,}90\) y \(1{,}10\), respectivamente. Si varias prioridades obtienen el mismo
+peso, se selecciona la más urgente. La ejecución canónica alcanza Krippendorff
+\(\alpha = 0{,}899902\); la ablación sin reglas heurísticas mantiene
+\(\alpha = 0{,}834155\).
+
+Estos valores respaldan la consistencia del procedimiento, pero no demuestran
+independencia entre funciones: varias comparten patrones y señales con las variables
+que posteriormente utiliza RuleFit-lite. La ablación confirma que el acuerdo no
+desaparece al retirar una fuente, no que se haya eliminado por completo la circularidad.
 
 \section*{C.7. Limitaciones}
 
-La guia reduce subjetividad, pero no elimina la necesidad de revision humana. Si se
-adoptan los artefactos finales del 17 de junio de 2026, los 59 falsos negativos P1 y,
-especialmente, los 7 casos P1--P4 deben considerarse candidatos prioritarios a revision
-interna. Estos casos permiten detectar limites de la guia de etiquetado, senales
-insuficientes o decisiones del modelo que podrian implicar infrapriorizacion critica.
-La muestra completa se documenta en el Anexo~\ref{cap:anexod}.
+La guía reduce subjetividad, pero no elimina la necesidad de revisión humana. Los
+artefactos finales identifican 59 falsos negativos P1, incluidos 7 casos P1--P4, que
+constituyen la prioridad de la muestra preparada. Estos casos permiten estudiar
+límites de la guía, señales insuficientes o decisiones del modelo con riesgo de
+infrapriorización. La muestra completa se documenta en el
+Anexo~\ref{cap:anexod}.
 
 La validación externa con operadores del 112 queda como trabajo futuro. Hasta entonces, P1--P4 debe citarse siempre como escala académica del prototipo. Esta cautela metodológica previene malentendidos sobre el alcance y la madurez de la solución inteligente. De este modo, se mantiene una postura honesta y rigurosa en el plano de la investigación universitaria.

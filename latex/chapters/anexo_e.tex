@@ -1,88 +1,101 @@
-\chapter{Baseline experto de priorizacion}
+\chapter{Línea base heurística de priorización}
 \label{cap:anexoe}
 
 Este anexo describe de manera detallada el modelo de referencia desarrollado a partir del conocimiento experto de las reglas de despacho en protección civil. Mediante esta lógica determinista, se establece un umbral mínimo de rendimiento y seguridad que sirve de contraste para los modelos estadísticos. Con esta comparación se busca verificar el valor añadido que aporta la formulación interpretativa basada en aprendizaje automático.
 
 \section*{E.1. Objetivo}
 
-Este anexo documenta el baseline experto empleado como primera referencia de Capa 2.
-Su finalidad no es sustituir al modelo interpretable aprendido, sino fijar una linea
-base trazable que cualquier aproximacion RuleFit debe superar. El baseline toma
-exclusivamente senales predecisionales extraidas del texto del Registro 112 CyL y
-variables derivadas V01--V15 disponibles antes de la decision operativa.
+Este anexo documenta la línea base heurística empleada como primera referencia de
+Capa 2. Fue diseñada por el equipo a partir de criterios operativos y normativos,
+pero no ha sido validada por un panel externo de expertos. Toma exclusivamente
+señales previas a la decisión y las variables activas V01--V07 y V12--V15.
 
-El criterio metodológico es conservador: las reglas priorizan la protección de la vida y la detección de incidentes P1, aunque ello pueda reducir la precisión en clases intermedias. Esta propiedad lo hace útil como patrón de seguridad y como comparador académico. Al privilegiar la sensibilidad frente a la especificidad, se minimiza la posibilidad de pasar por alto un suceso de extrema gravedad. Así, se establece un marco analítico prudente alineado con la salvaguarda de las personas.
+El criterio es conservador: las reglas priorizan la detección de incidentes P1,
+aunque ello reduzca la precisión en clases intermedias. Su función es proporcionar
+una referencia transparente para determinar si RuleFit-lite aporta una mejora global.
 
-\section*{E.2. Reglas expertas}
+\section*{E.2. Reglas heurísticas}
 
-La Tabla~\ref{tab:baseline-experto-reglas} recoge las 16 reglas activas del baseline. Todas cuentan con anclaje normativo o documental y se implementan en \texttt{src/capa2\_rulefit/baseline\_expert/expert\_rules.py}. A través de este catálogo de predicados lógicos, se definen los desencadenantes de prioridad para cada familia. Esta explicitación formal de reglas manuales permite auditar cada salida a nivel de código fuente.
+La Tabla~\ref{tab:baseline-experto-reglas} recoge las 16 reglas activas. Sus anclajes
+se apoyan en la Ley 17/2015, PLANCAL, INUNCYL y la Ley 4/2007 de Castilla y León
+\cite{Ley17_2015,PLANCAL_DEC_4_2019,INUNCYL,Ley4_2007_CYL}. La implementación se
+encuentra en
+\texttt{src/capa2\_rulefit/baseline\_expert/expert\_rules.py}.
 
 \begin{table}[ht]
 \centering
-\caption{Reglas expertas del baseline de Capa 2}
+\caption{Reglas de la línea base heurística de Capa 2}
 \label{tab:baseline-experto-reglas}
 \scriptsize
 \begin{tabularx}{\textwidth}{|l|c|r|X|X|}
 \hline
-\textbf{ID} & \textbf{P} & \textbf{Peso} & \textbf{Condicion} & \textbf{Anclaje} \\ \hline
+\textbf{ID} & \textbf{P} & \textbf{Peso} & \textbf{Condición} & \textbf{Anclaje} \\ \hline
 EXP-P1-FALLECIDO & P1 & 3.8 & \texttt{signal\_fallecido} & Ley 17/2015; PLANCAL \\ \hline
 EXP-P1-RIESGO-VITAL & P1 & 3.4 & \texttt{riesgo\_vital} o \texttt{riesgo\_vital\_textual} & Ley 17/2015; PLANCAL \\ \hline
 EXP-P1-CRITICO-ATRAPADO & P1 & 2.7 & \texttt{signal\_herido\_grave} y \texttt{signal\_atrapado} & Ley 17/2015; PLANCAL \\ \hline
-EXP-P1-MULTIVICTIMA & P1 & 2.5 & Victimas estimadas $\geq$ 3 y riesgo vital & Ley 17/2015; PLANCAL \\ \hline
+EXP-P1-MULTIVICTIMA & P1 & 2.5 & Víctimas estimadas $\geq$ 3 y riesgo vital & Ley 17/2015; PLANCAL \\ \hline
 EXP-P2-HERIDO-GRAVE & P2 & 2.1 & \texttt{signal\_herido\_grave} & Ley 17/2015; PLANCAL \\ \hline
 EXP-P2-ATRAPADO & P2 & 2.0 & \texttt{signal\_atrapado} & PLANCAL \\ \hline
 EXP-P2-INTOXICACION & P2 & 1.9 & \texttt{signal\_intoxicacion} & MPCyL; PLANCAL \\ \hline
 EXP-P2-INCENDIO-VIVIENDA & P2 & 1.8 & Incendio en vivienda, edificio o entorno habitado & PLANCAL; Ley 4/2007 CyL \\ \hline
 EXP-P2-RESCATE & P2 & 1.7 & \texttt{signal\_rescate} & PLANCAL \\ \hline
-EXP-P2-TRAFICO-GRAVE & P2 & 1.6 & Trafico y herido grave & Ley 17/2015; Registro 112 CyL \\ \hline
-EXP-P2-METEORO-ALTO-IMPACTO & P2 & 1.4 & Meteo/inundacion y varias llamadas & INUNCYL; PLANCAL \\ \hline
+EXP-P2-TRAFICO-GRAVE & P2 & 1.6 & Tráfico y herido grave & Ley 17/2015; Registro 112 CyL \\ \hline
+EXP-P2-METEORO-ALTO-IMPACTO & P2 & 1.4 & Meteo/inundación y varias llamadas & INUNCYL; PLANCAL \\ \hline
 EXP-P3-ACCIDENTE-TRAFICO & P3 & 1.0 & \texttt{signal\_accidente\_trafico} & Registro 112 CyL \\ \hline
 EXP-P3-VARIAS-LLAMADAS & P3 & 0.9 & \texttt{signal\_varias\_llamadas} & Registro 112 CyL \\ \hline
-EXP-P3-INCENDIO-SIN-VICTIMAS & P3 & 0.9 & \texttt{signal\_incendio} sin victimas explicitas & Ley 4/2007 CyL; PLANCAL \\ \hline
+EXP-P3-INCENDIO-SIN-VICTIMAS & P3 & 0.9 & \texttt{signal\_incendio} sin víctimas explícitas & Ley 4/2007 CyL; PLANCAL \\ \hline
 EXP-P3-METEO-INUNDACION & P3 & 0.8 & \texttt{signal\_meteo\_inundacion} & INUNCYL \\ \hline
-EXP-P4-SIN-SENALES-CRITICAS & P4 & 0.8 & Sin senales criticas y llamada unica & Registro 112 CyL \\ \hline
+EXP-P4-SIN-SENALES-CRITICAS & P4 & 0.8 & Sin señales críticas y llamada única & Registro 112 CyL \\ \hline
 \end{tabularx}
 \end{table}
 
-\section*{E.3. Metricas principales}
+\subsection*{E.2.1. Agregación y desempate}
 
-La evaluación se realiza frente a las etiquetas académicas P1--P4 generadas por supervisión débil y con los splits versionados de entrenamiento, validación y test. La Tabla~\ref{tab:baseline-experto-metricas} resume el comportamiento del baseline. Los resultados obtenidos muestran la coherencia del modelo manual sobre las distintas particiones. Esta consistencia en las métricas consolida su papel como marco de referencia para la evaluación.
+Cada clase parte de una puntuación inicial: P1=\(0{,}15\), P2=\(0{,}25\),
+P3=\(0{,}35\) y P4=\(0{,}25\). A continuación se suman los pesos de las reglas
+activadas. Si existe alguna regla P1, su puntuación se eleva \(0{,}75\) por encima
+del mayor valor; si no existe P1 pero sí P2, esta se eleva \(0{,}35\). Finalmente,
+las puntuaciones se normalizan y se selecciona la clase con mayor probabilidad.
+
+Los pesos son decisiones heurísticas del equipo, no parámetros aprendidos ni
+estimaciones de probabilidad calibrada. Este detalle limita la interpretación de sus
+salidas probabilísticas, aunque mantiene el procedimiento completamente auditable.
+
+\section*{E.3. Métricas principales}
+
+La evaluación se realiza frente a las etiquetas académicas P1--P4 generadas por
+supervisión débil y con las particiones versionadas. La
+Tabla~\ref{tab:baseline-experto-metricas} resume su comportamiento.
 
 \begin{table}[ht]
 \centering
-\caption{Metricas del baseline experto}
+\caption{Métricas de la línea base heurística}
 \label{tab:baseline-experto-metricas}
 \small
 \begin{tabular}{|l|r|r|r|}
 \hline
 \textbf{Split} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} \\ \hline
 Train & 0.725849 & 0.706714 & 0.997278 \\ \hline
-Validacion & 0.717822 & 0.691811 & 1.000000 \\ \hline
+Validación & 0.717822 & 0.691811 & 1.000000 \\ \hline
 Test & 0.727835 & 0.703932 & 0.998457 \\ \hline
 \end{tabular}
 \end{table}
 
-El resultado confirma el comportamiento esperado: recall P1 muy elevado, precisión moderada en clases intermedias y macro-F1 suficiente como referencia exigente. En el conjunto de test, el baseline alcanza una macro-F1 de 0.703932 y un recall P1 de 0.998457. Estas cifras evidencian que el modelo experto cumple con creces el objetivo de seguridad. No obstante, también ponen de relieve la necesidad de incorporar un modelo más equilibrado que refine la clasificación general.
-
-El baseline experto alcanza un recall P1 muy elevado, coherente con su diseno
-conservador orientado a no infrapriorizar incidentes criticos. Este resultado no debe
-interpretarse como una debilidad del baseline, sino como evidencia de que la comparacion
-se realiza frente a una referencia exigente construida con conocimiento experto. Sin
-embargo, su macro-F1 es inferior al modelo RuleFit-lite seleccionado. En la evaluacion
-final, el baseline obtiene macro-F1 de 0.703932 y recall P1 de 0.998457, mientras que
-RuleFit-lite alcanza macro-F1 de 0.905604 y recall P1 de 0.909924. Esta comparacion
-muestra que RuleFit-lite ofrece un equilibrio mas adecuado entre rendimiento global,
-sensibilidad ante P1 e interpretabilidad.
+La línea base alcanza en prueba macro-F1 \(0{,}703932\) y sensibilidad P1
+\(0{,}998457\). Su elevada sensibilidad responde al diseño conservador, pero reduce
+la discriminación entre clases intermedias. RuleFit-lite obtiene macro-F1
+\(0{,}905604\) y sensibilidad P1 \(0{,}909924\), un equilibrio más adecuado entre
+rendimiento global, detección de P1 e interpretabilidad.
 
 \begin{table}[ht]
 \centering
-\caption{Comparacion resumida entre baseline experto y RuleFit-lite}
+\caption{Comparación resumida entre la línea base y RuleFit-lite}
 \label{tab:baseline-vs-rulefit-lite}
 \small
 \begin{tabular}{|l|r|r|}
 \hline
 \textbf{Modelo} & \textbf{Macro-F1 test} & \textbf{Recall P1 test} \\ \hline
-Baseline experto & 0.703932 & 0.998457 \\ \hline
+Línea base heurística & 0.703932 & 0.998457 \\ \hline
 RuleFit-lite & 0.905604 & 0.909924 \\ \hline
 \end{tabular}
 \end{table}
@@ -90,20 +103,20 @@ RuleFit-lite & 0.905604 & 0.909924 \\ \hline
 \section*{E.4. Limitaciones}
 
 \begin{itemize}
-    \item El baseline refleja conocimiento experto codificado manualmente; por tanto,
-    puede sobrerrepresentar escenarios criticos y reducir precision en P2/P3.
-    \item Las reglas se validan contra etiquetas debiles academicas, no contra prioridad
-    operativa real del 112, inexistente en el dataset publico.
+    \item La línea base refleja criterios operativos y normativos codificados manualmente por el equipo; por tanto,
+    puede sobrerrepresentar escenarios críticos y reducir precisión en P2/P3.
+    \item Las reglas se validan contra etiquetas débiles académicas, no contra prioridad
+    operativa real del 112, inexistente en el dataset público.
     \item El modelo no aprende interacciones no previstas por las reglas. Esa es
-    precisamente la funcion de la comparativa con RuleFit.
-    \item No utiliza columnas post-decision como recursos movilizados, pacientes
+    precisamente la función de la comparativa con RuleFit.
+    \item No utiliza columnas post-decisión como recursos movilizados, pacientes
     atendidos o cierre administrativo, para evitar leakage.
 \end{itemize}
 
-El baseline experto debe entenderse como referencia comparativa y no como solucion
-descartada por falta de calidad. Su tendencia conservadora puede sobreactivar P1 y
-reducir la discriminacion entre clases intermedias. Por ello, el modelo seleccionado no
-busca unicamente maximizar recall P1, sino mantener un comportamiento interpretable y
-mas equilibrado en el conjunto de clases P1--P4.
+La línea base debe entenderse como referencia comparativa. Su tendencia conservadora puede sobreactivar P1 y
+reducir la discriminación entre clases intermedias. Por ello, el modelo seleccionado no
+busca únicamente maximizar recall P1, sino mantener un comportamiento interpretable y
+más equilibrado en el conjunto de clases P1--P4.
 
-RuleFit-lite no compite contra una referencia débil, sino contra un baseline diseñado con conocimiento experto. La mejora obtenida en macro-F1, manteniendo un recall P1 alto, refuerza la idoneidad del modelo seleccionado para un sistema académico de apoyo a la decisión. Este contraste metodológico permite defender la viabilidad del enfoque tri-capa ante tribunals de evaluación. Se demuestra así que es posible integrar aprendizaje estadístico sin renunciar a la explicabilidad requerida.
+La mejora de macro-F1 obtenida por RuleFit-lite, manteniendo una sensibilidad P1 alta,
+respalda su selección para el prototipo académico.

@@ -67,23 +67,22 @@ obtener valoración preliminar de utilidad, comprensibilidad, confianza, trazabi
 claridad de la supervisión humana sin exponer datos reales ni depender de una sala de
 operaciones.
 
-La integración con LLM se realiza mediante Ollama con el modelo
+La integración con LLM se realiza mediante Ollama con
 \texttt{llama3.1:8b-instruct-q4\_K\_M}. El LLM no decide la prioridad: recibe la
 recomendación ya calculada por RuleFit-lite y la convierte en una explicación
 estructurada. Si Ollama no responde, el prototipo conserva el modo degradado
 determinista descrito en la sección siguiente.
 
 Como comprobación técnica, se ha ejecutado un \textit{smoke test} P1--P4 contra el
-backend en vivo. El resultado queda versionado en
+backend en vivo. El resultado queda en
 \texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.json} y
 \texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md}. La prueba verifica cuatro
 incidentes representativos, uno por prioridad, con Capa 2 RuleFit activa y Capa 3 no
 degradada.
 
 Adicionalmente, tras integrar la rama de Capa 1, se ha regenerado una validación
-reproducible Capa 1--Capa 2--Capa 3 sobre cinco escenarios operativos curados. Este
-informe se conserva en \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.json} y
-\texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}. Su finalidad es comprobar que
+reproducible Capa 1--Capa 2--Capa 3. Estos
+informes se conservan en \texttt{artifacts/reports/}. Su finalidad es comprobar que
 la salida real de Capa 1 alimenta correctamente el motor RuleFit, incluyendo casos P1
 con atrapamiento, inconsciencia, incendio, intoxicación, inundación y una incidencia
 vial ordinaria con negaciones explícitas como ``no hay heridos ni vehículos
@@ -160,13 +159,16 @@ El reporte \texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.jso
 
 \section{Repositorio del código fuente}
 
-El código fuente completo, los scripts de datos, entrenamiento y evaluación, los contratos Pydantic y los artefactos versionados están disponibles en el repositorio público del proyecto:
+El código fuente completo, los scripts de datos, entrenamiento y evaluación, los contratos Pydantic y los artefactos versionados están disponibles en el repositorio público del proyecto junto a un notebook que permite la ejecución del prototipo en Google Colab. La URL de ambos son las siguientes:
 
 \begin{center}
 \url{https://github.com/jalbfil/tfe_muia_unir_188}
 \end{center}
 
-Cada commit está enlazado con la tarea de la especificación que lo motiva y el autor responsable, lo que permite trazabilidad completa entre la memoria académica y el código ejecutable.
+
+\begin{center}
+\url{https://colab.research.google.com/drive/1XKVhjJCWDXH9bjI0Qsj4JCFUa5cwp7_J?usp=sharing}
+\end{center}
 
 \section{Conclusiones del capítulo}
 

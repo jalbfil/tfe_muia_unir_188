@@ -1,44 +1,45 @@
-\chapter{Plantilla de validacion interna y casos revisables}
+\chapter{Muestra y protocolo de revisión interna}
 \label{cap:anexod}
 
 Este anexo describe de manera detallada la plantilla y la muestra de incidentes seleccionados para llevar a cabo la auditoría manual interna. A través de este procedimiento de control, se evalúan las discrepancias del modelo estadístico en los casos más complejos de clasificar. Con este análisis estructurado se busca identificar posibles vías de mejora para las reglas lógicas y las Puertas de Seguridad.
 
 \section*{D.1. Finalidad del anexo}
 
-Este anexo documenta el instrumento de validación interna utilizado para revisar recomendaciones de prioridad P1--P4 sobre casos reales del Registro 112 de Castilla y León. Su función es cerrar el bucle humano del sistema: no basta con reportar métricas automáticas, sino que los casos de riesgo y las discrepancias deben poder revisarse, justificarse y registrarse de forma trazable. A través de esta auditoría manual, se asegura que las decisiones del modelo de IA no queden sin supervisión técnica. De este modo, se fortalece el rigor metodológico exigido por la institución académica.
+Este anexo documenta el instrumento preparado para revisar recomendaciones P1--P4
+sobre casos reales del Registro 112 Castilla y León. Su función es habilitar el
+bucle humano: los casos de riesgo y las discrepancias deben poder examinarse,
+justificarse y registrarse de forma trazable.
 
-La validacion descrita aqui no sustituye a una validacion externa con operadores del
-112. Es una revision academica interna, adecuada para el alcance v0.1.0, que permite
-detectar patrones de error, comprobar la comprensibilidad de las evidencias mostradas y
-preparar una futura evaluacion operativa.
+La muestra y el protocolo no equivalen a una validación completada. En v0.1.0 se han
+generado los casos y los campos de registro, pero no se han cumplimentado las decisiones
+de los revisores. Tampoco sustituyen una validación externa con operadores del 112.
 
-\section*{D.2. Muestra de revision}
+\section*{D.2. Muestra de revisión}
 
-La muestra se genera mediante \texttt{scripts/build\_internal\_validation\_sample.py}.
+La muestra se genera mediante \path{scripts/build_internal_validation_sample.py}.
 El artefacto principal es
-\texttt{resources/internal\_validation/casos\_revision\_v0.1.0.csv}, acompañado por
+\path{resources/internal_validation/casos_revision_v0.1.0.csv}, acompañado por
 un resumen en \texttt{casos\_revision\_v0.1.0.md}. La selección combina dos criterios:
 
 \begin{itemize}
-    \item inclusion de los 59 falsos negativos P1 detectados en el test estratificado;
-    \item inclusion de una muestra equilibrada adicional de 60 casos, con 15 casos por
+    \item inclusión de los 59 falsos negativos P1 detectados en el test estratificado;
+    \item inclusión de una muestra equilibrada adicional de 60 casos, con 15 casos por
     clase P1, P2, P3 y P4.
 \end{itemize}
 
-El total resultante es de 119 casos revisables. Esta cifra cubre el minimo de 30 casos
-exigido para la validacion interna y deja preparada una base superior a 100 casos para
-la evaluacion de fidelidad de explicaciones de T113. En v0.1.0 esta evaluacion se
-ejecuta con un juez determinista offline sobre explicaciones de Capa 3 en modo
-degradado.
+El total resultante es de 119 casos revisables. La muestra supera el mínimo previsto
+y sirve también como entrada de la evaluación automatizada de fidelidad. Esta
+segunda evaluación sí se ejecuta en v0.1.0 mediante un juez determinista local sobre
+explicaciones de Capa 3 en modo degradado.
 
 \begin{table}[ht]
 \centering
-\caption{Composicion de la muestra de validacion interna}
+\caption{Composición de la muestra preparada para revisión}
 \label{tab:anexod-muestra}
 \small
 \begin{tabular}{|l|r|}
 \hline
-\textbf{Tipo de caso} & \textbf{Numero de casos} \\ \hline
+\textbf{Tipo de caso} & \textbf{Número de casos} \\ \hline
 Falsos negativos P1 & 59 \\ \hline
 Muestra equilibrada P1 & 15 \\ \hline
 Muestra equilibrada P2 & 15 \\ \hline
@@ -48,32 +49,32 @@ Muestra equilibrada P4 & 15 \\ \hline
 \end{tabular}
 \end{table}
 
-\section*{D.3. Plantilla de revision humana}
+\section*{D.3. Plantilla de revisión humana}
 
 Cada fila del fichero de validación representa un caso revisable. La plantilla incluye identificación, referencia académica, predicción del sistema, evidencias mostradas y campos reservados para la decisión humana. A través de esta estructura tabular, se facilita la recogida de anotaciones de manera uniforme por todos los autores. Dicha consistencia metodológica resulta vital para asegurar la calidad de la revisión final.
 
 \begin{table}[ht]
 \centering
-\caption{Campos principales de la plantilla de revision}
+\caption{Campos principales de la plantilla de revisión}
 \label{tab:anexod-plantilla}
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{3.5cm}|X|}
 \hline
-\textbf{Campo} & \textbf{Funcion} \\ \hline
-\texttt{case\_id} & Identificador interno de revision, con formato REV-NNN \\ \hline
-\texttt{sample\_type} & Tipo de seleccion: falso negativo P1 o muestra equilibrada \\ \hline
+\textbf{Campo} & \textbf{Función} \\ \hline
+\texttt{case\_id} & Identificador interno de revisión, con formato REV-NNN \\ \hline
+\texttt{sample\_type} & Tipo de selección: falso negativo P1 o muestra equilibrada \\ \hline
 \texttt{incident\_id} & Identificador trazable del Registro 112 CyL \\ \hline
-\texttt{texto\_operativo} & Texto minimizado del incidente, usado para revisar la decision \\ \hline
-\texttt{weak\_label\_p1p4} & Etiqueta academica generada por supervision debil \\ \hline
+\texttt{texto\_operativo} & Texto minimizado del incidente, usado para revisar la decisión \\ \hline
+\texttt{weak\_label\_p1p4} & Etiqueta académica generada por supervisión débil \\ \hline
 \texttt{recomendacion\_sistema} & Prioridad P1--P4 recomendada por RuleFit-lite \\ \hline
-\texttt{prob\_p1}--\texttt{prob\_p4} & Distribucion de probabilidad normalizada \\ \hline
+\texttt{prob\_p1}--\texttt{prob\_p4} & Distribución de probabilidad normalizada \\ \hline
 \texttt{agreement\_score} & Acuerdo local entre fuentes débiles \\ \hline
 \texttt{reglas\_o\_senales\_mostradas} & Señales activas y reglas principales de la clase predicha \\ \hline
 \texttt{explanation\_context} & Contexto estructurado de explicación: prioridad, margen, evidencias y avisos usados por Capa 3 \\ \hline
-\texttt{accion\_revisor} & Aceptar, modificar o rechazar la recomendacion \\ \hline
-\texttt{prioridad\_asignada\_revisor} & Prioridad final asignada por el revisor interno \\ \hline
-\texttt{motivo\_divergencia} & Justificacion obligatoria si se modifica o rechaza \\ \hline
-\texttt{auditoria\_especial} & Marca casos que requieren revision prioritaria \\ \hline
+\texttt{accion\_revisor} & Aceptar, modificar o rechazar la recomendación \\ \hline
+\texttt{prioridad\_assigned\_revisor} & Prioridad final asignada por el revisor interno \\ \hline
+\texttt{motivo\_divergencia} & Justificación obligatoria si se modifica o rechaza \\ \hline
+\texttt{auditoria\_especial} & Marca casos que requieren revisión prioritaria \\ \hline
 \end{tabularx}
 \end{table}
 
@@ -83,107 +84,95 @@ La Tabla~\ref{tab:anexod-casos} muestra una muestra compacta de casos incluidos 
 
 \begin{table}[ht]
 \centering
-\caption{Ejemplos de casos reales seleccionados para validacion}
+\caption{Ejemplos de casos reales seleccionados para validación}
 \label{tab:anexod-casos}
 \scriptsize
 \begin{tabular}{|l|l|l|l|r|l|l|}
 \hline
-\textbf{Caso} & \textbf{Tipo} & \textbf{Incidente} & \textbf{Weak label} & \textbf{Sistema} & \textbf{Conf.} & \textbf{Categoria} \\ \hline
-REV-001 & Equilibrado P1 & 1241431594407 & P1 & P1 & 1.000000 & trafico \\ \hline
+\textbf{Caso} & \textbf{Tipo} & \textbf{Incidente} & \textbf{Weak label} & \textbf{Sistema} & \textbf{Conf.} & \textbf{Categoría} \\ \hline
+REV-001 & Equilibrado P1 & 1228180006005 & P1 & P1 & 0.712510 & tráfico \\ \hline
 REV-016 & Equilibrado P2 & 1264142203135 & P2 & P2 & 0.673363 & sanitario \\ \hline
-REV-031 & Equilibrado P3 & 1284166925456 & P3 & P3 & 0.943535 & sanitario \\ \hline
-REV-046 & Equilibrado P4 & 1270383505564 & P4 & P4 & 0.969164 & sanitario \\ \hline
-REV-061 & FN P1 & 1223038406360 & P1 & P3 & 0.943535 & sanitario \\ \hline
-REV-062 & FN P1 & 1230985085280 & P1 & P2 & 0.995748 & sanitario \\ \hline
-REV-064 & FN P1 critico & 1255644701359 & P1 & P4 & 0.985624 & sanitario \\ \hline
-REV-068 & FN P1 critico & 1279887542362 & P1 & P4 & 0.985624 & sanitario \\ \hline
-REV-069 & FN P1 critico & 1284166596701 & P1 & P4 & 0.985624 & sanitario \\ \hline
-REV-080 & FN P1 critico & 1284268940694 & P1 & P4 & 0.857180 & sanitario \\ \hline
-REV-098 & FN P1 critico & 1284746951651 & P1 & P4 & 0.985624 & sanitario \\ \hline
-REV-118 & FN P1 critico & 1285206245620 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-031 & Equilibrado P3 & 1284226557820 & P3 & P3 & 0.953758 & sanitario \\ \hline
+REV-046 & Equilibrado P4 & 1284154490226 & P4 & P4 & 0.985624 & sanitario \\ \hline
+REV-061 & FN P1 & 1244182009991 & P1 & P3 & 0.893565 & incendio \\ \hline
+REV-062 & FN P1 & 1248678215637 & P1 & P2 & 0.552789 & incendio \\ \hline
+REV-064 & FN P1 crítico & 1255644701359 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-068 & FN P1 crítico & 1279887542362 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-069 & FN P1 crítico & 1284166596701 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-080 & FN P1 crítico & 1284268940694 & P1 & P4 & 0.857180 & sanitario \\ \hline
+REV-098 & FN P1 crítico & 1284746951651 & P1 & P4 & 0.985624 & sanitario \\ \hline
+REV-118 & FN P1 crítico & 1285206245620 & P1 & P4 & 0.985624 & sanitario \\ \hline
 \end{tabular}
 \end{table}
 
-\section*{D.5. Procedimiento de revision}
+\section*{D.5. Procedimiento de revisión}
 
-Cada autor revisa de forma independiente los casos asignados, consultando el texto operativo, la etiqueta débil, la recomendación del sistema, las probabilidades, las señales activadas y, cuando esté disponible, la explicación normativa de Capa 3. La decisión se registra en tres valores posibles según el nivel de discrepancia identificado. Este procedimiento garantiza que la auditoría no quede dominada por el sesgo individual de un único evaluador. De esta forma, se fomenta una toma de decisiones colegiada y consensuada.
+Cada autor deberá revisar de forma independiente los casos asignados, consultando el texto
+operativo, la etiqueta débil, la recomendación del sistema, las probabilidades, las
+señales activadas y, cuando esté disponible, la explicación normativa de Capa 3. La
+decisión se registrará en tres valores posibles:
 
 \begin{itemize}
-    \item \textbf{Aceptar}: la recomendacion del sistema se considera adecuada.
+    \item \textbf{Aceptar}: la recomendación del sistema se considera adecuada.
     \item \textbf{Modificar}: el revisor asigna otra prioridad P1--P4 y justifica el
     cambio.
-    \item \textbf{Rechazar}: el caso revela una recomendacion no util o evidencia
+    \item \textbf{Rechazar}: el caso revela una recomendación no útil o evidencia
     insuficiente para sostenerla.
 \end{itemize}
 
-Las divergencias de dos o mas niveles se marcan como auditoria especial. En particular,
-los casos P1 clasificados como P3 o P4 deben analizarse antes de congelar el modelo,
-porque representan infraestimaciones relevantes. En la version evaluada aparecen 7
-casos P1--P4, que requieren especial atencion por representar infrapriorizaciones
-criticas. Su analisis debe comprobar si el error procede de la guia de etiquetado, de
-una extraccion incompleta de senales, de la ponderacion del modelo o de una falta de
-evidencia explicita en el texto operativo.
+Las divergencias de dos o más niveles se marcarán como auditoría especial. En particular,
+los casos P1 clasificados como P3 o P4 deberán analizarse antes de una futura validación externa,
+porque representan infraestimaciones relevantes. En la versión evaluada aparecen 7
+casos P1--P4, que requieren especial atención por representar infrapriorizaciones
+críticas. Su análisis debe comprobar si el error procede de la guía de etiquetado, de
+una extracción incompleta de señales, de la ponderación del modelo o de una falta de
+evidencia explícita en el texto operativo.
 
-\section*{D.6. Evaluacion exploratoria del MVP con participantes externos}
+\section*{D.6. Protocolo propuesto de evaluación exploratoria}
 
-Ademas de la revision interna de casos, se realizo una evaluacion exploratoria del MVP
-con nueve participantes externos. La prueba se distribuyo mediante un enlace de acceso
-al prototipo preparado en Google Colab y se acompano de un cuestionario estructurado. La
-finalidad fue valorar comprensibilidad, utilidad percibida, confianza, trazabilidad y
-claridad de la supervision humana, no validar el sistema para uso operativo real.
+Como trabajo posterior se propone una evaluación breve del producto mínimo viable
+(MVP) con nueve participantes. El acceso se facilitaría mediante Google Colab y se
+acompañaría de casos de prueba y un cuestionario estructurado sobre
+comprensibilidad, utilidad percibida, confianza y claridad de la supervisión humana.
 
-Para preservar la privacidad, no se recogen nombres, unidades concretas ni datos
-personales. Cada participante se identifica mediante un codigo A1--C3 y una descripcion
-funcional suficiente para interpretar su aportacion. La Tabla~\ref{tab:anexod-participantes}
-resume la composicion de la muestra.
+La selección prevista se distribuye entre tres perfiles. Para preservar la privacidad,
+los participantes se identificarían mediante códigos A1--C3 y descripciones
+funcionales, sin recoger nombres, unidades concretas ni datos personales. La
+Tabla~\ref{tab:anexod-participantes} resume el diseño propuesto.
 
 \begin{table}[ht]
 \centering
-\caption{Perfiles participantes en la evaluacion exploratoria del MVP}
+\caption{Perfiles propuestos para la evaluación exploratoria del MVP}
 \label{tab:anexod-participantes}
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{0.9cm}|p{3.2cm}|X|p{3.9cm}|}
 \hline
-\textbf{Codigo} & \textbf{Grupo} & \textbf{Perfil funcional} & \textbf{Rol en la evaluacion} \\ \hline
-A1 & PM/CIS/emergencias & Perfil de transmisiones, comunicaciones y sistemas CIS con experiencia en coordinacion de puestos de mando. & Coherencia operativa, flujo de informacion y trazabilidad. \\ \hline
-A2 & PM/CIS/emergencias & Perfil vinculado al montaje de puestos de mando en emergencias. & Utilidad en contexto de emergencia y claridad de prioridad critica. \\ \hline
-A3 & PM/CIS/emergencias & Perfil de informatica y redes en puestos de mando. & Trazabilidad tecnica, continuidad y comprension del sistema. \\ \hline
-B1 & Tecnico IA & Tecnico de telecomunicaciones radio, usuario habitual de IA. & Claridad tecnica y utilidad en comunicaciones radio. \\ \hline
-B2 & Tecnico IA & Tecnico de telecomunicaciones satelite, usuario habitual de IA. & Claridad en conectividad y sistemas distribuidos. \\ \hline
-B3 & Tecnico IA & Ingeniero informatico y desarrollador, usuario habitual de IA. & Arquitectura, separacion de capas y reproducibilidad. \\ \hline
-C1 & No especializado IA & Tecnico de montaje de puestos de mando, sin uso tecnico habitual de IA. & Comprension desde perfil tecnico no IA. \\ \hline
-C2 & No especializado IA & Usuario no tecnico, sin uso habitual de IA. & Comprensibilidad general. \\ \hline
-C3 & No especializado IA & Perfil de seguridad publica, usuario no tecnico de IA. & Percepcion desde seguridad publica y supervision humana. \\ \hline
+\textbf{Código} & \textbf{Grupo} & \textbf{Perfil funcional} & \textbf{Rol en la evaluación} \\ \hline
+A1 & Puesto de mando/CIS/emergencias & Perfil de transmisiones y sistemas de información y comunicaciones (CIS), con experiencia en coordinación de puestos de mando. & Coherencia operativa, flujo de información y trazabilidad. \\ \hline
+A2 & Puesto de mando/CIS/emergencias & Perfil vinculado al montaje de puestos de mando en emergencias. & Utilidad en contexto de emergencia y claridad de prioridad crítica. \\ \hline
+A3 & Puesto de mando/CIS/emergencias & Perfil de informática y redes en puestos de mando. & Trazabilidad técnica, continuidad y comprensión del sistema. \\ \hline
+B1 & Técnico IA & Técnico de telecomunicaciones radio, usuario habitual de IA. & Claridad técnica y utilidad en comunicaciones radio. \\ \hline
+B2 & Técnico IA & Técnico de telecomunicaciones satélite, usuario habitual de IA. & Claridad en conectividad y sistemas distribuidos. \\ \hline
+B3 & Técnico IA & Ingeniero informático y desarrollador, usuario habitual de IA. & Arquitectura, separación de capas y reproducibilidad. \\ \hline
+C1 & No especializado IA & Técnico de montaje de puestos de mando, sin uso técnico habitual de IA. & Comprensión desde perfil técnico no IA. \\ \hline
+C2 & No especializado IA & Usuario no técnico, sin uso habitual de IA. & Comprensibilidad general. \\ \hline
+C3 & No especializado IA & Perfil de seguridad pública, usuario no técnico de IA. & Percepción desde seguridad pública y supervisión humana. \\ \hline
 \end{tabularx}
 \end{table}
 
-La Tabla~\ref{tab:anexod-comentarios} sintetiza los temas recurrentes detectados en las respuestas abiertas. Estos comentarios se usan como orientación cualitativa para mejorar la interfaz y la explicación, no como evidencia estadística generalizable. A partir de estas opiniones, se deducen los ajustes de usabilidad más urgentes para la aplicación. De igual manera, se perfila la dirección de los experimentos de interacción hombre-máquina en etapas posteriores.
-
-\begin{table}[ht]
-\centering
-\caption{Temas recurrentes en los comentarios abiertos}
-\label{tab:anexod-comentarios}
-\small
-\begin{tabularx}{\textwidth}{|p{4cm}|X|}
-\hline
-\textbf{Tema identificado} & \textbf{Interpretacion} \\ \hline
-Valor de la trazabilidad & Varios participantes destacaron la utilidad de registrar prioridad, explicacion y decision humana. \\ \hline
-Claridad de prioridad critica & Los perfiles operativos valoraron que los casos P1 mostrasen senales criticas visibles. \\ \hline
-Necesidad de lenguaje menos tecnico & Los usuarios no especializados indicaron dificultad para interpretar probabilidades, reglas o senales. \\ \hline
-Separacion modelo-explicacion & Los usuarios tecnicos de IA pidieron distinguir claramente que parte prioriza, que parte explica y que parte registra. \\ \hline
-Supervision humana & Los tres grupos valoraron positivamente que el sistema no decida de forma autonoma y que la persona mantenga la decision final. \\ \hline
-\end{tabularx}
-\end{table}
+El cuestionario propuesto utilizará una escala Likert de 1 a 5 y preguntas abiertas.
+Para poder presentar resultados será necesario conservar las respuestas anonimizadas,
+la fecha, la duración, el consentimiento y el instrumento completo. Se calcularán
+media, mediana, desviación típica, mínimo y máximo. En ausencia de esos datos,
+este anexo no atribuye resultados ni comentarios a participantes reales.
 
 \section*{D.7. Limitaciones}
 
-La muestra procede de etiquetas academicas generadas por supervision debil. Por tanto,
-la revision interna puede detectar incoherencias del sistema o de la propia etiqueta,
-pero no certifica validez operativa. La validacion externa con personal del 112 sigue
-siendo una linea prioritaria de trabajo futuro.
+La muestra procede de etiquetas académicas generadas por supervisión débil. Por tanto,
+la revisión interna puede detectar incoherencias del sistema o de la propia etiqueta,
+pero no certifica validez operativa. La validación externa con personal del 112 sigue
+siendo una línea prioritaria de trabajo futuro.
 
-La evaluacion exploratoria del MVP comparte esta prudencia metodologica. Aunque los
-perfiles participantes aportan perspectivas utiles sobre puestos de mando, comunicaciones
-criticas, IA y comprensibilidad general, el tamano muestral es reducido y no permite
-extraer conclusiones estadisticamente generalizables. Por ello, sus resultados se
-interpretan como evidencia preliminar de aceptacion, claridad y utilidad percibida.
+El protocolo exploratorio tampoco constituye una evaluación ejecutada. Incluso cuando
+se aplique, nueve participantes solo permitirán obtener indicios cualitativos y
+descriptivos, no conclusiones estadísticamente generalizables.

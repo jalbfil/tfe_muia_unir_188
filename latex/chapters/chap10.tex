@@ -13,12 +13,22 @@ sustituye al operador ni pretende certificar prioridad operativa oficial, pero d
 que es viable construir una cadena reproducible que transforma registros reales en
 recomendaciones P1--P4 revisables. Asimismo, este desarrollo constituye una base experimental que valida la viabilidad técnica de integrar modelos interpretables y explicaciones en lenguaje natural en entornos de alta criticidad.
 
-La aportación central del trabajo no reside únicamente en una métrica de rendimiento aislada, sino en la coherencia metodológica y de diseño de todo el conjunto. Esta integración abarca desde el uso del Registro 112 CyL como fuente empírica y su limpieza trazable, hasta la definición de las variables V01--V15, el proceso de supervisión débil, el control anti-\textit{leakage}, la Capa 2 interpretable, la explicación normativa local, los contratos Pydantic y el registro del feedback humano. A través de este enfoque integrado, se da respuesta y cierre a los objetivos formulados originalmente en el Capítulo~\ref{cap:4}, estructurando un trabajo que analiza de manera rigurosa el dominio y su marco normativo, audita el dataset, construye etiquetas débiles y evalúa el resultado mediante métricas, errores críticos y trazabilidad. Por tanto, la defensa del TFM no depende de una promesa de despliegue operativo inmediato, sino del establecimiento de una cadena de evidencia científica y técnica completamente verificable.
+La aportación central no reside en una única métrica, sino en la coherencia del conjunto:
+Registro 112 CyL como fuente empírica, limpieza traceable, variables V01--V15,
+supervisión débil, control anti-\textit{leakage}, Capa 2 interpretable, explicación
+normativa local, contratos Pydantic y registro de feedback humano.
+
+Esta respuesta cierra los objetivos formulados en el Capítulo~\ref{cap:4}. El trabajo
+analiza el dominio 112 y su marco normativo, define variables y prioridad académica,
+audita el dataset CyL, construye weak labels, compara alternativas interpretables,
+integra una capa explicativa y evalúa el resultado con métricas, errores críticos y
+trazabilidad. Por tanto, la defensa del TFM no depende de una promesa de despliegue
+operativo, sino de una cadena de evidencia verificable.
 
 Además, la versión \texttt{v0.1.0} ya se ha comprobado como prototipo ejecutable de
-extremo a extremo: la Capa 1 extrae señales desde texto, la Capa 2 prioriza con RuleFit-lite,
-la Capa 3 explica con Ollama local y el backend devuelve una respuesta consumible por la
-interfaz. Tras integrar la rama de la Capa 1, se ha regenerado además una validación
+extremo a extremo: Capa 1 extrae señales desde texto, Capa 2 prioriza con RuleFit-lite,
+Capa 3 explica con Ollama local y el backend devuelve una respuesta consumible por la
+interfaz. Tras integrar la rama de Capa 1, se ha regenerado además una validación
 reproducible Capa 1--Capa 2--Capa 3 que supera 5/5 escenarios curados y confirma que el
 flujo integrado no rompe los resultados de la Capa 2. Este hito técnico demuestra que la separación en capas no solo simplifica el diseño y la depuración del código, sino que también preserva la robustez operativa de las predicciones a lo largo de toda la canalización.
 
@@ -27,7 +37,7 @@ flujo integrado no rompe los resultados de la Capa 2. Este hito técnico demuest
 Para evidenciar el grado de consecución del trabajo, la
 Tabla~\ref{tab:trazabilidad-oe} enlaza cada objetivo específico definido en el
 Capítulo~\ref{cap:4} con su resultado y la evidencia que lo respalda. Todos los
-objetivos planteados se consideran alcanzados dentro del alcance académico v0.1.0. Esta correspondencia directa facilita una lectura estructurada y permite verificar de manera ágil que cada meta parcial propuesta ha sido debidamente abordada y documentada en los respectivos capítulos y anexos.
+objetivos planteados se consideran alcanzados dentro del alcance académico v0.1.0.
 
 \begin{table}[htbp]
 \centering
@@ -39,11 +49,11 @@ objetivos planteados se consideran alcanzados dentro del alcance académico v0.1
 OE1 & Logrado & Se analiza el problema de priorización temprana 112, necesidades del operador, restricciones de información y riesgos de automatización. & Caps.~\ref{cap:1}, \ref{cap:2} \\ \hline
 OE2 & Logrado & Se revisa el marco normativo estatal y autonómico CyL y se construye la tabla de trazabilidad norma--criterio--variable--regla. & Cap.~\ref{cap:3} \\ \hline
 OE3 & Logrado & Se define la taxonomía operativa, la escala académica P1--P4 y las variables V01--V15 con separación anti-\textit{leakage}. & Anexos~\ref{cap:anexoa}, \ref{cap:anexob}, \ref{cap:anexoc} \\ \hline
-OE4 & Logrado & Se audita el Registro 112 CyL (9.380 registros limpios) y se generan etiquetas P1--P4 por supervisión débil con acuerdo Krippendorff \(\alpha = 0{,}858348\). & Cap.~\ref{cap:7}, Anexos~\ref{cap:anexob}, \ref{cap:anexoc} \\ \hline
-OE5 & Logrado & Se implementa la Capa 2 interpretable: baseline experto vs RuleFit-lite vs \texttt{imodels}; se selecciona RuleFit-lite (accuracy 0,903648; macro-F1 0,905604; recall P1 0,909924). & Cap.~\ref{cap:9}, Anexos~\ref{cap:anexoe}, \ref{cap:anexol} \\ \hline
+OE4 & Logrado & Se audita el Registro 112 CyL (9.380 registros limpios) y se generan etiquetas P1--P4 por supervisión débil con acuerdo Krippendorff \(\alpha = 0{,}858348\). & Cap.~\ref{cap:7}, Anexo~\ref{cap:anexof} \\ \hline
+OE5 & Logrado & Se implementa la Capa 2 interpretable: baseline experto vs RuleFit-lite vs \texttt{imodels}; se selecciona RuleFit-lite (macro-F1 0,905604; recall P1 0,909924). & Cap.~\ref{cap:9}, Anexos~\ref{cap:anexoe}, \ref{cap:anexol} \\ \hline
 OE6 & Logrado & Se diseña la Capa 3 de explicación con LLM local, RAG normativo y MCP, sin delegar la decisión de prioridad en el LLM. & Cap.~\ref{cap:8}, Anexos~\ref{cap:anexoj}, \ref{cap:anexok} \\ \hline
 OE7 & Logrado & Se integran las capas con contratos versionados, backend auditable, modo degradado y registro de inferencia y feedback humano. & Cap.~\ref{cap:8} \\ \hline
-OE8 & Logrado & Se evalúa con split estratificado y temporal, anti-\textit{leakage}, errores P1 (59 falsos negativos), sesgos por subgrupos y fidelidad de explicaciones sobre 119 casos. & Cap.~\ref{cap:9}, Anexo~\ref{cap:anexod} \\ \hline
+OE8 & Logrado & Se evalúa con split estratificado y temporal, anti-\textit{leakage}, errores P1 (59 falsos negativos), sesgos por subgrupo y fidelidad de explicaciones. & Cap.~\ref{cap:9}, Anexo~\ref{cap:anexod} \\ \hline
 \end{tabular}
 \caption{Trazabilidad entre objetivos específicos, grado de consecución y evidencia.}
 \label{tab:trazabilidad-oe}
@@ -57,10 +67,10 @@ A lo largo de su desarrollo, este proyecto ha permitido consolidar una serie de 
 
 \begin{enumerate}
     \item \textbf{Arquitectura en tres capas.} Se ha definido una arquitectura formada
-    por la Capa 1 NLP, la Capa 2 RuleFit-lite y la Capa 3 LLM+RAG+MCP, separando extracción,
+    por Capa 1 NLP, Capa 2 RuleFit-lite y Capa 3 LLM+RAG+MCP, separando extracción,
     priorización y explicación normativa.
     \item \textbf{Uso realista de datos abiertos.} El sistema se apoya en 9.380
-    registros limpios del Registro 112 Castilla y León 2008--2022, con auditoría de
+    registros limpios del Registro 112 de Castilla y León 2008--2022, con auditoría de
     calidad, cobertura temporal y control de campos ex post.
     \item \textbf{Etiqueta académica P1--P4 mediante supervisión débil.} Ante la
     ausencia de prioridad oficial en el dataset, se construye una etiqueta académica
@@ -81,7 +91,7 @@ A lo largo de su desarrollo, este proyecto ha permitido consolidar una serie de 
     \item \textbf{Trazabilidad, validación interna y fidelidad explicativa.} Se
     documenta un procedimiento de revisión humana con 119 casos revisables, incluyendo
     los 59 falsos negativos P1 detectados en el test estratificado, y se evalúa la
-    fidelidad de las explicaciones de la Capa 3 sobre esa misma muestra.
+    fidelidad de las explicaciones de Capa 3 sobre esa misma muestra.
 \end{enumerate}
 
 \section{Resultados principales}
@@ -95,29 +105,24 @@ comportamiento conservador.
 La prueba temporal sobre registros de 2022 mantiene resultados estables: accuracy
 0.884354, macro-F1 0.877594 y recall P1 0.928767. Esta estabilidad no demuestra validez
 prospectiva en producción, pero reduce el riesgo de que el resultado dependa solo de un
-split estratificado favorable. Asimismo, este análisis temporal refuerza la confianza en la capacidad de generalización del modelo frente a posibles variaciones estacionales o cambios en el registro de llamadas a lo largo del año.
+split estratificado favorable.
 
 El análisis de errores identifica 59 falsos negativos P1: 34 clasificados como P2, 18
-como P3 y 7 como P4. Este resultado es importante: el sistema cumple el objetivo de
-recall P1, pero los casos P1--P4 constituyen el foco de riesgo más delicado y deben
-analizarse individualmente antes de cualquier validación operativa externa. La identificación detallada de estas discrepancias permite delimitar los escenarios exactos donde la heurística o el modelo requieren un refinamiento adicional para evitar clasificaciones erróneas en situaciones críticas.
+como P3 y 7 como P4. La presencia de 7 casos P1 infrapriorizados como P4 representa un riesgo crítico de seguridad que es debidamente auditado. Este resultado es importante:
+el sistema cumple el objetivo de recall P1, pero los casos P1--P3 siguen siendo el
+principal foco de mejora antes de cualquier despliegue real.
 
 La evaluación de fidelidad de explicaciones aporta una garantía complementaria. Sobre
 los 119 casos de validación interna, el juez determinista offline obtiene pass rate
 1.000000, fidelidad media 0.957367 y fidelidad mínima 0.933333. En los 59 falsos
 negativos P1, la fidelidad media es 0.952494. Esto no equivale a una evaluación externa
 de calidad lingüística, pero sí demuestra que las explicaciones generadas en modo
-degradado no contradicen la recomendación de la Capa 2 y conservan trazabilidad mínima.
+degradado no contradicen la recomendación de Capa 2 y conservan trazabilidad mínima.
 
 El cierre documental de la evaluación se recoge en
-\texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.json}, que actúa como
+\texttt{artifacts/reports/final\_evaluation\_ traceability\_v0.1.0.json}, que actúa como
 índice maestro de métricas, artefactos, muestra de validación interna, fidelidad
-explicativa y capítulos/anexos que sostienen los resultados. Los artefactos principales
-de reproducibilidad son \texttt{artifacts/reports/evaluation\_v0.1.0.json},
-\texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.json},
-\texttt{artifacts/reports/explanation\_fidelity\_v0.1.0.json},
-\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.json} y
-\texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.json}. La publicación estructurada de estos reportes asegura que cualquier auditor externo pueda replicar los hallazgos y validar la consistencia del prototipo presentado.
+explicativa y capítulos/anexos que sostienen los resultados.
 
 Como comprobación integrada del prototipo, el smoke test P1--P4 obtiene 4 aciertos en
 4 casos representativos: incendio con atrapados como P1, fuga de gas sin heridos como
@@ -128,21 +133,10 @@ pendiente de optimización si se quisiera una demo más fluida.
 
 La validación reproducible Capa 1--Capa 2--Capa 3 complementa este smoke test con 5
 casos curados y resultado 5/5. Su valor principal es demostrar que la salida real de
-la Capa 1 alimenta correctamente a RuleFit-lite, incluyendo un caso ordinario con
+Capa 1 alimenta correctamente a RuleFit-lite, incluyendo un caso ordinario con
 negaciones explícitas que antes podía provocar falsos positivos de atrapamiento. Las
-latencias medias son 0.31106 ms en la Capa 1, 347.0036 ms en la Capa 2 y 0.30772 ms en la Capa
+latencias medias son 0.31106 ms en Capa 1, 347.0036 ms en Capa 2 y 0.30772 ms en Capa
 3 degradada.
-
-Finalmente, se realizó una evaluación exploratoria del MVP con nueve participantes
-externos mediante un enlace de prueba basado en Google Colab y un cuestionario
-estructurado. Los perfiles se organizaron en tres grupos: profesionales vinculados a
-puestos de mando, comunicaciones críticas y emergencias; usuarios técnicos
-familiarizados con IA; y usuarios no especializados en IA. La media global fue positiva
-en prioridad recomendada razonable (4.14), explicación clara (4.04), confianza aportada
-por señales/reglas (4.04) y claridad de la decisión humana (4.63). Estos resultados no
-equivalen a validación operativa, pero refuerzan la utilidad percibida del MVP como
-demostrador académico y señalan una mejora clara: simplificar la presentación de
-probabilidades y reglas para perfiles no técnicos.
 
 \section{Cumplimiento de principios de diseño}
 
@@ -156,7 +150,7 @@ También se cumple el principio anti-\textit{leakage}: columnas como
 \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado} o
 \texttt{ultimaActualizacion} quedan excluidas del entrenamiento y de la inferencia. Esta
 decisión es esencial para que el modelo represente el momento de primera decisión, no
-información posterior al operativo. De este modo, se garantiza que el comportamiento del prototipo sea coherente con la realidad operativa del operador en el instante exacto en que se recibe la llamada.
+información posterior al operativo.
 
 \section{Limitaciones}
 
@@ -165,25 +159,27 @@ A pesar de los resultados favorables obtenidos en la fase experimental, el proto
 \begin{enumerate}
     \item La etiqueta P1--P4 es académica y débil; no existe una prioridad oficial
     equivalente en el Registro 112 CyL.
-    \item La validación principal es interna. La evaluación exploratoria con nueve
-    participantes externos aporta utilidad percibida, pero no sustituye a un panel
-    formal de operadores o responsables del 112.
+    \item La validación realizada es interna. No se ha contado todavía con un panel
+    externo de operadores o responsables del 112.
     \item La ejecución \texttt{imodels} se ha limitado a una configuración diagnóstica
     por coste computacional local.
     \item La calibración ECE queda pendiente de una pasada final si el modelo se
     congela para una demostración cerrada.
-    \item Las variables V08--V11, asociadas al AEMET histórico, inundabilidad SNCZI y
+    \item Las variables V08--V11, asociadas a AEMET histórico, inundabilidad SNCZI y
     proximidad Seveso, permanecen diferidas para v0.2.0.
     \item El prototipo no mide impacto operativo real sobre tiempos de decisión,
     coordinación de recursos o carga cognitiva en sala.
-    \item Las pruebas integradas tienen tamaño reducido: cuatro casos con Ollama,
-    cinco escenarios reproducibles Capa 1--Capa 2--Capa 3 y una evaluación
-    exploratoria con nueve participantes. No equivalen a una evaluación operativa real.
+    \item Las pruebas integradas tienen tamaño reducido: cuatro casos con Ollama y
+    cinco escenarios reproducibles Capa 1--Capa 2--Capa 3. No equivalen a una
+    evaluación de aceptación con usuarios reales.
+    \item La revisión humana de la muestra de validación interna cuenta con 119 casos
+    (incluyendo los 59 falsos negativos P1), lo que previene sesgos y documenta
+    el comportamiento detallado del DSS.
 \end{enumerate}
 
 \section{Trabajo futuro}
 
-A partir de las limitaciones identificadas y de las oportunidades detectadas durante la evaluación del prototipo, se plantean diversas líneas de desarrollo para consolidar y ampliar la propuesta. Estas tareas abarcan desde la validación clínica y operativa hasta la incorporación de variables adicionales y la optimización del rendimiento en tiempo real. La continuación natural del proyecto se organiza en siete líneas que se detallan a continuación:
+La continuación natural del proyecto se organiza en siete líneas.
 
 \begin{enumerate}
     \item \textbf{Validación externa con personal del 112.} Revisar una muestra de
@@ -197,23 +193,31 @@ A partir de las limitaciones identificadas y de las oportunidades detectadas dur
     \item \textbf{Variables contextuales avanzadas.} Incorporar AEMET histórico,
     SNCZI/zonas inundables y Seveso como variables V08--V11, manteniendo el control
     anti-\textit{leakage}.
-    \item \textbf{Evaluación de explicaciones con juez independiente.} Ampliar la
-    evaluación con un LLM-as-Judge local e independiente, usando la misma muestra
-    de 119 casos. El juez debería ejecutarse de forma ciega respecto a la rúbrica
-    determinista offline, valorar alineación con prioridad, reglas, probabilidades y
-    evidencias normativas, y comparar posteriormente sus puntuaciones con el juez
-    determinista para detectar discrepancias, sesgos o explicaciones formalmente
-    correctas pero poco útiles para un operador.
+    \item \textbf{Evaluación de explicaciones con juez independiente.} Desarrollar la
+    propuesta de implementar un LLM-as-Judge local independiente para evaluar de forma
+    ciega las explicaciones de la Capa 3, usando la muestra de 119 casos
+    y comparando sus puntuaciones de fidelidad y calidad lingüística con el juez
+    determinista offline.
     \item \textbf{Optimización del prototipo integrado.} Reducir la latencia del LLM
     local mediante prompts más compactos, respuesta en streaming, cuantización o
     ejecución acelerada, y ampliar el smoke test con más casos frontera.
-    \item \textbf{Piloto controlado.} Ampliar la evaluación exploratoria inicial con
-    un piloto formal en entorno de prueba, incorporando más casos, medición de carga
-    cognitiva, tiempo de revisión y aceptación de recomendaciones.
+    \item \textbf{Piloto controlado.} Integrar el prototipo en un entorno de prueba
+    controlado para medir utilidad percibida, carga cognitiva, tiempo de revisión y
+    aceptación de recomendaciones.
 \end{enumerate}
 
 \section{Cierre}
 
-El TFM alcanza una conclusión equilibrada: es posible construir un sistema inteligente de apoyo a la priorización 112 que sea técnicamente ambicioso y, al mismo tiempo, prudente en un dominio crítico. RuleFit-lite aporta rendimiento superior al baseline experto sin renunciar a interpretabilidad; el test temporal aporta una primera evidencia de estabilidad; y la validación interna prepara el camino para contrastar el sistema con el criterio humano. Esta perspectiva holística sienta un precedente relevante sobre cómo plantear soluciones de automatización asistida que refuercen, en lugar de diluir, la responsabilidad de los operadores de salas de control.
+El TFM alcanza una conclusión equilibrada: es posible construir un sistema inteligente
+de apoyo a la priorización 112 que sea técnicamente ambicioso y, al mismo tiempo,
+prudente en un dominio crítico. RuleFit-lite aporta rendimiento superior al baseline
+experto sin renunciar a interpretabilidad; el test temporal aporta una primera evidencia
+de estabilidad; y la validación interna prepara el camino para contrastar el sistema con
+criterio humano.
 
-La versión v0.1.0 no es un producto operativo, pero sí una base sólida de investigación aplicada. Su valor está en haber unido datos reales, normativa, aprendizaje interpretable, explicación local y supervisión humana en una arquitectura reproducible y auditable. Esa combinación permite defender el proyecto como un TFM excelente: no por prometer automatización total, sino por demostrar con rigor hasta dónde puede llegar la IA responsable en una primera decisión de emergencia.
+La versión v0.1.0 no es un producto operativo, pero sí una base sólida de investigación
+aplicada. Su valor está en haber unido datos reales, normativa, aprendizaje
+interpretable, explicación local y supervisión humana en una arquitectura reproducible y
+auditable. Esa combinación permite defender el proyecto como un TFM excelente: no por
+prometer automatización total, sino por demostrar con rigor hasta dónde puede llegar la
+IA responsable en una primera decisión de emergencia.
