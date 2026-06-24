@@ -1,9 +1,12 @@
 {
-  "generated_at": "2026-05-26T17:32:52.685478+00:00",
+  "generated_at": "2026-06-24T16:04:58.601837+00:00",
   "models": [
     {
       "model": "baseline_expert",
       "available": true,
+      "validation_accuracy": 0.717822,
+      "validation_macro_f1": 0.691811,
+      "validation_recall_p1": 1.0,
       "test_accuracy": 0.727835,
       "test_macro_f1": 0.703932,
       "test_recall_p1": 0.998457,
@@ -17,6 +20,9 @@
       "available": true,
       "engine": "lite",
       "fit_rows": 3000,
+      "validation_accuracy": 0.881188,
+      "validation_macro_f1": 0.879592,
+      "validation_recall_p1": 0.9344,
       "test_accuracy": 0.885911,
       "test_macro_f1": 0.884163,
       "test_recall_p1": 0.938272,
@@ -30,6 +36,9 @@
       "available": true,
       "engine": "imodels",
       "fit_rows": 50,
+      "validation_accuracy": 0.78925,
+      "validation_macro_f1": 0.584768,
+      "validation_recall_p1": 0.9104,
       "test_accuracy": 0.768385,
       "test_macro_f1": 0.568239,
       "test_recall_p1": 0.902778,
@@ -41,6 +50,6 @@
   ],
   "recommendation": {
     "recommended_model": "rulefit_lite",
-    "criterion": "Maximize test macro-F1, keep high P1 recall, prefer fewer rules on ties."
+    "criterion": "Maximize validation macro-F1, keep high validation P1 recall, prefer fewer rules on ties. Test is reserved for final estimation."
   }
 }

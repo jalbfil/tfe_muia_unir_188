@@ -45,7 +45,9 @@ La literatura sobre interpretabilidad refuerza esta decisión. Rudin \citeyear{R
 
 \section{Explicabilidad, LLM local, RAG y MCP}
 
-La explicabilidad en este TFM no se reduce a mostrar una probabilidad. La recomendación debe acompañarse de reglas activadas, confianza, advertencias cuando proceda y citas normativas. Para ello, la Capa 3 utiliza un LLM local cuantizado \cite{Llama3_2024,Qwen25_2024}, recuperación aumentada sobre un corpus normativo de Castilla y León y herramientas MCP.
+La explicabilidad en este TFM no se reduce a mostrar una probabilidad. La recomendación debe acompañarse de reglas activadas, confianza, advertencias cuando proceda y citas normativas. 
+
+Para ello, la Capa 3 utiliza un LLM local cuantizado \cite{Llama3_2024,Qwen25_2024}, recuperación aumentada sobre un corpus normativo de Castilla y León y herramientas MCP.
 
 \begin{figure}[htbp]
 \centering
@@ -59,7 +61,7 @@ $\rightarrow$
 $\rightarrow$
 \textbf{Recomendación y reglas activas (Capa 2)}
 $\rightarrow$
-\textbf{Orquestador RAG + prompt (Capa 3)}
+\textbf{Orquestador RAG + prompt + Tools MCP (Capa 3)}
 $\rightarrow$
 \textbf{Explicación para el operador (HITL)}
 \end{minipage}
@@ -70,7 +72,7 @@ $\rightarrow$
 
 El uso de un modelo de lenguaje de gran tamaño (Large Language Model, LLM) local responde a dos necesidades: generar explicaciones comprensibles para el operador y preservar la soberanía del dato. En el marco regulatorio europeo (tales como el RGPD o la directiva del Reglamento de IA de la UE), la inferencia local se consolida como un patrón de conformidad y privacidad \citeA{Szabelka2025DigitalSovereignty}. La generación aumentada por recuperación (Retrieval-Augmented Generation, RAG) \citeA{Lewis2020RAG} evita que la explicación dependa solo de memoria generativa: el sistema consulta fragmentos del corpus normativo, recuperados mediante embeddings tipo Sentence-BERT \cite{Reimers2019SBERT}, y los utiliza para sustentar citas legales. La confiabilidad y consistencia de este acotamiento en sistemas de alta criticidad ha sido validada empíricamente por Sandeboina et al. \citeA{Sandeboina2026RAGReliability}, demostrando que reduce de manera sustancial las alucinaciones factualmente verificables.
 
-En el prototipo real se utiliza el codificador de sentencias \texttt{paraphrase-multilingual-MiniLM-L12-v2}, por su equilibrio entre soporte multilingüe, cobertura para textos en español e inglés y ligereza operativa en ejecución local. Por su parte, el protocolo de contexto de modelo (Model Context Protocol, MCP) aporta un mecanismo estándar para exponer herramientas como búsqueda normativa, detalle de reglas y cita legal de prioridades; \citeA{Anthropic2024MCP} lo presentó como un protocolo abierto para conectar asistentes de IA con fuentes de datos y herramientas externas. Esta integración facilita el diseño de una interfaz unificada y desacoplada para la interacción con modelos generativos.
+En el prototipo real se utiliza el codificador \texttt{paraphrase-multilingual-MiniLM-L12-v2}, por su equilibrio entre soporte multilingüe, cobertura para textos en español e inglés y ligereza operativa en ejecución local. Por su parte, el protocolo de contexto de modelo (Model Context Protocol, MCP) aporta un mecanismo estándar para exponer herramientas como búsqueda normativa, detalle de reglas y cita legal de prioridades; \citeA{Anthropic2024MCP} lo presentó como un protocolo abierto para conectar asistentes de IA con fuentes de datos y herramientas externas. Esta integración facilita el diseño de una interfaz unificada y desacoplada para la interacción con modelos generativos.
 
 El uso de un codificador de sentencias ligero como \texttt{paraphrase-multilingual-MiniLM-L12-v2}, con 384 dimensiones de \textit{embedding}, permite resolver búsquedas semánticas sobre el corpus normativo local con baja latencia, mantener el consumo de memoria dentro del perfil de hardware local y asegurar que las explicaciones normativas se nutran de fragmentos legales exactos de forma reproducible. Esta elección resulta crítica en entornos de emergencias, donde cada segundo de retraso en la presentación de información al operador puede repercutir en el resultado del operativo. De esta forma, el sistema equilibra la precisión de la recuperación semántica con la agilidad que demanda la operación en tiempo real.
 

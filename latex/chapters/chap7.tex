@@ -1,19 +1,21 @@
-\chapter{Datos, dataset y supervisión débil}
+\chapter{Datos, conjunto de datos y supervisión débil}
 \label{cap:7}
 
 Este capítulo detalla la preparación del conjunto de datos y la metodología de supervisión débil utilizada para suplir la falta de etiquetas de prioridad históricas. En primer lugar, se expone el origen de los datos procedentes del Registro 112 de Castilla y León y el proceso de depuración aplicado a las variables. A continuación, se describe la lógica de supervisión débil que permite generar etiquetas académicas a partir de múltiples heurísticas operativas y se evalúa el acuerdo inter-etiquetador. Finalmente, se detalla la estrategia de partición de datos y los controles implementados para evitar el filtrado de información y asegurar la solidez de la evaluación.
 
-\section{Finalidad del capítulo}
+El capítulo anterior ha definido la arquitectura del sistema. Este capítulo desarrolla la base empírica que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y León, las variables V01--V15, la construcción de la etiqueta académica P1--P4, la supervisión débil, la prevención de fugas de información y las particiones de entrenamiento, validación y prueba.
 
-El capítulo anterior ha definido la arquitectura del sistema: Capa 1 NLP, Capa 2 RuleFit y Capa 3 LLM+RAG+MCP. Este capítulo desarrolla la base de datos que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y León, la representación de variables V01--V15, la construcción de la etiqueta académica P1--P4, la estrategia de supervisión débil, la prevención de \textit{leakage}, la división train/validation/test y las limitaciones metodológicas del conjunto de datos.
-
-La idea central es sencilla: el proyecto trabaja con registros reales, pero no con una prioridad oficial. Por ello, el dataset no puede tratarse como una fuente supervisada tradicional. El valor del TFM reside en construir una cadena honesta y reproducible: datos reales abiertos, limpieza trazable, variables operativas justificadas, etiqueta académica documentada, modelos interpretables y evaluación prudente.
+El proyecto trabaja con registros reales, pero no dispone de una prioridad oficial. Por ello, el conjunto no puede tratarse como una fuente supervisada tradicional. Se adopta un procedimiento metodológico trazable: datos abiertos, limpieza reproducible, variables justificadas, etiqueta académica documentada, modelos interpretables y evaluación prudente.
 
 \section{Estrategia general de datos}
 
 La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y León como fuente empírica principal \cite{Registro112CyL}. Esta decisión aporta coherencia territorial y normativa: el dataset procede de un servicio autonómico 112 real, y el marco de interpretación se apoya en la normativa estatal y de Castilla y León, especialmente la Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL. Asimismo, este enfoque garantiza que los escenarios analizados reflejen la casuística real de los incidentes gestionados en la región. De este modo, se evita el uso de datos puramente sintéticos que podrían distorsionar la evaluación del modelo en condiciones operativas.
 
-El dataset abierto permite trabajar con texto operativo, fecha, localidad, provincia, coordenadas aproximadas, identificador y categoría preliminar. Sin embargo, no contiene una prioridad oficial P1--P4, ni una escala equivalente de gravedad, ni todas las variables estructuradas que requiere el sistema. Por tanto, el objetivo no es aprender una prioridad institucional inexistente, sino construir una prioridad académica mediante supervisión débil y validación interna.
+El conjunto abierto permite trabajar con texto operativo, fecha, localidad, provincia,
+coordenadas aproximadas, identificador y categoría preliminar. Sin embargo, no
+contiene una prioridad oficial P1--P4 ni todas las variables estructuradas requeridas.
+El objetivo es construir una referencia académica mediante supervisión débil y
+dejar preparada su revisión humana.
 
 El procesamiento y acondicionamiento de los datos crudos sigue una secuencia estructurada. Este flujo de trabajo garantiza que cada fase se ejecute bajo estrictas salvaguardas metodológicas. En concreto, el flujo de datos se organiza en seis pasos:
 
@@ -22,8 +24,8 @@ El procesamiento y acondicionamiento de los datos crudos sigue una secuencia est
     \item Normalización de texto, fechas, coordenadas y categorías.
     \item Extracción de señales textuales y variables V01--V15.
     \item Construcción de etiquetas P1--P4 mediante supervisión débil.
-    \item Generación de splits train/validation/test, incluyendo split temporal.
-    \item Evaluación de la Capa 2 y análisis de sesgos, errores y \textit{leakage}.
+    \item Generación de particiones de entrenamiento, validación y prueba, incluida una partición temporal.
+    \item Evaluación de Capa 2 y análisis de sesgos, errores y \textit{leakage}.
 \end{enumerate}
 
 \section{Registro de Emergencias del 112 de Castilla y León}
@@ -82,7 +84,7 @@ Campos ex post & Identificar columnas prohibidas para evitar \textit{leakage} \\
 \label{tab:auditoria-dataset-cap7}
 \end{table}
 
-El capítulo de evaluación presenta métricas solo después de esta auditoría. En un TFM excelente, la calidad del dato se expone antes que los resultados. Esta prioridad metodológica previene interpretaciones sesgadas basadas en conjuntos de datos no depurados.
+La auditoría precede a la presentación de resultados para que las métricas puedan interpretarse a partir de la calidad y las limitaciones de los datos.
 
 \section{Limpieza y normalización}
 
@@ -120,7 +122,7 @@ V15 & Accesibilidad de recursos & Localización + reglas aproximadas & Activa \\
 \label{tab:variables-cap7}
 \end{table}
 
-Las variables V08--V11 se mantienen en el contrato para preservar la dirección futura del sistema, pero no deben condicionar los resultados principales de v0.1.0. Su presencia en la estructura de datos asegura la compatibilidad con futuras expansiones del modelo que incorporen datos en tiempo real de fuentes meteorológicas. No obstante, para la validación del prototipo actual, estas variables se han inicializado con valores por defecto o se han marcado como omitidas para no introducir ruido en las métricas de rendimiento.
+Las variables V08--V11 se mantienen en el contrato para preservar la evolución futura del sistema, pero no se emplean como entrada del modelo v0.1.0 ni condicionan sus resultados.
 
 \section{Señales operativas textuales}
 
@@ -136,26 +138,26 @@ La guía de etiquetado define cuatro niveles: P1 crítica, P2 alta, P3 media y P
 
 \section{Supervisión débil}
 
-La supervisión débil permite construir etiquetas de entrenamiento a partir de varias fuentes imperfectas. En este proyecto se implementan cuatro fuentes de voto:
+La supervisión débil permite construir etiquetas de entrenamiento a partir de varias funciones de etiquetado imperfectas. En v0.1.0 se implementan cuatro aproximaciones deterministas:
 
 \begin{enumerate}
-    \item \textbf{Reglas heurísticas}: aplica criterios P1--P4 sobre señales textuales y variables permitidas.
-    \item \textbf{NER + intensificadores}: combina entidades/señales con expresiones de gravedad, cantidad o urgencia.
-    \item \textbf{Proxy semántico por agrupación}: aproxima familias de incidentes textualmente similares.
-    \item \textbf{LLM-as-annotator proxy}: simula un anotador guiado por la escala académica, sin usar campos prohibidos.
+    \item \textbf{Reglas heurísticas}: aplica una puntuación de gravedad sobre señales textuales, categoría preliminar y variables permitidas.
+    \item \textbf{Señales e intensificadores}: aproxima el reconocimiento de entidades nombradas (\textit{Named Entity Recognition}, NER) mediante patrones de gravedad, cantidad y urgencia, sin ejecutar un modelo NER entrenado.
+    \item \textbf{Proxy de agrupación semántica}: reutiliza en esta versión una función determinista de puntuación; no ejecuta un algoritmo de agrupamiento vectorial.
+    \item \textbf{Proxy de anotador LLM}: incorpora patrones adicionales de vulnerabilidad, emplazamiento y negación, pero no invoca un LLM durante el etiquetado.
 \end{enumerate}
 
-Los votos se agregan mediante un modelo de etiquetas o majority voting ponderado. La salida se materializa en el contrato \texttt{WeakLabel}: votos por anotador, etiqueta final, confianza del label model, acuerdo local y bandera de uso en entrenamiento. Este contrato asegura que cualquier componente de entrenamiento posterior pueda filtrar los datos según su nivel de fiabilidad. De esta forma, el flujo completo de supervisión débil mantiene una estructura de auditoría transparente y robusta.
+Los votos se agregan mediante votación ponderada. Los pesos son \(0{,}85\) para reglas heurísticas, \(1{,}00\) para señales e intensificadores, \(0{,}90\) para el proxy de agrupación y \(1{,}10\) para el proxy de anotador LLM. Se suman los pesos recibidos por cada prioridad y, si existe empate, se escoge la prioridad más urgente. La salida conserva los votos, la etiqueta final, la confianza derivada del peso ganador y el acuerdo local.
 
 \subsection{Acuerdo y control de calidad}
 
-El objetivo mínimo es Krippendorff \(\alpha \geq 0{,}67\) sobre el conjunto etiquetado. La ejecución principal alcanza \(\alpha = 0{,}858348\), por encima del umbral aceptable para un prototipo académico. Este valor no convierte la etiqueta en oficial, pero aporta evidencia de consistencia entre fuentes débiles. Los casos de bajo acuerdo deben revisarse y documentarse, especialmente si afectan a P1/P2.
+El objetivo mínimo es Krippendorff \(\alpha \geq 0{,}67\). La ejecución canónica alcanza \(\alpha = 0{,}899902\), por encima del umbral establecido. Este valor aporta evidencia de consistencia entre funciones, pero debe interpretarse con cautela: las fuentes comparten patrones y dos de ellas emplean una puntuación muy similar, por lo que no constituyen anotadores plenamente independientes.
 
-Además, se plantea una validación interna entre los tres autores sobre al menos 30 casos. Esta validación no sustituye a un panel experto externo del 112, pero permite detectar divergencias, mejorar la guía de etiquetado y documentar límites del sistema. El proceso de consenso manual sirve para calibrar las discrepancias surgidas en las heurísticas de la supervisión débil. Como resultado, se obtiene una muestra de control de alta calidad que ayuda a verificar la robustez del modelo de agregación probabilística.
+Además, se ha preparado una muestra de revisión interna superior al mínimo previsto. Sus campos de decisión humana no están cumplimentados en v0.1.0, por lo que constituye un instrumento preparado y no una validación humana completada.
 
 \subsection{Ablación anti-circularidad}
 
-La supervisión débil introduce un riesgo: que el modelo aprenda simplemente a reproducir las reglas heurísticas usadas para etiquetar. Para controlarlo, se compara el label model sin la fuente de reglas heurísticas y analiza la variación de acuerdo. La ablación alcanza \(\alpha = 0{,}834155\), lo que indica que la etiqueta no colapsa al retirar esa fuente y reduce el riesgo de circularidad extrema.
+La supervisión débil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablación sin la fuente de reglas heurísticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten señales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitación metodológica de v0.1.0.
 
 \section{Prevención de leakage}
 
@@ -171,7 +173,7 @@ El sistema excluye de forma explícita variables que no estarían disponibles en
 \textbf{Columna} & \textbf{Razón de exclusión como feature} \\ \hline
 \texttt{MediosMov} & Refleja recursos movilizados, es decir, una consecuencia de la decisión operativa \\ \hline
 \texttt{medios\_mov\_limpio} & Derivado de \texttt{MediosMov}; mantiene la misma fuga \\ \hline
-\texttt{medios\_mov\_uso\_recomendado} & Codificación auxiliar ex post; no disponible en primera decisión \\ \hline
+\texttt{medios\_mov\_uso\_ recomendado} & Codificación auxiliar ex post; no disponible en primera decisión \\ \hline
 \texttt{PacientesAten} & Resultado clínico o asistencia posterior \\ \hline
 \texttt{pacientes\_aten\_limpio} & Derivado de \texttt{PacientesAten}; conserva información posterior \\ \hline
 \texttt{IncidenteCerrado} & Estado final del incidente \\ \hline
@@ -201,30 +203,32 @@ Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{Incide
 \label{tab:permitidas-prohibidas-leakage-cap7}
 \end{table}
 
-\section{Splits train, validation y test}
+\section{Particiones de entrenamiento, validación y prueba}
 
 Para garantizar la validez de los modelos entrenados y medir su capacidad de generalización, se definen particiones rigurosas que impiden la fuga de información entre conjuntos. La división de datos debe impedir que el modelo vea en entrenamiento información demasiado parecida a la de test, controlando sesgos geográficos y temporales. Con este propósito, se plantean dos estrategias de partición complementarias: un split estratificado para la evaluación general y un split temporal para evaluar la robustez frente al cambio de periodo operativo.
 
-\subsection{Split estratificado}
+\subsection{Partición estratificada}
 
-El split principal divide el dataset en train, validation y test preservando la distribución por prioridad, año y provincia, con semilla fija 42. Los splits deben documentarse conforme a la ejecución final adoptada como fuente única. Al utilizar los artefactos del 17/06/2026 como cierre v0.1.0, el conjunto de test estratificado contiene 1.453 registros con soporte P1=655, P2=349, P3=375 y P4=74. Esta información procede de la matriz de confusión del reporte \texttt{artifacts/reports/evaluation\_v0.1.0.md} y debe coincidir exactamente con el Capítulo~\ref{cap:9} y los anexos de validación.
+La partición principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validación y 1.453 de prueba, preservando la distribución por prioridad, año y provincia con semilla fija 42. La partición de prueba contiene P1=655, P2=349, P3=375 y P4=74, conforme al reporte canónico \texttt{artifacts/reports/evaluation\_v0.1.0.json}.
 
 \begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{|p{3.2cm}|p{3.0cm}|p{5.4cm}|}
 \hline
-\textbf{Split} & \textbf{Filas} & \textbf{Distribución P1--P4} \\ \hline
+\textbf{Partición} & \textbf{Filas} & \textbf{Distribución P1--P4} \\ \hline
+Entrenamiento estratificado & 6.512 & P1=3.049; P2=1.504; P3=1.701; P4=258 \\ \hline
+Validación estratificada & 1.415 & P1=658; P2=329; P3=374; P4=54 \\ \hline
 Test estratificado & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
 Test temporal 2022 & 735 & Evaluación de estabilidad fuera del periodo principal \\ \hline
 \end{tabular}
-\caption{Distribución final de los conjuntos de test adoptados como fuente v0.1.0.}
+\caption{Distribución de las particiones adoptadas en v0.1.0.}
 \label{tab:splits-final-cap7}
 \end{table}
 
-\subsection{Split temporal}
+\subsection{Partición temporal}
 
-El split temporal evalúa robustez fuera del periodo de entrenamiento. La versión ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como test temporal. Los tamaños son 7.935 registros en train, 710 en validación y 735 en test. Este enfoque simula una situación realista: entrenar con histórico pasado y aplicar sobre incidentes futuros.
+La partición temporal evalúa robustez fuera del periodo de entrenamiento. La versión ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tamaños son 7.935, 710 y 735 registros, respectivamente.
 
 Ambos splits son necesarios. El estratificado mide rendimiento general controlando distribución; el temporal mide estabilidad ante cambio de periodo. La combinación de ambas perspectivas metodológicas proporciona una imagen completa del comportamiento del sistema. Mientras que el primero valida el acierto en condiciones estándar, el segundo pone a prueba la resiliencia del modelo frente al paso del tiempo.
 

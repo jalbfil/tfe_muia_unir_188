@@ -5,90 +5,96 @@ Este anexo presenta detalladamente la estructura de la taxonomía operativa dise
 
 \section*{A.1. Finalidad del anexo}
 
-Este anexo documenta la taxonomía operativa utilizada por el prototipo para agrupar incidentes del Registro 112 de Castilla y León. Su finalidad no es crear un catálogo jurídico oficial, sino proporcionar una clasificación funcional para la extracción de variables, la supervisión débil, la Capa 2 RuleFit-lite y la explicación normativa de la Capa 3. De este modo, se simplifica el análisis de texto libre asociando palabras clave con categorías operativas bien delimitadas. Con ello se reduce la ambigüedad en la fase de inferencia predictiva.
+Este anexo documenta la taxonomía operativa utilizada por el prototipo para agrupar
+incidentes del Registro 112 de Castilla y León. Su finalidad no es crear un catálogo
+jurídico oficial, sino proporcionar una clasificación funcional para la extracción de
+variables, la supervisión débil, la Capa 2 RuleFit-lite y la explicación normativa de
+la Capa 3.
 
-La taxonomía se alinea con el marco descrito en el Capítulo~\ref{cap:3}: Ley 17/2015, Ley 4/2007 de Castilla y León, PLANCAL, INFOCAL, INUNCYL, MPCyL y normativa Seveso. La variable relacionada es V04, descrita en el Anexo~\ref{cap:anexob}. Esta correspondencia directa entre conceptos legales y variables computacionales constituye uno de los pilares del diseño metodológico del proyecto. Gracias a esta alineación, cada predicción cuenta con un respaldo normativo claro y defendible.
+La taxonomía se alinea con el marco descrito en el Capítulo~\ref{cap:3}: Ley 17/2015,
+Ley 4/2007 de Castilla y León, PLANCAL, INFOCAL, INUNCYL, MPCyL y normativa Seveso. La
+variable relacionada es V04, descrita en el Anexo~\ref{cap:anexob}.
 
-\section*{A.2. Criterios de construccion}
+\section*{A.2. Criterios de construcción}
 
-La taxonomia se ha construido aplicando cuatro criterios:
+La taxonomía se ha construido aplicando cuatro criterios:
 
 \begin{itemize}
     \item \textbf{Coherencia normativa}: cada familia debe poder vincularse con riesgos
-    o funciones reconocidas en proteccion civil.
-    \item \textbf{Utilidad predictiva}: cada categoria debe aportar informacion a la
-    priorizacion P1--P4 o a la explicacion.
-    \item \textbf{Disponibilidad en datos abiertos}: la categoria debe poder inferirse
+    o funciones reconocidas en protección civil.
+    \item \textbf{Utilidad predictiva}: cada categoría debe aportar información a la
+    priorización P1--P4 o a la explicación.
+    \item \textbf{Disponibilidad en datos abiertos}: la categoría debe poder inferirse
     desde texto, tipo preliminar o campos disponibles del Registro 112 CyL.
-    \item \textbf{Anti-\textit{leakage}}: la categoria no puede depender de medios
-    movilizados, pacientes atendidos, cierre administrativo ni informacion posterior.
+    \item \textbf{Anti-\textit{leakage}}: la categoría no puede depender de medios
+    movilizados, pacientes atendidos, cierre administrativo ni información posterior.
 \end{itemize}
 
 \section*{A.3. Familias principales}
 
 \begin{table}[ht]
 \centering
-\caption{Taxonomia operativa principal del prototipo}
+\caption{Taxonomía operativa principal del prototipo}
 \label{tab:anexoa-taxonomia}
 \small
 \begin{tabularx}{\textwidth}{|p{2.6cm}|p{3.0cm}|X|p{3.0cm}|}
 \hline
-\textbf{Codigo} & \textbf{Familia} & \textbf{Descripcion operativa} & \textbf{Anclaje} \\ \hline
-CAT-SAN & Sanitario & Urgencias medicas, heridos, intoxicaciones, fallecidos o situaciones con posible riesgo vital. & Ley 17/2015; PLANCAL \\ \hline
-CAT-TRAF & Trafico & Accidentes de circulacion, atropellos, vehiculos implicados, cortes o riesgos viarios. & PLANCAL; Registro 112 CyL \\ \hline
-CAT-INC & Incendio & Incendios urbanos, industriales, de vehiculo, vegetacion o interfaz urbano-forestal. & INFOCAL; PLANCAL \\ \hline
-CAT-RES & Rescate y salvamento & Atrapamientos, rescates en altura, agua, espacios confinados, busquedas o personas desaparecidas. & PLANCAL; Ley 4/2007 CyL \\ \hline
-CAT-MET & Meteorologico e inundacion & Lluvias, nieve, viento, tormentas, inundaciones, balsas de agua o efectos de fenomenos adversos. & INUNCYL; PLANCAL \\ \hline
-CAT-SEG & Seguridad & Agresiones, amenazas, altercados, presencia policial o situaciones con riesgo para personas. & Ley 17/2015; coordinacion multiagencia \\ \hline
-CAT-TEC & Tecnologico o industrial & Fugas, sustancias peligrosas, incidentes industriales, Seveso o infraestructuras criticas. & MPCyL; RD 840/2015 \\ \hline
-CAT-OTR & Otros y asistencia & Consultas, incidencias menores, asistencia tecnica, animales, servicios municipales o informacion. & Registro 112 CyL \\ \hline
+\textbf{Código} & \textbf{Familia} & \textbf{Descripción operativa} & \textbf{Anclaje} \\ \hline
+CAT-SAN & Sanitario & Urgencias médicas, heridos, intoxicaciones, fallecidos o situaciones con posible riesgo vital. & Ley 17/2015; PLANCAL \\ \hline
+CAT-TRAF & Tráfico & Accidentes de circulación, atropellos, vehículos implicados, cortes o riesgos viarios. & PLANCAL; Registro 112 CyL \\ \hline
+CAT-INC & Incendio & Incendios urbanos, industriales, de vehículo, vegetación o interfaz urbano-forestal. & INFOCAL; PLANCAL \\ \hline
+CAT-RES & Rescate y salvamento & Atrapamientos, rescates en altura, agua, espacios confinados, búsquedas o personas desaparecidas. & PLANCAL; Ley 4/2007 CyL \\ \hline
+CAT-MET & Meteorológico e inundación & Lluvias, nieve, viento, tormentas, inundaciones, balsas de agua o efectos de fenómenos adversos. & INUNCYL; PLANCAL \\ \hline
+CAT-SEG & Seguridad & Agresiones, amenazas, altercados, presencia policial o situaciones con riesgo para personas. & Ley 17/2015; coordinación multiagencia \\ \hline
+CAT-TEC & Tecnológico o industrial & Fugas, sustancias peligrosas, incidentes industriales, Seveso o infraestructuras críticas. & MPCyL; RD 840/2015 \\ \hline
+CAT-OTR & Otros y asistencia & Consultas, incidencias menores, asistencia técnica, animales, servicios municipales o información. & Registro 112 CyL \\ \hline
 \end{tabularx}
 \end{table}
 
-\section*{A.4. Relacion con variables y senales}
+\section*{A.4. Relación con variables y señales}
 
 La taxonomía alimenta directamente las variables categóricas usadas por la Capa 2:
 \texttt{cat\_trafico}, \texttt{cat\_incendio}, \texttt{cat\_rescate},
 \texttt{cat\_sanitario}, \texttt{cat\_meteorologico}, \texttt{cat\_seguridad} y
 \texttt{cat\_otros}. La familia tecnológica se conserva como categoría conceptual de
 alto interés, aunque en v0.1.0 su cobertura automática queda limitada por la ausencia de
-integración completa de las variables V08--V11. Para compensar esta limitación temporal, el prototipo recurre a la extracción de señales de texto descriptivas en lugar de consultas automatizadas a bases geoespaciales externas. Así, el modelo mantiene su utilidad sin comprometer la reproducibilidad local.
+integración completa de variables V08--V11.
 
 \begin{table}[ht]
 \centering
-\caption{Relacion entre taxonomia, senales y uso en Capa 2}
+\caption{Relación entre taxonomía, señales y uso en Capa 2}
 \label{tab:anexoa-senales}
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{2.3cm}|p{4.0cm}|X|p{2.5cm}|}
 \hline
-\textbf{Familia} & \textbf{Senales textuales tipicas} & \textbf{Efecto esperado} & \textbf{Variable Capa 2} \\ \hline
-Sanitario & fallecido, herido grave, inconsciente, intoxicacion & Eleva probabilidad P1/P2 si hay gravedad personal & \texttt{cat\_sanitario} \\ \hline
-Trafico & accidente, colision, atropello, atrapado & P2/P3; P1 si hay riesgo vital o atrapamiento grave & \texttt{cat\_trafico} \\ \hline
-Incendio & fuego, humo, vivienda, nave, forestal & P2/P3; P1 si hay atrapados, victimas o propagacion critica & \texttt{cat\_incendio} \\ \hline
-Rescate & atrapado, rescate, desaparecido, barranco, rio & P1/P2 segun riesgo vital y vulnerabilidad & \texttt{cat\_rescate} \\ \hline
-Meteorologico & inundacion, nieve, viento, lluvia intensa & P2/P3 segun afectacion y llamadas multiples & \texttt{cat\_meteorologico} \\ \hline
-Seguridad & agresion, amenaza, violencia, pelea & P2/P3 segun riesgo activo para personas & \texttt{cat\_seguridad} \\ \hline
-Otros & consulta, asistencia, animal, incidencia tecnica & Normalmente P3/P4 salvo senales criticas & \texttt{cat\_otros} \\ \hline
+\textbf{Familia} & \textbf{Señales textuales típicas} & \textbf{Efecto esperado} & \textbf{Variable Capa 2} \\ \hline
+Sanitario & fallecido, herido grave, inconsciente, intoxicación & Eleva probabilidad P1/P2 si hay gravedad personal & \texttt{cat\_sanitario} \\ \hline
+Tráfico & accidente, colisión, atropello, atrapado & P2/P3; P1 si hay riesgo vital o atrapamiento grave & \texttt{cat\_trafico} \\ \hline
+Incendio & fuego, humo, vivienda, nave, forestal & P2/P3; P1 si hay atrapados, víctimas o propagación crítica & \texttt{cat\_incendio} \\ \hline
+Rescate & atrapado, rescate, desaparecido, barranco, río & P1/P2 según riesgo vital y vulnerabilidad & \texttt{cat\_rescate} \\ \hline
+Meteorológico & inundación, nieve, viento, lluvia intensa & P2/P3 según afectación y llamadas múltiples & \texttt{cat\_meteorologico} \\ \hline
+Seguridad & agresión, amenaza, violencia, pelea & P2/P3 según riesgo activo para personas & \texttt{cat\_seguridad} \\ \hline
+Otros & consulta, asistencia, animal, incidencia técnica & Normalmente P3/P4 salvo señales críticas & \texttt{cat\_otros} \\ \hline
 \end{tabularx}
 \end{table}
 
-\section*{A.5. Limitaciones}
+\section*{A.5. Limitaciones y riesgos}
 
-La taxonomia es una herramienta academica y funcional. No sustituye la codificacion
-interna de un servicio 112 ni agota toda la casuistica real. Algunos incidentes pueden
-pertenecer a varias familias; en esos casos se priorizan las senales de mayor urgencia
-para Capa 2 y se conservan las evidencias relevantes para la explicacion.
+La taxonomía es una herramienta académica y funcional. No sustituye la codificación
+interna de un servicio 112 ni agota toda la casuística real. Algunos incidentes pueden
+pertenecer a varias familias; en esos casos se priorizan las señales de mayor urgencia
+para la Capa 2 y se conservan las evidencias relevantes para la explicación.
 
 Las familias tecnológica, meteorológica avanzada e inundación completa se beneficiarían
-de integrar AEMET histórico, SNCZI y Seveso en la versión v0.2.0. En la versión v0.1.0 se documentan como
+de integrar AEMET histórico, SNCZI y Seveso en v0.2.0. En v0.1.0 se documentan como
 línea futura para evitar sobrerrepresentar información que todavía no está disponible
-de forma reproducible. Esta prudencia metodológica asegura que el prototipo actual se evalúe exclusivamente sobre datos reales ya consolidados. De esta manera, las métricas presentadas reflejan con honestidad las capacidades actuales del software desarrollado.
+de forma reproducible.
 
-En consecuencia, las familias asociadas a riesgos meteorologicos o industriales
-complejos actuan en v0.1.0 de forma pasiva: pueden influir cuando aparecen como senales
-en el texto operativo, pero no mediante enriquecimiento automatico con fuentes externas.
-Esta decision reduce falsos positivos derivados de contexto no verificado. El mapeo del
-tipo de incidente a la taxonomia se apoya en un analizador textual optimizado para
-senales predecisionales, pero los incidentes multirriesgo, por ejemplo una colision con
-incendio y heridos, requieren revision manual para confirmar que la familia dominante no
+En consecuencia, las familias asociadas a riesgos meteorológicos o industriales
+complejos actúan en v0.1.0 de forma pasiva: pueden influir cuando aparecen como señales
+en el texto operativo, pero no mediante enriquecimiento automático con fuentes externas.
+Esta decisión reduce falsos positivos derivados de contexto no verificado. El mapeo del
+tipo de incidente a la taxonomía se apoya en un analizador textual optimizado para
+señales predecisionales, pero los incidentes multirriesgo, por ejemplo una colisión con
+incendio y heridos, requieren revisión manual para confirmar que la familia dominante no
 oculta otros riesgos relevantes.

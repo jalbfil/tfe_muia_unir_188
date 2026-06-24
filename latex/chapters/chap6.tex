@@ -72,11 +72,11 @@ Los contratos son la pieza que convierte la arquitectura en un sistema verificab
 \begin{tabular}{|p{3.4cm}|p{4.1cm}|p{6.2cm}|}
 \hline
 \textbf{Contrato} & \textbf{Momento de uso} & \textbf{Función principal} \\ \hline
-\texttt{IncidentInput} & Entrada cruda & Representa texto, categoría, localización, fecha, provincia y operador antes de cualquier inferencia \\ \hline
-\texttt{IncidentFeatures} & Salida Capa 1 & Contiene variables V01--V15, señales textuales, confianza y metadatos de extracción \\ \hline
-\texttt{PriorityRecommendation} & Salida Capa 2 & Contiene prioridad P1--P4, probabilidades, reglas activadas, nivel de confianza y modelo usado \\ \hline
-\texttt{OperatorRecommendation} & Salida Capa 3 & Contiene explicación textual, citas legales, recomendaciones no vinculantes y resumen de reglas \\ \hline
-\texttt{OperatorDecision} & Feedback humano & Registra prioridad final asignada por el operador y posible divergencia \\ \hline
+\texttt{Incident Input} & Entrada cruda & Representa texto, categoría, localización, fecha, provincia y operador antes de cualquier inferencia \\ \hline
+\texttt{Incident Features} & Salida Capa 1 & Contiene variables V01--V15, señales textuales, confianza y metadatos de extracción \\ \hline
+\texttt{Priority Recommendation} & Salida Capa 2 & Contiene prioridad P1--P4, probabilidades, reglas activadas, nivel de confianza y modelo usado \\ \hline
+\texttt{Operator Recommendation} & Salida Capa 3 & Contiene explicación textual, citas legales, recomendaciones no vinculantes y resumen de reglas \\ \hline
+\texttt{Operator Decision} & Feedback humano & Registra prioridad final asignada por el operador y posible divergencia \\ \hline
 \texttt{InferenceLog} & Auditoría & Conserva snapshots, latencias, versiones de modelo, herramientas invocadas y hash de entrada \\ \hline
 \end{tabular}
 \caption{Contratos principales del flujo de inferencia.}
@@ -179,7 +179,7 @@ Para garantizar la alineación con PLANCAL y la Ley 17/2015 de Protección Civil
 
 Técnicamente, el Safety Gate actúa como un sistema de filtrado duro sobre el argmax probabilístico generado por RuleFit-lite. Su función no es sustituir el modelado interpretable estadístico, sino impedir que determinados patrones predecisionales de alto riesgo queden infrapriorizados por ruido en el texto de entrada, escasez de muestras en el entrenamiento, o ambigüedad. Para lograr esto, evalúa condiciones deterministas basadas en el conocimiento experto de los protocolos de despacho. Este mecanismo proporciona una red de seguridad indispensable en entornos tácticos donde la velocidad de respuesta y la precisión son críticas para salvar vidas.
 
-Conceptualmente, si RuleFit-lite produce una prioridad \(\hat{y}=\arg\max_{c \in \{P1,P2,P3,P4\}} p(c)\), la Puerta de Seguridad evalúa un conjunto de predicados deterministas \(S_i(x)\) sobre \texttt{IncidentFeatures}. Cuando alguno de los predicados críticos se activa, la prioridad se fuerza a \(P1\) o \(P2\), se inyecta una regla de seguridad con peso alto y se adjuntan anclajes normativos para la explicación posterior. El vector de probabilidad se redistribuye de forma determinista con probabilidad dominante:
+Conceptualmente, si RuleFit-lite produce una prioridad \(\hat{y}=\arg\max_{c \in \{P1,P2,P3,P4\}} p(c)\), la Puerta de Seguridad evalúa un conjunto de predicados deterministas \(S_i(x)\) sobre \texttt{Incident Features}. Cuando alguno de los predicados críticos se activa, la prioridad se fuerza a \(P1\) o \(P2\), se inyecta una regla de seguridad con peso alto y se adjuntan anclajes normativos para la explicación posterior. El vector de probabilidad se redistribuye de forma determinista con probabilidad dominante:
 
 \[
 p'(y_{seguro}) = 0{,}97,\qquad p'(c \neq y_{seguro}) = 0{,}01.
@@ -278,11 +278,11 @@ El operador puede aceptar la prioridad, modificarla o rechazarla. En cualquier c
 
 \section{Evaluación del diseño}
 
-El Capítulo 9 mide si el diseño cumple sus objetivos. Las métricas principales de Capa 2 son F1 macro, recall@P1, sparsity del modelo, latencia, rendimiento temporal, análisis por subgrupos y matriz de confusión. El objetivo crítico es recall@P1 igual o superior a 0,85, porque los falsos negativos graves son el riesgo más importante. La calibración ECE queda identificada como mejora futura si el modelo se congela para demostración, y RuleFit debe respetar el límite de 30 reglas activas.
+El Capítulo 9 mide si el diseño cumple sus objetivos. Las métricas principales de Capa 2 son F1 macro, recall@P1, sparsity del modelo, latencia, rendimiento temporal, análisis por subgrupos y matriz de confusión. El objetivo crítico es recall P1 igual o superior a 0,85, porque los falsos negativos graves son el riesgo más importante. La calibración ECE queda identificada como mejora futura si el modelo se congela para demostración, y RuleFit debe respetar el límite de 30 reglas activas.
 
 La Capa 3 se evaluará por validez contractual, latencia, presencia de citas en P1/P2 y fidelidad de explicación respecto a reglas activadas. La validación interna entre autores servirá para comparar etiquetas humanas, etiqueta débil y recomendación del sistema sobre un subconjunto de casos. Ambas líneas de evaluación permiten contrastar la coherencia de la arquitectura antes de planificar un piloto controlado.
 
-\xsection{Conclusiones}
+\section{Conclusiones}
 
 La arquitectura definida en este capítulo materializa la idea central del TFM: un sistema de apoyo a la decisión para incidentes 112 en Castilla y León que combina datos reales, normativa, aprendizaje interpretable, explicación local y supervisión humana. Esta propuesta busca superar las limitaciones de rigidez de los sistemas basados puramente en heurísticas. Asimismo, el diseño modular adoptado establece las bases técnicas para incorporar variables contextuales complejas en futuras versiones.
 
