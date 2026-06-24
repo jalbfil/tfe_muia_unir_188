@@ -1,95 +1,97 @@
-\chapter{Identificacion de requisitos del sistema}
+\chapter{Identificación de requisitos del sistema}
 \label{cap:5}
 
-\section{Introduccion al capitulo}
+\section{Introducción al capítulo}
 
-En un TFM de desarrollo software, los requisitos son el puente entre el analisis del dominio y la implementacion. Este capitulo traduce el problema de priorizacion temprana de incidentes 112 en especificaciones funcionales, no funcionales y restricciones de alcance. La version final del sistema se concibe como un prototipo academico de apoyo a la decision para Castilla y Leon, no como una plataforma productiva de despacho ni como un sustituto del operador.
+En un TFM de desarrollo software, los requisitos son el puente entre el análisis del dominio y la implementación. Este capítulo traduce el problema de priorización temprana de incidentes 112 en especificaciones funcionales, no funcionales y restricciones de alcance. La versión final del sistema se concibe como un prototipo académico de apoyo a la decisión para Castilla y León, no como una plataforma productiva de despacho ni como un sustituto del operador.
 
-Las decisiones recogidas aqui condicionan la arquitectura descrita en el Capitulo~\ref{cap:6}, el tratamiento de datos del Capitulo~\ref{cap:7} y la evaluacion experimental del Capitulo~\ref{cap:9}. Por ello, los requisitos se formulan ya alineados con la linea tecnica consolidada: Capa 1 NLP, Capa 2 RuleFit-lite, Capa 3 LLM+RAG+MCP, supervision humana, anti-\textit{leakage} y trazabilidad reproducible.
+Las decisiones recogidas aquí condicionan la arquitectura descrita en el Capítulo~\ref{cap:6}, el tratamiento de datos del Capítulo~\ref{cap:7} y la evaluación experimental del Capítulo~\ref{cap:9}. Por ello, los requisitos se formulan ya alineados con la línea técnica consolidada: Capa 1 NLP, Capa 2 RuleFit-lite, Capa 3 LLM+RAG+MCP, supervisión humana, anti-\textit{leakage} y trazabilidad reproducible.
 
-\section{Definicion formal del problema}
+\section{Definición formal del problema}
 
-El sistema aborda el siguiente problema: dado un incidente 112 descrito mediante texto libre, categoria preliminar, localizacion, fecha y datos operativos parciales, se necesita generar una recomendacion inicial de prioridad P1--P4 que ayude al operador a formar una primera valoracion, sin sustituir su criterio profesional.
+El sistema aborda el siguiente problema: dado un incidente 112 descrito mediante texto libre, categoría preliminar, localización, fecha y datos operativos parciales, se necesita generar una recomendación inicial de prioridad P1--P4 que ayude al operador a formar una primera valoración, sin sustituir su criterio profesional.
 
-La unidad de analisis es el incidente individual. La prioridad P1--P4 no es una etiqueta oficial del Registro 112 Castilla y Leon; es una construccion academica del prototipo, creada para estudiar la viabilidad de una recomendacion explicable basada en variables operativas, supervision debil y aprendizaje interpretable. La recomendacion debe ir acompa\~nada de evidencia suficiente para que pueda ser aceptada, corregida o rechazada por una persona.
+La unidad de análisis es el incidente individual. La prioridad P1--P4 no es una etiqueta oficial del Registro 112 de Castilla y León; es una construcción académica del prototipo, creada para estudiar la viabilidad de una recomendación explicable basada en variables operativas, supervisión débil y aprendizaje interpretable. La recomendación debe ir acompañada de evidencia suficiente para que pueda ser aceptada, corregida o rechazada por una persona.
 
-El sistema se diferencia de un clasificador automatico convencional en tres aspectos. Primero, opera en condiciones de informacion incompleta. Segundo, debe evitar usar datos posteriores a la primera decision. Tercero, debe explicar la salida de forma comprensible, porque en emergencias la confianza depende tanto del resultado como de la capacidad de auditarlo.
+El sistema se diferencia de un clasificador automático convencional en tres aspectos. Primero, opera en condiciones de información incompleta. Segundo, debe evitar usar datos posteriores a la primera decisión. Tercero, debe explicar la salida de forma comprensible, porque en emergencias la confianza depende tanto del resultado como de la capacidad de auditarlo.
 
 \section{Usuario objetivo y contexto de uso}
 
-El usuario objetivo es un responsable de coordinacion, jefe de sala, operador avanzado o perfil equivalente que deba valorar incidentes en un entorno 112. Se presupone conocimiento del dominio y capacidad para interpretar una recomendacion como apoyo, no como orden automatica. El prototipo puede utilizarse sobre registros historicos, cargas controladas o entradas manuales, siempre dentro de un entorno academico o de prueba.
+El usuario objetivo es un responsable de coordinación, jefe de sala, operador avanzado o perfil equivalente que deba valorar incidentes en un entorno 112. Se presupone conocimiento del dominio y capacidad para interpretar una recomendación como apoyo, no como orden automática. El prototipo puede utilizarse sobre registros históricos, cargas controladas o entradas manuales, siempre dentro de un entorno académico o de prueba.
 
-El sistema no moviliza recursos, no activa planes, no envia alertas y no toma decisiones juridicamente vinculantes. Su funcion es ordenar la informacion, proponer una prioridad inicial y mostrar las razones principales de esa propuesta.
+El sistema no moviliza recursos, no activa planes, no envía alertas y no toma decisiones jurídicamente vinculantes. Su función es ordenar la información, proponer una prioridad inicial y mostrar las razones principales de esa propuesta.
 
 \section{Requisitos funcionales}
 
-\paragraph{RF1. Recepcion y normalizacion del incidente}
-El sistema debe recibir incidentes desde carga de dataset o entrada controlada y transformarlos en un registro normalizado con identificador, texto operativo, categoria, fecha, provincia, municipio, coordenadas cuando existan y campos auxiliares permitidos.
+\paragraph{RF1. Recepción y normalización del incidente}
+El sistema debe recibir incidentes desde carga de dataset o entrada controlada y transformarlos en un registro normalizado con identificador, texto operativo, categoría, fecha, provincia, municipio, coordenadas cuando existan y campos auxiliares permitidos.
 
-\paragraph{RF2. Extraccion de variables y se\~nales}
-La Capa 1 debe extraer variables operativas V01--V15 y se\~nales textuales relevantes para la priorizacion. En v0.1.0 el nucleo evaluable se centra en las variables disponibles de forma reproducible y deja V08--V11 como extension futura cuando se integren AEMET, SNCZI y Seveso.
+\paragraph{RF2. Extracción de variables y señales}
+La Capa 1 debe extraer variables operativas V01--V15 y señales textuales relevantes para la priorización. En v0.1.0 el núcleo evaluable se centra en las variables disponibles de forma reproducible y deja V08--V11 como extensión futura cuando se integren AEMET, SNCZI y Seveso.
 
 \paragraph{RF3. Control de columnas prohibidas}
-El sistema debe excluir de entrenamiento e inferencia los campos posteriores a la decision o que reflejen consecuencias del operativo, como \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado} o \texttt{ultimaActualizacion}. Este requisito es obligatorio para evitar fuga de informacion.
+El sistema debe excluir de entrenamiento e inferencia los campos posteriores a la decisión o que reflejen consecuencias del operativo, como \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado} o \texttt{ultimaActualizacion}. Este requisito es obligatorio para evitar fuga de información.
 
-\paragraph{RF4. Generacion de etiqueta academica}
-Cuando no exista prioridad oficial P1--P4, el sistema debe construir etiquetas academicas mediante supervision debil, usando fuentes de se\~nal separadas y midiendo acuerdo. La etiqueta resultante debe documentarse como aproximacion metodologica, no como verdad operativa oficial.
+\paragraph{RF4. Generación de etiqueta académica}
+Cuando no exista prioridad oficial P1--P4, el sistema debe construir etiquetas académicas mediante supervisión débil, usando fuentes de señal separadas y midiendo acuerdo. La etiqueta resultante debe documentarse como aproximación metodológica, no como verdad operativa oficial.
 
-\paragraph{RF5. Recomendacion de prioridad P1--P4}
-La Capa 2 debe generar una recomendacion de prioridad mediante un modelo interpretable. En v0.1.0 el modelo seleccionado es RuleFit-lite, comparado con un baseline experto y con una ejecucion diagnostica \texttt{imodels}. La salida debe incluir prioridad, probabilidades por clase, reglas o se\~nales activadas y version del modelo.
+\paragraph{RF5. Recomendación de prioridad P1--P4}
+La Capa 2 debe generar una recomendación de prioridad mediante un modelo interpretable. En v0.1.0 el modelo seleccionado es RuleFit-lite, comparado con un baseline experto y con una ejecución diagnóstica \texttt{imodels}. La salida debe incluir prioridad, probabilidades por clase, reglas o señales activadas y versión del modelo.
 
-\paragraph{RF6. Calculo de confianza e incertidumbre}
-El sistema debe exponer informacion sobre confianza o incertidumbre asociada a la recomendacion, especialmente cuando falten variables relevantes o cuando la prediccion se apoye en se\~nales debiles. La confianza no debe confundirse con gravedad.
+\paragraph{RF6. Cálculo de confianza e incertidumbre}
+El sistema debe exponer información sobre confianza o incertidumbre asociada a la recomendación, especialmente cuando falten variables relevantes o cuando la predicción se apoye en señales débiles. La confianza no debe confundirse con gravedad.
 
-\paragraph{RF7. Generacion de explicacion}
-La Capa 3 debe generar una explicacion breve y trazable que conecte la prioridad recomendada con reglas, probabilidades, evidencias disponibles y, cuando proceda, citas normativas recuperadas del corpus CyL. El LLM no decide la prioridad: explica la salida de Capa 2.
+\paragraph{RF7. Generación de explicación}
+La Capa 3 debe generar una explicación breve y trazable que conecte la prioridad recomendada con reglas, probabilidades, evidencias disponibles y, cuando proceda, citas normativas recuperadas del corpus CyL. El LLM no decide la prioridad: explica la salida de Capa 2.
 
-\paragraph{RF8. Validacion humana}
-El sistema debe permitir que una persona revise la recomendacion y registre una decision: aceptar, modificar o rechazar. Este feedback debe conservarse para analisis posterior, mejora del modelo y validacion interna. La supervision humana se garantiza a nivel de contrato mediante \texttt{OperatorDecision}, que obliga a persistir la prioridad recomendada, la prioridad finalmente asignada por el operador, el motivo de divergencia cuando proceda, el identificador del operador y la marca temporal.
+\paragraph{RF8. Validación humana}
+El sistema debe permitir que una persona (operador del 112) revise la recomendación del DSS y registre una decisión explícita (aceptación, modificación o rechazo). Esta intervención humana (HITL) debe ser obligatoria para cerrar el caso y guardarse a nivel de base de datos mediante la persistencia del contrato estructurado \texttt{OperatorDecision}, vinculando la prioridad asignada y la justificación de cualquier discrepancia.
 
 \paragraph{RF9. Registro auditable}
-Cada inferencia debe quedar asociada a entrada, variables, modelo, version, prioridad, probabilidades, explicacion, evidencias, decision humana si existe y marca temporal. Esta trazabilidad sostiene la auditoria tecnica y la defensa academica. Cuando el operador confirma o modifica la prioridad, el contrato \texttt{OperatorDecision} debe persistirse en el log de auditoria, de modo que la supervision humana no sea solo un elemento visual de la interfaz, sino un registro verificable.
+Cada inferencia debe quedar registrada de forma inalterable y asociada a su entrada original, variables extraídas por la Capa 1, modelo de Capa 2 y su versión, prioridad recomendada, probabilidades calculadas, explicación de Capa 3, y la decisión humana final (\texttt{OperatorDecision}) si ya fue registrada. Esta persistencia garantiza la trazabilidad exigida por las normativas de IA de alto riesgo \cite{EUAIAct2024}, sustentando la auditoría técnica y la defensa académica.
 
-\paragraph{RF10. Reevaluacion}
-El sistema debe poder reevaluar un incidente cuando cambien los datos de entrada, conservando el historial de recomendaciones para reconstruir la evolucion del caso.
+\paragraph{RF10. Reevaluación}
+El sistema debe poder reevaluar un incidente cuando cambien los datos de entrada, conservando el historial de recomendaciones para reconstruir la evolución del caso.
 
 \section{Requisitos no funcionales}
 
 \subsection{Explicabilidad}
 
-La recomendacion debe ser interpretable para un operador. Este requisito justifica que la Capa 2 use un modelo con reglas exportables y que la Capa 3 traduzca esas evidencias a lenguaje operativo. No basta con predecir una clase; el sistema debe mostrar por que la propone.
+La recomendación debe ser interpretable para un operador. Este requisito justifica que la Capa 2 use un modelo con reglas exportables y que la Capa 3 traduzca esas evidencias a lenguaje operativo. No basta con predecir una clase; el sistema debe mostrar por qué la propone.
 
 \subsection{Trazabilidad}
 
-Toda salida debe poder reconstruirse desde los datos de entrada hasta la explicacion final. La trazabilidad incluye scripts de datos, weak labels, splits, modelo entrenado, reglas activas, metricas, logs y decisiones humanas registradas.
+Toda salida debe poder reconstruirse desde los datos de entrada hasta la explicación final. La trazabilidad incluye scripts de datos, weak labels, splits, modelo entrenado, reglas activas, métricas, logs y decisiones humanas registradas.
 
-\subsection{Supervision humana}
+\subsection{Supervisión humana}
 
-Ninguna recomendacion debe ejecutarse automaticamente. La persona responsable conserva la decision final y puede corregir la prioridad propuesta. Este principio es coherente con el Reglamento Europeo de Inteligencia Artificial \cite{EUAIAct2024} y con la prudencia exigible en un dominio de alto impacto.
+Ninguna recomendación debe ejecutarse automáticamente. La persona responsable conserva la decisión final y puede corregir la prioridad propuesta. Este principio es coherente con el Reglamento Europeo de Inteligencia Artificial \cite{EUAIAct2024} y con la prudencia exigible en un dominio de alto impacto.
 
-\subsection{Robustez ante informacion incompleta}
+\subsection{Robustez ante información incompleta}
 
-El sistema debe funcionar con informacion parcial, porque esa es la situacion habitual en la primera decision. Cuando la informacion sea insuficiente, la herramienta debe indicarlo y evitar presentar una certeza artificial.
+El sistema debe funcionar con información parcial, porque esa es la situación habitual en la primera decisión. Cuando la información sea insuficiente, la herramienta debe indicarlo y evitar presentar una certeza artificial.
 
 \subsection{Reproducibilidad}
 
-Los resultados deben poder regenerarse con scripts versionados. Esto incluye auditoria del dataset, construccion de etiquetas, splits, entrenamiento, evaluacion, analisis de errores, muestra de validacion interna y reporte final.
+Los resultados deben poder regenerarse con scripts versionados. Esto incluye auditoría del dataset, construcción de etiquetas, splits, entrenamiento, evaluación, análisis de errores, muestra de validación interna y reporte final.
 
-\subsection{Soberania del dato}
+\subsection{Soberanía del dato}
 
-El prototipo debe priorizar ejecucion local y evitar dependencias cloud para datos sensibles. Las herramientas generativas se tratan como apoyo explicativo, no como mecanismo autonomo de decision.
+El prototipo debe priorizar ejecución local y evitar dependencias cloud para datos sensibles. Las herramientas generativas se tratan como apoyo explicativo, no como mecanismo autónomo de decisión.
 
 \section{Restricciones y supuestos}
 
-La primera restriccion es que se trabaja con un prototipo academico, no con un sistema certificado ni desplegado en una sala 112 real. La segunda es que el Registro 112 Castilla y Leon no contiene prioridad oficial P1--P4, por lo que la evaluacion se realiza contra una etiqueta academica de supervision debil. La tercera es que no se dispone todavia de validacion externa con operadores del 112; por eso se prepara una muestra de validacion interna y se documenta como paso previo.
+\subsection{Restricciones metodológicas y del prototipo}
+La primera restricción es que se trabaja con un prototipo académico, no con un sistema certificado ni desplegado en una sala 112 real. La segunda es que el Registro 112 de Castilla y León no contiene prioridad oficial P1--P4, por lo que la evaluación se realiza contra una etiqueta académica de supervisión débil. La tercera es que no se dispone todavía de validación externa con operadores del 112; por eso se prepara una muestra de validación interna y se documenta como paso previo.
 
-La cuarta restriccion es que algunas variables contextuales de alto interes, como AEMET historico, inundabilidad SNCZI y proximidad Seveso, quedan diferidas a v0.2.0. La quinta es que la evaluacion no mide reduccion real del tiempo de decision en sala, sino rendimiento tecnico, estabilidad temporal, errores criticos, fidelidad explicativa y trazabilidad documental.
+La cuarta restricción es que algunas variables contextuales de alto interés, como AEMET histórico, inundabilidad SNCZI y proximidad Seveso, quedan diferidas a v0.2.0. La quinta es que la evaluación no mide reducción real del tiempo de decisión en sala, sino rendimiento técnico, estabilidad temporal, errores críticos, fidelidad explicativa y trazabilidad documental.
 
-Desde el punto de vista software, el funcionamiento completo de la Capa 3 depende de la disponibilidad local de Ollama con el modelo \texttt{llama3.1:8b-instruct-q4\_K\_M} o equivalente configurado. Si el servicio local no responde, el sistema debe activar el modo degradado determinista, manteniendo la recomendacion de Capa 2 y generando una explicacion basada en reglas y plantillas. Este supuesto evita depender de APIs externas, pero implica que la latencia y disponibilidad pueden verse condicionadas por el hardware local, especialmente si no existe GPU suficiente o memoria compartida adecuada para ejecutar el modelo.
+Estas restricciones no invalidan el trabajo. Lo delimitan y evitan prometer más de lo que el prototipo puede demostrar. La excelencia del TFM se apoya precisamente en reconocer esas fronteras y en dejar un camino verificable para ampliarlas.
 
-El segundo supuesto tecnico es el uso de contratos Pydantic como frontera estricta entre capas. Las entradas, salidas y logs se tipan mediante contratos versionados, de forma que la Capa 1, la Capa 2, la Capa 3 y el backend intercambien estructuras verificables. Esta decision reduce errores de integracion y facilita la auditoria, pero obliga a mantener sincronizados los contratos cuando evolucione el prototipo.
+\subsection{Supuestos y dependencias tecnológicas}
+El funcionamiento y la viabilidad operativa del prototipo v0.1.0 dependen de varios supuestos tecnológicos específicos de ejecución local. En primer lugar, se asume el tipado estricto y la validación automática en tiempo de ejecución mediante contratos de datos desarrollados con la librería \texttt{Pydantic}, lo que garantiza que los datos fluyan sin corrupción entre las capas. En segundo lugar, se asume la disponibilidad y correcta ejecución local de la suite de inferencia \texttt{Ollama} cargando el modelo compacto \texttt{Llama 3.1:8B} (o su equivalente configurado \texttt{Qwen 2.5:7B-instruct}) para la generación de explicaciones textuales coherentes y sin alucinaciones.
 
-Estas restricciones no invalidan el trabajo. Lo delimitan y evitan prometer mas de lo que el prototipo puede demostrar. La excelencia del TFM se apoya precisamente en reconocer esas fronteras y en dejar un camino verificable para ampliarlas.
+Existe un riesgo tecnológico relevante asociado a la latencia y la disponibilidad: si el hardware del puesto de trabajo local carece de una GPU dedicada o compartida suficiente para albergar y ejecutar Ollama, el tiempo de inferencia del LLM puede aumentar significativamente o fallar, comprometiendo la disponibilidad del DSS en entornos de alta presión de despacho, lo que obliga al sistema a recurrir de forma segura a su modo de operación degradado (basado en plantillas deterministas).
 
 \section{Trazabilidad entre requisitos y componentes}
 
@@ -99,26 +101,26 @@ Estas restricciones no invalidan el trabajo. Lo delimitan y evitan prometer mas 
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{|p{1.4cm}|p{4.4cm}|p{4.3cm}|p{4.1cm}|}
 \hline
-\textbf{Req.} & \textbf{Descripcion resumida} & \textbf{Componente asociado} & \textbf{Evidencia} \\ \hline
-RF1 & Recepcion y normalizacion & Pipeline de datos y backend & Dataset limpio y contratos \\ \hline
-RF2 & Extraccion de variables & Capa 1 NLP & Variables V01--V15 y se\~nales \\ \hline
+\textbf{Req.} & \textbf{Descripción resumida} & \textbf{Componente asociado} & \textbf{Evidencia} \\ \hline
+RF1 & Recepción y normalización & Pipeline de datos y backend & Dataset limpio y contratos \\ \hline
+RF2 & Extracción de variables & Capa 1 NLP & Variables V01--V15 y señales \\ \hline
 RF3 & Anti-\textit{leakage} & Pipeline y Capa 2 & Columnas prohibidas excluidas \\ \hline
-RF4 & Weak labels P1--P4 & Supervision debil & Acuerdo y ablacion \\ \hline
-RF5 & Prioridad P1--P4 & RuleFit-lite & Modelo, reglas y metricas \\ \hline
+RF4 & Weak labels P1--P4 & Supervisión débil & Acuerdo y ablación \\ \hline
+RF5 & Prioridad P1--P4 & RuleFit-lite & Modelo, reglas y métricas \\ \hline
 RF6 & Confianza & Capa 2 e inferencia & Probabilidades por clase \\ \hline
-RF7 & Explicacion & Capa 3 LLM+RAG+MCP & Explicacion, citas y modo degradado \\ \hline
-RF8 & Validacion humana & UI, feedback y contrato \texttt{OperatorDecision} & Decision humana persistida \\ \hline
-RF9 & Registro auditable & Backend, logs, \texttt{InferenceLog} y \texttt{OperatorDecision} & Auditoria completa de inferencia y feedback \\ \hline
-RF10 & Reevaluacion & Orquestador & Historial de inferencias \\ \hline
+RF7 & Explicación & Capa 3 LLM+RAG+MCP & Explicación y citas \\ \hline
+RF8 & Validación humana & UI y feedback & Muestra de revisión interna \\ \hline
+RF9 & Registro auditable & Backend y logs & \texttt{InferenceLog} \\ \hline
+RF10 & Reevaluación & Orquestador & Historial de inferencias \\ \hline
 \end{tabular}
 \caption{Trazabilidad entre requisitos y componentes del sistema.}
 \label{tab:trazabilidad-requisitos-componentes}
 \end{table}
 
-\noindent\textit{Fuente: elaboracion propia.}
+\noindent\textit{Fuente: elaboración propia.}
 
-\section{Conclusiones del capitulo}
+\section{Conclusiones del capítulo}
 
-Los requisitos definidos convierten el problema operativo en una especificacion coherente con la arquitectura final. El sistema debe recibir incidentes, extraer variables, evitar leakage, recomendar prioridad mediante Capa 2 interpretable, explicar la salida mediante Capa 3, registrar la trazabilidad y mantener siempre la decision humana en el centro.
+Los requisitos definidos convierten el problema operativo en una especificación coherente con la arquitectura final. El sistema debe recibir incidentes, extraer variables, evitar leakage, recomendar prioridad mediante Capa 2 interpretable, explicar la salida mediante Capa 3, registrar la trazabilidad y mantener siempre la decisión humana en el centro.
 
-El siguiente capitulo desarrolla la arquitectura que materializa estos requisitos: una solucion modular de tres capas, preparada para evaluacion reproducible y para una futura validacion externa con personal experto.
+El siguiente capítulo desarrolla la arquitectura que materializa estos requisitos: una solución modular de tres capas, preparada para evaluación reproducible y para una futura validación externa con personal experto.

@@ -1,16 +1,16 @@
-\chapter{Variables V01--V15 de priorizacion}
+\chapter{Variables V01--V15 de priorización}
 \label{cap:anexob}
 
 \section*{B.1. Finalidad del anexo}
 
-Este anexo especifica las variables V01--V15 utilizadas como marco comun entre datos,
-weak labels, Capa 2, explicacion y validacion humana. La matriz no debe interpretarse
-como un formulario operativo oficial, sino como una representacion academica de factores
-relevantes para priorizar incidentes 112 en Castilla y Leon.
+Este anexo especifica las variables V01--V15 utilizadas como marco común entre datos,
+weak labels, Capa 2, explicación y validación humana. La matriz no debe interpretarse
+como un formulario operativo oficial, sino como una representación académica de factores
+relevantes para priorizar incidentes 112 en Castilla y León.
 
-La version v0.1.0 distingue entre variables implementadas de forma reproducible con el
-Registro 112 CyL y variables previstas para v0.2.0. Esta distincion es clave para evitar
-fuga de informacion y para no atribuir al modelo datos contextuales que todavia no se
+La versión v0.1.0 distingue entre variables implementadas de forma reproducible con el
+Registro 112 CyL y variables previstas para v0.2.0. Esta distinción es clave para evitar
+fuga de información y para no atribuir al modelo datos contextuales que todavía no se
 han integrado.
 
 \section*{B.2. Matriz de variables}
@@ -22,30 +22,30 @@ han integrado.
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{1.0cm}|p{3.0cm}|p{2.1cm}|X|p{2.1cm}|}
 \hline
-\textbf{ID} & \textbf{Variable} & \textbf{Tipo} & \textbf{Funcion en el sistema} & \textbf{Estado v0.1.0} \\ \hline
-V01 & Riesgo vital inmediato & Binaria & Captura fallecido, inconsciente, herido grave, atrapado critico o riesgo vital textual. & Implementada por senales \\ \hline
-V02 & Victimas confirmadas o probables & Ordinal & Aproxima magnitud humana inicial cuando el texto permite inferir afectados. & Parcial por texto \\ \hline
-V03 & Tipo de dano principal & Categorica & Diferencia dano a personas, bienes, medioambiente o incidente menor. & Implementada indirecta \\ \hline
-V04 & Tipo de incidente & Categorica & Mapea el incidente a la taxonomia del Anexo~\ref{cap:anexoa}. & Implementada \\ \hline
-V05 & Poblacion vulnerable & Binaria & Identifica menores, mayores, dependientes o colectivos especialmente expuestos. & Parcial por texto \\ \hline
-V06 & Personas en riesgo estimadas & Ordinal & Representa exposicion potencial mas alla de victimas confirmadas. & Parcial \\ \hline
-V07 & Emplazamiento critico & Categorica & Hospitales, residencias, centros educativos, infraestructuras o lugares sensibles. & Parcial por texto \\ \hline
-V08 & Nivel de aviso AEMET & Ordinal & Contexto meteorologico oficial para elevar riesgo cuando sea pertinente. & Diferida v0.2.0 \\ \hline
-V09 & Fenomeno meteorologico activo & Categorica & Lluvia, nieve, viento, tormenta, temperatura u otro fenomeno coherente. & Diferida v0.2.0 \\ \hline
-V10 & Peligrosidad por inundacion & Binaria & Cruce territorial con zonas inundables SNCZI. & Diferida v0.2.0 \\ \hline
-V11 & Proximidad Seveso & Binaria & Identifica instalaciones sujetas a RD 840/2015 o riesgo tecnologico. & Diferida v0.2.0 \\ \hline
+\textbf{ID} & \textbf{Variable} & \textbf{Tipo} & \textbf{Función en el sistema} & \textbf{Estado v0.1.0} \\ \hline
+V01 & Riesgo vital inmediato & Binaria & Captura fallecido, inconsciente, herido grave, atrapado crítico o riesgo vital textual. & Implementada por señales \\ \hline
+V02 & Víctimas confirmadas o probables & Ordinal & Aproxima magnitud humana inicial cuando el texto permite inferir afectados. & Parcial por texto \\ \hline
+V03 & Tipo de daño principal & Categórica & Diferencia daño a personas, bienes, medioambiente o incidente menor. & Implementada indirecta \\ \hline
+V04 & Tipo de incidente & Categórica & Mapea el incidente a la taxonomía del Anexo~\ref{cap:anexoa}. & Implementada \\ \hline
+V05 & Población vulnerable & Binaria & Identifica menores, mayores, dependientes o colectivos especialmente expuestos. & Parcial por texto \\ \hline
+V06 & Personas en riesgo estimadas & Ordinal & Representa exposición potencial más allá de víctimas confirmadas. & Parcial \\ \hline
+V07 & Emplazamiento crítico & Categórica & Hospitales, residencias, centros educativos, infraestructuras o lugares sensibles. & Parcial por texto \\ \hline
+V08 & Nivel de aviso AEMET & Ordinal & Contexto meteorológico oficial para elevar riesgo cuando sea pertinente. & Diferida v0.2.0 \\ \hline
+V09 & Fenómeno meteorológico activo & Categórica & Lluvia, nieve, viento, tormenta, temperatura u otro fenómeno coherente. & Diferida v0.2.0 \\ \hline
+V10 & Peligrosidad por inundación & Binaria & Cruce territorial con zonas inundables SNCZI. & Diferida v0.2.0 \\ \hline
+V11 & Proximidad Seveso & Binaria & Identifica instalaciones sujetas a RD 840/2015 o riesgo tecnológico. & Diferida v0.2.0 \\ \hline
 V12 & Tendencia del incidente & Ordinal & Estable, agravamiento, mejora o desconocida; orienta escalado. & Parcial por texto \\ \hline
 V13 & Fiabilidad del informador & Ordinal & Modula confianza, no gravedad. & No disponible directa \\ \hline
-V14 & Numero de avisos simultaneos & Ordinal & Varias llamadas elevan confianza y posible impacto. & Implementada por senal \\ \hline
-V15 & Accesibilidad al punto & Ordinal & Dificultad de acceso, entorno rural, montana o rescate complejo. & Parcial por texto \\ \hline
+V14 & Número de avisos simultáneos & Ordinal & Varias llamadas elevan confianza y posible impacto. & Implementada por señal \\ \hline
+V15 & Accesibilidad al punto & Ordinal & Dificultad de acceso, entorno rural, montaña o rescate complejo. & Parcial por texto \\ \hline
 \end{tabularx}
 \end{table}
 
 \section*{B.3. Variables implementadas en Capa 2 v0.1.0}
 
 El modelo RuleFit-lite seleccionado no consume directamente todas las variables V01--V15
-como campos completos. Consume un conjunto compacto de senales predecisionales derivadas
-del texto y de la categoria preliminar:
+como campos completos. Consume un conjunto compacto de señales predecisionales derivadas
+del texto y de la categoría preliminar:
 
 \begin{itemize}
     \item \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave},
@@ -54,69 +54,44 @@ del texto y de la categoria preliminar:
     \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate},
     \texttt{signal\_meteo\_inundacion};
     \item \texttt{riesgo\_vital\_textual};
-    \item variables \texttt{cat\_*} derivadas de la taxonomia.
+    \item variables \texttt{cat\_*} derivadas de la taxonomía.
 \end{itemize}
 
-Esta decision mantiene reproducibilidad y evita introducir variables contextuales
-incompletas. Las variables V08--V11 se conservan en el dise\~no porque son relevantes
-para una version futura, pero no se contabilizan como evidencia ya disponible en la
-evaluacion v0.1.0.
+Esta decisión mantiene reproducibilidad y evita introducir variables contextuales
+incompletas. Las variables V08--V11 se conservan en el diseño porque son relevantes
+para una versión futura, pero no se contabilizan como evidencia ya disponible en la
+evaluación v0.1.0.
 
-Por tanto, en v0.1.0 las variables V01, V04 y V14 se consideran funcionales mediante
-senales textuales o categoria preliminar; V02, V03, V05, V06, V07, V12 y V15 operan de
-forma parcial cuando el texto contiene evidencia suficiente; V13 no esta disponible de
-forma directa; y V08--V11 quedan diferidas a v0.2.0 por requerir integracion externa
-con AEMET, SNCZI y bases Seveso. Esta clasificacion evita presentar como implementadas
-variables que forman parte del diseno metodologico, pero no del nucleo reproducible
-evaluado.
+\section*{B.4. Columnas prohibidas por leakage y políticas de privacidad}
 
-\section*{B.4. Columnas prohibidas por leakage}
-
-El sistema excluye cualquier columna que refleje decisiones tomadas despues de la
-primera valoracion o informacion administrativa posterior. En particular, no se usan:
+El sistema excluye rigurosamente del entrenamiento e inferencia cualquier variable o columna que refleje decisiones ex post o información administrativa y clínica posterior a la primera decisión de despacho. En particular, queda prohibido el uso de:
 
 \begin{itemize}
-    \item \texttt{MediosMov} y derivados de medios movilizados;
-    \item \texttt{PacientesAten} y derivados de pacientes atendidos;
-    \item \texttt{IncidenteCerrado};
-    \item \texttt{ultimaActualizacion};
-    \item enlaces, identificadores tecnicos no predictivos o columnas sin semantica
-    operativa.
+    \item \texttt{MediosMov} y derivados de recursos reales movilizados.
+    \item \texttt{PacientesAten} y registros de atención sanitaria o traslados.
+    \item \texttt{IncidenteCerrado} y estado final de resolución del caso.
+    \item \texttt{ultimaActualizacion} y marcas de tiempo de modificación del log central.
+    \item Enlaces, identificadores de despacho y metadatos ex post.
 \end{itemize}
 
-Estas columnas pueden describir la gestion final del incidente, pero no estaban
-disponibles como entrada valida para una primera decision. Usarlas elevaria
-artificialmente las metricas y debilitaria la validez academica del TFM.
+La exclusión de estas columnas ex post posee una justificación metodológica crítica: si el modelo RuleFit tuviera acceso a variables como el número de ambulancias movilizadas o el estado de cierre del incidente, aprendería a deducir la prioridad directamente de estas consecuencias operativas en lugar de identificar las señales tempranas de riesgo. Esto provocaría un sobreaprendizaje destructivo (target leakage), invalidando la utilidad del sistema como apoyo en tiempo real cuando el operador aún no ha movilizado ningún recurso.
 
-La exclusion se fundamenta en una restriccion temporal: el modelo solo puede observar
-informacion disponible antes o durante la primera valoracion. Variables como medios
-movilizados, pacientes atendidos o cierre del incidente incorporan decisiones humanas,
-recursos finalmente asignados o resultados posteriores. Si se incluyeran, el modelo
-aprenderia atajos del proceso administrativo en lugar de senales tempranas del texto,
-produciendo sobreaprendizaje y una estimacion optimista no transferible a un escenario
-real de despacho.
-
-Ademas, el tratamiento de texto operativo y coordenadas se realiza bajo un criterio de
-minimizacion y confidencialidad compatible con RGPD y LOPDGDD: se evita incorporar datos
-personales innecesarios a la evaluacion, se trabaja con identificadores tecnicos y se
-mantiene la finalidad estrictamente academica del procesamiento.
+Asimismo, en cumplimiento del Reglamento General de Protección de Datos (RGPD) \cite{RGPD} y de la Ley Orgánica 3/2018 (LOPDGDD) \cite{LOPDGDD}, el sistema aplica políticas estrictas de anonimización y minimización de datos. Las coordenadas geográficas exactas (latitud y longitud) del Registro 112 CyL se procesan de forma restringida (por ejemplo, truncando decimales para conservar solo la precisión municipal) para evitar la reidentificación de personas o domicilios, garantizando el tratamiento confidencial y seguro del texto operativo.
 
 \section*{B.5. Ausencia de datos}
 
-La ausencia de una variable no debe rellenarse con informacion posterior. Cuando el dato
-no esta disponible, el sistema debe:
+La ausencia de una variable no debe rellenarse con información posterior. Cuando el dato
+no está disponible, el sistema debe:
 
 \begin{itemize}
-    \item emitir la recomendacion con las senales presentes;
+    \item emitir la recomendación con las señales presentes;
     \item reducir o matizar la confianza cuando falten variables relevantes;
-    \item mostrar la ausencia en la explicacion si afecta a la interpretacion;
-    \item registrar el caso para revision si la ausencia coincide con un error critico.
+    \item mostrar la ausencia en la explicación si afecta a la interpretación;
+    \item registrar el caso para revisión si la ausencia coincide con un error crítico.
 \end{itemize}
 
-\section*{B.6. Limitaciones}
+\section*{B.6. Limitaciones y riesgos}
 
-La matriz V01--V15 es mas amplia que la implementacion v0.1.0. Esta diferencia es
-deliberada: permite que la memoria documente el dise\~no completo sin fingir que todas
-las fuentes externas ya estan integradas. La evaluacion final reportada en el
-Capitulo~\ref{cap:9} se interpreta, por tanto, como rendimiento del nucleo reproducible
-actual, no como rendimiento de una version enriquecida con AEMET, SNCZI y Seveso.
+La matriz V01--V15 es más amplia que la implementación v0.1.0, lo cual es una decisión deliberada de diseño para documentar la evolución futura hacia v0.2.0 sin sesgar la evaluación del núcleo reproducible actual (excluyendo AEMET, SNCZI y Seveso).
+
+Existe un riesgo crítico de leakage residual si en el futuro se introducen nuevas variables o integraciones del sistema de despacho sin verificar rigurosamente su disponibilidad temporal en la llamada de entrada. Cualquier campo que se incorpore al modelo debe someterse a una auditoría de línea de tiempo para asegurar que se genera en los primeros instantes de la llamada del ciudadano y no durante la posterior coordinación de la emergencia.
