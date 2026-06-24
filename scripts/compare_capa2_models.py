@@ -23,10 +23,14 @@ def _load_optional(path: Path) -> dict[str, Any] | None:
 
 
 def _baseline_row(report: dict[str, Any]) -> dict[str, Any]:
+    val = report["splits"]["val"]
     test = report["splits"]["test"]
     return {
         "model": "baseline_expert",
         "available": True,
+        "validation_accuracy": val["accuracy"],
+        "validation_macro_f1": val["macro_f1"],
+        "validation_recall_p1": val["recall_p1"],
         "test_accuracy": test["accuracy"],
         "test_macro_f1": test["macro_f1"],
         "test_recall_p1": test["recall_p1"],
@@ -44,12 +48,16 @@ def _rulefit_row(name: str, report: dict[str, Any] | None) -> dict[str, Any]:
             "available": False,
             "reason": "report_not_found",
         }
+    val = report["splits"]["val"]
     test = report["splits"]["test"]
     return {
         "model": name,
         "available": True,
         "engine": report.get("engine"),
         "fit_rows": report.get("fit_rows"),
+        "validation_accuracy": val["accuracy"],
+        "validation_macro_f1": val["macro_f1"],
+        "validation_recall_p1": val["recall_p1"],
         "test_accuracy": test["accuracy"],
         "test_macro_f1": test["macro_f1"],
         "test_recall_p1": test["recall_p1"],
@@ -65,8 +73,8 @@ def _recommend(rows: list[dict[str, Any]]) -> dict[str, Any]:
     ranked = sorted(
         available,
         key=lambda row: (
-            float(row.get("test_macro_f1") or 0.0),
-            float(row.get("test_recall_p1") or 0.0),
+            float(row.get("validation_macro_f1") or 0.0),
+            float(row.get("validation_recall_p1") or 0.0),
             -float(row.get("active_rules") or 9999),
         ),
         reverse=True,
@@ -74,7 +82,10 @@ def _recommend(rows: list[dict[str, Any]]) -> dict[str, Any]:
     winner = ranked[0] if ranked else None
     return {
         "recommended_model": winner["model"] if winner else None,
-        "criterion": "Maximize test macro-F1, keep high P1 recall, prefer fewer rules on ties.",
+        "criterion": (
+            "Maximize validation macro-F1, keep high validation P1 recall, "
+            "prefer fewer rules on ties. Test is reserved for final estimation."
+        ),
     }
 
 
@@ -87,7 +98,7 @@ def _write_md(report: dict[str, Any], path: Path) -> None:
         "",
         "## Comparativa",
         "",
-        "| Modelo | Disponible | Accuracy test | Macro-F1 test | Recall P1 | Reglas | Train s | Infer ms/fila |",
+        "| Modelo | Disponible | Accuracy val | Macro-F1 val | Recall P1 val | Reglas | Train s | Infer ms/fila |",
         "|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for row in report["models"]:
@@ -95,9 +106,9 @@ def _write_md(report: dict[str, Any], path: Path) -> None:
             "| {model} | {available} | {accuracy} | {macro_f1} | {recall_p1} | {rules} | {train} | {infer} |".format(
                 model=row["model"],
                 available=row.get("available"),
-                accuracy=row.get("test_accuracy", ""),
-                macro_f1=row.get("test_macro_f1", ""),
-                recall_p1=row.get("test_recall_p1", ""),
+                accuracy=row.get("validation_accuracy", ""),
+                macro_f1=row.get("validation_macro_f1", ""),
+                recall_p1=row.get("validation_recall_p1", ""),
                 rules=row.get("active_rules", ""),
                 train=row.get("training_seconds", ""),
                 infer=row.get("mean_inference_ms_per_row", ""),
@@ -105,7 +116,8 @@ def _write_md(report: dict[str, Any], path: Path) -> None:
         )
     lines.extend(["", "## Lectura", ""])
     lines.append(
-        "La comparativa prioriza macro-F1 en test, recall P1 y parsimonia. "
+        "La seleccion prioriza macro-F1 y recall P1 en validacion, junto con la parsimonia. "
+        "El conjunto de test se reserva para estimar el rendimiento final del modelo seleccionado. "
         "El motor imodels se ha ejecutado en entorno Python 3.12 aislado; si se "
         "incrementan filas/arboles, debe repetirse el reporte con los mismos splits."
     )

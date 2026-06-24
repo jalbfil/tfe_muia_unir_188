@@ -3,20 +3,15 @@
 
 \section*{C.1. Finalidad del anexo}
 
-Este anexo documenta la guia usada para construir la etiqueta academica P1--P4 mediante
-supervision debil. La guia no pretende reemplazar una prioridad oficial del 112, porque
-el Registro 112 Castilla y Leon no contiene dicha etiqueta. Su funcion es definir un
-criterio reproducible para entrenar, comparar y evaluar la Capa 2 dentro del alcance
-academico del TFM.
+Este anexo documenta la gu\'ia empleada para construir mediante supervisi\'on d\'ebil
+la escala acad\'emica P1--P4. El Registro 112 Castilla y Le\'on no contiene una
+prioridad oficial equivalente; por ello, la gu\'ia define un criterio reproducible para
+entrenar, comparar y evaluar la Capa 2 sin atribuir validez institucional a la etiqueta.
 
-La version operativa se corresponde con
+La versi\'on operativa se corresponde con
 \texttt{resources/labeling\_guide\_p1p4.md} y con la decision metodologica de tratar
 P1--P4 como escala academica, no juridica ni institucional.
-
-La guia P1--P4 constituye la fuente metodologica de la supervision debil empleada en el
-prototipo. Su finalidad es generar una etiqueta academica reproducible para
-entrenamiento y evaluacion, no sustituir el criterio operativo del 112 ni definir una
-prioridad oficial. La revision humana posterior se documenta en el
+La muestra preparada para una futura revisi\'on humana se documenta en el
 Anexo~\ref{cap:anexod}.
 
 \section*{C.2. Principios generales}
@@ -55,7 +50,7 @@ P4 & Baja & Consulta, incidencia menor, asistencia diferible o caso sin urgencia
 \section*{C.4. Reglas de etiquetado}
 
 Las reglas siguientes orientan la asignacion academica. No se presentan como reglas
-oficiales del 112, sino como criterios reproducibles para weak supervision:
+oficiales del 112, sino como criterios reproducibles de supervisi\'on d\'ebil:
 
 \begin{table}[ht]
 \centering
@@ -97,26 +92,32 @@ Los conflictos mas relevantes son:
     o incidencia menor.
 \end{itemize}
 
-\section*{C.6. Fuentes debiles y acuerdo}
+\section*{C.6. Funciones de etiquetado, agregaci\'on y acuerdo}
 
-La etiqueta final no procede de un unico criterio manual. Se construye combinando varias
-fuentes debiles: reglas textuales, categoria operativa, senales de gravedad y criterios
-de consistencia. El acuerdo entre fuentes se mide para verificar que la etiqueta no sea
-puramente arbitraria. En la ejecucion v0.1.0, Krippendorff
-\(\alpha = 0.858348\), y la ablacion sin reglas heuristicas mantiene
-\(\alpha = 0.834155\).
+La etiqueta final combina cuatro funciones deterministas: reglas heur\'isticas,
+se\~nales e intensificadores, un proxy de agrupaci\'on sem\'antica y un proxy de
+anotador LLM. Los dos \'ultimos nombres describen la funci\'on experimental prevista,
+pero en v0.1.0 no ejecutan un agrupamiento vectorial ni invocan un modelo generativo.
 
-Estos valores no convierten la etiqueta en prioridad oficial, pero si justifican su uso
-como objetivo academico reproducible para entrenar y evaluar RuleFit-lite.
+Los votos se agregan mediante suma ponderada. Los pesos son \(0{,}85\), \(1{,}00\),
+\(0{,}90\) y \(1{,}10\), respectivamente. Si varias prioridades obtienen el mismo
+peso, se selecciona la m\'as urgente. La ejecuci\'on can\'onica alcanza Krippendorff
+\(\alpha = 0{,}899902\); la ablaci\'on sin reglas heur\'isticas mantiene
+\(\alpha = 0{,}834155\).
+
+Estos valores respaldan la consistencia del procedimiento, pero no demuestran
+independencia entre funciones: varias comparten patrones y se\~nales con las variables
+que posteriormente utiliza RuleFit-lite. La ablaci\'on confirma que el acuerdo no
+desaparece al retirar una fuente, no que se haya eliminado por completo la circularidad.
 
 \section*{C.7. Limitaciones}
 
-La guia reduce subjetividad, pero no elimina la necesidad de revision humana. Si se
-adoptan los artefactos finales del 17 de junio de 2026, los 59 falsos negativos P1 y,
-especialmente, los 7 casos P1--P4 deben considerarse candidatos prioritarios a revision
-interna. Estos casos permiten detectar limites de la guia de etiquetado, senales
-insuficientes o decisiones del modelo que podrian implicar infrapriorizacion critica.
-La muestra completa se documenta en el Anexo~\ref{cap:anexod}.
+La gu\'ia reduce subjetividad, pero no elimina la necesidad de revisi\'on humana. Los
+artefactos finales identifican 59 falsos negativos P1, incluidos 7 casos P1--P4, que
+constituyen la prioridad de la muestra preparada. Estos casos permiten estudiar
+l\'imites de la gu\'ia, se\~nales insuficientes o decisiones del modelo con riesgo de
+infrapriorizaci\'on. La muestra completa se documenta en el
+Anexo~\ref{cap:anexod}.
 
 La validacion externa con operadores del 112 queda como trabajo futuro. Hasta entonces,
 P1--P4 debe citarse siempre como escala academica del prototipo.

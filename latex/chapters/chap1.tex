@@ -1,4 +1,4 @@
-\chapter{Introduccion}
+\chapter{Introducci\'on}
 \label{cap:1}
 
 \section{Contexto general del trabajo}
@@ -13,11 +13,9 @@ El presente TFM se situa en la interseccion entre gestion de emergencias e intel
 
 La saturacion informativa en emergencias aparece cuando el volumen, la velocidad o la heterogeneidad de la informacion supera la capacidad del operador para procesarla con seguridad. Este fenomeno es especialmente critico en situaciones con multiples incidentes simultaneos, avisos incompletos o informacion contradictoria. En esos escenarios, una priorizacion deficiente puede retrasar la atencion a incidentes graves, sobredimensionar sucesos menores o dificultar la justificacion posterior de la decision adoptada.
 
-El problema abordado por este TFM puede formularse asi: dado un conjunto de incidentes 112 descritos mediante texto libre y datos operativos parciales, ¿como puede un sistema inteligente ayudar a estructurar la informacion, extraer variables relevantes, recomendar una prioridad P1--P4 y explicar esa recomendacion de forma comprensible y auditable?
+El problema abordado por este TFM puede formularse as\'i: dado un conjunto de incidentes 112 descritos mediante texto libre y datos operativos parciales, ?`c\'omo puede un sistema inteligente ayudar a estructurar la informaci\'on, extraer variables relevantes, recomendar una prioridad P1--P4 y explicar esa recomendaci\'on de forma comprensible y auditable?
 
-La respuesta propuesta se apoya en una arquitectura de tres capas. La Capa 1 realiza una extraccion determinista y auditable de variables operativas V01--V15 y se\~nales textuales desde el incidente. La Capa 2 recomienda prioridad mediante RuleFit-lite, manteniendo un nucleo interpretable y comparandolo con un baseline experto y una ejecucion diagnostica con \texttt{imodels}. La Capa 3 genera una explicacion operativa mediante un LLM local, recuperacion aumentada sobre corpus CyL y herramientas MCP, sin modificar la prioridad calculada por Capa 2.
-
-El sistema propuesto separa de forma explicita la recomendacion de prioridad y la generacion de explicaciones. La Capa 2 constituye el nucleo de priorizacion interpretable, mientras que la Capa 3 actua como apoyo explicativo, generando una explicacion operativa basada en las se\~nales del incidente, la prioridad asignada y la trazabilidad interna del sistema. Esta separacion evita que el LLM sustituya al modelo de priorizacion o al criterio profesional del operador.
+La respuesta propuesta se apoya en una arquitectura de tres capas. La Capa 1 realiza una extracci\'on determinista y auditable de variables operativas V01--V15 y se\~nales textuales. La Capa 2 recomienda la prioridad mediante RuleFit-lite y se compara con una l\'inea base heur\'istica y una ejecuci\'on diagn\'ostica de \texttt{imodels}. La Capa 3 genera una explicaci\'on mediante un modelo de lenguaje de gran tama\~no (\textit{Large Language Model}, LLM) local, generaci\'on aumentada por recuperaci\'on (\textit{Retrieval-Augmented Generation}, RAG) sobre el corpus normativo y herramientas basadas en \textit{Model Context Protocol} (MCP). Esta separaci\'on impide que el componente generativo recalcule la prioridad o sustituya el criterio profesional.
 
 \section{Justificacion e impacto social}
 
@@ -33,7 +31,7 @@ Desde la perspectiva social, el proyecto se alinea con una vision responsable de
 
 La contribucion principal del TFM no consiste en entrenar un modelo opaco para maximizar una metrica aislada de precision. El proyecto aborda un problema mas delicado: construir un sistema explicable y evaluable cuando no existe una etiqueta oficial P1--P4 en el dataset abierto. Por ello, la prioridad academica se construye mediante supervision debil, anclada en PLANCAL y en la guia de etiquetado del proyecto.
 
-La aportacion de IA se concreta en cinco elementos. Primero, la extraccion determinista y auditable de variables operativas desde texto libre en espa\~nol. Segundo, la generacion de etiquetas P1--P4 mediante varios anotadores debiles y medicion de acuerdo. Tercero, el uso de RuleFit-lite como nucleo interpretable de Capa 2, con reglas activas exportables y probabilidades por clase. Cuarto, la comparacion contra un baseline experto y una ejecucion \texttt{imodels}, separando la alternativa seleccionada de los experimentos diagnosticos. Quinto, la generacion de explicaciones operativas mediante LLM local, RAG normativo y MCP a partir de la salida estructurada de Capa 2, sin modificar la prioridad asignada y manteniendo la decision final en manos del operador.
+La aportaci\'on de inteligencia artificial comprende la extracci\'on auditable de variables desde texto, la construcci\'on de etiquetas mediante supervisi\'on d\'ebil, la priorizaci\'on interpretable con RuleFit-lite, su contraste con una l\'inea base heur\'istica y con \texttt{imodels}, y la generaci\'on de explicaciones a partir de la salida estructurada de Capa 2. Estas funciones se integran sin transferir al LLM la recomendaci\'on de prioridad ni la decisi\'on final.
 
 Esta combinacion permite que cada recomendacion pueda vincularse con entrada, variables extraidas, reglas activadas, probabilidad, confianza, version de modelo, trazabilidad documental y decision humana final. Esa trazabilidad constituye la diferencia entre un simple clasificador y un sistema de apoyo a la decision.
 
@@ -43,7 +41,7 @@ El objetivo general del TFM es dise\~nar, implementar y evaluar un prototipo sof
 
 \subsection{Alcance funcional}
 
-El sistema abarca la recepcion de un incidente, la extraccion de variables, la recomendacion de prioridad, la generacion de explicacion operativa, el registro auditable de la inferencia y la posibilidad de que el operador acepte, modifique o rechace la recomendacion. En v0.1.0 se prioriza el nucleo evaluable: variables V01--V07 y V12--V15, se\~nales textuales, RuleFit-lite, RAG normativo, herramientas MCP y una UI minima en Streamlit.
+El sistema abarca la recepci\'on de un incidente, la extracci\'on de variables, la recomendaci\'on de prioridad, la generaci\'on de una explicaci\'on operativa, el registro auditable de la inferencia y la posibilidad de que el operador acepte, modifique o rechace la recomendaci\'on. En v0.1.0 se prioriza el n\'ucleo evaluable: variables V01--V07 y V12--V15, se\~nales textuales, RuleFit-lite, RAG normativo, herramientas MCP y una interfaz de usuario en Streamlit.
 
 El endpoint \texttt{/predict} devuelve informacion estructurada de prioridad, detalles de reglas activadas y contexto explicativo mediante \texttt{priority\_details} y \texttt{explanation\_context}. Esto permite conectar la recomendacion de Capa 2 con la explicacion generada por Capa 3, preservando la separacion entre decision automatizada, explicacion y validacion humana.
 
@@ -53,7 +51,7 @@ No forman parte del alcance de v0.1.0 el despacho automatico de recursos, la int
 
 El alcance territorial se centra en Castilla y Leon. El Registro de Emergencias del 112 de Castilla y Leon aporta la base empirica real para trabajar con incidentes, texto operativo, fechas, provincias, localidades y coordenadas \cite{Registro112CyL}. El marco normativo autonomico se apoya en Ley 4/2007, PLANCAL y planes especiales CyL. Esta decision evita mantener una separacion artificial entre marco normativo y dataset, y refuerza la coherencia del proyecto.
 
-La escala P1--P4 utilizada por el sistema no es una prioridad oficial del dataset. Es una construccion academica del prototipo, necesaria para entrenar, evaluar y explicar el motor. Se inspira en la logica de gravedad, coordinacion y escalado de la normativa, pero no equivale juridicamente a las situaciones operativas oficiales.
+La escala P1--P4 mantiene en todo el trabajo su car\'acter acad\'emico y no equivale jur\'idicamente a las situaciones operativas oficiales.
 
 \subsection{Limitaciones}
 
@@ -71,4 +69,4 @@ No obstante, la contribucion academica no se reduce a programar una aplicacion. 
 
 La memoria se organiza en diez capitulos y anexos tecnicos. El Capitulo 1 introduce el problema, el alcance y la contribucion. El Capitulo 2 revisa el contexto y el estado del arte en IA para emergencias, DSS, NLP, supervision debil, RuleFit, LLM locales, RAG y MCP. El Capitulo 3 fija el marco operativo y normativo de Castilla y Leon. El Capitulo 4 formula objetivos, preguntas de investigacion y metodologia. El Capitulo 5 define requisitos. El Capitulo 6 presenta la arquitectura de tres capas. El Capitulo 7 desarrolla datos, variables, etiquetado y leakage. El Capitulo 8 documenta el prototipo. El Capitulo 9 presenta la evaluacion. El Capitulo 10 sintetiza conclusiones y trabajo futuro.
 
-Los anexos recogen la taxonomia, variables, guia de etiquetado, plantilla de validacion, baseline experto, contratos, corpus RAG, prompts, model cards, capturas, uso de IA y trazabilidad extendida.
+Los anexos recogen la taxonom\'ia, las variables, la gu\'ia de etiquetado, el protocolo de revisi\'on, la l\'inea base heur\'istica, los contratos, el corpus RAG, las instrucciones del LLM, las fichas de modelo, las capturas y la trazabilidad extendida.
