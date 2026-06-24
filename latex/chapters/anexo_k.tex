@@ -1,12 +1,11 @@
 \chapter{Prompts y herramientas MCP de Capa 3}
 \label{cap:anexok}
 
+Este anexo detalla los mecanismos de interacción entre el modelo generativo local y el resto de componentes a través del protocolo MCP. En particular, se describen las plantillas de instrucciones y los parámetros configurados para asegurar explicaciones fieles a la decisión predictiva. Con esta documentación técnica se persigue dar transparencia al proceso de generación lingüística y mitigar posibles riesgos de desalineación.
+
 \section*{K.1. Objetivo}
 
-Este anexo describe como la Capa 3 transforma la salida congelada de Capa 2 en
-una explicacion estructurada para supervision humana. El principio operativo es
-invariable: \textbf{la prioridad P1--P4 la decide Capa 2}; Capa 3 solo explica,
-cita y contextualiza.
+Este anexo describe cómo la Capa 3 transforma la salida congelada de la Capa 2 en una explicación estructurada para la supervisión humana. El principio operativo es invariable: \textbf{la prioridad P1--P4 la decide la Capa 2}; la Capa 3 solo explica, cita y contextualiza. A través de este aislamiento, se asegura que el comportamiento probabilístico del LLM no interfiera con el clasificador estadístico. De este modo, se evitan cambios arbitrarios en el nivel de emergencia asignado.
 
 \section*{K.2. Entradas y salida esperada}
 
@@ -14,39 +13,37 @@ La Capa 3 consume principalmente dos bloques del endpoint
 \texttt{/predict}:
 
 \begin{itemize}
-    \item \texttt{priority\_details}: prioridad, distribucion de probabilidades,
+    \item \texttt{priority\_details}: prioridad, distribución de probabilidades,
     confianza, modelo usado y reglas activadas.
-    \item \texttt{explanation\_context}: decision de Capa 2,
+    \item \texttt{explanation\_context}: decisión de la Capa 2,
     \texttt{probability\_margin}, resumen de reglas, evidencias y avisos.
 \end{itemize}
 
-Salida contractual de Capa 3: \texttt{OperatorRecommendation} con
-\texttt{priority\_recommended}, \texttt{explanation\_text},
-\texttt{legal\_citations}, \texttt{actuation\_hints} y metadatos del LLM.
+Salida contractual de la Capa 3: \texttt{OperatorRecommendation} con \texttt{priority\_recommended}, \texttt{explanation\_text}, \texttt{legal\_citations}, \texttt{actuation\_hints} y metadatos del LLM. Esta estructura de datos se encuentra totalmente definida y validada mediante esquemas JSON robustos. Con ella se asegura la consistencia e integridad de las respuestas que se muestran en el panel del despachador.
 
 \begin{table}[ht]
 \centering
-\caption{Campos principales del JSON explicativo de Capa 3}
+\caption{Campos principales del JSON explicativo de la Capa 3}
 \label{tab:anexok-json}
 \small
 \begin{tabularx}{\textwidth}{|p{3.5cm}|X|}
 \hline
 \textbf{Campo} & \textbf{Directriz operativa} \\ \hline
-\texttt{explanation\_text} & Explicacion breve, formal y accionable, entre 80 y 600 caracteres, sin recalcular prioridad ni introducir hechos nuevos. \\ \hline
+\texttt{explanation\_text} & Explicación breve, formal y accionable, entre 80 y 600 caracteres, sin recalcular prioridad ni introducir hechos nuevos. \\ \hline
 \texttt{actuation\_hints} & Lista de acciones orientativas coherentes con P1--P4, siempre sometidas al criterio del operador. \\ \hline
-\texttt{confidence\_disclaimer} & Advertencia sobre falta de informacion, baja confianza o discrepancias entre la prioridad calculada y el texto original. \\ \hline
+\texttt{confidence\_disclaimer} & Advertencia sobre falta de información, baja confianza o discrepancias entre la prioridad calculada y el texto original. \\ \hline
 \end{tabularx}
 \end{table}
 
-\section*{K.3. Politica de prompts (v0.1.0)}
+\section*{K.3. Política de prompts (v0.1.0)}
 
-Los prompts de sistema y ejemplos \textit{few-shot} estan orientados a:
+Los prompts de sistema y ejemplos \textit{few-shot} están orientados a:
 
 \begin{enumerate}
-    \item mantener la prioridad calculada por Capa 2;
+    \item mantener la prioridad calculada por la Capa 2;
     \item explicar incertidumbre cuando el margen de probabilidad es bajo;
-    \item justificar la recomendacion con reglas/evidencias reales;
-    \item incluir cita legal minima en casos P1/P2.
+    \item justificar la recomendación con reglas/evidencias reales;
+    \item incluir cita legal mínima en casos P1/P2.
 \end{enumerate}
 
 Reglas de seguridad del prompt:
@@ -54,28 +51,26 @@ Reglas de seguridad del prompt:
 \begin{itemize}
     \item no recalcular prioridad;
     \item no inventar reglas ni citas cuando no hay evidencia;
-    \item declarar necesidad de revision humana en baja confianza.
+    \item declarar necesidad de revisión humana ante baja confianza.
 \end{itemize}
 
-Archivos de referencia:
-\texttt{src/capa3\_llm\_mcp/prompts/system\_prompt.py} y
-\texttt{src/capa3\_llm\_mcp/prompts/few\_shots.py}.
+Archivos de referencia: \texttt{src/capa3\_llm\_mcp/prompts/system\_prompt.py} y \texttt{src/capa3\_llm\_mcp/prompts/few\_shots.py}. En estos módulos de código fuente se definen las instrucciones de comportamiento del modelo de lenguaje y las muestras guías. Su edición directa permite ajustar el estilo de las explicaciones generadas sin alterar el motor predictivo principal.
 
-\section*{K.3.1. Directrices eticas y de seguridad en prompts}
+\section*{K.3.1. Directrices éticas y de seguridad en prompts}
 
-Los prompts de la Capa 3 incorporan instrucciones especificas para evitar rechazos
-genericos propios de asistentes comerciales. Dado que un LLM instruido puede negarse a
-procesar textos sobre violencia, accidentes, sustancias quimicas o situaciones de
+Los prompts de la Capa 3 incorporan instrucciones específicas para evitar rechazos
+genéricos propios de asistentes comerciales. Dado que un LLM instruido puede negarse a
+procesar textos sobre violencia, accidentes, sustancias químicas o situaciones de
 peligro, el \texttt{SYSTEM\_PROMPT} redefine su rol como soporte exclusivo de seguridad
-publica. Se le prohibe denegar el procesamiento de descripciones criticas y se le exige
+pública. Se le prohíbe denegar el procesamiento de descripciones críticas y se le exige
 emitir un JSON completo y supervisable.
 
-Asimismo, el prompt define una directriz de deteccion de discrepancias: si el modelo
-identifica incoherencias entre la prioridad pre-calculada por Capa 2 y los hechos
+Asimismo, el prompt define una directriz de detección de discrepancias: si el modelo
+identifica incoherencias entre la prioridad precalculada por la Capa 2 y los hechos
 descritos en el texto, por ejemplo una prioridad P3/P4 ante riesgo vital, inconsciencia,
 atrapados o materiales peligrosos, debe alertar en el campo
 \texttt{confidence\_disclaimer}. Esta alerta no modifica la prioridad, pero incentiva la
-revision humana.
+revisión humana.
 
 \section*{K.4. Herramientas MCP activas en v0.1.0}
 
@@ -87,40 +82,35 @@ En \texttt{v0.1.0} se registran tres tools:
     \item \texttt{cite\_legal\_basis}
 \end{itemize}
 
-Implementacion: \texttt{src/capa3\_llm\_mcp/mcp\_server/server.py} y
-\texttt{src/capa3\_llm\_mcp/mcp\_server/tools/}.
+Implementación del servidor MCP y sus herramientas asociadas en: \texttt{src/capa3\_llm\_mcp/mcp\_server/server.py} y \texttt{src/capa3\_llm\_mcp/mcp\_server/tools/}. Dicho código define el catálogo de funciones que el modelo puede invocar para enriquecer su respuesta. Esta arquitectura abierta simplifica el mantenimiento y la integración de nuevos recursos del sistema.
 
-La tool \texttt{get\_aemet\_context} queda diferida a \texttt{v0.2.0}
-segun alcance aprobado.
+La tool \texttt{get\_aemet\_context} queda diferida a \texttt{v0.2.0} según alcance aprobado. Su implementación en el servidor de herramientas requiere la provisión de una API de meteorología robusta. No obstante, para el alcance del actual prototipo, se ha preservado la definición formal en la especificación para mantener la compatibilidad futura.
 
 \section*{K.5. Runtime LLM y modo degradado}
 
-El runtime operativo en \texttt{v0.1.0} usa Ollama local con modelo por defecto
-\texttt{llama3.1:8b-instruct-q4\_K\_M}, configurable por variable
-\texttt{OLLAMA\_MODEL}. El wrapper mantiene nombre historico
-\texttt{QwenWrapper} por compatibilidad de codigo.
+El runtime operativo en \texttt{v0.1.0} usa Ollama local con el modelo por defecto \texttt{llama3.1:8b-instruct-q4\_K\_M}, configurable por variable \texttt{OLLAMA\_MODEL}. El wrapper mantiene el nombre histórico \texttt{QwenWrapper} por compatibilidad de código. Esta modularidad del backend facilita cambiar el motor de inferencia local sin reescribir la lógica de negocio. Con ello se asegura que el sistema pueda adaptarse a modelos más eficientes que se publiquen en el futuro.
 
-Si el LLM no esta disponible o la respuesta no cumple contrato, se activa modo
+Si el LLM no está disponible o la respuesta no cumple con el contrato, se activa el modo
 degradado determinista:
 
 \begin{itemize}
-    \item se conserva la prioridad de Capa 2;
-    \item se construye explicacion basada en reglas y probabilidades;
-    \item se preserva la exigencia de citas minimas para P1/P2.
+    \item se conserva la prioridad de la Capa 2;
+    \item se construye una explicación basada en reglas y probabilidades;
+    \item se preserva la exigencia de citas mínimas para P1/P2.
 \end{itemize}
 
-El orquestador implementa ademas una recuperacion robusta del JSON mediante extraccion
-del primer objeto valido devuelto por el modelo. Si la respuesta queda corrupta o no
+El orquestador implementa además una recuperación robusta del JSON mediante extracción
+del primer objeto válido devuelto por el modelo. Si la respuesta queda corrupta o no
 puede validarse contra \texttt{OperatorRecommendation}, el sistema cae de forma segura en
 modo degradado basado en reglas, evitando que un fallo de formato bloquee la salida.
 
-\section*{K.6. Limites conocidos}
+\section*{K.6. Límites conocidos}
 
 \begin{itemize}
     \item la latencia con LLM real depende del hardware local y de la carga del
     runtime Ollama;
-    \item el soporte normativo para escenarios quimicos sigue condicionado por la
+    \item el soporte normativo para escenarios químicos sigue condicionado por la
     cobertura documental de MPCyL (ver Anexo~\ref{cap:anexoj});
-    \item la evaluacion con un juez LLM independiente queda como ampliacion futura
-    respecto al juez determinista offline ya aplicado en la version v0.1.0.
+    \item la evaluación con un juez LLM independiente queda como ampliación futura
+    respecto al juez determinista offline ya aplicado en la versión v0.1.0.
 \end{itemize}

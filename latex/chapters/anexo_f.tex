@@ -1,16 +1,13 @@
 \chapter{Esquema de datos y contratos}
 \label{cap:anexof}
 
+Este anexo expone la especificación detallada de los esquemas y estructuras que sustentan la comunicación interna del prototipo. Mediante contratos de datos fuertemente tipados, se asegura el flujo consistente de información y se validan las restricciones metodológicas en cada fase. Con esta formalización se persigue dotar al software de una robustez y auditabilidad alineadas con los requisitos de la ingeniería del software y el apoyo a la decisión.
+
 \section*{F.1. Finalidad del anexo}
 
-Este anexo resume el esquema de datos que conecta las tres capas del prototipo. Su
-funcion es garantizar que la entrada del incidente, las variables extraidas, la
-recomendacion de Capa 2, la explicacion de Capa 3 y el feedback humano se intercambian
-mediante contratos estables y auditables.
+Este anexo resume el esquema de datos que conecta las tres capas del prototipo. Su función es garantizar que la entrada del incidente, las variables extraídas, la recomendación de la Capa 2, la explicación de la Capa 3 y el feedback humano se intercambien mediante contratos estables y auditables. Gracias a este enfoque, cada transformación del pipeline se valida de forma automática contra tipos de datos estrictos. De esta manera, se minimiza la posibilidad de fallos de integración durante la inferencia en producción.
 
-La especificacion tecnica completa se concreta en los contratos Pydantic \cite{Pydantic2026} ubicados en
-\texttt{src/contracts/contracts/} y en los esquemas JSON exportados en
-\texttt{src/contracts/docs/schemas/}.
+La especificación técnica completa se concreta en los contratos Pydantic \cite{Pydantic2026} ubicados en \texttt{src/contracts/contracts/} y en los esquemas JSON exportados en \texttt{src/contracts/docs/schemas/}. Estos ficheros de configuración definen el formato exacto de intercambio de información. Con ello se facilita el trabajo en paralelo de los miembros del equipo y se asegura la compatibilidad futura con otros clientes API.
 
 \section*{F.2. Objetos principales}
 
@@ -21,13 +18,13 @@ La especificacion tecnica completa se concreta en los contratos Pydantic \cite{P
 \small
 \begin{tabularx}{\textwidth}{|p{3.0cm}|X|p{3.5cm}|}
 \hline
-\textbf{Contrato} & \textbf{Funcion} & \textbf{Evidencia} \\ \hline
-\texttt{IncidentInput} & Entrada normalizada del incidente: identificador, texto, fecha, provincia, municipio, coordenadas y categoria preliminar. & \texttt{IncidentInput.schema.json} \\ \hline
-\texttt{IncidentFeatures} & Variables V01--V15 y senales textuales extraidas por Capa 1 o derivadas del dataset. & \texttt{IncidentFeatures.schema.json} \\ \hline
-\texttt{WeakLabel} & Etiqueta academica P1--P4, fuentes debiles, acuerdo y metadatos de trazabilidad. & \texttt{WeakLabel.schema.json} \\ \hline
-\texttt{PriorityRecommendation} & Salida de Capa 2: prioridad recomendada, probabilidades, reglas activadas y version del modelo. & \texttt{PriorityRecommendation.schema.json} \\ \hline
-\texttt{OperatorRecommendation} & Explicacion entregada al operador, citas legales, advertencias y modo degradado si aplica. & \texttt{OperatorRecommendation.schema.json} \\ \hline
-\texttt{OperatorDecision} & Decision humana: aceptar, modificar o rechazar, prioridad final y justificacion. & \texttt{OperatorDecision.schema.json} \\ \hline
+\textbf{Contrato} & \textbf{Función} & \textbf{Evidencia} \\ \hline
+\texttt{IncidentInput} & Entrada normalizada del incidente: identificador, texto, fecha, provincia, municipio, coordenadas y categoría preliminar. & \texttt{IncidentInput.schema.json} \\ \hline
+\texttt{IncidentFeatures} & Variables V01--V15 y señales textuales extraídas por la Capa 1 o derivadas del dataset. & \texttt{IncidentFeatures.schema.json} \\ \hline
+\texttt{WeakLabel} & Etiqueta académica P1--P4, fuentes débiles, acuerdo y metadatos de trazabilidad. & \texttt{WeakLabel.schema.json} \\ \hline
+\texttt{PriorityRecommendation} & Salida de la Capa 2: prioridad recomendada, probabilidades, reglas activadas y versión del modelo. & \texttt{PriorityRecommendation.schema.json} \\ \hline
+\texttt{OperatorRecommendation} & Explicación entregada al operador, citas legales, advertencias y modo degradado si aplica. & \texttt{OperatorRecommendation.schema.json} \\ \hline
+\texttt{OperatorDecision} & Decisión humana: aceptar, modificar o rechazar, prioridad final y justificación. & \texttt{OperatorDecision.schema.json} \\ \hline
 \texttt{InferenceLog} & Registro auditable de entrada, salida, hashes, versiones, tiempos y advertencias. & \texttt{InferenceLog.schema.json} \\ \hline
 \end{tabularx}
 \end{table}
@@ -37,62 +34,58 @@ La especificacion tecnica completa se concreta en los contratos Pydantic \cite{P
 El flujo de datos del prototipo sigue una secuencia deliberadamente simple:
 
 \begin{enumerate}
-    \item \texttt{IncidentInput} recibe el incidente desde dataset o entrada controlada.
-    \item \texttt{IncidentFeatures} representa variables V01--V15 y senales permitidas.
+    \item \texttt{IncidentInput} recibe el incidente desde el dataset o una entrada controlada.
+    \item \texttt{IncidentFeatures} representa las variables V01--V15 y señales permitidas.
     \item La Capa 2 consume solo features predecisionales y genera
     \texttt{PriorityRecommendation}.
-    \item La Capa 3 transforma la recomendacion en \texttt{OperatorRecommendation}.
+    \item La Capa 3 transforma la recomendación en \texttt{OperatorRecommendation}.
     \item El operador registra, si procede, una \texttt{OperatorDecision}.
     \item \texttt{InferenceLog} conserva la trazabilidad completa de la inferencia.
 \end{enumerate}
 
-Esta separacion evita que una explicacion generativa modifique la prioridad y permite
-auditar cada paso de forma independiente.
+Esta separación evita que una explicación generativa modifique la prioridad y permite auditar cada paso de forma independiente. Asimismo, garantiza que los fallos en una de las capas no comprometan la disponibilidad del resto del sistema. Esta resiliencia estructural resulta vital para demostrar la seguridad informática del prototipo desarrollado.
 
 \section*{F.3.1. Validadores de integridad}
 
-Los contratos no son meras estructuras de datos; incorporan validadores que actuan como
+Los contratos no son meras estructuras de datos; incorporan validadores que actúan como
 puertas de integridad entre capas. En \texttt{IncidentInput}, el validador
 \texttt{\_require\_tz\_aware} exige que \texttt{fecha\_incidente} incluya zona horaria,
 evitando mezclar eventos sin referencia temporal clara. El validador
 \texttt{\_coords\_paired} impide que latitud y longitud se definan a medias: ambas deben
 existir juntas o quedar ausentes. Finalmente, \texttt{\_text\_has\_alphabetic} evita
-entradas sin contenido textual util.
+entradas sin contenido textual útil.
 
 En \texttt{PriorityRecommendation}, el validador
-\texttt{\_probs\_complete\_and\_sum\_to\_one} comprueba que la distribucion de
+\texttt{\_probs\_complete\_and\_sum\_to\_one} comprueba que la distribución de
 probabilidades contenga exactamente P1, P2, P3 y P4 y que sume \(1,0 \pm 10^{-6}\).
 El validador \texttt{\_argmax\_matches\_recommended} fuerza que la prioridad recomendada
 coincida con la clase de mayor probabilidad. Por su parte,
-\texttt{\_rulefit\_sparsity\_and\_p1p2\_rules} limita RuleFit a un maximo de 30 reglas
-activas y exige que toda recomendacion P1 o P2 incluya al menos una regla, manteniendo
+\texttt{\_rulefit\_sparsity\_and\_p1p2\_rules} limita RuleFit a un máximo de 30 reglas
+activas y exige que toda recomendación P1 o P2 incluya al menos una regla, manteniendo
 la trazabilidad exigida para incidentes de mayor gravedad.
 
-\section*{F.4. Politica anti-\textit{leakage}}
+\section*{F.4. Política anti-\textit{leakage}}
 
-Los contratos y el pipeline rechazan columnas posteriores a la primera decision. En
-particular, no se admiten como entrada de Capa 2 campos como \texttt{MediosMov},
+Los contratos y el pipeline rechazan columnas posteriores a la primera decisión. En
+particular, no se admiten como entrada de la Capa 2 campos como \texttt{MediosMov},
 \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} ni
-derivados directos. Estos campos pueden emplearse, como maximo, en analisis auxiliar o
-validacion posterior, pero no en entrenamiento ni inferencia.
+derivados directos. Estos campos pueden emplearse, como máximo, en análisis auxiliar o
+validación posterior, pero no en entrenamiento ni inferencia.
 
-La politica queda documentada en \texttt{src/contracts/contracts/leakage\_columns.py} y
-se verifica mediante tests de puerta anti-\textit{leakage}.
+La política queda documentada en \texttt{src/contracts/contracts/leakage\_columns.py} y se verifica mediante tests de puerta anti-\textit{leakage}. Estas pruebas se ejecutan de manera automática en el entorno de desarrollo y validación. Dicho control proactivo garantiza que ningún componente nuevo vulrene la exclusión de variables ex post.
 
 \section*{F.5. Trazabilidad}
 
 Cada inferencia debe poder reconstruirse con:
 
 \begin{itemize}
-    \item version del dataset y split utilizado;
-    \item version del modelo de Capa 2;
+    \item versión del dataset y split utilizado;
+    \item versión del modelo de la Capa 2;
     \item features permitidas presentes en la entrada;
     \item prioridad, probabilidades y reglas activadas;
-    \item explicacion generada y citas normativas;
-    \item decision humana, si existe;
+    \item explicación generada y citas normativas;
+    \item decisión humana, si existe;
     \item hash de entrada y marca temporal.
 \end{itemize}
 
-Este esquema sostiene la evaluacion de los Capitulos~\ref{cap:7}, \ref{cap:8} y
-\ref{cap:9}, y permite conectar los resultados con la model card del
-Anexo~\ref{cap:anexol}.
+Este esquema sostiene la evaluación de los Capítulos~\ref{cap:7}, \ref{cap:8} y \ref{cap:9}, y permite conectar los resultados con la model card del Anexo~\ref{cap:anexol}. A través de esta interconexión formal de artefactos, se facilita la reproducibilidad completa del estudio académico. De igual modo, se asegura que cualquier auditoría externa disponga de los esquemas y pesos originales para su verificación.

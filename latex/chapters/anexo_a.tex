@@ -1,17 +1,13 @@
-\chapter{Taxonomia operativa de incidentes CyL}
+\chapter{Taxonomía operativa de incidentes CyL}
 \label{cap:anexoa}
+
+Este anexo presenta detalladamente la estructura de la taxonomía operativa diseñada para clasificar y agrupar los sucesos históricos del Registro 112 de Castilla y León. A través de las familias definidas, se facilita el procesamiento estructurado y la extracción de variables clave para el motor predictivo. Con esta ordenación conceptual se busca proporcionar un marco de referencia coherente que conecte los textos libres con el catálogo de riesgos de protección civil.
 
 \section*{A.1. Finalidad del anexo}
 
-Este anexo documenta la taxonomia operativa utilizada por el prototipo para agrupar
-incidentes del Registro 112 Castilla y Leon. Su finalidad no es crear un catalogo
-juridico oficial, sino proporcionar una clasificacion funcional para la extraccion de
-variables, la supervision debil, la Capa 2 RuleFit-lite y la explicacion normativa de
-Capa 3.
+Este anexo documenta la taxonomía operativa utilizada por el prototipo para agrupar incidentes del Registro 112 de Castilla y León. Su finalidad no es crear un catálogo jurídico oficial, sino proporcionar una clasificación funcional para la extracción de variables, la supervisión débil, la Capa 2 RuleFit-lite y la explicación normativa de la Capa 3. De este modo, se simplifica el análisis de texto libre asociando palabras clave con categorías operativas bien delimitadas. Con ello se reduce la ambigüedad en la fase de inferencia predictiva.
 
-La taxonomia se alinea con el marco descrito en el Capitulo~\ref{cap:3}: Ley 17/2015,
-Ley 4/2007 de Castilla y Leon, PLANCAL, INFOCAL, INUNCYL, MPCyL y normativa Seveso. La
-variable relacionada es V04, descrita en el Anexo~\ref{cap:anexob}.
+La taxonomía se alinea con el marco descrito en el Capítulo~\ref{cap:3}: Ley 17/2015, Ley 4/2007 de Castilla y León, PLANCAL, INFOCAL, INUNCYL, MPCyL y normativa Seveso. La variable relacionada es V04, descrita en el Anexo~\ref{cap:anexob}. Esta correspondencia directa entre conceptos legales y variables computacionales constituye uno de los pilares del diseño metodológico del proyecto. Gracias a esta alineación, cada predicción cuenta con un respaldo normativo claro y defendible.
 
 \section*{A.2. Criterios de construccion}
 
@@ -51,12 +47,12 @@ CAT-OTR & Otros y asistencia & Consultas, incidencias menores, asistencia tecnic
 
 \section*{A.4. Relacion con variables y senales}
 
-La taxonomia alimenta directamente las variables categoricas usadas por Capa 2:
+La taxonomía alimenta directamente las variables categóricas usadas por la Capa 2:
 \texttt{cat\_trafico}, \texttt{cat\_incendio}, \texttt{cat\_rescate},
 \texttt{cat\_sanitario}, \texttt{cat\_meteorologico}, \texttt{cat\_seguridad} y
-\texttt{cat\_otros}. La familia tecnologica se conserva como categoria conceptual de
-alto interes, aunque en v0.1.0 su cobertura automatica queda limitada por la ausencia de
-integracion completa de variables V08--V11.
+\texttt{cat\_otros}. La familia tecnológica se conserva como categoría conceptual de
+alto interés, aunque en v0.1.0 su cobertura automática queda limitada por la ausencia de
+integración completa de las variables V08--V11. Para compensar esta limitación temporal, el prototipo recurre a la extracción de señales de texto descriptivas en lugar de consultas automatizadas a bases geoespaciales externas. Así, el modelo mantiene su utilidad sin comprometer la reproducibilidad local.
 
 \begin{table}[ht]
 \centering
@@ -83,10 +79,10 @@ interna de un servicio 112 ni agota toda la casuistica real. Algunos incidentes 
 pertenecer a varias familias; en esos casos se priorizan las senales de mayor urgencia
 para Capa 2 y se conservan las evidencias relevantes para la explicacion.
 
-Las familias tecnologica, meteorologica avanzada e inundacion completa se beneficiarian
-de integrar AEMET historico, SNCZI y Seveso en v0.2.0. En v0.1.0 se documentan como
-linea futura para evitar sobrerrepresentar informacion que todavia no esta disponible
-de forma reproducible.
+Las familias tecnológica, meteorológica avanzada e inundación completa se beneficiarían
+de integrar AEMET histórico, SNCZI y Seveso en la versión v0.2.0. En la versión v0.1.0 se documentan como
+línea futura para evitar sobrerrepresentar información que todavía no está disponible
+de forma reproducible. Esta prudencia metodológica asegura que el prototipo actual se evalúe exclusivamente sobre datos reales ya consolidados. De esta manera, las métricas presentadas reflejan con honestidad las capacidades actuales del software desarrollado.
 
 En consecuencia, las familias asociadas a riesgos meteorologicos o industriales
 complejos actuan en v0.1.0 de forma pasiva: pueden influir cuando aparecen como senales

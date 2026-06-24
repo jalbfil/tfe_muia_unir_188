@@ -1,13 +1,11 @@
 \chapter{Plantilla de validacion interna y casos revisables}
 \label{cap:anexod}
 
+Este anexo describe de manera detallada la plantilla y la muestra de incidentes seleccionados para llevar a cabo la auditoría manual interna. A través de este procedimiento de control, se evalúan las discrepancias del modelo estadístico en los casos más complejos de clasificar. Con este análisis estructurado se busca identificar posibles vías de mejora para las reglas lógicas y las Puertas de Seguridad.
+
 \section*{D.1. Finalidad del anexo}
 
-Este anexo documenta el instrumento de validacion interna utilizado para revisar
-recomendaciones de prioridad P1--P4 sobre casos reales del Registro 112 Castilla y Leon.
-Su funcion es cerrar el bucle humano del sistema: no basta con reportar metricas
-automaticas, sino que los casos de riesgo y las discrepancias deben poder revisarse,
-justificarse y registrarse de forma trazable.
+Este anexo documenta el instrumento de validación interna utilizado para revisar recomendaciones de prioridad P1--P4 sobre casos reales del Registro 112 de Castilla y León. Su función es cerrar el bucle humano del sistema: no basta con reportar métricas automáticas, sino que los casos de riesgo y las discrepancias deben poder revisarse, justificarse y registrarse de forma trazable. A través de esta auditoría manual, se asegura que las decisiones del modelo de IA no queden sin supervisión técnica. De este modo, se fortalece el rigor metodológico exigido por la institución académica.
 
 La validacion descrita aqui no sustituye a una validacion externa con operadores del
 112. Es una revision academica interna, adecuada para el alcance v0.1.0, que permite
@@ -18,8 +16,8 @@ preparar una futura evaluacion operativa.
 
 La muestra se genera mediante \texttt{scripts/build\_internal\_validation\_sample.py}.
 El artefacto principal es
-\texttt{resources/internal\_validation/casos\_revision\_v0.1.0.csv}, acompa\~nado por
-un resumen en \texttt{casos\_revision\_v0.1.0.md}. La seleccion combina dos criterios:
+\texttt{resources/internal\_validation/casos\_revision\_v0.1.0.csv}, acompañado por
+un resumen en \texttt{casos\_revision\_v0.1.0.md}. La selección combina dos criterios:
 
 \begin{itemize}
     \item inclusion de los 59 falsos negativos P1 detectados en el test estratificado;
@@ -52,9 +50,7 @@ Muestra equilibrada P4 & 15 \\ \hline
 
 \section*{D.3. Plantilla de revision humana}
 
-Cada fila del fichero de validacion representa un caso revisable. La plantilla incluye
-identificacion, referencia academica, prediccion del sistema, evidencias mostradas y
-campos reservados para la decision humana.
+Cada fila del fichero de validación representa un caso revisable. La plantilla incluye identificación, referencia académica, predicción del sistema, evidencias mostradas y campos reservados para la decisión humana. A través de esta estructura tabular, se facilita la recogida de anotaciones de manera uniforme por todos los autores. Dicha consistencia metodológica resulta vital para asegurar la calidad de la revisión final.
 
 \begin{table}[ht]
 \centering
@@ -71,9 +67,9 @@ campos reservados para la decision humana.
 \texttt{weak\_label\_p1p4} & Etiqueta academica generada por supervision debil \\ \hline
 \texttt{recomendacion\_sistema} & Prioridad P1--P4 recomendada por RuleFit-lite \\ \hline
 \texttt{prob\_p1}--\texttt{prob\_p4} & Distribucion de probabilidad normalizada \\ \hline
-\texttt{agreement\_score} & Acuerdo local entre fuentes debiles \\ \hline
-\texttt{reglas\_o\_senales\_mostradas} & Se\~nales activas y reglas principales de la clase predicha \\ \hline
-\texttt{explanation\_context} & Contexto estructurado de explicacion: prioridad, margen, evidencias y avisos usados por Capa 3 \\ \hline
+\texttt{agreement\_score} & Acuerdo local entre fuentes débiles \\ \hline
+\texttt{reglas\_o\_senales\_mostradas} & Señales activas y reglas principales de la clase predicha \\ \hline
+\texttt{explanation\_context} & Contexto estructurado de explicación: prioridad, margen, evidencias y avisos usados por Capa 3 \\ \hline
 \texttt{accion\_revisor} & Aceptar, modificar o rechazar la recomendacion \\ \hline
 \texttt{prioridad\_asignada\_revisor} & Prioridad final asignada por el revisor interno \\ \hline
 \texttt{motivo\_divergencia} & Justificacion obligatoria si se modifica o rechaza \\ \hline
@@ -83,9 +79,7 @@ campos reservados para la decision humana.
 
 \section*{D.4. Casos reales seleccionados}
 
-La Tabla~\ref{tab:anexod-casos} muestra una muestra compacta de casos incluidos en el
-CSV. Los casos REV-061--REV-068 son falsos negativos P1 y, por tanto, tienen prioridad
-de revision.
+La Tabla~\ref{tab:anexod-casos} muestra una muestra compacta de casos incluidos en el CSV. Los casos REV-061--REV-068 son falsos negativos P1 y, por tanto, tienen prioridad de revisión. Dicho análisis pormenorizado ayuda a detectar los desencadenantes de falsas alarmas o priorizaciones atenuadas. Esta inspección manual detallada guía la corrección de las reglas y la optimización de los hiperparámetros.
 
 \begin{table}[ht]
 \centering
@@ -112,10 +106,7 @@ REV-118 & FN P1 critico & 1285206245620 & P1 & P4 & 0.985624 & sanitario \\ \hli
 
 \section*{D.5. Procedimiento de revision}
 
-Cada autor revisa de forma independiente los casos asignados, consultando el texto
-operativo, la etiqueta debil, la recomendacion del sistema, las probabilidades, las
-se\~nales activadas y, cuando este disponible, la explicacion normativa de Capa 3. La
-decision se registra en tres valores posibles:
+Cada autor revisa de forma independiente los casos asignados, consultando el texto operativo, la etiqueta débil, la recomendación del sistema, las probabilidades, las señales activadas y, cuando esté disponible, la explicación normativa de Capa 3. La decisión se registra en tres valores posibles según el nivel de discrepancia identificado. Este procedimiento garantiza que la auditoría no quede dominada por el sesgo individual de un único evaluador. De esta forma, se fomenta una toma de decisiones colegiada y consensuada.
 
 \begin{itemize}
     \item \textbf{Aceptar}: la recomendacion del sistema se considera adecuada.
@@ -166,9 +157,7 @@ C3 & No especializado IA & Perfil de seguridad publica, usuario no tecnico de IA
 \end{tabularx}
 \end{table}
 
-La Tabla~\ref{tab:anexod-comentarios} sintetiza los temas recurrentes detectados en las
-respuestas abiertas. Estos comentarios se usan como orientacion cualitativa para mejorar
-la interfaz y la explicacion, no como evidencia estadistica generalizable.
+La Tabla~\ref{tab:anexod-comentarios} sintetiza los temas recurrentes detectados en las respuestas abiertas. Estos comentarios se usan como orientación cualitativa para mejorar la interfaz y la explicación, no como evidencia estadística generalizable. A partir de estas opiniones, se deducen los ajustes de usabilidad más urgentes para la aplicación. De igual manera, se perfila la dirección de los experimentos de interacción hombre-máquina en etapas posteriores.
 
 \begin{table}[ht]
 \centering

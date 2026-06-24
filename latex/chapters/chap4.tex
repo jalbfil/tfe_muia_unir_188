@@ -1,40 +1,42 @@
-\chapter{Objetivos y metodologia de trabajo}
+\chapter{Objetivos y metodología de trabajo}
 \label{cap:4}
 
-\section{Introduccion al capitulo}
+Este capítulo define la dirección estratégica del proyecto mediante la formulación de sus objetivos y la metodología adoptada para su desarrollo. En primer lugar, se enuncia el objetivo general del Trabajo Fin de Máster y se desglosan los objetivos específicos que marcan el plan de trabajo. A continuación, se detalla la metodología de desarrollo incremental basada en capas y las fases del ciclo de vida del software. Finalmente, se describe la organización interna del grupo de trabajo y el control de contribuciones individuales, garantizando la trazabilidad y la calidad de los entregables.
 
-Este capitulo conecta el problema descrito en los capitulos anteriores con la estrategia seguida para resolverlo. El TFM no plantea una herramienta generica de emergencias, sino un prototipo software de apoyo a la decision para priorizacion temprana de incidentes 112 en Castilla y Leon. La linea de trabajo se articula alrededor de datos reales abiertos, una etiqueta academica P1--P4 construida mediante supervision debil, una Capa 2 interpretable basada en RuleFit-lite y una Capa 3 orientada a explicar la recomendacion con trazabilidad normativa.
+\section{Introducción al capítulo}
 
-La finalidad del capitulo es fijar con claridad que se pretende conseguir, que preguntas guian el desarrollo, que aportacion de inteligencia artificial realiza el trabajo y como se ha organizado el equipo para avanzar de forma incremental sin perder coherencia entre prototipo, evaluacion y memoria.
+Este capítulo conecta el problema descrito en los capítulos anteriores con la estrategia seguida para resolverlo. El TFM no plantea una herramienta genérica de emergencias, sino un prototipo software de apoyo a la decisión para priorización temprana de incidentes 112 en Castilla y León. La línea de trabajo se articula alrededor de datos reales abiertos, una etiqueta académica P1--P4 construida mediante supervisión débil, una Capa 2 interpretable basada en RuleFit-lite y una Capa 3 orientada a explicar la recomendación con trazabilidad normativa.
+
+La finalidad del capítulo es fijar con claridad qué se pretende conseguir, qué preguntas guían el desarrollo, qué aportación de inteligencia artificial realiza el trabajo y cómo se ha organizado el equipo para avanzar de forma incremental sin perder coherencia entre prototipo, evaluación y memoria. A través de esta estructura, se busca facilitar la replicabilidad de todo el proceso metodológico llevado a cabo por el grupo. De este modo, cada hito del desarrollo de software queda plenamente justificado por objetivos científicos y académicos concretos.
 
 \section{Objetivo general}
 
-El objetivo general de este Trabajo Fin de Master es:
+El objetivo general de este Trabajo Fin de Máster (TFM) es:
 
-\textit{Dise\~nar, implementar y evaluar un prototipo software modular de apoyo a la decision para la priorizacion inicial de incidentes 112 en Castilla y Leon, capaz de transformar texto operativo y datos parciales en una recomendacion P1--P4 explicable, trazable y revisable, mediante una arquitectura de tres capas que combine extraccion NLP, aprendizaje interpretable con RuleFit-lite, explicacion normativa local y supervision humana obligatoria.}
+\textit{Diseñar, implementar y evaluar un prototipo software modular de apoyo a la decisión para la priorización inicial de incidentes 112 en Castilla y León, capaz de transformar texto operativo y datos parciales en una recomendación P1--P4 explicable, trazable y revisable, mediante una arquitectura de tres capas que combine extracción NLP, aprendizaje interpretable con RuleFit-lite, explicación normativa local y supervisión humana obligatoria.}
 
-El objetivo es especifico porque delimita dominio, territorio, usuario y salida esperada. Es medible porque la Capa 2 se evalua mediante metricas reproducibles como macro-F1, recall P1, matriz de confusion, falsos negativos criticos, estabilidad temporal y analisis por subgrupos. Es alcanzable porque se apoya en datos abiertos del Registro 112 Castilla y Leon, scripts versionados y un prototipo academico acotado. Es relevante porque aborda una decision de alto impacto en emergencias sin sustituir al operador. Y es temporalmente delimitado porque se concreta en una version v0.1.0 evaluable dentro del alcance del TFM.
+El objetivo es específico porque delimita dominio, territorio, usuario y salida esperada. Es medible porque la Capa 2 se evalúa mediante métricas reproducibles como macro-F1, recall P1, matriz de confusión, falsos negativos críticos, estabilidad temporal y análisis por subgrupos. Es alcanzable porque se apoya en datos abiertos del Registro 112 Castilla y León, scripts versionados y un prototipo académico acotado. Es relevante porque aborda una decisión de alto impacto en emergencias sin sustituir al operador. Y es temporalmente delimitado porque se concreta en una versión v0.1.0 evaluable dentro del alcance del TFM.
 
-\section{Objetivos especificos}
+\section{Objetivos específicos}
 
-El objetivo general se descompone en ocho objetivos especificos:
+El objetivo general se descompone en ocho objetivos específicos:
 
 \begin{enumerate}
-    \item[OE1.] Analizar el problema de la priorizacion temprana de incidentes 112, identificando necesidades del operador, restricciones de informacion y riesgos de automatizacion en un dominio critico.
-    \item[OE2.] Revisar el marco normativo estatal y autonomico aplicable a Castilla y Leon, extrayendo criterios de gravedad, coordinacion, escalado y trazabilidad que fundamentan el sistema.
-    \item[OE3.] Definir la taxonomia operativa, la escala academica P1--P4 y las variables V01--V15, separando variables disponibles en primera decision de variables contextuales diferidas o potencialmente sujetas a \textit{leakage}.
-    \item[OE4.] Auditar el Registro de Emergencias 112 de Castilla y Leon, construir el dataset limpio, documentar limitaciones y generar etiquetas academicas P1--P4 mediante supervision debil.
-    \item[OE5.] Dise\~nar e implementar una Capa 2 interpretable que compare un baseline experto con RuleFit-lite y una ejecucion diagnostica con \texttt{imodels}, seleccionando el modelo mas adecuado para el caso de uso.
-    \item[OE6.] Dise\~nar una Capa 3 de explicacion que convierta reglas, probabilidades, evidencias y citas normativas en una justificacion comprensible para el operador, sin delegar la decision en un LLM.
+    \item[OE1.] Analizar el problema de la priorización temprana de incidentes 112, identificando necesidades del operador, restricciones de información y riesgos de automatización en un dominio crítico.
+    \item[OE2.] Revisar el marco normativo estatal y autonómico aplicable a Castilla y León, extrayendo criterios de gravedad, coordinación, escalado y trazabilidad que fundamentan el sistema.
+    \item[OE3.] Definir la taxonomía operativa, la escala académica P1--P4 y las variables V01--V15, separando variables disponibles en primera decisión de variables contextuales diferidas o potencialmente sujetas a \textit{leakage}.
+    \item[OE4.] Auditar el Registro de Emergencias 112 de Castilla y León, construir el dataset limpio, documentar limitaciones y generar etiquetas académicas P1--P4 mediante supervisión débil.
+    \item[OE5.] Diseñar e implementar una Capa 2 interpretable que compare un baseline experto con RuleFit-lite y una ejecución diagnóstica con \texttt{imodels}, seleccionando el modelo más adecuado para el caso de uso.
+    \item[OE6.] Diseñar una Capa 3 de explicación que convierta reglas, probabilidades, evidencias y citas normativas en una justificación comprensible para el operador, sin delegar la decisión en un LLM.
     \item[OE7.] Integrar las capas mediante contratos versionados, backend auditable, modo degradado, registros de inferencia y mecanismos de feedback humano.
-    \item[OE8.] Evaluar el prototipo con splits estratificado y temporal, analisis anti-\textit{leakage}, estudio de errores P1, sesgos por subgrupo, muestra de validacion interna y fidelidad de explicaciones.
+    \item[OE8.] Evaluar el prototipo con splits estratificado y temporal, análisis anti-\textit{leakage}, estudio de errores P1, sesgos por subgrupo, muestra de validación interna y fidelidad de explicaciones.
 \end{enumerate}
 
-En relacion con OE5, la Capa 2 queda preparada para su consumo por Capa 3 mediante una salida explicable que incluye prioridad recomendada, reglas activadas, detalles de decision y contexto estructurado para explicacion. Esta salida, materializada en campos como \texttt{priority\_details} y \texttt{explanation\_context}, permite que Capa 3 genere una explicacion operativa sin recalcular ni sustituir la prioridad asignada por el modelo interpretable.
+En relación con OE5, la Capa 2 queda preparada para su consumo por la Capa 3 mediante una salida explicable que incluye prioridad recomendada, reglas activadas, detalles de decisión y contexto estructurado para la explicación. Esta salida, materializada en campos como \texttt{priority\_details} y \texttt{explanation\_context}, permite que la Capa 3 genere una explicación operativa sin recalcular ni sustituir la prioridad asignada por el modelo interpretable. Esta separación lógica garantiza que el razonamiento estadístico y la fundamentación jurídica se mantengan independientes y auditables.
 
-En relacion con OE8, la validacion interna se apoya en una muestra revisable de 119 casos, compuesta por 59 falsos negativos P1 y 60 casos equilibrados adicionales. Esta muestra permite auditar errores criticos, revisar decisiones y preparar una validacion externa posterior con personal experto, sin afirmar todavia una validacion operativa real en sala 112.
+En relación con OE8, la validación interna se apoya en una muestra revisable de 119 casos, compuesta por 59 falsos negativos P1 y 60 casos equilibrados adicionales. Esta muestra permite auditar errores críticos, revisar decisiones y preparar una validación externa posterior con personal experto, sin afirmar todavía una validación operativa real en sala 112. La disponibilidad de este conjunto curado de prueba es clave para el proceso de mejora continua del motor predictivo.
 
-Esta secuencia mantiene una progresion logica: primero se delimita el dominio, despues se construye una base empirica defendible, a continuacion se implementa el modelo interpretable y finalmente se evalua su comportamiento desde una perspectiva tecnica, explicativa y humana.
+Esta secuencia mantiene una progresión lógica de desarrollo científico y de ingeniería. En primer lugar, se delimita el dominio conceptual y normativo; en segundo lugar, se construye una base empírica sólida y libre de filtraciones; y, finalmente, se evalúa el comportamiento desde una perspectiva técnica, explicativa y humana. Este orden secuencial asegura que cada fase de la ingeniería del sistema se apoye en los resultados verificados del paso anterior.
 
 \begin{table}[htbp]
 \centering
@@ -42,46 +44,46 @@ Esta secuencia mantiene una progresion logica: primero se delimita el dominio, d
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{|p{1.1cm}|p{4.4cm}|p{4.9cm}|p{3.2cm}|}
 \hline
-\textbf{Obj.} & \textbf{Evidencia principal} & \textbf{Artefacto o ubicacion} & \textbf{Criterio de cumplimiento} \\ \hline
-OE1 & Planteamiento del problema, usuario y riesgos de automatizacion & Capitulos 1 y 4 & Dominio, alcance y supervision humana delimitados \\ \hline
-OE2 & Marco estatal, autonomico y europeo & Capitulo 3; Tabla de fuentes normativas & Normas vinculadas a variables, reglas y limites \\ \hline
-OE3 & Taxonomia, variables V01--V15 y politica anti-\textit{leakage} & Anexos A y B; Capitulo 7 & Variables disponibles y prohibidas documentadas \\ \hline
-OE4 & Dataset limpio, auditoria, splits y weak labels & Capitulo 7; Anexo C; scripts de dataset & Dataset reproducible y etiqueta academica trazable \\ \hline
-OE5 & Baseline experto, RuleFit-lite, comparativa \texttt{imodels} y handoff & \texttt{artifacts/reports/capa2\_model\_selection\_v0.1.0.md}; \texttt{capa2\_for\_capa3\_handoff\_v0.1.0.md} & Modelo seleccionado y salida consumible por Capa 3 \\ \hline
-OE6 & Explicacion con LLM local, RAG, MCP y modo degradado & Capitulos 6 y 8; Anexo L & Capa 3 explica sin recalcular prioridad \\ \hline
-OE7 & Integracion Capa 1--Capa 2--Capa 3 y smoke test & \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}; \texttt{prototype\_v0.1.0\_smoke\_test.md} & 5/5 escenarios integrados y 4/4 casos con Ollama \\ \hline
-OE8 & Evaluacion final, errores P1, validacion interna y fidelidad explicativa & \texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.md} & 59 FN P1, 119 casos revisables y resultados trazables \\ \hline
+\textbf{Obj.} & \textbf{Evidencia principal} & \textbf{Artefacto o ubicación} & \textbf{Criterio de cumplimiento} \\ \hline
+OE1 & Planteamiento del problema, usuario y riesgos de automatización & Capítulos 1 y 4 & Dominio, alcance y supervisión humana delimitados \\ \hline
+OE2 & Marco estatal, autonómico y europeo & Capítulo 3; Tabla de fuentes normativas & Normas vinculadas a variables, reglas y límites \\ \hline
+OE3 & Taxonomía, variables V01--V15 y política anti-\textit{leakage} & Anexos A y B; Capítulo 7 & Variables disponibles y prohibidas documentadas \\ \hline
+OE4 & Dataset limpio, auditoría, splits y weak labels & Capítulo 7; Anexo C; scripts de dataset & Dataset reproducible y etiqueta académica traceable \\ \hline
+OE5 & Baseline experto, RuleFit-lite, comparativa \texttt{imodels} y handoff & \texttt{artifacts/reports/capa2\_model\_selection\_v0.1.0.md}; \texttt{capa2\_for\_capa3\_handoff\_v0.1.0.md} & Modelo seleccionado y salida usable por Capa 3 \\ \hline
+OE6 & Explicación con LLM local, RAG, MCP y modo degradado & Capítulos 6 y 8; Anexo L & Capa 3 explica sin recalcular prioridad \\ \hline
+OE7 & Integración Capa 1--Capa 2--Capa 3 y smoke test & \texttt{artifacts/reports/capa1\_capa2\_e2e\_v0.1.0.md}; \texttt{prototype\_v0.1.0\_smoke\_test.md} & 5/5 escenarios integrados y 4/4 casos con Ollama \\ \hline
+OE8 & Evaluación final, errores P1, validación interna y fidelidad explicativa & \texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.md} & 59 FN P1, 119 casos revisables y resultados trazables \\ \hline
 \end{tabular}
-\caption{Relacion entre objetivos especificos, evidencias y criterios de cumplimiento.}
+\caption{Relación entre objetivos específicos, evidencias y criterios de cumplimiento.}
 \label{tab:objetivos-evidencias-cumplimiento}
 \end{table}
 
-\noindent\textit{Fuente: elaboracion propia a partir de los artefactos reproducibles del proyecto.}
+\noindent\textit{Fuente: elaboración propia a partir de los artefactos reproducibles del proyecto.}
 
-\section{Preguntas de investigacion}
+\section{Preguntas de investigación}
 
-Las preguntas de investigacion orientan el dise\~no y la evaluacion del sistema:
+Las preguntas de investigación orientan el diseño y la evaluación del sistema:
 
 \begin{enumerate}
-    \item[PI1.] ?Puede construirse una etiqueta academica P1--P4 defendible cuando el dataset abierto no contiene prioridad oficial?
-    \item[PI2.] ?Que aporta un modelo interpretable como RuleFit-lite frente a un baseline experto basado en se\~nales textuales y reglas operativas?
-    \item[PI3.] ?Es posible mantener un recall P1 suficiente sin convertir el sistema en una herramienta excesivamente conservadora que degrade el rendimiento global?
-    \item[PI4.] ?Hasta que punto los resultados se mantienen estables cuando se evalua el modelo en un split temporal posterior?
-    \item[PI5.] ?Que errores criticos aparecen, especialmente falsos negativos P1, y que evidencia debe mostrarse para que puedan ser revisados por humanos?
-    \item[PI6.] ?Las explicaciones generadas por Capa 3 son fieles a las reglas, probabilidades y evidencias producidas por Capa 2?
+    \item[PI1.] ¿Puede construirse una etiqueta académica P1--P4 defendible cuando el dataset abierto no contiene prioridad oficial?
+    \item[PI2.] ¿Qué aporta un modelo interpretable como RuleFit-lite frente a un baseline experto basado en señales textuales y reglas operativas?
+    \item[PI3.] ¿Es posible mantener un recall P1 suficiente sin convertir el sistema en una herramienta excesivamente conservadora que degrade el rendimiento global?
+    \item[PI4.] ¿Hasta qué punto los resultados se mantienen estables cuando se evalúa el modelo en un split temporal posterior?
+    \item[PI5.] ¿Qué errores críticos aparecen, especialmente falsos negativos P1, y qué evidencia debe mostrarse para que puedan ser revisados por humanos?
+    \item[PI6.] ¿Las explicaciones generadas por la Capa 3 son fieles a las reglas, probabilidades y evidencias producidas por la Capa 2?
 \end{enumerate}
 
-Estas preguntas evitan presentar el TFM como una promesa de automatizacion total. El foco esta en demostrar si una arquitectura responsable puede producir recomendaciones utiles, explicables y auditables dentro de un prototipo academico.
+Estas preguntas evitan presentar el TFM como una promesa de automatización total. El foco está en demostrar si una arquitectura responsable puede producir recomendaciones útiles, explicables y auditables dentro de un prototipo académico. Asimismo, la resolución de cada interrogante metodológica ayuda a esclarecer el papel de las explicaciones locales en sistemas sociotécnicos de alta criticidad.
 
-\section{Contribucion en inteligencia artificial}
+\section{Contribución en inteligencia artificial}
 
-La contribucion de IA se concreta en cinco elementos. En primer lugar, el proyecto transforma informacion operativa heterogenea en variables estructuradas y se\~nales textuales aptas para inferencia. En segundo lugar, resuelve la ausencia de prioridad oficial mediante supervision debil, midiendo acuerdo entre fuentes y documentando la naturaleza academica de la etiqueta. En tercer lugar, implementa una Capa 2 interpretable que combina baseline experto, RuleFit-lite y comparativa diagnostica. En cuarto lugar, separa priorizacion y explicacion: la prioridad procede del modelo interpretable, mientras que el LLM local se limita a explicar y citar. En quinto lugar, convierte la evaluacion en un bloque trazable con metricas, artefactos, muestra de validacion interna y analisis de fidelidad.
+La contribución de IA se concreta en cinco elementos. En primer lugar, el proyecto transforma información operativa heterogénea en variables estructuradas y señales textuales aptas para inferencia. En segundo lugar, resuelve la ausencia de prioridad oficial mediante supervisión débil, midiendo acuerdo entre fuentes y documentando la naturaleza académica de la etiqueta. En tercer lugar, implementa una Capa 2 interpretable que combina baseline experto, RuleFit-lite y comparativa diagnóstica. En cuarto lugar, separa priorización y explicación: la prioridad procede del modelo interpretable, mientras que el LLM local se limita a explicar y citar. En quinto lugar, convierte la evaluación en un bloque trazable con métricas, artefactos, muestra de validación interna y análisis de fidelidad.
 
-La eleccion de RuleFit-lite no se presenta como dogma. Se justifica porque mejora de forma clara el rendimiento global frente al baseline experto, mantiene un recall P1 aceptable, ofrece reglas exportables y evita depender de modelos opacos para la recomendacion principal. La ejecucion con \texttt{imodels} se conserva como comparativa diagnostica y como evidencia de que se ha explorado la via RuleFit recomendada, aunque la version seleccionada para v0.1.0 sea la alternativa reproducible y controlada localmente.
+La elección de RuleFit-lite no se presenta como dogma. Se justifica porque mejora de forma clara el rendimiento global frente al baseline experto, mantiene un recall P1 aceptable, ofrece reglas exportables y evita depender de modelos opacos para la recomendación principal. La ejecución con \texttt{imodels} se conserva como comparativa diagnóstica y como evidencia de que se ha explorado la vía RuleFit recomendada, aunque la versión seleccionada para v0.1.0 sea la alternativa reproducible y controlada localmente.
 
 \section{Contribuciones individuales}
 
-La organizacion del equipo responde a la arquitectura del sistema y al reparto final de archivos. La aportacion de Juan Carlos se centra en la construccion metodologica y experimental de Capa 2: preparacion del dataset, generacion de etiquetas debiles, dise\~no del baseline experto, seleccion y evaluacion de RuleFit-lite, analisis de errores P1, validacion interna y preparacion de los anexos C, D y E. Esta contribucion se integra con Capa 1 y Capa 3 mediante contratos de entrada y salida, pero no sustituye las responsabilidades tecnicas asignadas al resto de miembros.
+La organización del equipo responde a la arquitectura del sistema y al reparto final de archivos. La aportación de Juan Carlos se centra en la construcción metodológica y experimental de la Capa 2: preparación del dataset, generación de etiquetas débiles, diseño del baseline experto, selección y evaluación de RuleFit-lite, análisis de errores P1, validación interna y preparación de los anexos C, D y E. Esta contribución se integra con la Capa 1 y la Capa 3 mediante contratos de entrada y salida, pero no sustituye las responsabilidades técnicas asignadas al resto de miembros.
 
 \begin{table}[htbp]
 \centering
@@ -89,45 +91,45 @@ La organizacion del equipo responde a la arquitectura del sistema y al reparto f
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{|p{2.7cm}|p{3.8cm}|p{4.3cm}|p{3.3cm}|}
 \hline
-\textbf{Integrante} & \textbf{Subproblema de IA} & \textbf{Contribucion principal} & \textbf{Evidencia} \\ \hline
-Juan Carlos Albert Fillol & Priorizacion interpretable & Weak supervision, RuleFit-lite, baseline experto, evaluacion, errores P1 y validacion interna & Cap. 0, 1, 4, 7, 9 y Anexos C, D, E \\ \hline
-Brian Mathias Pesci Juliani & Explicacion normativa & LLM local, RAG, MCP, backend, logs, contratos, modo degradado y model card & Cap. 2, 6, 8 y Anexos F, H, J, K, L; bibliografia \\ \hline
-Ancor Gonzalez Carballo & Extraccion y supervision & Capa 1 determinista, variables V01--V15, requisitos, conclusiones, guia de uso y soporte a la supervision humana & Cap. 3, 5, 10 y Anexos A, B, G, I \\ \hline
+\textbf{Integrante} & \textbf{Subproblema de IA} & \textbf{Contribución principal} & \textbf{Evidencia} \\ \hline
+Juan Carlos Albert Fillol & Priorización interpretable & Supervisión débil, RuleFit-lite, baseline experto, evaluación, errores P1 y validación interna & Cap. 0, 1, 4, 7, 9 y Anexos C, D, E \\ \hline
+Brian Mathias Pesci Juliani & Explicación normativa & LLM local, RAG, MCP, backend, logs, contratos, modo degradado y model card & Cap. 2, 6, 8 y Anexos F, H, J, K, L; bibliografía \\ \hline
+Ancor González Carballo & Extracción y supervisión & Capa 1 determinista, variables V01--V15, requisitos, conclusiones, guía de uso y soporte a la supervisión humana & Cap. 3, 5, 10 y Anexos A, B, G, I \\ \hline
 \end{tabular}
 \caption{Contribuciones individuales vinculadas al componente inteligente del sistema.}
 \label{tab:contribuciones-ia-chap4}
 \end{table}
 
-\noindent\textit{Fuente: elaboracion propia.}
+\noindent\textit{Fuente: elaboración propia.}
 
-\section{Enfoque metodologico}
+\section{Enfoque metodológico}
 
-El desarrollo sigue un enfoque iterativo e incremental adaptado a un TFM grupal. El equipo ha trabajado por bloques trazables: definicion del dominio, datos, arquitectura, Capa 2, Capa 3, integracion, evaluacion y redaccion. Este enfoque permite corregir decisiones cuando la evidencia tecnica lo aconseja, por ejemplo al sustituir una formulacion inicial basada solo en reglas por una comparativa real entre baseline experto, RuleFit-lite e \texttt{imodels}.
+El desarrollo sigue un enfoque iterativo e incremental adaptado a un TFM grupal. El equipo ha trabajado por bloques trazables: definición del dominio, datos, arquitectura, Capa 2, Capa 3, integración, evaluación y redacción. Este enfoque permite corregir decisiones cuando la evidencia técnica lo aconseja, por ejemplo al sustituir una formulación inicial basada solo en reglas por una comparativa real entre baseline experto, RuleFit-lite e \texttt{imodels}.
 
-La metodologia no se presenta como Scrum formal. No hay roles ceremoniales ni sprints cerrados en sentido industrial. Se adopta, en cambio, la logica incremental: cada bloque genera un artefacto verificable, se contrasta con el capitulo correspondiente y se integra en la planificacion de tareas. Esta forma de trabajo resulta especialmente adecuada porque el TFM combina investigacion aplicada, desarrollo software y redaccion academica.
+La metodología no se presenta como Scrum formal. No hay roles ceremoniales ni sprints cerrados en sentido industrial. Se adopta, en cambio, la lógica incremental: cada bloque genera un artefacto verificable, se contrasta con el capítulo correspondiente y se integra en la planificación de tareas. Esta forma de trabajo resulta especialmente adecuada porque el TFM combina investigación aplicada, desarrollo software y redacción académica.
 
-La metodologia seguida prioriza evidencia reproducible frente a afirmaciones operativas no verificadas. Cada decision tecnica se vincula con un artefacto concreto: dataset limpio, guia de etiquetado, splits, baseline experto, modelo RuleFit-lite, reportes de evaluacion, pruebas integradas, smoke test y anexos de validacion. Los reportes generados el 17/06/2026 se adoptan como fuente de verdad documental para la evaluacion v0.1.0, de modo que las cifras de falsos negativos P1, validacion interna y pruebas integradas no se mezclen con ejecuciones preliminares.
+La metodología seguida prioriza evidencia reproducible frente a afirmaciones operativas no verificadas. Cada decisión técnica se vincula con un artefacto concreto: dataset limpio, guía de etiquetado, splits, baseline experto, modelo RuleFit-lite, reportes de evaluación, pruebas integradas, smoke test y anexos de validación. Los reportes generados el 17/06/2026 se adoptan como fuente de verdad documental para la evaluación v0.1.0, de modo que las cifras de falsos negativos P1, validación interna y pruebas integradas no se mezclen con ejecuciones preliminares.
 
 \section{Fases de desarrollo}
 
-El trabajo se ha estructurado en siete fases:
+El proceso de diseño e implementación del prototipo se ha estructurado de manera rigurosa y ordenada. Para ello, se definieron una serie de hitos temporales que facilitan el control de los entregables y la coherencia metodológica. En concreto, el trabajo se ha estructurado en siete fases que se detallan a continuación:
 
 \begin{enumerate}
-    \item \textbf{Delimitacion del dominio.} Analisis del problema 112, marco normativo estatal y autonomico, alcance territorial CyL y principios de supervision humana.
-    \item \textbf{Datos y variables.} Auditoria del Registro 112 CyL, definicion de V01--V15, identificacion de columnas prohibidas por \textit{leakage} y construccion del dataset limpio.
-    \item \textbf{Supervision debil.} Generacion de etiquetas academicas P1--P4, medicion de acuerdo, ablacion anti-circularidad y construccion de splits estratificado y temporal.
-    \item \textbf{Capa 2 interpretable.} Implementacion del baseline experto, RuleFit-lite e \texttt{imodels}; extraccion de reglas, pesos, probabilidades y metricas por clase.
-    \item \textbf{Capa 3 explicativa e integracion.} Dise\~no del RAG normativo, herramientas MCP, modo degradado, backend, contratos y logs de inferencia.
-    \item \textbf{Evaluacion y trazabilidad.} Evaluacion final, sesgos por subgrupo, errores P1, muestra de validacion interna, fidelidad de explicaciones y reporte maestro.
-    \item \textbf{Redaccion y coherencia final.} Alineacion de capitulos, anexos, metricas, limitaciones y trabajo futuro para que la defensa refleje exactamente el sistema construido.
+    \item \textbf{Delimitación del dominio.} Análisis del problema 112, marco normativo estatal y autonómico, alcance territorial CyL y principios de supervisión humana.
+    \item \textbf{Datos y variables.} Auditoría del Registro 112 CyL, definición de V01--V15, identificación de columnas prohibidas por \textit{leakage} y construcción del dataset limpio.
+    \item \textbf{Supervisión débil.} Generación de etiquetas académicas P1--P4, medición de acuerdo, ablación anti-circularidad y construcción de splits estratificado y temporal.
+    \item \textbf{Capa 2 interpretable.} Implementación del baseline experto, RuleFit-lite e \texttt{imodels}; extracción de reglas, pesos, probabilidades y métricas por clase.
+    \item \textbf{Capa 3 explicativa e integración.} Diseño del RAG normativo, herramientas MCP, modo degradado, backend, contratos y logs de inferencia.
+    \item \textbf{Evaluación y trazabilidad.} Evaluación final, sesgos por subgrupo, errores P1, muestra de validación interna, fidelidad de explicaciones y reporte maestro.
+    \item \textbf{Redacción y coherencia final.} Alineación de capítulos, anexos, métricas, limitaciones y trabajo futuro para que la defensa refleje exactamente el sistema construido.
 \end{enumerate}
 
-\section{Consideraciones eticas}
+\section{Consideraciones éticas}
 
-El sistema se dise\~na para un dominio de alto impacto, por lo que incorpora salvaguardas desde el principio. La primera es la supervision humana: el prototipo recomienda, pero no moviliza recursos ni activa planes. La segunda es la explicabilidad: toda recomendacion debe acompa\~narse de reglas, probabilidades, evidencias y, cuando proceda, citas normativas. La tercera es el control anti-\textit{leakage}: se excluyen campos posteriores a la decision para no entrenar un modelo que aprenda consecuencias del operativo. La cuarta es la soberania del dato: la inferencia se concibe en local y sin dependencia de APIs externas para datos sensibles.
+El sistema se diseña para un dominio de alto impacto, por lo que incorpora salvaguardas desde el principio. La primera es la supervisión humana: el prototipo recomienda, pero no moviliza recursos ni activa planes. La segunda es la explicabilidad: toda recomendación debe acompañarse de reglas, probabilidades, evidencias y, cuando proceda, citas normativas. La tercera es el control anti-\textit{leakage}: se excluyen campos posteriores a la decisión para no entrenar un modelo que aprenda consecuencias del operativo. La cuarta es la soberanía del dato: la inferencia se concibe en local y sin dependencia de APIs externas para datos sensibles.
 
-Tambien se documenta el uso de herramientas de IA generativa como apoyo a la elaboracion del TFM. Dichas herramientas se han empleado para organizacion, redaccion preliminar y revision de coherencia, pero las decisiones tecnicas, metodologicas y academicas corresponden al equipo y se contrastan con los artefactos reproducibles del proyecto.
+También se documenta el uso de herramientas de IA generativa como apoyo a la elaboración del TFM. Dichas herramientas se han empleado para organización, redacción preliminar y revisión de coherencia, pero las decisiones técnicas, metodológicas y académicas corresponden al equipo y se contrastan con los artefactos reproducibles del proyecto. La autoría intelectual del análisis y del código final recae exclusivamente en los firmantes de esta memoria.
 
-\section{Conclusiones del capitulo}
+\section{Conclusiones del capítulo}
 
-Los objetivos, preguntas y metodologia definidos en este capitulo fijan una linea de trabajo coherente con el resto de la memoria: un prototipo academico, territorialmente centrado en Castilla y Leon, que usa datos reales abiertos, supervision debil, un modelo interpretable y explicaciones trazables. Esta formulacion permite que los capitulos posteriores no dependan de promesas abstractas, sino de artefactos concretos: dataset limpio, splits, modelos, metricas, anexos de validacion y reporte final de evaluacion.
+Los objetivos, preguntas y metodología definidos en este capítulo fijan una línea de trabajo coherente con el resto de la memoria: un prototipo académico, territorialmente centrado en Castilla y León, que usa datos reales abiertos, supervisión débil, un modelo interpretable y explicaciones trazables. Esta formulación permite que los capítulos posteriores no dependan de promesas abstractas, sino de artefactos concretos: dataset limpio, splits, modelos, métricas, anexos de validación y reporte final de evaluación. De esta manera, se garantiza el carácter empírico y la transparencia de las conclusiones obtenidas a lo largo de todo el trabajo.

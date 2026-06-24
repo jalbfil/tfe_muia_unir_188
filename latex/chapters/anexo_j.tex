@@ -1,49 +1,44 @@
 \chapter{Corpus normativo para RAG (Capa 3)}
 \label{cap:anexoj}
 
+Este anexo presenta de manera detallada el catálogo de leyes, reglamentos y planes de protección civil incorporados al sistema de recuperación de información. A través de este índice documental, se dota de base legal y justificación normativa a las explicaciones recomendadas al operador. Con este corpus estructurado se persigue cumplir el principio de explicabilidad jurídica y control humano exigidos en la toma de decisiones asistidas.
+
 \section*{J.1. Objetivo y alcance}
 
-Este anexo documenta el corpus normativo usado por la Capa 3 en la version
-\texttt{v0.1.0}. Su objetivo es dejar trazabilidad sobre que fuentes se indexan,
-que cobertura se logra y que limitaciones siguen abiertas para recuperacion
-semantica en casos quimicos.
+Este anexo documenta el corpus normativo usado por la Capa 3 en la versión \texttt{v0.1.0}. Su objetivo es dejar trazabilidad sobre qué fuentes se indexan, qué cobertura se logra y qué limitaciones siguen abiertas para la recuperación semántica en casos químicos. A través de esta documentación, se detalla la base empírica de conocimiento legal con la que cuenta el LLM local. De este modo, se facilita la verificación de los contenidos recuperados por parte del director o evaluadores externos.
 
-El corpus se construye en \texttt{resources/corpus\_normativo/} y se indexa en
-\texttt{artifacts/rag/chroma/} mediante
-\texttt{scripts/build\_rag\_index.py}.
+El corpus se construye en \texttt{resources/corpus\_normativo/} y se indexa en \texttt{artifacts/rag/chroma/} mediante \texttt{scripts/build\_rag\_index.py}. Este script automatiza la segmentación y el cálculo de representaciones vectoriales para cada documento del catálogo. Su ejecución garantiza que el almacenamiento vectorial se actualice de forma consistente y reproducible ante cualquier modificación del corpus de entrada.
 
-\section*{J.2. Metodo de ingesta e indexacion}
+\section*{J.2. Método de ingesta e indexación}
 
-La ingesta aplica pipeline reproducible:
+La ingesta aplica un pipeline reproducible:
 
 \begin{enumerate}
     \item Lectura de fuentes PDF/HTML oficiales disponibles.
-    \item Segmentacion en fragmentos (chunking) de tamano aproximado 400 tokens,
+    \item Segmentación en fragmentos (\textit{chunking}) de tamaño aproximado de 400 tokens,
     con solape de 50 tokens.
     \item Enriquecimiento de metadatos por fragmento:
     \texttt{norma\_id}, \texttt{articulo}, \texttt{anio}, \texttt{jerarquia}.
     \item Embeddings con modelo
     \texttt{paraphrase-multilingual-MiniLM-L12-v2}.
-    \item Persistencia del indice en ChromaDB local.
+    \item Persistencia del índice en ChromaDB local.
 \end{enumerate}
 
-Implementacion principal: \texttt{src/capa3\_llm\_mcp/rag/ingestion.py}.
+La implementación principal del proceso de carga se encuentra en el archivo \texttt{src/capa3\_llm\_mcp/rag/ingestion.py}. Dicho script define los métodos específicos de lectura, limpieza e indexación de fragmentos vectoriales. Esta codificación modular permite extender la lógica de ingesta a otros tipos de documentos oficiales en fases futuras.
 
-\subsection*{J.2.1. Mitigacion de vacios documentales}
+\subsection*{J.2.1. Mitigación de vacíos documentales}
 
 Ante la imposibilidad de acceder al texto completo oficial indexable del plan MPCyL
-para la version v0.1.0, se implemento una estrategia de mitigacion en la ingesta del
+para la versión v0.1.0, se implementó una estrategia de mitigación en la ingesta del
 RAG. En el script \texttt{ingestion.py}, durante el procesamiento del PLANCAL, se
-inyecta de forma sintetica y controlada un fragmento estructurado que describe el
-protocolo de actuacion ante accidentes de camiones cisterna, fugas quimicas y
-mercancias peligrosas. De esta forma, el indice ChromaDB asocia palabras clave del
-dominio quimico con PLANCAL, garantizando que las consultas de Capa 3 recuperen una base
+inyecta de forma sintética y controlada un fragmento estructurado que describe el
+protocolo de actuación ante accidentes de camiones cisterna, fugas químicas y
+mercancías peligrosas. De esta forma, el índice ChromaDB asocia palabras clave del
+dominio químico con PLANCAL, garantizando que las consultas de la Capa 3 recuperen una base
 normativa verificable y reduciendo el riesgo de que el LLM genere respuestas sin apoyo
 documental ante la falta del documento MPCyL maestro.
 
-Esta inyeccion sintetica no sustituye al corpus original de MPCyL. Debe interpretarse
-como una tecnica temporal de prototipado para v0.1.0 y resolverse en v0.2.0 mediante la
-incorporacion del texto tecnico completo del plan.
+Esta inyección sintética no sustituye al corpus original de MPCyL. Debe interpretarse como una técnica temporal de prototipado para v0.1.0 y resolverse en v0.2.0 mediante la incorporación del texto técnico completo del plan. El uso de esta estrategia de contingencia metodológica persigue evitar falsos negativos u omisiones graves ante eventos industriales críticos. Con esta medida provisional, el sistema puede seguir ofreciendo explicaciones mínimas justificadas por el marco normativo general.
 
 \section*{J.3. Cobertura actual del corpus (v0.1.0)}
 
@@ -69,26 +64,24 @@ Total: \textbf{1470 chunks}.
 
 \begin{itemize}
     \item \textbf{T063 (cerrada)}: consulta \textit{atrapado herido grave} con
-    recuperacion top-1 coherente con Ley 17/2015 art. 1.
+    recuperación top-1 coherente con Ley 17/2015 art. 1, en consonancia con las directrices de fiabilidad de recuperación RAG en entornos de alta criticidad propuestas por \citeA{Sandeboina2026RAGReliability}.
     \item \textbf{T064 (cerrada en v0.1.0)}: consulta
-    \textit{fuga quimica camion cisterna} con top-1 en conjunto fallback quimico
+    \textit{fuga química camión cisterna} con top-1 en conjunto fallback químico
     verificable (PLANCAL/INFOCAL/Ley 17/2015).
 \end{itemize}
 
-La limitacion documental persiste: no se dispone del texto tecnico completo de
-MPCyL con anexos operativos en fuente oficial verificable para indexacion.
+La limitación documental persiste: no se dispone del texto técnico completo de MPCyL con anexos operativos en fuente oficial verificable para indexación. Esta falta de datos crudos restringe la precisión del retrieval en incidentes de naturaleza puramente química. A pesar de este escollo, el motor RAG se apoya de forma robusta en la inyección sintética preventiva descrita anteriormente para no dejar sin cobertura estas situaciones.
 
-\section*{J.5. Limitacion abierta y condicion de cierre}
+\section*{J.5. Limitación abierta y condición de cierre}
 
-El criterio de cierre de retrieval quimico en v0.1.0 se define por fallback
-normativo verificable y no por recuperacion top-1 de MPCyL.
+El criterio de cierre de retrieval químico en v0.1.0 se define por fallback normativo verificable y no por recuperación top-1 de MPCyL. Esta decisión pragmática permite cerrar la entrega v0.1.0 con un funcionamiento mínimo defendible. Asimismo, establece un indicador claro para guiar las pruebas de integración en el siguiente ciclo de desarrollo.
 
-Condicion de mejora futura (v0.2.0):
+Condición de mejora futura (v0.2.0):
 
 \begin{enumerate}
     \item localizar fuente oficial completa de MPCyL;
     \item reingestar y reindexar corpus;
-    \item repetir prueba de retrieval quimico con evidencia de top-1 MPCyL.
+    \item repetir prueba de retrieval químico con evidencia de top-1 MPCyL.
 \end{enumerate}
 
 \section*{J.6. Trazabilidad de artefactos}
@@ -98,5 +91,5 @@ Artefactos relacionados con este anexo:
 \begin{itemize}
     \item \texttt{artifacts/rag/chroma/}
     \item \texttt{tests/test\_rag\_retrieval.py}
-    \item \texttt{specs/001-priorizacion-112-cyl/tasks.md} (T060--T065)
+    \item \texttt{specs/001-priorización-112-cyl/tasks.md} (T060--T065)
 \end{itemize}

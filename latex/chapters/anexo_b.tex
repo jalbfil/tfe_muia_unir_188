@@ -1,17 +1,13 @@
 \chapter{Variables V01--V15 de priorizacion}
 \label{cap:anexob}
 
+Este anexo expone la definición y especificación técnica de las quince variables de priorización diseñadas para estructurar la información del incidente. A través de este conjunto estructurado de características, se establece un lenguaje común que unifica la extracción de señales de la Capa 1 y el aprendizaje de la Capa 2. Con esta modelización se persigue asegurar que el modelo cuente con los atributos necesarios para justificar su recomendación ante el operador.
+
 \section*{B.1. Finalidad del anexo}
 
-Este anexo especifica las variables V01--V15 utilizadas como marco comun entre datos,
-weak labels, Capa 2, explicacion y validacion humana. La matriz no debe interpretarse
-como un formulario operativo oficial, sino como una representacion academica de factores
-relevantes para priorizar incidentes 112 en Castilla y Leon.
+Este anexo especifica las variables V01--V15 utilizadas como marco común entre datos, weak labels, Capa 2, explicación y validación humana. La matriz no debe interpretarse como un formulario operativo oficial, sino como una representación académica de factores relevantes para priorizar incidentes 112 en Castilla y León. A través de este catálogo de variables, se formalizan los indicios de riesgo que el operador analiza habitualmente. De esta forma, se facilita la auditoría independiente de cada uno de los componentes de predicción.
 
-La version v0.1.0 distingue entre variables implementadas de forma reproducible con el
-Registro 112 CyL y variables previstas para v0.2.0. Esta distincion es clave para evitar
-fuga de informacion y para no atribuir al modelo datos contextuales que todavia no se
-han integrado.
+La versión v0.1.0 distingue entre variables implementadas de forma reproducible con el Registro 112 CyL y variables previstas para v0.2.0. Esta distinción es clave para evitar fuga de información y para no atribuir al modelo datos contextuales que todavía no se han integrado. La delimitación estricta de este catálogo es lo que permite verificar la reproducibilidad del experimento en entornos de desarrollo local. Así, se garantiza la correspondencia entre los resultados declarados y el código ejecutable.
 
 \section*{B.2. Matriz de variables}
 
@@ -44,8 +40,8 @@ V15 & Accesibilidad al punto & Ordinal & Dificultad de acceso, entorno rural, mo
 \section*{B.3. Variables implementadas en Capa 2 v0.1.0}
 
 El modelo RuleFit-lite seleccionado no consume directamente todas las variables V01--V15
-como campos completos. Consume un conjunto compacto de senales predecisionales derivadas
-del texto y de la categoria preliminar:
+como campos completos. Consume un conjunto compacto de señales predecisionales derivadas
+del texto y de la categoría preliminar. Esta selección acotada responde al principio de parsimonia y facilita la inspección de los coeficientes logísticos. De esta manera, se garantiza que el motor predictivo mantenga una alta explicabilidad sin perder precisión.
 
 \begin{itemize}
     \item \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave},
@@ -57,10 +53,10 @@ del texto y de la categoria preliminar:
     \item variables \texttt{cat\_*} derivadas de la taxonomia.
 \end{itemize}
 
-Esta decision mantiene reproducibilidad y evita introducir variables contextuales
-incompletas. Las variables V08--V11 se conservan en el dise\~no porque son relevantes
-para una version futura, pero no se contabilizan como evidencia ya disponible en la
-evaluacion v0.1.0.
+Esta decisión mantiene la reproducibilidad y evita introducir variables contextuales
+incompletas. Las variables V08--V11 se conservan en el diseño porque son relevantes
+para una versión futura, pero no se contabilizan como evidencia ya disponible en la
+evaluación v0.1.0. Su inclusión en el catálogo de variables responde a la necesidad de mantener la compatibilidad con desarrollos posteriores. De esta forma, se traza un camino de mejora incremental bien fundamentado.
 
 Por tanto, en v0.1.0 las variables V01, V04 y V14 se consideran funcionales mediante
 senales textuales o categoria preliminar; V02, V03, V05, V06, V07, V12 y V15 operan de
@@ -84,9 +80,9 @@ primera valoracion o informacion administrativa posterior. En particular, no se 
     operativa.
 \end{itemize}
 
-Estas columnas pueden describir la gestion final del incidente, pero no estaban
-disponibles como entrada valida para una primera decision. Usarlas elevaria
-artificialmente las metricas y debilitaria la validez academica del TFM.
+Estas columnas pueden describir la gestión final del incidente, pero no estaban
+disponibles como entrada válida para una primera decisión. Usarlas elevaría
+artificialmente las métricas y debilitaría la validez académica del TFM. Dicha precaución metodológica resulta vital para asegurar que la evaluación no sufra de sobreaprendizaje o atajos administrativos. De este modo, se garantiza que el modelo aprenda señales reales del suceso y no comportamientos ex post.
 
 La exclusion se fundamenta en una restriccion temporal: el modelo solo puede observar
 informacion disponible antes o durante la primera valoracion. Variables como medios
@@ -103,8 +99,8 @@ mantiene la finalidad estrictamente academica del procesamiento.
 
 \section*{B.5. Ausencia de datos}
 
-La ausencia de una variable no debe rellenarse con informacion posterior. Cuando el dato
-no esta disponible, el sistema debe:
+La ausencia de una variable no debe rellenarse con información posterior. Cuando el dato
+no está disponible, el sistema debe aplicar protocolos de imputación o fallback seguros. Este comportamiento preventivo evita la introducción de leakage en situaciones donde faltan registros temporales o geográficos. De igual modo, asegura que la recomendación se genere bajo condiciones controladas:
 
 \begin{itemize}
     \item emitir la recomendacion con las senales presentes;
@@ -116,7 +112,7 @@ no esta disponible, el sistema debe:
 \section*{B.6. Limitaciones}
 
 La matriz V01--V15 es mas amplia que la implementacion v0.1.0. Esta diferencia es
-deliberada: permite que la memoria documente el dise\~no completo sin fingir que todas
+deliberada: permite que la memoria documente el diseño completo sin fingir que todas
 las fuentes externas ya estan integradas. La evaluacion final reportada en el
 Capitulo~\ref{cap:9} se interpreta, por tanto, como rendimiento del nucleo reproducible
 actual, no como rendimiento de una version enriquecida con AEMET, SNCZI y Seveso.

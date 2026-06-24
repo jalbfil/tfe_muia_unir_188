@@ -1,64 +1,66 @@
-\chapter{Datos, dataset y supervisi\'on d\'ebil}
+\chapter{Datos, dataset y supervisión débil}
 \label{cap:7}
 
-\section{Finalidad del capitulo}
+Este capítulo detalla la preparación del conjunto de datos y la metodología de supervisión débil utilizada para suplir la falta de etiquetas de prioridad históricas. En primer lugar, se expone el origen de los datos procedentes del Registro 112 de Castilla y León y el proceso de depuración aplicado a las variables. A continuación, se describe la lógica de supervisión débil que permite generar etiquetas académicas a partir de múltiples heurísticas operativas y se evalúa el acuerdo inter-etiquetador. Finalmente, se detalla la estrategia de partición de datos y los controles implementados para evitar el filtrado de información y asegurar la solidez de la evaluación.
 
-El capitulo anterior ha definido la arquitectura del sistema: Capa 1 NLP, Capa 2 RuleFit y Capa 3 LLM+RAG+MCP. Este capitulo desarrolla la base de datos que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y Leon, la representacion de variables V01--V15, la construccion de la etiqueta academica P1--P4, la estrategia de supervision debil, la prevencion de \textit{leakage}, la division train/validation/test y las limitaciones metodologicas del conjunto de datos.
+\section{Finalidad del capítulo}
 
-La idea central es sencilla: el proyecto trabaja con registros reales, pero no con una prioridad oficial. Por ello, el dataset no puede tratarse como una fuente supervisada tradicional. El valor del TFM reside en construir una cadena honesta y reproducible: datos reales abiertos, limpieza trazable, variables operativas justificadas, etiqueta academica documentada, modelos interpretables y evaluacion prudente.
+El capítulo anterior ha definido la arquitectura del sistema: Capa 1 NLP, Capa 2 RuleFit y Capa 3 LLM+RAG+MCP. Este capítulo desarrolla la base de datos que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y León, la representación de variables V01--V15, la construcción de la etiqueta académica P1--P4, la estrategia de supervisión débil, la prevención de \textit{leakage}, la división train/validation/test y las limitaciones metodológicas del conjunto de datos.
+
+La idea central es sencilla: el proyecto trabaja con registros reales, pero no con una prioridad oficial. Por ello, el dataset no puede tratarse como una fuente supervisada tradicional. El valor del TFM reside en construir una cadena honesta y reproducible: datos reales abiertos, limpieza trazable, variables operativas justificadas, etiqueta académica documentada, modelos interpretables y evaluación prudente.
 
 \section{Estrategia general de datos}
 
-La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y Leon como fuente empirica principal \cite{Registro112CyL}. Esta decision aporta coherencia territorial y normativa: el dataset procede de un servicio autonomico 112 real, y el marco de interpretacion se apoya en normativa estatal y de Castilla y Leon, especialmente Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL.
+La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y León como fuente empírica principal \cite{Registro112CyL}. Esta decisión aporta coherencia territorial y normativa: el dataset procede de un servicio autonómico 112 real, y el marco de interpretación se apoya en la normativa estatal y de Castilla y León, especialmente la Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL. Asimismo, este enfoque garantiza que los escenarios analizados reflejen la casuística real de los incidentes gestionados en la región. De este modo, se evita el uso de datos puramente sintéticos que podrían distorsionar la evaluación del modelo en condiciones operativas.
 
-El dataset abierto permite trabajar con texto operativo, fecha, localidad, provincia, coordenadas aproximadas, identificador y categoria preliminar. Sin embargo, no contiene una prioridad oficial P1--P4, ni una escala equivalente de gravedad, ni todas las variables estructuradas que requiere el sistema. Por tanto, el objetivo no es aprender una prioridad institucional inexistente, sino construir una prioridad academica mediante supervision debil y validacion interna.
+El dataset abierto permite trabajar con texto operativo, fecha, localidad, provincia, coordenadas aproximadas, identificador y categoría preliminar. Sin embargo, no contiene una prioridad oficial P1--P4, ni una escala equivalente de gravedad, ni todas las variables estructuradas que requiere el sistema. Por tanto, el objetivo no es aprender una prioridad institucional inexistente, sino construir una prioridad académica mediante supervisión débil y validación interna.
 
-El flujo de datos se organiza en seis pasos:
+El procesamiento y acondicionamiento de los datos crudos sigue una secuencia estructurada. Este flujo de trabajo garantiza que cada fase se ejecute bajo estrictas salvaguardas metodológicas. En concreto, el flujo de datos se organiza en seis pasos:
 
 \begin{enumerate}
     \item Ingesta y limpieza del Registro 112 CyL.
-    \item Normalizacion de texto, fechas, coordenadas y categorias.
-    \item Extraccion de se\~nales textuales y variables V01--V15.
-    \item Construccion de etiquetas P1--P4 mediante supervision debil.
-    \item Generacion de splits train/validation/test, incluyendo split temporal.
-    \item Evaluacion de Capa 2 y analisis de sesgos, errores y \textit{leakage}.
+    \item Normalización de texto, fechas, coordenadas y categorías.
+    \item Extracción de señales textuales y variables V01--V15.
+    \item Construcción de etiquetas P1--P4 mediante supervisión débil.
+    \item Generación de splits train/validation/test, incluyendo split temporal.
+    \item Evaluación de la Capa 2 y análisis de sesgos, errores y \textit{leakage}.
 \end{enumerate}
 
-\section{Registro de Emergencias del 112 de Castilla y Leon}
+\section{Registro de Emergencias del 112 de Castilla y León}
 
-El Registro de Emergencias del 112 de Castilla y Leon es un conjunto de datos publico publicado por la Junta de Castilla y Leon bajo licencia Creative Commons Reconocimiento 4.0 \cite{Registro112CyL}. En este TFM se utiliza el fichero historico 2008--2022 como fuente real de incidentes para probar el pipeline de datos y alimentar la construccion de etiquetas academicas.
+El Registro de Emergencias del 112 de Castilla y León es un conjunto de datos público publicado por la Junta de Castilla y León bajo licencia Creative Commons Reconocimiento 4.0 \cite{Registro112CyL}. En este TFM se utiliza el fichero histórico 2008--2022 como fuente real de incidentes para probar el pipeline de datos y alimentar la construcción de etiquetas académicas. Este marco temporal permite abarcar una amplia variedad estacional y tipológica de sucesos históricos registrados.
 
-Su valor principal es el realismo. Los registros no son ejemplos artificiales creados para el TFM, sino incidentes gestionados por un servicio autonomico 112. Esto permite trabajar con lenguaje operativo, categorias heterogeneas, coordenadas, localidades, duplicidades potenciales, ruido textual y limitaciones propias de datos administrativos reales.
+Su valor principal es el realismo. Los registros no son ejemplos artificiales creados para el TFM, sino incidentes gestionados por un servicio autonómico 112. Esto permite trabajar con lenguaje operativo, categorías heterogéneas, coordenadas, localidades, duplicidades potenciales, ruido textual y limitaciones propias de datos administrativos reales.
 
 \subsection{Campos de entrada}
 
-La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del dataset y su relacion con los contratos del sistema.
+La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del dataset y su relación con los contratos del sistema. A través de esta estructura, se define qué variables del registro bruto se descartan por razones de seguridad o leakage y cuáles se preservan. Este mapeo sistemático constituye el paso previo fundamental para la definición de la interfaz de entrada del motor tri-capa.
 
 \begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{|p{3.2cm}|p{4.6cm}|p{5.4cm}|}
 \hline
-\textbf{Campo original} & \textbf{Uso en el sistema} & \textbf{Observacion metodologica} \\ \hline
-\texttt{Titulo} & \texttt{texto\_titulo} en \texttt{IncidentInput} & Fuente textual breve para se\~nales operativas \\ \hline
-\texttt{DescripcionBlob} & \texttt{texto\_descripcion} & Requiere limpieza de HTML y normalizacion \\ \hline
-\texttt{FechaIncidente} & \texttt{fecha\_incidente} & Permite analisis temporal y split por a\~no \\ \hline
+\textbf{Campo original} & \textbf{Uso en el sistema} & \textbf{Observación metodológica} \\ \hline
+\texttt{Titulo} & \texttt{texto\_titulo} en \texttt{IncidentInput} & Fuente textual breve para señales operativas \\ \hline
+\texttt{DescripcionBlob} & \texttt{texto\_descripcion} & Requiere limpieza de HTML y normalización \\ \hline
+\texttt{FechaIncidente} & \texttt{fecha\_incidente} & Permite análisis temporal y split por año \\ \hline
 \texttt{Localidad} & \texttt{localidad} & Contexto territorial no siempre equivalente a coordenada exacta \\ \hline
-\texttt{Localidad.1} & \texttt{latitud}, \texttt{longitud} & Permite disponibilidad de coordenadas cuando el campo es valido \\ \hline
+\texttt{Localidad.1} & \texttt{latitud}, \texttt{longitud} & Permite disponibilidad de coordenadas cuando el campo es válido \\ \hline
 \texttt{TipoIncidente} & \texttt{categoria\_preliminar} & Campo orientativo; no basta para priorizar \\ \hline
 \texttt{Identificador} & Trazabilidad interna & No se usa como feature predictiva \\ \hline
-\texttt{MediosMov} & Solo evaluacion ex post si procede & Variable prohibida como entrada por \textit{leakage} \\ \hline
-\texttt{PacientesAten} & Solo evaluacion ex post si procede & Resultado posterior, no disponible en primera decision \\ \hline
-\texttt{IncidenteCerrado} & Exclusion & Estado final del incidente \\ \hline
-\texttt{ultimaActualizacion} & Exclusion & Informacion posterior al inicio \\ \hline
+\texttt{MediosMov} & Solo evaluación ex post si procede & Variable prohibida como entrada por \textit{leakage} \\ \hline
+\texttt{PacientesAten} & Solo evaluación ex post si procede & Resultado posterior, no disponible en primera decisión \\ \hline
+\texttt{IncidenteCerrado} & Exclusión & Estado final del incidente \\ \hline
+\texttt{ultimaActualizacion} & Exclusión & Información posterior al inicio \\ \hline
 \end{tabular}
 \caption{Campos principales del Registro 112 CyL y uso previsto en el sistema.}
 \label{tab:campos-registro-cyl-cap7}
 \end{table}
 
-\subsection{Auditoria inicial}
+\subsection{Auditoría inicial}
 
-La auditoria del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la version v0.1.0 esta tarea queda materializada en \texttt{scripts/audit\_dataset.py} y en los informes de \texttt{resources/dataset/audit}. El dataset final utilizado en v0.1.0 conserva 9.380 registros validos, 41 columnas, cobertura temporal entre 2008-07-28 y 2022-12-31, ausencia de fechas invalidas, 0 identificadores duplicados y cobertura de coordenadas del 99,24\%. Estos datos constituyen la base reproducible del entrenamiento y evaluacion, siempre diferenciando los datos reales del Registro 112 CyL de la etiqueta academica P1--P4 generada mediante supervision debil.
+La auditoría del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geográfica y distribución por provincia y categoría. En la versión v0.1.0 esta tarea queda materializada en \texttt{scripts/audit\_dataset.py} y en los informes de \texttt{resources/dataset/audit}. El dataset final utilizado en v0.1.0 conserva 9.380 registros válidos, 41 columnas, cobertura temporal entre 2008-07-28 y 2022-12-31, ausencia de fechas inválidas, 0 identificadores duplicados y cobertura de coordenadas del 99,24\%. Estos datos constituyen la base reproducible del entrenamiento y evaluación, siempre diferenciando los datos reales del Registro 112 CyL de la etiqueta académica P1--P4 generada mediante supervisión débil.
 
 \begin{table}[htbp]
 \centering
@@ -66,31 +68,31 @@ La auditoria del dataset documenta volumen, duplicados, nulos, cobertura tempora
 \begin{tabular}{|p{4.4cm}|p{8.4cm}|}
 \hline
 \textbf{Elemento auditado} & \textbf{Finalidad} \\ \hline
-Numero de registros & Confirmar volumen util para entrenamiento y evaluacion \\ \hline
-Rango temporal & Verificar coherencia 2008--2022 y detectar fechas anomalas \\ \hline
-Distribucion por a\~no & Identificar cambios de registro o sesgos temporales \\ \hline
-Distribucion por provincia & Evitar que la evaluacion quede dominada por una provincia \\ \hline
-Distribucion por \texttt{TipoIncidente} & Conocer la heterogeneidad operativa del dataset \\ \hline
+Número de registros & Confirmar volumen útil para entrenamiento y evaluación \\ \hline
+Rango temporal & Verificar coherencia 2008--2022 y detectar fechas anómalas \\ \hline
+Distribución por año & Identificar cambios de registro o sesgos temporales \\ \hline
+Distribución por provincia & Evitar que la evaluación quede dominada por una provincia \\ \hline
+Distribución por \texttt{TipoIncidente} & Conocer la heterogeneidad operativa del dataset \\ \hline
 Nulos por columna & Separar campos explotables de campos incompletos \\ \hline
 Duplicados o registros equivalentes & Evitar fuga entre train/test por incidentes repetidos \\ \hline
-Cobertura de coordenadas & Medir disponibilidad de localizacion para variables contextuales \\ \hline
+Cobertura de coordenadas & Medir disponibilidad de localización para variables contextuales \\ \hline
 Campos ex post & Identificar columnas prohibidas para evitar \textit{leakage} \\ \hline
 \end{tabular}
-\caption{Elementos obligatorios de la auditoria del dataset.}
+\caption{Elementos obligatorios de la auditoría del dataset.}
 \label{tab:auditoria-dataset-cap7}
 \end{table}
 
-El capitulo de evaluacion presenta metricas solo despues de esta auditoria. En un TFM excelente, la calidad del dato se expone antes que los resultados.
+El capítulo de evaluación presenta métricas solo después de esta auditoría. En un TFM excelente, la calidad del dato se expone antes que los resultados. Esta prioridad metodológica previene interpretaciones sesgadas basadas en conjuntos de datos no depurados.
 
-\section{Limpieza y normalizacion}
+\section{Limpieza y normalización}
 
-La limpieza transforma el fichero bruto en una representacion apta para contratos. Las operaciones implementadas son: lectura robusta del CSV historico; eliminacion de columnas vacias o irrelevantes; normalizacion de nombres; limpieza de HTML; union de titulo y descripcion en un texto operativo; normalizacion para extraccion de patrones; parseo de fechas; separacion de coordenadas; derivacion de provincia; mapeo de \texttt{TipoIncidente} a categoria preliminar; e identificacion de columnas prohibidas.
+La limpieza transforma el fichero bruto en una representación apta para contratos. Las operaciones implementadas son: lectura robusta del CSV histórico; eliminación de columnas vacías o irrelevantes; normalización de nombres; limpieza de HTML; unión de título y descripción en un texto operativo; normalización para extracción de patrones; parseo de fechas; separación de coordenadas; derivación de provincia; mapeo de \texttt{TipoIncidente} a categoría preliminar; e identificación de columnas prohibidas.
 
-El resultado debe conservar trazabilidad con el identificador original. Cada transformacion relevante debe ser reproducible mediante script y, cuando afecte al entrenamiento, quedar versionada.
+El resultado debe conservar trazabilidad con el identificador original. Cada transformación relevante debe ser reproducible mediante script y, cuando afecte al entrenamiento, quedar versionada. Este criterio de versionado sistemático es el que garantiza la reproducibilidad de todo el pipeline de preparación de datos.
 
 \section{Variables V01--V15}
 
-El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 transforma la entrada en \texttt{IncidentFeatures}, un contrato que contiene variables V01--V15 y se\~nales textuales. La Tabla~\ref{tab:variables-cap7} resume el origen esperado de cada variable.
+El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 transforma la entrada en \texttt{IncidentFeatures}, un contrato que contiene variables V01--V15 y señales textuales. La Tabla~\ref{tab:variables-cap7} resume el origen esperado de cada variable.
 
 \begin{table}[htbp]
 \centering
@@ -98,90 +100,90 @@ El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 tra
 \begin{tabular}{|p{1.0cm}|p{4.0cm}|p{3.9cm}|p{4.0cm}|}
 \hline
 \textbf{Var.} & \textbf{Variable} & \textbf{Origen principal} & \textbf{Estado v0.1.0} \\ \hline
-V01 & Riesgo vital & Texto + se\~nales + etiquetado & Activa \\ \hline
-V02 & Numero de victimas estimado & Texto + etiquetado & Activa \\ \hline
+V01 & Riesgo vital & Texto + señales + etiquetado & Activa \\ \hline
+V02 & Número de víctimas estimado & Texto + etiquetado & Activa \\ \hline
 V03 & Gravedad de lesiones & Texto + etiquetado & Activa \\ \hline
-V04 & Tipo de incidente normalizado & Titulo, descripcion y categoria preliminar & Activa \\ \hline
-V05 & Poblacion vulnerable & Texto + reglas + revision & Activa \\ \hline
-V06 & Numero de llamadas & Texto, agrupacion o indicios de varios avisos & Activa \\ \hline
-V07 & Emplazamiento critico & Texto/localidad + reglas & Activa \\ \hline
+V04 & Tipo de incidente normalizado & Título, descripción y categoría preliminar & Activa \\ \hline
+V05 & Población vulnerable & Texto + reglas + revisión & Activa \\ \hline
+V06 & Número de llamadas & Texto, agrupación o indicios de varios avisos & Activa \\ \hline
+V07 & Emplazamiento crítico & Texto/localización + reglas & Activa \\ \hline
 V08 & Aviso AEMET & Fuente externa & Diferida v0.2.0 \\ \hline
-V09 & Condicion meteorologica adversa & Texto/fuente externa & Diferida v0.2.0 \\ \hline
+V09 & Condición meteorológica adversa & Texto/fuente externa & Diferida v0.2.0 \\ \hline
 V10 & Zona inundable & Cruce geoespacial & Diferida v0.2.0 \\ \hline
 V11 & Proximidad Seveso & Registro externo & Diferida v0.2.0 \\ \hline
-V12 & Riesgo de propagacion & Texto + INFOCAL & Activa \\ \hline
-V13 & Multirriesgo & Texto + concurrencia de se\~nales & Activa \\ \hline
-V14 & Avisos simultaneos en zona & Texto/agrupacion temporal-geografica & Activa \\ \hline
-V15 & Accesibilidad de recursos & Localizacion + reglas aproximadas & Activa \\ \hline
+V12 & Riesgo de propagación & Texto + INFOCAL & Activa \\ \hline
+V13 & Multirriesgo & Texto + concurrencia de señales & Activa \\ \hline
+V14 & Avisos simultáneos en zona & Texto/agrupación temporal-geográfica & Activa \\ \hline
+V15 & Accesibilidad de recursos & Localización + reglas aproximadas & Activa \\ \hline
 \end{tabular}
 \caption{Variables V01--V15 y estado dentro del alcance v0.1.0.}
 \label{tab:variables-cap7}
 \end{table}
 
-Las variables V08--V11 se mantienen en el contrato para preservar la direccion futura del sistema, pero no deben condicionar los resultados principales de v0.1.0.
+Las variables V08--V11 se mantienen en el contrato para preservar la dirección futura del sistema, pero no deben condicionar los resultados principales de v0.1.0. Su presencia en la estructura de datos asegura la compatibilidad con futuras expansiones del modelo que incorporen datos en tiempo real de fuentes meteorológicas. No obstante, para la validación del prototipo actual, estas variables se han inicializado con valores por defecto o se han marcado como omitidas para no introducir ruido en las métricas de rendimiento.
 
-\section{Se\~nales operativas textuales}
+\section{Señales operativas textuales}
 
-Las se\~nales textuales son indicadores derivados del titulo y la descripcion. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores debiles de Capa 2. Las principales se\~nales son \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_meteo\_inundacion} y \texttt{riesgo\_vital\_textual}.
+Las señales textuales son indicadores derivados del título y la descripción. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores débiles de la Capa 2. Las principales señales son \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_meteo\_inundacion} y \texttt{riesgo\_vital\_textual}.
 
-Estas se\~nales deben tratarse como indicios. La palabra ``herido'', por ejemplo, no equivale siempre a P1; la expresion ``herido grave atrapado'' si tiene un peso operativo mucho mayor. Por eso la extraccion textual debe combinar patrones, intensificadores y validacion posterior, evitando que una busqueda literal determine por si sola la prioridad.
+Estas señales deben tratarse como indicios. La palabra ``herido'', por ejemplo, no equivale siempre a P1; la expresión ``herido grave atrapado'' sí tiene un peso operativo mucho mayor. Por eso la extracción textual debe combinar patrones, intensificadores y validación posterior, evitando que una búsqueda literal determine por sí sola la prioridad.
 
-\section{Etiqueta academica P1--P4}
+\section{Etiqueta académica P1--P4}
 
-La etiqueta P1--P4 es una construccion academica del TFM. No existe como campo oficial en el Registro 112 CyL y no debe presentarse como prioridad institucional. Su funcion es permitir entrenamiento, comparacion y evaluacion del sistema.
+La etiqueta P1--P4 es una construcción académica del TFM. No existe como campo oficial en el Registro 112 CyL y no debe presentarse como prioridad institucional. Su función es permitir entrenamiento, comparación y evaluación del sistema.
 
-La guia de etiquetado define cuatro niveles: P1 critica, P2 alta, P3 media y P4 baja. La etiqueta se asigna en el momento teorico de la primera decision. Por tanto, no puede utilizar informacion posterior como medios movilizados, pacientes atendidos o cierre del incidente. La incertidumbre se refleja en la confianza, no rebajando automaticamente la prioridad.
+La guía de etiquetado define cuatro niveles: P1 crítica, P2 alta, P3 media y P4 baja. La etiqueta se asigna en el momento teórico de la primera decisión. Por tanto, no puede utilizar información posterior como medios movilizados, pacientes atendidos o cierre del incidente. La incertidumbre se refleja en la confianza, no rebajando automáticamente la prioridad.
 
-\section{Supervision debil}
+\section{Supervisión débil}
 
-La supervision debil permite construir etiquetas de entrenamiento a partir de varias fuentes imperfectas. En este proyecto se implementan cuatro fuentes de voto:
+La supervisión débil permite construir etiquetas de entrenamiento a partir de varias fuentes imperfectas. En este proyecto se implementan cuatro fuentes de voto:
 
 \begin{enumerate}
-    \item \textbf{Reglas heuristicas}: aplica criterios P1--P4 sobre se\~nales textuales y variables permitidas.
-    \item \textbf{NER + intensificadores}: combina entidades/se\~nales con expresiones de gravedad, cantidad o urgencia.
-    \item \textbf{Proxy semantico por agrupacion}: aproxima familias de incidentes textualmente similares.
-    \item \textbf{LLM-as-annotator proxy}: simula un anotador guiado por la escala academica, sin usar campos prohibidos.
+    \item \textbf{Reglas heurísticas}: aplica criterios P1--P4 sobre señales textuales y variables permitidas.
+    \item \textbf{NER + intensificadores}: combina entidades/señales con expresiones de gravedad, cantidad o urgencia.
+    \item \textbf{Proxy semántico por agrupación}: aproxima familias de incidentes textualmente similares.
+    \item \textbf{LLM-as-annotator proxy}: simula un anotador guiado por la escala académica, sin usar campos prohibidos.
 \end{enumerate}
 
-Los votos se agregan mediante un modelo de etiquetas o majority voting ponderado. La salida se materializa en el contrato \texttt{WeakLabel}: votos por anotador, etiqueta final, confianza del label model, acuerdo local y bandera de uso en entrenamiento.
+Los votos se agregan mediante un modelo de etiquetas o majority voting ponderado. La salida se materializa en el contrato \texttt{WeakLabel}: votos por anotador, etiqueta final, confianza del label model, acuerdo local y bandera de uso en entrenamiento. Este contrato asegura que cualquier componente de entrenamiento posterior pueda filtrar los datos según su nivel de fiabilidad. De esta forma, el flujo completo de supervisión débil mantiene una estructura de auditoría transparente y robusta.
 
 \subsection{Acuerdo y control de calidad}
 
-El objetivo minimo es Krippendorff \(\alpha \geq 0{,}67\) sobre el conjunto etiquetado. La ejecucion principal alcanza \(\alpha = 0{,}858348\), por encima del umbral aceptable para un prototipo academico. Este valor no convierte la etiqueta en oficial, pero aporta evidencia de consistencia entre fuentes debiles. Los casos de bajo acuerdo deben revisarse y documentarse, especialmente si afectan a P1/P2.
+El objetivo mínimo es Krippendorff \(\alpha \geq 0{,}67\) sobre el conjunto etiquetado. La ejecución principal alcanza \(\alpha = 0{,}858348\), por encima del umbral aceptable para un prototipo académico. Este valor no convierte la etiqueta en oficial, pero aporta evidencia de consistencia entre fuentes débiles. Los casos de bajo acuerdo deben revisarse y documentarse, especialmente si afectan a P1/P2.
 
-Ademas, se plantea una validacion interna entre los tres autores sobre al menos 30 casos. Esta validacion no sustituye a un panel experto externo del 112, pero permite detectar divergencias, mejorar la guia de etiquetado y documentar limites del sistema.
+Además, se plantea una validación interna entre los tres autores sobre al menos 30 casos. Esta validación no sustituye a un panel experto externo del 112, pero permite detectar divergencias, mejorar la guía de etiquetado y documentar límites del sistema. El proceso de consenso manual sirve para calibrar las discrepancias surgidas en las heurísticas de la supervisión débil. Como resultado, se obtiene una muestra de control de alta calidad que ayuda a verificar la robustez del modelo de agregación probabilística.
 
-\subsection{Ablacion anti-circularidad}
+\subsection{Ablación anti-circularidad}
 
-La supervision debil introduce un riesgo: que el modelo aprenda simplemente a reproducir las reglas heuristicas usadas para etiquetar. Para controlarlo, T036 compara el label model sin la fuente de reglas heuristicas y analiza la variacion de acuerdo. La ablacion alcanza \(\alpha = 0{,}834155\), lo que indica que la etiqueta no colapsa al retirar esa fuente y reduce el riesgo de circularidad extrema.
+La supervisión débil introduce un riesgo: que el modelo aprenda simplemente a reproducir las reglas heurísticas usadas para etiquetar. Para controlarlo, se compara el label model sin la fuente de reglas heurísticas y analiza la variación de acuerdo. La ablación alcanza \(\alpha = 0{,}834155\), lo que indica que la etiqueta no colapsa al retirar esa fuente y reduce el riesgo de circularidad extrema.
 
-\section{Prevencion de leakage}
+\section{Prevención de leakage}
 
-El \textit{leakage} es uno de los riesgos metodologicos mas graves del proyecto. Se produce cuando el modelo utiliza informacion que no estaria disponible en el momento de la primera decision. En el Registro 112 CyL existen campos que pueden reflejar actuaciones posteriores o resultados finales. La Tabla~\ref{tab:leakage-cap7} resume las columnas prohibidas.
+El \textit{leakage} es uno de los riesgos metodológicos más graves del proyecto. Se produce cuando el modelo utiliza información que no estaría disponible en el momento de la primera decisión. En el Registro 112 CyL existen campos que pueden reflejar actuaciones posteriores o resultados finales. La Tabla~\ref{tab:leakage-cap7} resume las columnas prohibidas.
 
-El sistema excluye de forma explicita variables que no estarian disponibles en el momento de la primera decision, como recursos movilizados, pacientes atendidos, estado de cierre o informacion posterior al desarrollo del incidente. Esta decision evita \textit{leakage} y mantiene la evaluacion alineada con el objetivo de apoyo a la primera decision.
+El sistema excluye de forma explícita variables que no estarían disponibles en el momento de la primera decisión, como recursos movilizados, pacientes atendidos, estado de cierre o información posterior al desarrollo del incidente. Esta decisión evita \textit{leakage} y mantiene la evaluación alineada con el objetivo de apoyo a la primera decisión. Al asegurar que el modelo solo utiliza datos pre-decisionales, se simula fielmente el entorno real de un despachador del 112. Esto garantiza que las métricas de precisión obtenidas sean realistas y extrapolables a la práctica operativa.
 
 \begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{|p{4.2cm}|p{8.2cm}|}
 \hline
-\textbf{Columna} & \textbf{Razon de exclusion como feature} \\ \hline
-\texttt{MediosMov} & Refleja recursos movilizados, es decir, una consecuencia de la decision operativa \\ \hline
+\textbf{Columna} & \textbf{Razón de exclusión como feature} \\ \hline
+\texttt{MediosMov} & Refleja recursos movilizados, es decir, una consecuencia de la decisión operativa \\ \hline
 \texttt{medios\_mov\_limpio} & Derivado de \texttt{MediosMov}; mantiene la misma fuga \\ \hline
-\texttt{medios\_mov\_uso\_recomendado} & Codificacion auxiliar ex post; no disponible en primera decision \\ \hline
-\texttt{PacientesAten} & Resultado clinico o asistencia posterior \\ \hline
-\texttt{pacientes\_aten\_limpio} & Derivado de \texttt{PacientesAten}; conserva informacion posterior \\ \hline
+\texttt{medios\_mov\_uso\_recomendado} & Codificación auxiliar ex post; no disponible en primera decisión \\ \hline
+\texttt{PacientesAten} & Resultado clínico o asistencia posterior \\ \hline
+\texttt{pacientes\_aten\_limpio} & Derivado de \texttt{PacientesAten}; conserva información posterior \\ \hline
 \texttt{IncidenteCerrado} & Estado final del incidente \\ \hline
-\texttt{ultimaActualizacion} & Actualizacion posterior al registro inicial \\ \hline
-\texttt{Enlace al contenido} & Identificador externo; util para trazabilidad, no como predictor \\ \hline
-\texttt{Unnamed: 13} & Columna vacia o no informativa \\ \hline
+\texttt{ultimaActualizacion} & Actualización posterior al registro inicial \\ \hline
+\texttt{Enlace al contenido} & Identificador externo; útil para trazabilidad, no como predictor \\ \hline
+\texttt{Unnamed: 13} & Columna vacía o no informativa \\ \hline
 \end{tabular}
 \caption{Columnas prohibidas como entrada del motor por riesgo de \textit{leakage}.}
 \label{tab:leakage-cap7}
 \end{table}
 
-Estas columnas pueden conservarse en zonas controladas de auditoria o evaluacion ex post, siempre separadas del entrenamiento e inferencia. El repositorio incluye un test de leakage que escanea los modulos de Capa 1 y Capa 2 para impedir referencias no permitidas.
+Estas columnas pueden conservarse en zonas controladas de auditoría o evaluación ex post, siempre separadas del entrenamiento e inferencia. El repositorio incluye un test de leakage que escanea los módulos de la Capa 1 y la Capa 2 para impedir referencias no permitidas. Dicho test actúa como una salvaguarda de integración continua en el ciclo de desarrollo de software. Gracias a esta verificación automática, se garantiza que ningún desarrollador introduzca inadvertidamente variables ex post en los estimadores.
 
 \begin{table}[htbp]
 \centering
@@ -189,57 +191,57 @@ Estas columnas pueden conservarse en zonas controladas de auditoria o evaluacion
 \begin{tabular}{|p{3.4cm}|p{4.6cm}|p{5.1cm}|}
 \hline
 \textbf{Grupo} & \textbf{Columnas o variables} & \textbf{Uso permitido} \\ \hline
-Texto inicial & \texttt{Titulo}, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extraccion de se\~nales \\ \hline
-Contexto predecisional & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalizacion, taxonomia, analisis temporal y territorial \\ \hline
-Variables derivadas permitidas & V01--V07, V12--V15 y se\~nales textuales & Entrada de Capa 2 y explicabilidad \\ \hline
-Identificadores & \texttt{Identificador} & Trazabilidad, splits y auditoria; no como predictor \\ \hline
-Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} y derivados & Solo auditoria o analisis ex post; nunca entrenamiento ni inferencia \\ \hline
+Texto inicial & \texttt{Titulo}, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para la Capa 1 y extracción de señales \\ \hline
+Contexto predecisional & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalización, taxonomía, análisis temporal y territorial \\ \hline
+Variables derivadas permitidas & V01--V07, V12--V15 y señales textuales & Entrada de la Capa 2 y explicabilidad \\ \hline
+Identificadores & \texttt{Identificador} & Trazabilidad, splits y auditoría; no como predictor \\ \hline
+Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} y derivados & Solo auditoría o análisis ex post; nunca entrenamiento ni inferencia \\ \hline
 \end{tabular}
-\caption{Columnas permitidas y prohibidas segun disponibilidad en la primera decision.}
+\caption{Columnas permitidas y prohibidas según disponibilidad en la primera decisión.}
 \label{tab:permitidas-prohibidas-leakage-cap7}
 \end{table}
 
 \section{Splits train, validation y test}
 
-La division de datos debe impedir que el modelo vea en entrenamiento informacion demasiado parecida a la de test. Se plantean dos estrategias complementarias.
+Para garantizar la validez de los modelos entrenados y medir su capacidad de generalización, se definen particiones rigurosas que impiden la fuga de información entre conjuntos. La división de datos debe impedir que el modelo vea en entrenamiento información demasiado parecida a la de test, controlando sesgos geográficos y temporales. Con este propósito, se plantean dos estrategias de partición complementarias: un split estratificado para la evaluación general y un split temporal para evaluar la robustez frente al cambio de periodo operativo.
 
 \subsection{Split estratificado}
 
-El split principal divide el dataset en train, validation y test preservando la distribucion por prioridad, a\~no y provincia, con semilla fija 42. Los splits deben documentarse conforme a la ejecucion final adoptada como fuente unica. Al utilizar los artefactos del 17/06/2026 como cierre v0.1.0, el conjunto de test estratificado contiene 1.453 registros con soporte P1=655, P2=349, P3=375 y P4=74. Esta informacion procede de la matriz de confusion del reporte \texttt{artifacts/reports/evaluation\_v0.1.0.md} y debe coincidir exactamente con el Capitulo~\ref{cap:9} y los anexos de validacion.
+El split principal divide el dataset en train, validation y test preservando la distribución por prioridad, año y provincia, con semilla fija 42. Los splits deben documentarse conforme a la ejecución final adoptada como fuente única. Al utilizar los artefactos del 17/06/2026 como cierre v0.1.0, el conjunto de test estratificado contiene 1.453 registros con soporte P1=655, P2=349, P3=375 y P4=74. Esta información procede de la matriz de confusión del reporte \texttt{artifacts/reports/evaluation\_v0.1.0.md} y debe coincidir exactamente con el Capítulo~\ref{cap:9} y los anexos de validación.
 
 \begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{|p{3.2cm}|p{3.0cm}|p{5.4cm}|}
 \hline
-\textbf{Split} & \textbf{Filas} & \textbf{Distribucion P1--P4} \\ \hline
+\textbf{Split} & \textbf{Filas} & \textbf{Distribución P1--P4} \\ \hline
 Test estratificado & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
-Test temporal 2022 & 735 & Evaluacion de estabilidad fuera del periodo principal \\ \hline
+Test temporal 2022 & 735 & Evaluación de estabilidad fuera del periodo principal \\ \hline
 \end{tabular}
-\caption{Distribucion final de los conjuntos de test adoptados como fuente v0.1.0.}
+\caption{Distribución final de los conjuntos de test adoptados como fuente v0.1.0.}
 \label{tab:splits-final-cap7}
 \end{table}
 
 \subsection{Split temporal}
 
-El split temporal evalua robustez fuera del periodo de entrenamiento. La version ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como test temporal. Los tamanos son 7.935 registros en train, 710 en validacion y 735 en test. Este enfoque simula una situacion realista: entrenar con historico pasado y aplicar sobre incidentes futuros.
+El split temporal evalúa robustez fuera del periodo de entrenamiento. La versión ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como test temporal. Los tamaños son 7.935 registros en train, 710 en validación y 735 en test. Este enfoque simula una situación realista: entrenar con histórico pasado y aplicar sobre incidentes futuros.
 
-Ambos splits son necesarios. El estratificado mide rendimiento general controlando distribucion; el temporal mide estabilidad ante cambio de periodo.
+Ambos splits son necesarios. El estratificado mide rendimiento general controlando distribución; el temporal mide estabilidad ante cambio de periodo. La combinación de ambas perspectivas metodológicas proporciona una imagen completa del comportamiento del sistema. Mientras que el primero valida el acierto en condiciones estándar, el segundo pone a prueba la resiliencia del modelo frente al paso del tiempo.
 
-\section{Uso en entrenamiento y evaluacion}
+\section{Uso en entrenamiento y evaluación}
 
-El dataset resultante alimenta tres usos distintos: pruebas de extraccion de Capa 1, entrenamiento y evaluacion de Capa 2, y evaluacion transversal de sesgo, falsos negativos P1, calibracion y matriz de confusion. La Capa 3 no se entrena con el dataset operativo; utiliza las salidas de Capa 2 y el corpus normativo para generar explicaciones.
+El dataset resultante alimenta tres usos distintos: pruebas de extracción de la Capa 1, entrenamiento y evaluación de la Capa 2, y evaluación transversal de sesgo, falsos negativos P1, calibración y matriz de confusión. La Capa 3 no se entrena con el dataset operativo; utiliza las salidas de la Capa 2 y el corpus normativo para generar explicaciones. Cada uno de estos usos cuenta con sus propios protocolos de verificación y contratos de entrada. De esta forma, se mantiene una separación clara de responsabilidades entre los distintos componentes del sistema.
 
 \section{Limitaciones del dataset}
 
-Las limitaciones deben quedar explicitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas debiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construccion academica trazable y reproducible. Cualquier cambio en la guia de etiquetado, en los splits o en el dataset limpio obliga a repetir la evaluacion.
+Las limitaciones deben quedar explicitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas débiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construcción académica trazable y reproducible. Cualquier cambio en la guía de etiquetado, en los splits o en el dataset limpio obliga a repetir la evaluación.
 
-La segunda limitacion es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del nucleo v0.1.0. La quinta es que la validacion externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoria.
+La segunda limitación es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del núcleo v0.1.0. La quinta es que la validación externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoría.
 
 \section{Conclusiones}
 
-El dise\~no de datos presentado en este capitulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un dataset totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
+El diseño de datos presentado en este capítulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un dataset totalmente sintético, pero tampoco finge disponer de una prioridad oficial que no existe. Esta postura pragmática asegura que el desarrollo técnico esté cimentado sobre bases realistas y éticas. Como consecuencia, las conclusiones derivadas del comportamiento del modelo resultan defendibles ante evaluadores y profesionales de emergencias.
 
-La aportacion metodologica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, contratos, variables operativas, supervision debil, control de leakage y splits reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
+La aportación metodológica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, contratos, variables operativas, supervisión débil, control de leakage y splits reproducibles. Esta base es la que permite que la Capa 2 pueda entrenarse y evaluarse de forma defendible. Además, este marco conceptual establece un precedente para la reutilización de otros registros administrativos de la administración pública. Al estructurar metodológicamente datos crudos y ruidosos, se abre la puerta a su aprovechamiento en tareas complejas de toma de decisiones.
 
-El siguiente capitulo documenta la implementacion del prototipo software que ejecuta este flujo: backend, orquestador, herramientas MCP, logging, modo degradado e interfaz minima.
+El siguiente capítulo documenta la implementación del prototipo software que ejecuta este flujo: backend, orquestador, herramientas MCP, logging, modo degradado e interfaz mínima. Se detallará la arquitectura del código, las dependencias tecnológicas seleccionadas y las decisiones de diseño del backend. De igual manera, se describirán las pruebas de integración que aseguran el correcto intercambio de información entre las tres capas.

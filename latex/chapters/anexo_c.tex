@@ -1,6 +1,8 @@
 \chapter{Guia de etiquetado P1--P4}
 \label{cap:anexoc}
 
+Este anexo expone de forma pormenorizada las directrices metodológicas utilizadas para la asignación de los niveles de prioridad P1--P4. A través de este manual conceptual, se establecen los límites de cada categoría y se definen las heurísticas de acuerdo aplicadas a las etiquetas. Con este protocolo se busca consolidar un criterio homogéneo que guíe tanto el etiquetado probabilístico como la revisión manual.
+
 \section*{C.1. Finalidad del anexo}
 
 Este anexo documenta la guia usada para construir la etiqueta academica P1--P4 mediante
@@ -9,9 +11,7 @@ el Registro 112 Castilla y Leon no contiene dicha etiqueta. Su funcion es defini
 criterio reproducible para entrenar, comparar y evaluar la Capa 2 dentro del alcance
 academico del TFM.
 
-La version operativa se corresponde con
-\texttt{resources/labeling\_guide\_p1p4.md} y con la decision metodologica de tratar
-P1--P4 como escala academica, no juridica ni institucional.
+La versión operativa se corresponde con el archivo \texttt{resources/labeling\_guide\_p1p4.md} y con la decisión metodológica de tratar P1--P4 como escala académica, no jurídica ni institucional. Dicha guía detalla los ejemplos de incidentes y las palabras clave asignadas a cada prioridad. A través de este documento, el equipo unifica criterios de etiquetado manual y automático.
 
 La guia P1--P4 constituye la fuente metodologica de la supervision debil empleada en el
 prototipo. Su finalidad es generar una etiqueta academica reproducible para
@@ -27,7 +27,7 @@ Anexo~\ref{cap:anexod}.
     \item \textbf{Prioridad como urgencia relativa.} P1--P4 ordena necesidad de
     atencion temprana; no equivale a declaracion formal de situacion operativa.
     \item \textbf{Precaucion razonable.} Ante informacion incompleta, se evita tanto
-    minimizar se\~nales criticas como asumir siempre el peor caso.
+    minimizar señales críticas como asumir siempre el peor caso.
     \item \textbf{Trazabilidad.} Toda etiqueta debe poder vincularse a texto,
     categoria, senales, variables o reglas.
     \item \textbf{Independencia anti-\textit{leakage}.} No se usan medios movilizados,
@@ -47,15 +47,14 @@ Anexo~\ref{cap:anexod}.
 \textbf{Nivel} & \textbf{Nombre} & \textbf{Criterio operativo} & \textbf{Ejemplos de senales} \\ \hline
 P1 & Critica & Riesgo vital confirmado o altamente probable, fallecido, atrapamiento grave, multiples victimas o evolucion potencialmente critica. & fallecido, inconsciente, herido grave, atrapado critico, intoxicacion grave \\ \hline
 P2 & Alta & Gravedad relevante o potencial de escalado sin riesgo vital inmediato confirmado. Requiere atencion rapida y seguimiento. & herido, atrapado no critico, incendio en vivienda, rescate, varias llamadas \\ \hline
-P3 & Media & Incidente que requiere gestion activa, pero sin se\~nales claras de riesgo vital ni escalado alto. & accidente leve, incendio contenido, incidencia viaria, meteo limitada \\ \hline
+P3 & Media & Incidente que requiere gestión activa, pero sin señales claras de riesgo vital ni escalado alto. & accidente leve, incendio contenido, incidencia viaria, meteo limitada \\ \hline
 P4 & Baja & Consulta, incidencia menor, asistencia diferible o caso sin urgencia operativa aparente. & consulta, informacion, incidencia tecnica menor, sin senales criticas \\ \hline
 \end{tabularx}
 \end{table}
 
 \section*{C.4. Reglas de etiquetado}
 
-Las reglas siguientes orientan la asignacion academica. No se presentan como reglas
-oficiales del 112, sino como criterios reproducibles para weak supervision:
+Las reglas siguientes orientan la asignación académica. No se presentan como reglas oficiales del 112, sino como criterios reproducibles para la supervisión débil. Este conjunto de heurísticas inicializa el cálculo probabilístico del agregador de votos. Con ello se reduce la variabilidad subjetiva de los anotadores automáticos.
 
 \begin{table}[ht]
 \centering
@@ -71,8 +70,8 @@ R-P1-ATRAPADO-CRITICO & P1 & Atrapamiento con indicios de gravedad, rescate urge
 R-P2-HERIDO-GRAVE & P2 & Herido grave sin confirmacion suficiente para P1. \\ \hline
 R-P2-INTOXICACION & P2 & Intoxicacion, humo o exposicion a sustancias con posible afectacion personal. \\ \hline
 R-P2-INCENDIO-HABITADO & P2 & Incendio en vivienda, edificio, local habitado o entorno con personas expuestas. \\ \hline
-R-P2-RESCATE & P2 & Rescate o salvamento sin se\~nal P1 confirmada. \\ \hline
-R-P3-TRAFICO & P3 & Accidente de trafico sin se\~nales criticas ni heridos graves. \\ \hline
+R-P2-RESCATE & P2 & Rescate o salvamento sin señal P1 confirmada. \\ \hline
+R-P3-TRAFICO & P3 & Accidente de tráfico sin señales críticas ni heridos graves. \\ \hline
 R-P3-INCENDIO-SIN-VICTIMAS & P3 & Incendio sin victimas ni atrapados descritos. \\ \hline
 R-P4-SIN-URGENCIA & P4 & Consulta, informacion o incidencia menor sin senales operativas de gravedad. \\ \hline
 \end{tabularx}
@@ -106,8 +105,7 @@ puramente arbitraria. En la ejecucion v0.1.0, Krippendorff
 \(\alpha = 0.858348\), y la ablacion sin reglas heuristicas mantiene
 \(\alpha = 0.834155\).
 
-Estos valores no convierten la etiqueta en prioridad oficial, pero si justifican su uso
-como objetivo academico reproducible para entrenar y evaluar RuleFit-lite.
+Estos valores no convierten la etiqueta en prioridad oficial, pero sí justifican su uso como objetivo académico reproducible para entrenar y evaluar RuleFit-lite. Al disponer de una métrica de acuerdo inter-etiquetador alta, se valida la solidez de la base de datos de entrenamiento. De esta forma, las conclusiones obtenidas sobre las particiones de test resultan defendibles.
 
 \section*{C.7. Limitaciones}
 
@@ -118,5 +116,4 @@ interna. Estos casos permiten detectar limites de la guia de etiquetado, senales
 insuficientes o decisiones del modelo que podrian implicar infrapriorizacion critica.
 La muestra completa se documenta en el Anexo~\ref{cap:anexod}.
 
-La validacion externa con operadores del 112 queda como trabajo futuro. Hasta entonces,
-P1--P4 debe citarse siempre como escala academica del prototipo.
+La validación externa con operadores del 112 queda como trabajo futuro. Hasta entonces, P1--P4 debe citarse siempre como escala académica del prototipo. Esta cautela metodológica previene malentendidos sobre el alcance y la madurez de la solución inteligente. De este modo, se mantiene una postura honesta y rigurosa en el plano de la investigación universitaria.

@@ -1,4 +1,4 @@
-﻿% !TEX root = main.tex
+% !TEX root = main.tex
 \documentclass[11pt,a4paper,spanish, oneside]{book}
 \usepackage{estilo_unir-1}
 \usepackage{apacite}
@@ -9,7 +9,7 @@
 \numberwithin{figure}{chapter}
 \usepackage{longtable, booktabs, array, ragged2e, multirow, tabularx}
 %\usepackage{chngcntr}
-%\counterwithin{equatioººn}{chapter}
+%\counterwithin{equation}{chapter}
 %\counterwithin{figure}{chapter}
 %\counterwithin{table}{chapter}
 %\renewcommand\theequation{\thechapter.\arabic{equation}}
@@ -30,12 +30,12 @@
 %---------------------------
 %titulo del trabajo y autor
 %---------------------------
-\title{Sistema inteligente de apoyo a la decisi\'on para puestos de mando de emergencias}
-\titulacion{M\'aster Universitario en Inteligencia Artificial}
-\author{Juan Carlos Albert Fillol, Ancor Gonz\'alez Carballo y Brian Mathias Pesci Juliani}
+\title{Sistema inteligente de apoyo a la decisión para puestos de mando de emergencias}
+\titulacion{Máster Universitario en Inteligencia Artificial}
+\author{Juan Carlos Albert Fillol, Ancor González Carballo y Brian Mathias Pesci Juliani}
 \date{24 de junio de 2026}
-\director{Dr. Andr\'es Soto Villaverde}
-\nombreciudad{ Madrid, Tenerife y Alicante}
+\director{Dr. Andrés Soto Villaverde}
+\nombreciudad{Madrid, Tenerife y Alicante}
 
 %---------------------------
 %marges
@@ -92,10 +92,10 @@
 \chapter*{Resumen}
 \addcontentsline{toc}{chapter}{Resumen}
 
-La gestion de emergencias civiles exige decisiones rapidas y fundamentadas ante informacion heterogenea, incompleta y fragmentaria. En este contexto, los operadores del 112 y los responsables de coordinacion necesitan herramientas que ayuden a estructurar la informacion inicial sin sustituir el criterio humano. Este trabajo dise\~na, implementa y evalua un prototipo modular de apoyo a la decision para la priorizacion temprana de incidentes 112 en Castilla y Leon. La propuesta se apoya en el Registro de Emergencias del 112 de Castilla y Leon 2008--2022, una escala academica P1--P4 construida mediante supervision debil y una arquitectura de tres capas: extraccion de variables y se\~nales, priorizacion interpretable con RuleFit-lite y explicacion normativa mediante LLM local, RAG y herramientas MCP. La evaluacion compara un baseline experto, RuleFit-lite y una ejecucion diagnostica con \texttt{imodels}, usando splits estratificado y temporal, control anti-\textit{leakage}, analisis de falsos negativos P1, sesgos por subgrupo y fidelidad de explicaciones. Los resultados muestran que RuleFit-lite mejora el rendimiento global frente al baseline experto, mantiene recall P1 por encima del umbral definido y conserva trazabilidad suficiente para revision humana. El prototipo no se presenta como producto operativo ni como sistema certificado, sino como una base academica reproducible para estudiar IA responsable, explicable y supervisada en apoyo a la primera decision de emergencia.
+La gestión de emergencias civiles exige decisiones rápidas y fundamentadas ante información heterogénea, incompleta y fragmentaria. En este contexto, los operadores del 112 y los responsables de coordinación necesitan herramientas que ayuden a estructurar la información inicial sin sustituir el criterio humano. Este trabajo diseña, implementa y evalúa un prototipo modular de apoyo a la decisión para la priorización temprana de incidentes 112 en Castilla y León. La propuesta se apoya en el Registro de Emergencias del 112 de Castilla y León 2008--2022, una escala académica P1--P4 construida mediante supervisión débil y una arquitectura de tres capas: extracción de variables y señales, priorización interpretable con RuleFit-lite y explicación normativa mediante LLM local, RAG y herramientas MCP. La evaluación compara un baseline experto, RuleFit-lite y una ejecución diagnóstica con \texttt{imodels}, usando splits estratificado y temporal, control anti-\textit{leakage}, análisis de falsos negativos P1, sesgos por subgrupo y fidelidad de explicaciones. Los resultados muestran que RuleFit-lite mejora el rendimiento global frente al baseline experto, mantiene recall P1 por encima del umbral definido y conserva trazabilidad suficiente para revisión humana. El prototipo no se presenta como producto operativo ni como sistema certificado, sino como una base académica reproducible para estudiar IA responsable, explicable y supervisada en apoyo a la primera decisión de emergencia.
 
 \medskip
-\textbf{Palabras clave:} emergencias 112, apoyo a la decision, priorizacion de incidentes, RuleFit, supervision debil, inteligencia artificial explicable.
+\textbf{Palabras clave:} emergencias 112, apoyo a la decisión, priorización de incidentes, RuleFit, supervisión débil, inteligencia artificial explicable.
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
