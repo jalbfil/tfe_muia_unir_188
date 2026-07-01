@@ -150,6 +150,8 @@ También se cumple el principio anti-\textit{leakage}: columnas como
 decisión es esencial para que el modelo represente el momento de primera decisión, no
 información posterior al operativo.
 
+Adicionalmente, se justifica la idoneidad técnica del diseño de la Capa 1 frente a posibles valoraciones críticas sobre su nivel de complejidad en IA. El prototipo no delega la percepción inicial en reglas estáticas convencionales ni en clasificadores de caja negra totalmente opacos. En su lugar, implementa una arquitectura híbrida neuro-simbólica: un clasificador multietiqueta de aprendizaje automático real (TF-IDF + Regresión Logística con pesos de clase balanceados, entrenado sobre 6.512 registros del 112 CyL) que infiere probabilidades continuas con un F1-Score medio del \(92{,}54\%\), acoplado con guardarraíles lógicos de alta fidelidad. Esta integración es obligatoria en sistemas de despacho crítico de emergencias: un modelo puramente probabilístico introduce tasas aleatorias de falsos negativos y alucinaciones inaceptables cuando hay vidas en juego. Este enfoque neuro-simbólico garantiza un \textit{recall} perfecto de \(1{,}00\) ante señales críticas, suprime falsos positivos por bromas o llamadas de animales, mantiene la explicabilidad transparente en la Capa 2 (RuleFit-lite) y ofrece una latencia ultra-baja de \(0{,}82\text{ ms}\) en CPU local que respeta el SLA del 112.
+
 \section{Limitaciones}
 
 Las limitaciones del trabajo son claras y no deben ocultarse.

@@ -45,7 +45,8 @@ V15 & Accesibilidad al punto & Ordinal & Dificultad de acceso, entorno rural, mo
 
 El modelo RuleFit-lite seleccionado no consume directamente todas las variables V01--V15
 como campos completos. Consume un conjunto compacto de señales predecisionales derivadas
-del texto y de la categoría preliminar:
+del texto y de la categoría preliminar, extraídas por el clasificador híbrido multietiqueta
+de la Capa 1 (TF-IDF + Regresión Logística + guardarraíles deterministas):
 
 \begin{itemize}
     \item \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave},

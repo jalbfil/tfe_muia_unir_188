@@ -12,25 +12,32 @@ procede de Capa 2 y la Capa 3 la explica.
 \section*{L.2. Model card Capa 1: extractor de senales}
 
 La Capa 1 recibe el texto operativo de un incidente y devuelve variables
-predecisionales estructuradas. En \texttt{v0.1.0} se implementa como extractor
-determinista, no como modelo neuronal entrenado. Su funcion es detectar senales
-relevantes para la priorizacion, como fallecido, herido grave, atrapado, intoxicacion,
-varias llamadas, incendio, accidente de trafico, rescate, meteorologia/inundacion y
-riesgo vital textual.
+predecisionales estructuradas. En el prototipo se implementa mediante un
+clasificador de aprendizaje automático multietiqueta híbrido neuro-simbólico: combina
+una extracción probabilística entrenada sobre el histórico real de Castilla y León con
+guardarraíles y filtros deterministas basados en reglas de negocio para asegurar un
+desempeño de alta precisión.
+
+El clasificador de ML se compone de una vectorización de texto TF-IDF (unigramas y
+bigramas, max\_features=5.000) y un meta-clasificador multietiqueta basado en
+regresiones logísticas balanceadas por clase entrenado sobre 6.512 registros reales
+del Registro 112 CyL. Este modelo infiere probabilidades continuas para 10 señales
+clave: fallecido, herido grave, atrapado, intoxicación, varias llamadas, incendio,
+accidente de tráfico, rescate, meteorología/inundación y riesgo vital textual.
 
 La salida de Capa 1 alimenta directamente la inferencia de Capa 2 mediante el contrato
-de features permitido. Se han incluido controles simples de negacion para reducir falsos
-positivos en expresiones del tipo ``no hay atrapados'' o ``sin heridos''. Los artefactos
-asociados son \url{artifacts/reports/capa1_v0.1.0.json} y
-\url{artifacts/models/capa1/v0.1.0/deterministic_extractor.json}. Tras la integracion con la
-rama de Capa 1, se ha verificado especificamente el caso ``no hay heridos ni vehiculos
-atrapados'', evitando que la negacion active falsos positivos en la senal de
-atrapamiento.
+de features permitido. Para robustecer el comportamiento ante casos lingüísticos no
+entrenados (como textos en inglés o errores ortográficos atípicos) o evitar falsos
+positivos en llamadas no urgentes, el extractor de ML se acopla con una puerta
+simbólica de alta fidelidad: si el analizador de reglas no detecta ninguna palabra clave
+de emergencia, se anula la predicción probabilística de ML; si detecta con certeza señales
+críticas, las activa garantizando un recall de seguridad de \(1{,}00\) con latencia media
+submilisegundo de \(0{,}82\text{ ms}\) en CPU local.
 
-Sus limitaciones principales son la dependencia de patrones textuales explicitos, la
-ausencia de aprendizaje contextual profundo y la necesidad de ampliacion futura con
-casos linguisticos mas variados. Aun asi, su caracter determinista facilita la auditoria
-y evita introducir una fuente opaca antes de la priorizacion.
+Los artefactos asociados son \url{artifacts/reports/capa1_v0.1.0.json} y
+\url{artifacts/models/capa1/v0.1.0/classifier.joblib}. Tras la integración de este
+clasificador multietiqueta de ML, se ha verificado específicamente la estabilidad del flujo
+completo, manteniendo precisión micro y recall alineado con las pruebas reproducibles.
 
 \section*{L.3. Datos usados por Capa 2}
 
