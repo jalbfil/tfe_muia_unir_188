@@ -8,7 +8,7 @@ funcion es garantizar que la entrada del incidente, las variables extraidas, la
 recomendacion de Capa 2, la explicacion de Capa 3 y el feedback humano se intercambian
 mediante contratos estables y auditables.
 
-La especificacion tecnica completa se concreta en los contratos Pydantic ubicados en
+La especificacion tecnica completa se concreta en los contratos Pydantic \cite{Pydantic2026} ubicados en
 \texttt{src/contracts/contracts/} y en los esquemas JSON exportados en
 \texttt{src/contracts/docs/schemas/}.
 
@@ -48,6 +48,25 @@ El flujo de datos del prototipo sigue una secuencia deliberadamente simple:
 
 Esta separacion evita que una explicacion generativa modifique la prioridad y permite
 auditar cada paso de forma independiente.
+
+\section*{F.3.1. Validadores de integridad}
+
+Los contratos no son meras estructuras de datos; incorporan validadores que actuan como
+puertas de integridad entre capas. En \texttt{IncidentInput}, el validador
+\texttt{\_require\_tz\_aware} exige que \texttt{fecha\_incidente} incluya zona horaria,
+evitando mezclar eventos sin referencia temporal clara. El validador
+\texttt{\_coords\_paired} impide que latitud y longitud se definan a medias: ambas deben
+existir juntas o quedar ausentes. Finalmente, \texttt{\_text\_has\_alphabetic} evita
+entradas sin contenido textual util.
+
+En \texttt{PriorityRecommendation}, el validador
+\texttt{\_probs\_complete\_and\_sum\_to\_one} comprueba que la distribucion de
+probabilidades contenga exactamente P1, P2, P3 y P4 y que sume \(1,0 \pm 10^{-6}\).
+El validador \texttt{\_argmax\_matches\_recommended} fuerza que la prioridad recomendada
+coincida con la clase de mayor probabilidad. Por su parte,
+\texttt{\_rulefit\_sparsity\_and\_p1p2\_rules} limita RuleFit a un maximo de 30 reglas
+activas y exige que toda recomendacion P1 o P2 incluya al menos una regla, manteniendo
+la trazabilidad exigida para incidentes de mayor gravedad.
 
 \section*{F.4. Politica anti-\textit{leakage}}
 

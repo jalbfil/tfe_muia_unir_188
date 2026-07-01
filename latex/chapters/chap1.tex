@@ -1,4 +1,4 @@
-\chapter{Introduccion}
+\chapter{Introducci\'on}
 \label{cap:1}
 
 \section{Contexto general del trabajo}
@@ -7,19 +7,21 @@ La gestion de emergencias es uno de los ambitos de actuacion publica donde la ra
 
 El marco espa\~nol de proteccion civil, articulado principalmente por la Ley 17/2015 y la Norma Basica de Proteccion Civil, establece una respuesta basada en coordinacion, planificacion y actuacion graduada ante diferentes riesgos \cite{Ley17_2015,RD524_2023}. En Castilla y Leon, este marco se concreta mediante la Ley 4/2007, el Plan Territorial de Proteccion Civil de Castilla y Leon (PLANCAL) y diversos planes especiales como INFOCAL, INUNCYL o MPCyL \cite{Ley4_2007_CYL,PLANCAL_DEC_4_2019,INFOCAL_DEC_6_2025,INUNCYL,MPCYL_ACUERDO_3_2008}. Este entorno normativo proporciona una base adecuada para construir un sistema de apoyo a la decision que no se limite a clasificar incidentes, sino que justifique sus recomendaciones con criterios operativos y trazabilidad documental.
 
-El presente TFM se situa en la interseccion entre gestion de emergencias e inteligencia artificial aplicada. Su objetivo es dise\~nar, implementar y evaluar un prototipo software modular que priorice incidentes 112 de Castilla y Leon en una escala academica P1--P4, ofreciendo al operador una recomendacion explicable, revisable y respaldada por reglas y citas normativas. El sistema no sustituye al operador humano ni moviliza recursos de forma autonoma: actua como herramienta de apoyo a la primera decision.
+El presente TFM se situa en la interseccion entre gestion de emergencias e inteligencia artificial aplicada. Su objetivo es dise\~nar, implementar y evaluar un prototipo software modular que priorice incidentes 112 de Castilla y Leon en una escala academica P1--P4, ofreciendo al operador una recomendacion explicable, revisable y respaldada por reglas, evidencias internas y trazabilidad documental. La escala P1--P4 utilizada en el trabajo no corresponde a una prioridad oficial del servicio 112, sino a una construccion academica necesaria para entrenar, evaluar y explicar el prototipo. El sistema no sustituye al operador humano ni moviliza recursos de forma autonoma: actua como herramienta de apoyo a la primera decision.
 
 \section{Planteamiento del problema}
 
 La saturacion informativa en emergencias aparece cuando el volumen, la velocidad o la heterogeneidad de la informacion supera la capacidad del operador para procesarla con seguridad. Este fenomeno es especialmente critico en situaciones con multiples incidentes simultaneos, avisos incompletos o informacion contradictoria. En esos escenarios, una priorizacion deficiente puede retrasar la atencion a incidentes graves, sobredimensionar sucesos menores o dificultar la justificacion posterior de la decision adoptada.
 
-El problema abordado por este TFM puede formularse asi: dado un conjunto de incidentes 112 descritos mediante texto libre y datos operativos parciales, ¿como puede un sistema inteligente ayudar a estructurar la informacion, extraer variables relevantes, recomendar una prioridad P1--P4 y explicar esa recomendacion de forma comprensible y auditable?
+El problema abordado por este TFM puede formularse as\'i: dado un conjunto de incidentes 112 descritos mediante texto libre y datos operativos parciales, ?`c\'omo puede un sistema inteligente ayudar a estructurar la informaci\'on, extraer variables relevantes, recomendar una prioridad P1--P4 y explicar esa recomendaci\'on de forma comprensible y auditable?
 
-La respuesta propuesta se apoya en una arquitectura de tres capas. La Capa 1 extrae variables operativas V01--V15 y se\~nales textuales desde el incidente. La Capa 2 recomienda prioridad mediante RuleFit-lite, manteniendo un nucleo interpretable y comparandolo con un baseline experto y una ejecucion diagnostica con \texttt{imodels}. La Capa 3 genera una explicacion normativa mediante un LLM local, recuperacion aumentada sobre corpus CyL y herramientas MCP.
+La respuesta propuesta se apoya en una arquitectura de tres capas. La Capa 1 realiza una extracci\'on determinista y auditable de variables operativas V01--V15 y se\~nales textuales. La Capa 2 recomienda la prioridad mediante RuleFit-lite y se compara con una l\'inea base heur\'istica y una ejecuci\'on diagn\'ostica de \texttt{imodels}. La Capa 3 genera una explicaci\'on mediante un modelo de lenguaje de gran tama\~no (\textit{Large Language Model}, LLM) local, generaci\'on aumentada por recuperaci\'on (\textit{Retrieval-Augmented Generation}, RAG) sobre el corpus normativo y herramientas basadas en \textit{Model Context Protocol} (MCP). Esta separaci\'on impide que el componente generativo recalcule la prioridad o sustituya el criterio profesional.
 
 \section{Justificacion e impacto social}
 
 Desde la perspectiva operativa, cualquier mejora en la primera decision puede contribuir a orientar antes la atencion hacia incidentes con riesgo vital, victimas graves, atrapamiento, intoxicacion, propagacion o necesidad de coordinacion compleja. El valor del sistema no reside en automatizar la emergencia, sino en reducir carga cognitiva y mejorar la consistencia de la recomendacion inicial.
+
+Aunque el objetivo operativo del sistema se relaciona con la reduccion del \textit{Time To First Decision} (TTFD), el prototipo v0.1.0 no valida dicha reduccion en una sala 112 real ni con operadores profesionales. La evaluacion se centra en la trazabilidad, el rendimiento del modelo de priorizacion, la coherencia funcional del prototipo y la capacidad de generar explicaciones operativas.
 
 Desde la perspectiva tecnologica, las emergencias constituyen un dominio exigente para la IA: informacion incompleta, alto impacto potencial, necesidad de trazabilidad, supervision humana obligatoria y prohibicion de depender de servicios externos no controlados para datos sensibles. Esta orientacion es coherente con los principios de transparencia, supervision humana, gestion del riesgo y robustez recogidos en el Reglamento Europeo de Inteligencia Artificial \cite{EUAIAct2024}, asi como con revisiones recientes sobre IA en gestion de emergencias \cite{SAPEA2025,Ghaffarian2023}.
 
@@ -29,9 +31,9 @@ Desde la perspectiva social, el proyecto se alinea con una vision responsable de
 
 La contribucion principal del TFM no consiste en entrenar un modelo opaco para maximizar una metrica aislada de precision. El proyecto aborda un problema mas delicado: construir un sistema explicable y evaluable cuando no existe una etiqueta oficial P1--P4 en el dataset abierto. Por ello, la prioridad academica se construye mediante supervision debil, anclada en PLANCAL y en la guia de etiquetado del proyecto.
 
-La aportacion de IA se concreta en cinco elementos. Primero, la extraccion NLP de variables operativas desde texto libre en espa\~nol. Segundo, la generacion de etiquetas P1--P4 mediante varios anotadores debiles y medicion de acuerdo. Tercero, el uso de RuleFit-lite como nucleo interpretable de Capa 2, con reglas activas exportables y probabilidades por clase. Cuarto, la comparacion contra un baseline experto y una ejecucion \texttt{imodels}, separando la alternativa seleccionada de los experimentos diagnosticos. Quinto, la generacion de explicaciones mediante LLM local, RAG normativo y MCP, manteniendo la decision final en manos del operador.
+La aportaci\'on de inteligencia artificial comprende la extracci\'on auditable de variables desde texto, la construcci\'on de etiquetas mediante supervisi\'on d\'ebil, la priorizaci\'on interpretable con RuleFit-lite, su contraste con una l\'inea base heur\'istica y con \texttt{imodels}, y la generaci\'on de explicaciones a partir de la salida estructurada de Capa 2. Estas funciones se integran sin transferir al LLM la recomendaci\'on de prioridad ni la decisi\'on final.
 
-Esta combinacion permite que cada recomendacion pueda vincularse con entrada, variables extraidas, reglas activadas, probabilidad, confianza, citas legales, version de modelo y decision humana final. Esa trazabilidad constituye la diferencia entre un simple clasificador y un sistema de apoyo a la decision.
+Esta combinacion permite que cada recomendacion pueda vincularse con entrada, variables extraidas, reglas activadas, probabilidad, confianza, version de modelo, trazabilidad documental y decision humana final. Esa trazabilidad constituye la diferencia entre un simple clasificador y un sistema de apoyo a la decision.
 
 \section{Finalidad y alcance del sistema propuesto}
 
@@ -39,7 +41,9 @@ El objetivo general del TFM es dise\~nar, implementar y evaluar un prototipo sof
 
 \subsection{Alcance funcional}
 
-El sistema abarca la recepcion de un incidente, la extraccion de variables, la recomendacion de prioridad, la generacion de explicacion normativa, el registro auditable de la inferencia y la posibilidad de que el operador acepte, modifique o rechace la recomendacion. En v0.1.0 se prioriza el nucleo evaluable: variables V01--V07 y V12--V15, se\~nales textuales, RuleFit, RAG normativo, tres herramientas MCP y una UI minima en Streamlit.
+El sistema abarca la recepci\'on de un incidente, la extracci\'on de variables, la recomendaci\'on de prioridad, la generaci\'on de una explicaci\'on operativa, el registro auditable de la inferencia y la posibilidad de que el operador acepte, modifique o rechace la recomendaci\'on. En v0.1.0 se prioriza el n\'ucleo evaluable: variables V01--V07 y V12--V15, se\~nales textuales, RuleFit-lite, RAG normativo, herramientas MCP y una interfaz de usuario en Streamlit.
+
+El endpoint \texttt{/predict} devuelve informacion estructurada de prioridad, detalles de reglas activadas y contexto explicativo mediante \texttt{priority\_details} y \texttt{explanation\_context}. Esto permite conectar la recomendacion de Capa 2 con la explicacion generada por Capa 3, preservando la separacion entre decision automatizada, explicacion y validacion humana.
 
 No forman parte del alcance de v0.1.0 el despacho automatico de recursos, la integracion productiva con sistemas cerrados del 112, el uso de APIs cloud para inferencia con datos sensibles, la certificacion regulatoria del sistema ni la validacion externa con personal del 112. Estos elementos se documentan como trabajo futuro cuando corresponda.
 
@@ -47,7 +51,7 @@ No forman parte del alcance de v0.1.0 el despacho automatico de recursos, la int
 
 El alcance territorial se centra en Castilla y Leon. El Registro de Emergencias del 112 de Castilla y Leon aporta la base empirica real para trabajar con incidentes, texto operativo, fechas, provincias, localidades y coordenadas \cite{Registro112CyL}. El marco normativo autonomico se apoya en Ley 4/2007, PLANCAL y planes especiales CyL. Esta decision evita mantener una separacion artificial entre marco normativo y dataset, y refuerza la coherencia del proyecto.
 
-La escala P1--P4 utilizada por el sistema no es una prioridad oficial del dataset. Es una construccion academica del prototipo, necesaria para entrenar, evaluar y explicar el motor. Se inspira en la logica de gravedad, coordinacion y escalado de la normativa, pero no equivale juridicamente a las situaciones operativas oficiales.
+La escala P1--P4 mantiene en todo el trabajo su car\'acter acad\'emico y no equivale jur\'idicamente a las situaciones operativas oficiales.
 
 \subsection{Limitaciones}
 
@@ -65,4 +69,4 @@ No obstante, la contribucion academica no se reduce a programar una aplicacion. 
 
 La memoria se organiza en diez capitulos y anexos tecnicos. El Capitulo 1 introduce el problema, el alcance y la contribucion. El Capitulo 2 revisa el contexto y el estado del arte en IA para emergencias, DSS, NLP, supervision debil, RuleFit, LLM locales, RAG y MCP. El Capitulo 3 fija el marco operativo y normativo de Castilla y Leon. El Capitulo 4 formula objetivos, preguntas de investigacion y metodologia. El Capitulo 5 define requisitos. El Capitulo 6 presenta la arquitectura de tres capas. El Capitulo 7 desarrolla datos, variables, etiquetado y leakage. El Capitulo 8 documenta el prototipo. El Capitulo 9 presenta la evaluacion. El Capitulo 10 sintetiza conclusiones y trabajo futuro.
 
-Los anexos recogen la taxonomia, variables, guia de etiquetado, plantilla de validacion, baseline experto, contratos, corpus RAG, prompts, model cards, capturas, uso de IA y trazabilidad extendida.
+Los anexos recogen la taxonom\'ia, las variables, la gu\'ia de etiquetado, el protocolo de revisi\'on, la l\'inea base heur\'istica, los contratos, el corpus RAG, las instrucciones del LLM, las fichas de modelo, las capturas y la trazabilidad extendida.

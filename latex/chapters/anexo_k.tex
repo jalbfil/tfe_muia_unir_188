@@ -24,6 +24,20 @@ Salida contractual de Capa 3: \texttt{OperatorRecommendation} con
 \texttt{priority\_recommended}, \texttt{explanation\_text},
 \texttt{legal\_citations}, \texttt{actuation\_hints} y metadatos del LLM.
 
+\begin{table}[ht]
+\centering
+\caption{Campos principales del JSON explicativo de Capa 3}
+\label{tab:anexok-json}
+\small
+\begin{tabularx}{\textwidth}{|p{3.5cm}|X|}
+\hline
+\textbf{Campo} & \textbf{Directriz operativa} \\ \hline
+\texttt{explanation\_text} & Explicacion breve, formal y accionable, entre 80 y 600 caracteres, sin recalcular prioridad ni introducir hechos nuevos. \\ \hline
+\texttt{actuation\_hints} & Lista de acciones orientativas coherentes con P1--P4, siempre sometidas al criterio del operador. \\ \hline
+\texttt{confidence\_disclaimer} & Advertencia sobre falta de informacion, baja confianza o discrepancias entre la prioridad calculada y el texto original. \\ \hline
+\end{tabularx}
+\end{table}
+
 \section*{K.3. Politica de prompts (v0.1.0)}
 
 Los prompts de sistema y ejemplos \textit{few-shot} estan orientados a:
@@ -46,6 +60,22 @@ Reglas de seguridad del prompt:
 Archivos de referencia:
 \texttt{src/capa3\_llm\_mcp/prompts/system\_prompt.py} y
 \texttt{src/capa3\_llm\_mcp/prompts/few\_shots.py}.
+
+\section*{K.3.1. Directrices eticas y de seguridad en prompts}
+
+Los prompts de la Capa 3 incorporan instrucciones especificas para evitar rechazos
+genericos propios de asistentes comerciales. Dado que un LLM instruido puede negarse a
+procesar textos sobre violencia, accidentes, sustancias quimicas o situaciones de
+peligro, el \texttt{SYSTEM\_PROMPT} redefine su rol como soporte exclusivo de seguridad
+publica. Se le prohibe denegar el procesamiento de descripciones criticas y se le exige
+emitir un JSON completo y supervisable.
+
+Asimismo, el prompt define una directriz de deteccion de discrepancias: si el modelo
+identifica incoherencias entre la prioridad pre-calculada por Capa 2 y los hechos
+descritos en el texto, por ejemplo una prioridad P3/P4 ante riesgo vital, inconsciencia,
+atrapados o materiales peligrosos, debe alertar en el campo
+\texttt{confidence\_disclaimer}. Esta alerta no modifica la prioridad, pero incentiva la
+revision humana.
 
 \section*{K.4. Herramientas MCP activas en v0.1.0}
 
@@ -79,6 +109,11 @@ degradado determinista:
     \item se preserva la exigencia de citas minimas para P1/P2.
 \end{itemize}
 
+El orquestador implementa ademas una recuperacion robusta del JSON mediante extraccion
+del primer objeto valido devuelto por el modelo. Si la respuesta queda corrupta o no
+puede validarse contra \texttt{OperatorRecommendation}, el sistema cae de forma segura en
+modo degradado basado en reglas, evitando que un fallo de formato bloquee la salida.
+
 \section*{K.6. Limites conocidos}
 
 \begin{itemize}
@@ -86,6 +121,6 @@ degradado determinista:
     runtime Ollama;
     \item el soporte normativo para escenarios quimicos sigue condicionado por la
     cobertura documental de MPCyL (ver Anexo~\ref{cap:anexoj});
-    \item la fidelidad explicativa con juez LLM independiente queda como cierre
-    pendiente de T113.
+    \item la evaluacion con un juez LLM independiente queda como ampliacion futura
+    respecto al juez determinista offline ya aplicado en la version v0.1.0.
 \end{itemize}

@@ -1,17 +1,21 @@
-\chapter{Datos, dataset y supervisi\'on d\'ebil}
+\chapter{Datos, conjunto de datos y supervisi\'on d\'ebil}
 \label{cap:7}
 
 \section{Finalidad del capitulo}
 
-El capitulo anterior ha definido la arquitectura del sistema: Capa 1 NLP, Capa 2 RuleFit y Capa 3 LLM+RAG+MCP. Este capitulo desarrolla la base de datos que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y Leon, la representacion de variables V01--V15, la construccion de la etiqueta academica P1--P4, la estrategia de supervision debil, la prevencion de \textit{leakage}, la division train/validation/test y las limitaciones metodologicas del conjunto de datos.
+El cap\'itulo anterior ha definido la arquitectura del sistema. Este cap\'itulo desarrolla la base emp\'irica que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y Le\'on, las variables V01--V15, la construcci\'on de la etiqueta acad\'emica P1--P4, la supervisi\'on d\'ebil, la prevenci\'on de fugas de informaci\'on y las particiones de entrenamiento, validaci\'on y prueba.
 
-La idea central es sencilla: el proyecto trabaja con registros reales, pero no con una prioridad oficial. Por ello, el dataset no puede tratarse como una fuente supervisada tradicional. El valor del TFM reside en construir una cadena honesta y reproducible: datos reales abiertos, limpieza trazable, variables operativas justificadas, etiqueta academica documentada, modelos interpretables y evaluacion prudente.
+El proyecto trabaja con registros reales, pero no dispone de una prioridad oficial. Por ello, el conjunto no puede tratarse como una fuente supervisada tradicional. Se adopta un procedimiento metodol\'ogico trazable: datos abiertos, limpieza reproducible, variables justificadas, etiqueta acad\'emica documentada, modelos interpretables y evaluaci\'on prudente.
 
 \section{Estrategia general de datos}
 
 La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y Leon como fuente empirica principal \cite{Registro112CyL}. Esta decision aporta coherencia territorial y normativa: el dataset procede de un servicio autonomico 112 real, y el marco de interpretacion se apoya en normativa estatal y de Castilla y Leon, especialmente Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL.
 
-El dataset abierto permite trabajar con texto operativo, fecha, localidad, provincia, coordenadas aproximadas, identificador y categoria preliminar. Sin embargo, no contiene una prioridad oficial P1--P4, ni una escala equivalente de gravedad, ni todas las variables estructuradas que requiere el sistema. Por tanto, el objetivo no es aprender una prioridad institucional inexistente, sino construir una prioridad academica mediante supervision debil y validacion interna.
+El conjunto abierto permite trabajar con texto operativo, fecha, localidad, provincia,
+coordenadas aproximadas, identificador y categor\'ia preliminar. Sin embargo, no
+contiene una prioridad oficial P1--P4 ni todas las variables estructuradas requeridas.
+El objetivo es construir una referencia acad\'emica mediante supervisi\'on d\'ebil y
+dejar preparada su revisi\'on humana.
 
 El flujo de datos se organiza en seis pasos:
 
@@ -20,7 +24,7 @@ El flujo de datos se organiza en seis pasos:
     \item Normalizacion de texto, fechas, coordenadas y categorias.
     \item Extraccion de se\~nales textuales y variables V01--V15.
     \item Construccion de etiquetas P1--P4 mediante supervision debil.
-    \item Generacion de splits train/validation/test, incluyendo split temporal.
+    \item Generaci\'on de particiones de entrenamiento, validaci\'on y prueba, incluida una partici\'on temporal.
     \item Evaluacion de Capa 2 y analisis de sesgos, errores y \textit{leakage}.
 \end{enumerate}
 
@@ -58,7 +62,7 @@ La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del da
 
 \subsection{Auditoria inicial}
 
-La auditoria del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la version v0.1.0 esta tarea queda materializada en \texttt{scripts/audit\_dataset.py} y en los informes de \texttt{resources/dataset/audit}. El dataset limpio contiene 9.380 registros, 41 columnas, rango temporal valido entre 2008-07-28 y 2022-12-31, 0 fechas invalidas, 0 identificadores duplicados y una cobertura de coordenadas del 99,24\%.
+La auditoria del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la version v0.1.0 esta tarea queda materializada en \texttt{scripts/audit\_dataset.py} y en los informes de \texttt{resources/dataset/audit}. El dataset final utilizado en v0.1.0 conserva 9.380 registros validos, 41 columnas, cobertura temporal entre 2008-07-28 y 2022-12-31, ausencia de fechas invalidas, 0 identificadores duplicados y cobertura de coordenadas del 99,24\%. Estos datos constituyen la base reproducible del entrenamiento y evaluacion, siempre diferenciando los datos reales del Registro 112 CyL de la etiqueta academica P1--P4 generada mediante supervision debil.
 
 \begin{table}[htbp]
 \centering
@@ -80,7 +84,7 @@ Campos ex post & Identificar columnas prohibidas para evitar \textit{leakage} \\
 \label{tab:auditoria-dataset-cap7}
 \end{table}
 
-El capitulo de evaluacion presenta metricas solo despues de esta auditoria. En un TFM excelente, la calidad del dato se expone antes que los resultados.
+La auditor\'ia precede a la presentaci\'on de resultados para que las m\'etricas puedan interpretarse a partir de la calidad y las limitaciones de los datos.
 
 \section{Limpieza y normalizacion}
 
@@ -118,7 +122,7 @@ V15 & Accesibilidad de recursos & Localizacion + reglas aproximadas & Activa \\ 
 \label{tab:variables-cap7}
 \end{table}
 
-Las variables V08--V11 se mantienen en el contrato para preservar la direccion futura del sistema, pero no deben condicionar los resultados principales de v0.1.0.
+Las variables V08--V11 se mantienen en el contrato para preservar la evoluci\'on futura del sistema, pero no se emplean como entrada del modelo v0.1.0 ni condicionan sus resultados.
 
 \section{Se\~nales operativas textuales}
 
@@ -132,32 +136,34 @@ La etiqueta P1--P4 es una construccion academica del TFM. No existe como campo o
 
 La guia de etiquetado define cuatro niveles: P1 critica, P2 alta, P3 media y P4 baja. La etiqueta se asigna en el momento teorico de la primera decision. Por tanto, no puede utilizar informacion posterior como medios movilizados, pacientes atendidos o cierre del incidente. La incertidumbre se refleja en la confianza, no rebajando automaticamente la prioridad.
 
-\section{Supervision debil}
+\section{Supervisi\'on d\'ebil}
 
-La supervision debil permite construir etiquetas de entrenamiento a partir de varias fuentes imperfectas. En este proyecto se implementan cuatro fuentes de voto:
+La supervisi\'on d\'ebil permite construir etiquetas de entrenamiento a partir de varias funciones de etiquetado imperfectas. En v0.1.0 se implementan cuatro aproximaciones deterministas:
 
 \begin{enumerate}
-    \item \textbf{Reglas heuristicas}: aplica criterios P1--P4 sobre se\~nales textuales y variables permitidas.
-    \item \textbf{NER + intensificadores}: combina entidades/se\~nales con expresiones de gravedad, cantidad o urgencia.
-    \item \textbf{Proxy semantico por agrupacion}: aproxima familias de incidentes textualmente similares.
-    \item \textbf{LLM-as-annotator proxy}: simula un anotador guiado por la escala academica, sin usar campos prohibidos.
+    \item \textbf{Reglas heur\'isticas}: aplica una puntuaci\'on de gravedad sobre se\~nales textuales, categor\'ia preliminar y variables permitidas.
+    \item \textbf{Se\~nales e intensificadores}: aproxima el reconocimiento de entidades nombradas (\textit{Named Entity Recognition}, NER) mediante patrones de gravedad, cantidad y urgencia, sin ejecutar un modelo NER entrenado.
+    \item \textbf{Proxy de agrupaci\'on sem\'antica}: reutiliza en esta versi\'on una funci\'on determinista de puntuaci\'on; no ejecuta un algoritmo de agrupamiento vectorial.
+    \item \textbf{Proxy de anotador LLM}: incorpora patrones adicionales de vulnerabilidad, emplazamiento y negaci\'on, pero no invoca un LLM durante el etiquetado.
 \end{enumerate}
 
-Los votos se agregan mediante un modelo de etiquetas o majority voting ponderado. La salida se materializa en el contrato \texttt{WeakLabel}: votos por anotador, etiqueta final, confianza del label model, acuerdo local y bandera de uso en entrenamiento.
+Los votos se agregan mediante votaci\'on ponderada. Los pesos son \(0{,}85\) para reglas heur\'isticas, \(1{,}00\) para se\~nales e intensificadores, \(0{,}90\) para el proxy de agrupaci\'on y \(1{,}10\) para el proxy de anotador LLM. Se suman los pesos recibidos por cada prioridad y, si existe empate, se escoge la prioridad m\'as urgente. La salida conserva los votos, la etiqueta final, la confianza derivada del peso ganador y el acuerdo local.
 
 \subsection{Acuerdo y control de calidad}
 
-El objetivo minimo es Krippendorff \(\alpha \geq 0{,}67\) sobre el conjunto etiquetado. La ejecucion principal alcanza \(\alpha = 0{,}858348\), por encima del umbral aceptable para un prototipo academico. Este valor no convierte la etiqueta en oficial, pero aporta evidencia de consistencia entre fuentes debiles. Los casos de bajo acuerdo deben revisarse y documentarse, especialmente si afectan a P1/P2.
+El objetivo m\'inimo es Krippendorff \(\alpha \geq 0{,}67\). La ejecuci\'on can\'onica alcanza \(\alpha = 0{,}899902\), por encima del umbral establecido. Este valor aporta evidencia de consistencia entre funciones, pero debe interpretarse con cautela: las fuentes comparten patrones y dos de ellas emplean una puntuaci\'on muy similar, por lo que no constituyen anotadores plenamente independientes.
 
-Ademas, se plantea una validacion interna entre los tres autores sobre al menos 30 casos. Esta validacion no sustituye a un panel experto externo del 112, pero permite detectar divergencias, mejorar la guia de etiquetado y documentar limites del sistema.
+Adem\'as, se ha preparado una muestra de revisi\'on interna superior al m\'inimo previsto. Sus campos de decisi\'on humana no est\'an cumplimentados en v0.1.0, por lo que constituye un instrumento preparado y no una validaci\'on humana completada.
 
 \subsection{Ablacion anti-circularidad}
 
-La supervision debil introduce un riesgo: que el modelo aprenda simplemente a reproducir las reglas heuristicas usadas para etiquetar. Para controlarlo, T036 compara el label model sin la fuente de reglas heuristicas y analiza la variacion de acuerdo. La ablacion alcanza \(\alpha = 0{,}834155\), lo que indica que la etiqueta no colapsa al retirar esa fuente y reduce el riesgo de circularidad extrema.
+La supervisi\'on d\'ebil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablaci\'on sin la fuente de reglas heur\'isticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten se\~nales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitaci\'on metodol\'ogica de v0.1.0.
 
 \section{Prevencion de leakage}
 
 El \textit{leakage} es uno de los riesgos metodologicos mas graves del proyecto. Se produce cuando el modelo utiliza informacion que no estaria disponible en el momento de la primera decision. En el Registro 112 CyL existen campos que pueden reflejar actuaciones posteriores o resultados finales. La Tabla~\ref{tab:leakage-cap7} resume las columnas prohibidas.
+
+El sistema excluye de forma explicita variables que no estarian disponibles en el momento de la primera decision, como recursos movilizados, pacientes atendidos, estado de cierre o informacion posterior al desarrollo del incidente. Esta decision evita \textit{leakage} y mantiene la evaluacion alineada con el objetivo de apoyo a la primera decision.
 
 \begin{table}[htbp]
 \centering
@@ -181,17 +187,48 @@ El \textit{leakage} es uno de los riesgos metodologicos mas graves del proyecto.
 
 Estas columnas pueden conservarse en zonas controladas de auditoria o evaluacion ex post, siempre separadas del entrenamiento e inferencia. El repositorio incluye un test de leakage que escanea los modulos de Capa 1 y Capa 2 para impedir referencias no permitidas.
 
-\section{Splits train, validation y test}
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabular}{|p{3.4cm}|p{4.6cm}|p{5.1cm}|}
+\hline
+\textbf{Grupo} & \textbf{Columnas o variables} & \textbf{Uso permitido} \\ \hline
+Texto inicial & \texttt{Titulo}, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extraccion de se\~nales \\ \hline
+Contexto predecisional & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalizacion, taxonomia, analisis temporal y territorial \\ \hline
+Variables derivadas permitidas & V01--V07, V12--V15 y se\~nales textuales & Entrada de Capa 2 y explicabilidad \\ \hline
+Identificadores & \texttt{Identificador} & Trazabilidad, splits y auditoria; no como predictor \\ \hline
+Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} y derivados & Solo auditoria o analisis ex post; nunca entrenamiento ni inferencia \\ \hline
+\end{tabular}
+\caption{Columnas permitidas y prohibidas segun disponibilidad en la primera decision.}
+\label{tab:permitidas-prohibidas-leakage-cap7}
+\end{table}
+
+\section{Particiones de entrenamiento, validaci\'on y prueba}
 
 La division de datos debe impedir que el modelo vea en entrenamiento informacion demasiado parecida a la de test. Se plantean dos estrategias complementarias.
 
-\subsection{Split estratificado}
+\subsection{Partici\'on estratificada}
 
-El split principal divide el dataset en train, validation y test preservando la distribucion por prioridad, a\~no y provincia, con semilla fija 42. La version ejecutada queda versionada en \texttt{resources/dataset/splits/}: 6.511 registros en train, 1.414 en validacion y 1.455 en test. La distribucion de etiquetas en test es P1=648, P2=336, P3=397 y P4=74.
+La partici\'on principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validaci\'on y 1.453 de prueba, preservando la distribuci\'on por prioridad, a\~no y provincia con semilla fija 42. La partici\'on de prueba contiene P1=655, P2=349, P3=375 y P4=74, conforme al reporte can\'onico \texttt{artifacts/reports/evaluation\_v0.1.0.json}.
 
-\subsection{Split temporal}
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{|p{3.2cm}|p{3.0cm}|p{5.4cm}|}
+\hline
+\textbf{Partici\'on} & \textbf{Filas} & \textbf{Distribuci\'on P1--P4} \\ \hline
+Entrenamiento estratificado & 6.512 & P1=3.049; P2=1.504; P3=1.701; P4=258 \\ \hline
+Validaci\'on estratificada & 1.415 & P1=658; P2=329; P3=374; P4=54 \\ \hline
+Test estratificado & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
+Test temporal 2022 & 735 & Evaluacion de estabilidad fuera del periodo principal \\ \hline
+\end{tabular}
+\caption{Distribuci\'on de las particiones adoptadas en v0.1.0.}
+\label{tab:splits-final-cap7}
+\end{table}
 
-El split temporal evalua robustez fuera del periodo de entrenamiento. La version ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como test temporal. Los tamanos son 7.935 registros en train, 710 en validacion y 735 en test. Este enfoque simula una situacion realista: entrenar con historico pasado y aplicar sobre incidentes futuros.
+\subsection{Partici\'on temporal}
+
+La partici\'on temporal eval\'ua robustez fuera del periodo de entrenamiento. La versi\'on ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tama\~nos son 7.935, 710 y 735 registros, respectivamente.
 
 Ambos splits son necesarios. El estratificado mide rendimiento general controlando distribucion; el temporal mide estabilidad ante cambio de periodo.
 
@@ -201,7 +238,9 @@ El dataset resultante alimenta tres usos distintos: pruebas de extraccion de Cap
 
 \section{Limitaciones del dataset}
 
-Las limitaciones deben quedar explicitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. La segunda es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del nucleo v0.1.0. La quinta es que la validacion externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoria.
+Las limitaciones deben quedar explicitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas debiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construccion academica trazable y reproducible. Cualquier cambio en la guia de etiquetado, en los splits o en el dataset limpio obliga a repetir la evaluacion.
+
+La segunda limitacion es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del nucleo v0.1.0. La quinta es que la validacion externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoria.
 
 \section{Conclusiones}
 

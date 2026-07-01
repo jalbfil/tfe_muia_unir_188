@@ -29,6 +29,22 @@ La ingesta aplica pipeline reproducible:
 
 Implementacion principal: \texttt{src/capa3\_llm\_mcp/rag/ingestion.py}.
 
+\subsection*{J.2.1. Mitigacion de vacios documentales}
+
+Ante la imposibilidad de acceder al texto completo oficial indexable del plan MPCyL
+para la version v0.1.0, se implemento una estrategia de mitigacion en la ingesta del
+RAG. En el script \texttt{ingestion.py}, durante el procesamiento del PLANCAL, se
+inyecta de forma sintetica y controlada un fragmento estructurado que describe el
+protocolo de actuacion ante accidentes de camiones cisterna, fugas quimicas y
+mercancias peligrosas. De esta forma, el indice ChromaDB asocia palabras clave del
+dominio quimico con PLANCAL, garantizando que las consultas de Capa 3 recuperen una base
+normativa verificable y reduciendo el riesgo de que el LLM genere respuestas sin apoyo
+documental ante la falta del documento MPCyL maestro.
+
+Esta inyeccion sintetica no sustituye al corpus original de MPCyL. Debe interpretarse
+como una tecnica temporal de prototipado para v0.1.0 y resolverse en v0.2.0 mediante la
+incorporacion del texto tecnico completo del plan.
+
 \section*{J.3. Cobertura actual del corpus (v0.1.0)}
 
 Resultado de \texttt{python scripts/build\_rag\_index.py --dry-run}:

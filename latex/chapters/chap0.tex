@@ -2,11 +2,11 @@
 \addcontentsline{toc}{chapter}{Organizacion del trabajo en grupo}
 \setcounter{secnumdepth}{-1}
 
-\section{Introduccion al trabajo grupal}
+\section{Introducci\'on al trabajo grupal}
 
-El presente Trabajo Fin de Master (TFM) se ha desarrollado en modalidad grupal, de conformidad con el procedimiento establecido por la Universidad Internacional de La Rioja (UNIR) para la elaboracion y defensa de Trabajos Fin de Estudios en grupo. La modalidad grupal resulta coherente con la naturaleza del proyecto: se dise\~na, implementa y evalua un sistema inteligente de apoyo a la decision para priorizacion temprana de incidentes 112 en Castilla y Leon, combinando procesamiento de lenguaje natural, aprendizaje interpretable, explicacion normativa y prototipo software.
+El presente Trabajo Fin de M\'aster (TFM) se ha desarrollado en modalidad grupal, de conformidad con el procedimiento establecido por la Universidad Internacional de La Rioja (UNIR). Esta modalidad resulta coherente con la naturaleza del proyecto: se dise\~na, implementa y eval\'ua un sistema inteligente de apoyo a la decisi\'on para la priorizaci\'on temprana de incidentes 112 en Castilla y Le\'on, combinando procesamiento del lenguaje natural, aprendizaje interpretable, explicaci\'on normativa y desarrollo de software.
 
-La organizacion del equipo se ha definido alrededor de tres capas tecnicas y una capa transversal de integracion. La Capa 1 transforma texto libre de incidentes en variables operativas estructuradas. La Capa 2 produce una recomendacion de prioridad P1--P4 mediante un nucleo interpretable basado en RuleFit-lite, entrenado sobre etiquetas academicas construidas por supervision debil y comparado con un baseline experto y una ejecucion diagnostica con \texttt{imodels}. La Capa 3 genera explicaciones para el operador mediante un LLM local, recuperacion aumentada con corpus normativo de Castilla y Leon y herramientas MCP. La integracion se completa con contratos Pydantic, backend auditable, logs de inferencia, interfaz minima y evaluacion reproducible.
+La organizaci\'on del equipo se articula en tres capas t\'ecnicas y una funci\'on transversal de integraci\'on. La Capa 1 extrae variables y se\~nales mediante un procedimiento determinista y auditable. La Capa 2 recomienda una prioridad P1--P4 con RuleFit-lite y se compara con una l\'inea base heur\'istica basada en reglas y con una ejecuci\'on diagn\'ostica de \texttt{imodels}. Su salida estructurada alimenta la Capa 3, que genera explicaciones con un modelo de lenguaje de gran tama\~no (\textit{Large Language Model}, LLM) local, generaci\'on aumentada por recuperaci\'on (\textit{Retrieval-Augmented Generation}, RAG) y herramientas basadas en \textit{Model Context Protocol} (MCP).
 
 El reparto no se limita a distribuir tareas de programacion. Cada integrante asume una contribucion diferenciada al componente inteligente del sistema, de modo que el resultado conjunto pueda defenderse como una solucion integrada y no como una suma de piezas independientes.
 
@@ -14,65 +14,48 @@ El reparto no se limita a distribuir tareas de programacion. Cada integrante asu
 
 El equipo esta formado por tres estudiantes del Master Universitario en Inteligencia Artificial de la UNIR, bajo la direccion del Dr. Andres Soto Villaverde. Cada integrante aporta un perfil complementario y una responsabilidad principal dentro de la arquitectura.
 
-\subsection{Capa 2: weak supervision, RuleFit y evaluacion}
+\subsection{Capa 2: supervisi\'on d\'ebil, RuleFit y evaluaci\'on}
 \textbf{Responsable principal:} Juan Carlos Albert Fillol.
 
-Su bloque de trabajo se centra en la formalizacion del problema de priorizacion P1--P4, la auditoria del dataset 112 Castilla y Leon, la construccion de etiquetas academicas mediante supervision debil, el dise\~no del baseline experto, el entrenamiento del modelo RuleFit-lite, la comparacion diagnostica con \texttt{imodels} y la evaluacion cuantitativa del sistema. Desde el punto de vista academico, esta contribucion constituye el nucleo de explicabilidad y validez metodologica del TFM: el sistema debe ser capaz de recomendar una prioridad, justificarla mediante reglas activadas y demostrar su comportamiento con metricas como macro-F1, recall P1, estabilidad temporal, sesgos por subgrupo, analisis de errores criticos y fidelidad explicativa.
+Su bloque de trabajo se centra en la formalizaci\'on del problema P1--P4, la auditor\'ia del conjunto de datos, la construcci\'on de etiquetas acad\'emicas mediante supervisi\'on d\'ebil, la l\'inea base heur\'istica, RuleFit-lite y la evaluaci\'on cuantitativa. La recomendaci\'on debe vincularse con reglas activadas y evaluarse mediante macro-F1, sensibilidad de P1, estabilidad temporal, an\'alisis por subgrupos y errores cr\'iticos.
+
+Juan Carlos asume, adem\'as, la coordinaci\'on metodol\'ogica y el cierre del bloque de datos, supervisi\'on d\'ebil, l\'inea base heur\'istica, priorizaci\'on interpretable, evaluaci\'on, preparaci\'on de la revisi\'on interna y trazabilidad de Capa 2. Su aportaci\'on conecta la salida de Capa 1 con la explicaci\'on de Capa 3, sin asumir la autor\'ia de las capas desarrolladas por los dem\'as integrantes.
 
 \subsection{Capa 3: LLM local, RAG normativo, MCP y backend}
 \textbf{Responsable principal:} Brian Mathias Pesci Juliani.
 
 Su bloque de trabajo comprende la capa de explicacion y la integracion software del prototipo. Incluye la ingesta del corpus normativo de Castilla y Leon, la construccion del indice RAG, el wrapper del LLM local, el dise\~no de prompts, las herramientas MCP para busqueda normativa y detalle de reglas, el modo degradado sin LLM, el backend FastAPI, el orquestador de capas y el sistema de logs auditables. Su contribucion principal desde la IA consiste en convertir la salida del modelo interpretable en una recomendacion comprensible, trazable y respaldada por citas normativas, manteniendo la soberania del dato y evitando APIs externas en produccion.
 
-\subsection{Capa 1: extraccion NLP de variables operativas}
+\subsection{Capa 1: extracci\'on de variables operativas}
 \textbf{Responsable principal:} Ancor Gonzalez Carballo.
 
-Su bloque de trabajo se orienta a la transformacion del texto libre del incidente en una representacion estructurada compatible con los contratos del sistema. Incluye la extraccion de se\~nales textuales, la preparacion de datos para modelos de lenguaje en espa\~nol, el dise\~no del extractor de variables V01--V15, la validacion de latencia y la garantia de que la Capa 1 no consume variables prohibidas por la politica anti-\textit{leakage}. Esta contribucion es esencial porque la calidad de la priorizacion depende de que el sistema represente correctamente el incidente antes de aplicar reglas o modelos.
-
-\section{Sintesis de contribuciones individuales desde la perspectiva de la IA}
-
-La Tabla~\ref{tab:contribuciones-ia-individuales} resume la aportacion de cada integrante al componente inteligente del sistema.
-
-\begin{table}[htbp]
-\centering
-\scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{|p{2.8cm}|p{4.2cm}|p{4.4cm}|p{3.0cm}|}
-\hline
-\textbf{Integrante} & \textbf{Subproblema de IA} & \textbf{Contribucion principal} & \textbf{Evidencia} \\ \hline
-Juan Carlos Albert Fillol & Priorizacion interpretable bajo incertidumbre & Weak supervision P1--P4, baseline experto, RuleFit-lite, comparativa \texttt{imodels}, evaluacion, errores P1 y validacion interna & Caps. 3, 4, 6, 7, 9 y Anexos C, D, E, L \\ \hline
-Brian Mathias Pesci Juliani & Explicacion normativa y orquestacion reproducible & RAG normativo, LLM local, MCP, backend, logs, modo degradado y trazabilidad de inferencia & Caps. 5, 6, 8, 9 y Anexos J, K, L \\ \hline
-Ancor Gonzalez Carballo & Extraccion de informacion operativa desde texto & Capa 1 NLP, se\~nales textuales, variables V01--V15, tests de contrato y latencia & Caps. 6, 7, 8, 9 y Anexos A, B, L \\ \hline
-\end{tabular}
-\caption{Contribuciones individuales desde la perspectiva de la inteligencia artificial.}
-\label{tab:contribuciones-ia-individuales}
-\end{table}
-
-\noindent\textit{Fuente: elaboracion propia.}
+Su bloque de trabajo se orienta a la transformacion del texto libre del incidente en una representacion estructurada compatible con los contratos del sistema. En la v0.1.0 esta capa se plantea como un extractor determinista y auditable, basado en reglas y se\~nales textuales, no como un modelo neuronal validado. Incluye el dise\~no del extractor de variables V01--V15, la validacion de latencia y la garantia de que la Capa 1 no consume variables prohibidas por la politica anti-\textit{leakage}. Esta contribucion es esencial porque la calidad de la priorizacion depende de que el sistema represente correctamente el incidente antes de aplicar reglas o modelos.
 
 \section{Distribucion de capitulos y anexos}
 
-La Tabla~\ref{tab:tab1secCTF} recoge la distribucion de responsabilidades sobre la memoria. Los nombres indican responsabilidad principal y apoyo de revision, sin excluir trabajo transversal cuando la coherencia del documento lo exige.
+La Tabla~\ref{tab:tab1secCTF} recoge la distribucion de responsabilidades sobre la memoria. El reparto final se ha definido con un unico responsable por archivo para evitar duplicidades, solapamientos y conflictos de integracion. De esta forma, cada integrante revisa su parte, identifica los cambios necesarios y aporta texto, evidencias, capturas o referencias para la unificacion final.
 
 \begin{table}[htbp]
 \centering
 \scriptsize
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{|p{3.6cm}|p{4.5cm}|p{4.9cm}|}
+\begin{tabular}{|p{4.2cm}|p{4.2cm}|p{4.6cm}|}
 \hline
 \textbf{Apartado / capitulo} & \textbf{Responsables} & \textbf{Tipo de contribucion} \\ \hline
-Organizacion del trabajo & Juan, Ancor, Brian & Reparto, coordinacion y trazabilidad grupal \\ \hline
-Cap. 1. Introduccion & Juan, Ancor, Brian & Problema, alcance CyL y contribucion IA \\ \hline
-Cap. 2. Contexto y estado del arte & Juan, Ancor, Brian & Revision de IA en emergencias, RuleFit, weak supervision, LLM y MCP \\ \hline
-Cap. 3. Marco operativo y normativo & Juan, Brian & Normativa estatal, CyL, UE-IA y trazabilidad normativa \\ \hline
-Cap. 4. Objetivos y metodologia & Juan, Ancor, Brian & Objetivos SMART, preguntas de investigacion y metodo de trabajo \\ \hline
-Cap. 5. Requisitos & Juan, Brian & Requisitos funcionales, no funcionales, privacidad y conformidad \\ \hline
-Cap. 6. Arquitectura y dise\~no del sistema & Juan, Ancor, Brian & Tres capas, contratos, orquestador, fallback y explicabilidad \\ \hline
-Cap. 7. Datos y supervision debil & Juan, Ancor & Dataset CyL, variables, leakage, weak labels y splits \\ \hline
-Cap. 8. Prototipo software & Brian, Ancor, Juan & Backend, UI, MCP, logs y despliegue local \\ \hline
-Cap. 9. Evaluacion & Juan, Brian, Ancor & Metricas ML, explicaciones, validacion interna y sesgos \\ \hline
-Cap. 10. Conclusiones & Juan, Ancor, Brian & Aportaciones, limitaciones y trabajo futuro \\ \hline
-Anexos A--M & Segun capa responsable & Taxonomia, variables, guias, contratos, corpus, prompts, model cards y trazabilidad \\ \hline
+\texttt{chap0.tex} & Juan Carlos & Organizacion del trabajo y reparto final \\ \hline
+\texttt{chap1.tex} & Juan Carlos & Introduccion, problema, alcance y contribucion IA \\ \hline
+\texttt{chap2.tex} & Brian & Contexto, estado del arte y bibliografia APA 7 \\ \hline
+\texttt{chap3.tex} & Ancor & Marco operativo, normativo y contexto 112 CyL \\ \hline
+\texttt{chap4.tex} & Juan Carlos & Objetivos, preguntas de investigacion y metodologia \\ \hline
+\texttt{chap5.tex} & Ancor & Requisitos y especificacion funcional \\ \hline
+\texttt{chap6.tex} & Brian & Arquitectura, contratos y dise\~no del sistema \\ \hline
+\texttt{chap7.tex} & Juan Carlos & Datos de Castilla y Le\'on, supervisi\'on d\'ebil, prevenci\'on de fugas y particiones \\ \hline
+\texttt{chap8.tex} & Brian & Prototipo software, backend, UI, logs y despliegue \\ \hline
+\texttt{chap9.tex} & Juan Carlos & Evaluaci\'on de Capa 2, integraci\'on, revisi\'on preparada y an\'alisis por subgrupos \\ \hline
+\texttt{chap10.tex} & Ancor & Conclusiones, limitaciones y trabajo futuro \\ \hline
+\texttt{anexo\_a.tex}, \texttt{anexo\_b.tex}, \texttt{anexo\_g.tex} & Ancor & Taxonom\'ia, variables y gu\'ia de uso \\ \hline
+\texttt{anexo\_c.tex}, \texttt{anexo\_d.tex}, \texttt{anexo\_e.tex} & Juan Carlos & Gu\'ia P1--P4, protocolo de revisi\'on y l\'inea base heur\'istica \\ \hline
+\texttt{anexo\_f.tex}, \texttt{anexo\_h.tex}, \texttt{anexo\_j.tex}, \texttt{anexo\_k.tex}, \texttt{anexo\_l.tex}; \texttt{bibliografia.bib} & Brian & Contratos, corpus, instrucciones, servicio web, ficha de modelo y bibliograf\'ia \\ \hline
 \end{tabular}
 \caption{Distribucion de capitulos, responsables y tipo de contribucion.}
 \label{tab:tab1secCTF}
@@ -80,9 +63,32 @@ Anexos A--M & Segun capa responsable & Taxonomia, variables, guias, contratos, c
 
 \noindent\textit{Fuente: elaboracion propia.}
 
+\section{Contribuciones tecnicas por capa}
+
+La Tabla~\ref{tab:capas-responsables} sintetiza la responsabilidad tecnica principal de cada capa del prototipo. Esta tabla no elimina la revision cruzada, pero ayuda a evitar solapamientos en la memoria y en la defensa.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|p{2.6cm}|p{3.2cm}|p{7.0cm}|}
+\hline
+\textbf{Capa} & \textbf{Responsable principal} & \textbf{Contribucion tecnica} \\ \hline
+Capa 1 & Ancor Gonzalez Carballo & Extraccion determinista y auditable de variables operativas y se\~nales V01--V15 desde texto libre. \\ \hline
+Capa 2 & Juan Carlos Albert Fillol & Priorizaci\'on P1--P4 con supervisi\'on d\'ebil, l\'inea base heur\'istica, RuleFit-lite, evaluaci\'on y salida estructurada hacia Capa 3. \\ \hline
+Capa 3 & Brian Mathias Pesci Juliani & Generacion de explicaciones con LLM local, RAG normativo, herramientas MCP, backend, modo degradado y trazabilidad de inferencia. \\ \hline
+\end{tabular}
+\caption{Responsabilidad tecnica principal por capa del prototipo.}
+\label{tab:capas-responsables}
+\end{table}
+
+\noindent\textit{Fuente: elaboracion propia.}
+
 \section{Metodologia de coordinacion del grupo}
 
-La coordinacion del trabajo se ha apoyado en reuniones periodicas, control de versiones y una planificacion por tareas trazables. El repositorio Git se utiliza como fuente de verdad tecnica y documental; las decisiones de alcance se reflejan en la especificacion del proyecto y en la planificacion de tareas; y los contratos de datos permiten que cada capa pueda avanzar sin romper la integracion con las demas.
+La coordinaci\'on se ha apoyado en reuniones peri\'odicas, control de versiones y una planificaci\'on por tareas trazables. El repositorio Git act\'ua como referencia t\'ecnica y documental com\'un; las decisiones de alcance se reflejan en la especificaci\'on y los contratos de datos permiten que cada capa avance sin romper la integraci\'on.
+
+Durante la preparacion de la Entrega 3, el equipo acuerda trabajar sobre la version estable del prototipo y centralizar las propuestas de mejora en un documento compartido de Drive. El objetivo es revisar la memoria de forma ordenada, evitar cambios cruzados no controlados y llegar a la entrega con una version coherente entre documento, repositorio, prototipo y evidencias.
 
 El equipo ha trabajado con una logica iterativa e incremental. Primero se fijaron los contratos y la constitucion del proyecto; despues se definieron el dataset, la guia de etiquetado y el corpus normativo; posteriormente se implementaron las capas tecnica y explicativa; y finalmente se orienta el trabajo hacia la evaluacion, la redaccion y la defensa. Esta organizacion permite mantener alineados el prototipo software, la memoria academica y la evidencia reproducible.
 

@@ -15,7 +15,7 @@ El sistema se organiza en cinco bloques principales:
     \item \textbf{Pipeline de datos y Capa 1.} Limpia el Registro 112 Castilla y Leon, normaliza campos, construye variables y, en ejecucion, extrae senales textuales predecisionales desde el texto operativo del incidente.
     \item \textbf{Capa 2 RuleFit.} Implementa weak supervision, baseline experto, RuleFit-lite, comparativa \texttt{imodels}, evaluacion e inferencia.
     \item \textbf{Capa 3 explicativa.} Genera explicaciones a partir de la salida de Capa 2, evidencias disponibles y corpus normativo recuperado mediante RAG/MCP. En la version integrada se ejecuta localmente mediante Ollama.
-    \item \textbf{Backend y interfaz.} Expone la inferencia mediante API FastAPI y una interfaz Streamlit para pruebas controladas del prototipo.
+    \item \textbf{Backend y interfaz.} Expone la inferencia mediante API FastAPI \cite{FastAPI2026} y una interfaz Streamlit \cite{Streamlit2026} para pruebas controladas del prototipo.
     \item \textbf{Trazabilidad y validacion.} Registra salidas, metricas, muestra de revision humana y artefactos de evaluacion.
 \end{enumerate}
 
@@ -26,6 +26,16 @@ La separacion entre capas evita que el LLM decida la prioridad. La prioridad pro
 La parte de priorizacion se estructura bajo \texttt{src/capa2\_rulefit/}. El submodulo de \texttt{weak\_supervision} contiene la logica de etiquetas academicas P1--P4. El submodulo \texttt{baseline\_expert} implementa las reglas expertas que sirven como referencia interpretable. El submodulo \texttt{rulefit} contiene la preparacion de features, entrenamiento, exportacion de reglas y comparativa. El submodulo \texttt{inference} encapsula la inferencia para que el resto del prototipo consuma una salida estable.
 
 Esta estructura permite que el modelo seleccionado, RuleFit-lite, no quede mezclado con scripts de preparacion de datos ni con logica de explicacion. Tambien facilita comparar alternativas sin alterar el contrato de salida que recibe la Capa 3.
+
+En el prototipo integrado, el modelo seleccionado se empaqueta como artefacto persistente
+\texttt{artifacts/models/capa2/v0.1.0/rulefit.joblib} y se carga en inferencia mediante
+\texttt{joblib}. Esta decision permite separar el entrenamiento de la ejecucion del MVP y
+evita reentrenamientos accidentales durante una demostracion. Ademas, la clase
+\texttt{RuleSetClassifierModel} incorpora una comprobacion de compatibilidad para artefactos
+persistidos de \texttt{scikit-learn}: si el regresor logistico cargado no contiene el atributo
+\texttt{multi\_class}, se inicializa de forma conservadora con el valor \texttt{auto}. Esta
+medida protege la reproducibilidad del prototipo ante diferencias menores entre versiones de
+librerias.
 
 \section{Flujo de procesamiento}
 
@@ -49,6 +59,18 @@ texto del incidente, Capa 1 determinista, Capa 2 RuleFit-lite, Capa 3 con LLM lo
 registro de la respuesta. La API expone endpoints de salud, version, prediccion y
 feedback, mientras que la interfaz permite introducir incidentes de prueba y visualizar
 prioridad, confianza, probabilidades P1--P4, reglas activadas y explicacion generada.
+Las capturas incorporadas en el Anexo~\ref{cap:anexog} documentan visualmente esta
+ejecucion local del MVP, incluyendo entrada manual, entrada por voz, resultados P1, P3
+y P4, explicacion generada y registro de feedback humano.
+
+Para facilitar una evaluacion exploratoria con participantes externos, el equipo preparo
+tambien un acceso de prueba mediante un cuaderno en Google Colab. Este acceso no se
+plantea como despliegue productivo ni como integracion con sistemas 112, sino como
+entorno reproducible de demostracion: permite lanzar el prototipo, ejecutar casos
+sinteticos y recoger respuestas mediante un cuestionario estructurado. La finalidad es
+obtener valoracion preliminar de utilidad, comprensibilidad, confianza, trazabilidad y
+claridad de la supervision humana sin exponer datos reales ni depender de una sala de
+operaciones.
 
 La integracion con LLM se realiza mediante Ollama con el modelo
 \texttt{llama3.1:8b-instruct-q4\_K\_M}. El LLM no decide la prioridad: recibe la
@@ -72,6 +94,25 @@ con atrapamiento, inconsciencia, incendio, intoxicacion, inundacion y una incide
 vial ordinaria con negaciones explicitas como ``no hay heridos ni vehiculos
 atrapados''.
 
+\subsection{Interfaz de voz e inferencia inteligente}
+
+Para emular de forma controlada el flujo de trabajo de un despachador del 112, la
+interfaz Streamlit incorpora un modulo experimental de entrada por voz. El usuario puede
+grabar audio desde el microfono o cargar un archivo de llamada; el audio se procesa
+localmente mediante \texttt{faster-whisper} \cite{FasterWhisper2026}. La transcripcion
+resultante alimenta un parser estructurado que intenta extraer automaticamente titulo,
+descripcion, categoria, localidad y provincia. Cuando Ollama esta disponible, el parser
+emplea el modelo local \texttt{llama3.1:8b-instruct-q4\_K\_M} con temperatura 0.0; si el
+modelo no responde, el sistema utiliza heuristicas locales basadas en palabras clave y
+patrones de localidad o provincia.
+
+El resultado de esta etapa no se envia directamente como decision, sino que inicializa
+reactivamente el estado de sesion de Streamlit mediante el patron \textit{key-only}. El
+operador conserva la posibilidad de revisar y corregir los campos antes de lanzar la
+prediccion. Esta funcionalidad pertenece al bloque de interfaz e integracion del
+prototipo y refuerza la orientacion practica del MVP, aunque se mantiene como capacidad
+experimental y no como requisito de validacion externa.
+
 \begin{table}[ht]
 \centering
 \caption{Smoke test integrado del prototipo v0.1.0}
@@ -90,7 +131,11 @@ Consulta vecinal sin riesgo & P4 & P4 & 98.54\% & Ollama \\ \hline
 La prueba supera los cuatro casos esperados y observa una latencia media de
 4.897,888 ms por inferencia integrada, condicionada por el uso local del LLM. Esta
 cifra no se interpreta como rendimiento operativo final, sino como primera evidencia de
-integracion funcional del prototipo completo.
+integracion funcional del prototipo completo. En el contexto de investigacion academica
+y ejecucion sobre hardware domestico con recursos compartidos, esta latencia es
+aceptable para demostrar el flujo completo. En un despliegue operativo certificado, el
+tiempo de respuesta deberia optimizarse mediante hardware dedicado, configuracion
+especifica del servidor LLM o activacion del modo degradado determinista.
 
 La validacion reproducible Capa 1--Capa 2--Capa 3 alcanza 5/5 casos correctos, con
 modelo \texttt{RULEFIT} disponible, precision micro de senales 0.846154, recall micro
@@ -110,7 +155,7 @@ La trazabilidad se apoya en artefactos reproducibles: dataset auditado, weak lab
 
 El prototipo contempla un modo degradado para la explicacion. Si el LLM local no esta disponible o no cumple el tiempo esperado, el sistema puede generar una explicacion determinista basada en reglas, probabilidades y evidencias de Capa 2. Este modo evita que la ausencia del componente generativo bloquee la recomendacion o fuerce dependencia de servicios externos.
 
-El modo degradado tambien ha permitido evaluar fidelidad explicativa de forma controlada sobre la muestra de 111 casos de validacion interna, como se documenta en el Capitulo~\ref{cap:9}.
+El modo degradado tambien ha permitido evaluar fidelidad explicativa de forma controlada sobre la muestra de 119 casos de validacion interna, como se documenta en el Capitulo~\ref{cap:9}. En las pruebas reproducibles Capa 1--Capa 2--Capa 3, este modo ofrece respuestas submilisegundo y actua como mecanismo de contingencia cuando el LLM local no esta disponible o no cumple el tiempo esperado.
 
 \section{Relacion con la evaluacion}
 

@@ -1,28 +1,28 @@
-\chapter{Baseline experto de priorizacion}
+\chapter{L\'inea base heur\'istica de priorizaci\'on}
 \label{cap:anexoe}
 
 \section*{E.1. Objetivo}
 
-Este anexo documenta el baseline experto empleado como primera referencia de Capa 2.
-Su finalidad no es sustituir al modelo interpretable aprendido, sino fijar una linea
-base trazable que cualquier aproximacion RuleFit debe superar. El baseline toma
-exclusivamente senales predecisionales extraidas del texto del Registro 112 CyL y
-variables derivadas V01--V15 disponibles antes de la decision operativa.
+Este anexo documenta la l\'inea base heur\'istica empleada como primera referencia de
+Capa 2. Fue dise\~nada por el equipo a partir de criterios operativos y normativos,
+pero no ha sido validada por un panel externo de expertos. Toma exclusivamente
+se\~nales previas a la decisi\'on y las variables activas V01--V07 y V12--V15.
 
-El criterio metodologico es conservador: las reglas priorizan la proteccion de la vida
-y la deteccion de incidentes P1, aunque ello pueda reducir precision en clases
-intermedias. Esta propiedad lo hace util como patron de seguridad y como comparador
-academico.
+El criterio es conservador: las reglas priorizan la detecci\'on de incidentes P1,
+aunque ello reduzca la precisi\'on en clases intermedias. Su funci\'on es proporcionar
+una referencia transparente para determinar si RuleFit-lite aporta una mejora global.
 
-\section*{E.2. Reglas expertas}
+\section*{E.2. Reglas heur\'isticas}
 
-La Tabla~\ref{tab:baseline-experto-reglas} recoge las 16 reglas activas del baseline.
-Todas cuentan con anclaje normativo o documental y se implementan en
+La Tabla~\ref{tab:baseline-experto-reglas} recoge las 16 reglas activas. Sus anclajes
+se apoyan en la Ley 17/2015, PLANCAL, INUNCYL y la Ley 4/2007 de Castilla y Le\'on
+\cite{Ley17_2015,PLANCAL_DEC_4_2019,INUNCYL,Ley4_2007_CYL}. La implementaci\'on se
+encuentra en
 \texttt{src/capa2\_rulefit/baseline\_expert/expert\_rules.py}.
 
 \begin{table}[ht]
 \centering
-\caption{Reglas expertas del baseline de Capa 2}
+\caption{Reglas de la l\'inea base heur\'istica de Capa 2}
 \label{tab:baseline-experto-reglas}
 \scriptsize
 \begin{tabularx}{\textwidth}{|l|c|r|X|X|}
@@ -47,15 +47,27 @@ EXP-P4-SIN-SENALES-CRITICAS & P4 & 0.8 & Sin senales criticas y llamada unica & 
 \end{tabularx}
 \end{table}
 
-\section*{E.3. Metricas principales}
+\subsection*{E.2.1. Agregaci\'on y desempate}
 
-La evaluacion se realiza frente a las etiquetas academicas P1--P4 generadas por weak
-supervision y con los splits versionados de entrenamiento, validacion y test. La Tabla
-~\ref{tab:baseline-experto-metricas} resume el comportamiento del baseline.
+Cada clase parte de una puntuaci\'on inicial: P1=\(0{,}15\), P2=\(0{,}25\),
+P3=\(0{,}35\) y P4=\(0{,}25\). A continuaci\'on se suman los pesos de las reglas
+activadas. Si existe alguna regla P1, su puntuaci\'on se eleva \(0{,}75\) por encima
+del mayor valor; si no existe P1 pero s\'i P2, esta se eleva \(0{,}35\). Finalmente,
+las puntuaciones se normalizan y se selecciona la clase con mayor probabilidad.
+
+Los pesos son decisiones heur\'isticas del equipo, no par\'ametros aprendidos ni
+estimaciones de probabilidad calibrada. Este detalle limita la interpretaci\'on de sus
+salidas probabil\'isticas, aunque mantiene el procedimiento completamente auditable.
+
+\section*{E.3. M\'etricas principales}
+
+La evaluaci\'on se realiza frente a las etiquetas acad\'emicas P1--P4 generadas por
+supervisi\'on d\'ebil y con las particiones versionadas. La
+Tabla~\ref{tab:baseline-experto-metricas} resume su comportamiento.
 
 \begin{table}[ht]
 \centering
-\caption{Metricas del baseline experto}
+\caption{M\'etricas de la l\'inea base heur\'istica}
 \label{tab:baseline-experto-metricas}
 \small
 \begin{tabular}{|l|r|r|r|}
@@ -67,14 +79,29 @@ Test & 0.727835 & 0.703932 & 0.998457 \\ \hline
 \end{tabular}
 \end{table}
 
-El resultado confirma el comportamiento esperado: recall P1 muy elevado, precision
-moderada en clases intermedias y macro-F1 suficiente como referencia exigente. En el
-conjunto de test, el baseline alcanza macro-F1 de 0.703932 y recall P1 de 0.998457.
+La l\'inea base alcanza en prueba macro-F1 \(0{,}703932\) y sensibilidad P1
+\(0{,}998457\). Su elevada sensibilidad responde al dise\~no conservador, pero reduce
+la discriminaci\'on entre clases intermedias. RuleFit-lite obtiene macro-F1
+\(0{,}905604\) y sensibilidad P1 \(0{,}909924\), un equilibrio m\'as adecuado entre
+rendimiento global, detecci\'on de P1 e interpretabilidad.
+
+\begin{table}[ht]
+\centering
+\caption{Comparaci\'on resumida entre la l\'inea base y RuleFit-lite}
+\label{tab:baseline-vs-rulefit-lite}
+\small
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Modelo} & \textbf{Macro-F1 test} & \textbf{Recall P1 test} \\ \hline
+L\'inea base heur\'istica & 0.703932 & 0.998457 \\ \hline
+RuleFit-lite & 0.905604 & 0.909924 \\ \hline
+\end{tabular}
+\end{table}
 
 \section*{E.4. Limitaciones}
 
 \begin{itemize}
-    \item El baseline refleja conocimiento experto codificado manualmente; por tanto,
+    \item La l\'inea base refleja criterios operativos y normativos codificados manualmente por el equipo; por tanto,
     puede sobrerrepresentar escenarios criticos y reducir precision en P2/P3.
     \item Las reglas se validan contra etiquetas debiles academicas, no contra prioridad
     operativa real del 112, inexistente en el dataset publico.
@@ -84,6 +111,10 @@ conjunto de test, el baseline alcanza macro-F1 de 0.703932 y recall P1 de 0.9984
     atendidos o cierre administrativo, para evitar leakage.
 \end{itemize}
 
-Este baseline queda, por tanto, como referencia interpretable minima: una Capa 2
-aprendida solo resulta metodologicamente aceptable si mejora su macro-F1 sin degradar
-de forma sustancial la deteccion de P1.
+La l\'inea base debe entenderse como referencia comparativa. Su tendencia conservadora puede sobreactivar P1 y
+reducir la discriminacion entre clases intermedias. Por ello, el modelo seleccionado no
+busca unicamente maximizar recall P1, sino mantener un comportamiento interpretable y
+mas equilibrado en el conjunto de clases P1--P4.
+
+La mejora de macro-F1 obtenida por RuleFit-lite, manteniendo una sensibilidad P1 alta,
+respalda su selecci\'on para el prototipo acad\'emico.

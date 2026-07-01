@@ -38,18 +38,22 @@ La arquitectura se representa como una cadena de transformaciones controladas. L
 \begin{figure}[htbp]
 \centering
 \small
+\fbox{%
 \begin{tabular}{c}
-\texttt{IncidentInput} \\
+\texttt{Streamlit UI / cliente API} \\
 \(\downarrow\) \\
-\texttt{Capa 1 NLP -> IncidentFeatures} \\
+\texttt{FastAPI + contratos Pydantic + orquestador de pipeline} \\
 \(\downarrow\) \\
-\texttt{Capa 2 RuleFit -> PriorityRecommendation} \\
+\texttt{Capa 1: IncidentInput -> IncidentFeatures} \\
 \(\downarrow\) \\
-\texttt{Capa 3 LLM+RAG+MCP -> OperatorRecommendation} \\
+\texttt{Capa 2: RuleFit-lite + Safety Gate -> PriorityRecommendation} \\
 \(\downarrow\) \\
-\texttt{OperatorDecision + InferenceLog}
+\texttt{Capa 3: RAG ChromaDB + servidor MCP localhost + Ollama local} \\
+\(\downarrow\) \\
+\texttt{OperatorRecommendation -> SQLite / InferenceLog / OperatorDecision}
 \end{tabular}
-\caption{Flujo logico de inferencia del sistema.}
+}
+\caption{Arquitectura integrada de tres capas con contratos versionados y componentes locales.}
 \label{fig:flujo-logico-sistema}
 \end{figure}
 
@@ -164,7 +168,21 @@ La ejecucion diagnostica con \texttt{imodels} queda como contraste externo de la
 
 La salida de Capa 2 incluye una distribucion de probabilidad sobre P1--P4. El contrato exige que las probabilidades sumen 1, que la prioridad recomendada coincida con el argmax y que los incidentes P1/P2 incluyan al menos una regla activada cuando el modelo usado sea RuleFit o baseline experto.
 
-El nivel de confianza se deriva de la probabilidad maxima: alta si \(p_{max} \geq 0{,}80\), media entre 0,60 y 0,80, baja entre 0,40 y 0,60, y desconocida por debajo de 0,40. Esta confianza no sustituye la prioridad. Un incidente puede ser P1 con confianza media si hay indicios graves pero informacion incompleta.
+El nivel de confianza se deriva estrictamente de la probabilidad maxima del vector contractual: alta si \(p_{max} \geq 0{,}80\), media entre 0,60 y 0,80, baja entre 0,40 y 0,60, y desconocida por debajo de 0,40. Esta confianza no mide la gravedad fisica del suceso. Un incidente puede ser P1 con confianza baja o media si hay indicios criticos pero informacion fragmentaria; del mismo modo, un caso P4 puede tener confianza alta si las se\~nales disponibles son claras.
+
+\subsection{Puerta de Seguridad}
+
+Para garantizar la alineacion con PLANCAL y la Ley 17/2015 de Proteccion Civil, el dise\~no de la Capa 2 incorpora un modulo post-procesador denominado Puerta de Seguridad (\textit{Safety Gate}). Este componente actua como un sistema de filtrado duro sobre el argmax probabilistico de RuleFit-lite. Su funcion no es sustituir al modelo interpretable, sino impedir que determinados patrones predecisionales de alto riesgo queden infrapriorizados por ruido estadistico, escasez de datos o ambiguedad textual.
+
+Conceptualmente, si RuleFit-lite produce una prioridad \(\hat{y}=\arg\max_{c \in \{P1,P2,P3,P4\}} p(c)\), la Puerta de Seguridad evalua un conjunto de predicados deterministas \(S_i(x)\) sobre \texttt{IncidentFeatures}. Cuando alguno de los predicados criticos se activa, la prioridad se fuerza a \(P1\) o \(P2\), se inyecta una regla de seguridad con peso alto y se adjuntan anclajes normativos para la explicacion posterior. El vector de probabilidad se redistribuye de forma determinista con probabilidad dominante:
+
+\[
+p'(y_{seguro}) = 0{,}97,\qquad p'(c \neq y_{seguro}) = 0{,}01.
+\]
+
+En v0.1.0, la Puerta de Seguridad fuerza P1 ante riesgo vital, fallecido, riesgo vital textual, multirriesgo en emplazamiento critico, incendio forestal con propagacion, incendio con propagacion en emplazamiento critico, intoxicacion grave, rescate complejo con baja accesibilidad o multiples victimas estimadas. Fuerza P2 cuando existen se\~nales operativas relevantes como herido grave, atrapamiento, intoxicacion, rescate activo o episodio meteorologico/inundacion en emplazamiento critico, siempre que no se cumpla un criterio P1. Esta logica mantiene el principio de prudencia: ante indicadores predecisionales criticos, el sistema prefiere elevar la prioridad y exigir revision humana.
+
+La regla inyectada por la Puerta de Seguridad se incorpora a \texttt{activated\_rules} con identificadores como \texttt{SAFE-GATE-P1-RIESGO-VITAL} o \texttt{SAFE-GATE-P2-OPERATIVO}. De este modo, Capa 3 puede explicar que la recomendacion no procede solo del argmax estadistico, sino tambien de una salvaguarda determinista trazable. La salida forzada marca \texttt{requires\_human\_attention=true}, reforzando que el operador conserva la decision final.
 
 \section{Capa 3: explicacion normativa con LLM, RAG y MCP}
 
@@ -188,9 +206,35 @@ La Capa 3 expone tres herramientas MCP en v0.1.0: \texttt{search\_normative}, \t
 
 Estas herramientas permiten consultar corpus, recuperar detalle de reglas y construir citas legales. El uso de MCP separa la capacidad del LLM de las funciones verificables del sistema: buscar, citar y explicar reglas son operaciones con entradas y salidas controladas.
 
+\subsection{Cache de sesion en Capa 3}
+
+La Capa 3 incorpora una cache de sesion para evitar llamadas redundantes al LLM cuando se procesa el mismo texto operativo con la misma prioridad recomendada. La clave de cache se genera mediante SHA-256 a partir de la concatenacion del texto del incidente y la prioridad: \texttt{sha256(texto || prioridad)}. Esta decision reduce latencia en demostraciones y pruebas repetidas, sin alterar la recomendacion de Capa 2 ni los contratos de salida.
+
+El resultado cacheado es un objeto Pydantic \texttt{OperatorRecommendation}. Como ese objeto conserva el \texttt{incident\_id} del primer incidente que genero la explicacion, la implementacion clona el objeto mediante \texttt{model\_copy(update=\{...\})} cuando el \texttt{incident\_id} de la nueva inferencia es distinto. Esta copia evita colisiones en los logs de auditoria cruzada y mantiene la consistencia contractual: cada \texttt{InferenceLog} conserva hijos con el mismo identificador de incidente.
+
 \section{Orquestador, fallback y latencia}
 
 El backend actua como orquestador. Recibe la entrada, valida el contrato, ejecuta Capa 1, invoca Capa 2, llama a Capa 3 si procede, registra latencias y devuelve la recomendacion al cliente. Tambien gestiona errores, timeouts y modo degradado.
+
+\begin{figure}[htbp]
+\centering
+\small
+\fbox{%
+\begin{tabular}{c}
+\texttt{IncidentInput} \\
+\(\downarrow\) \\
+\texttt{IncidentFeatures (Capa 1)} \\
+\(\downarrow\) \\
+\texttt{PriorityRecommendation = RuleFit-lite + Safety Gate (Capa 2)} \\
+\(\downarrow\) \\
+\texttt{OperatorRecommendation = RAG + LLM local / modo degradado (Capa 3)} \\
+\(\downarrow\) \\
+\texttt{OperatorDecision + InferenceLog}
+\end{tabular}
+}
+\caption{Secuencia de inferencia desde la entrada del incidente hasta la decision humana.}
+\label{fig:secuencia-inferencia-cap6}
+\end{figure}
 
 El dise\~no contempla varios fallback:
 
@@ -201,11 +245,13 @@ El dise\~no contempla varios fallback:
     \item Si la entrada contiene campos prohibidos, el sistema rechaza la solicitud en lugar de degradar silenciosamente.
 \end{itemize}
 
-Los objetivos de latencia son exigentes: Capa 1 + Capa 2 deben responder en p95 igual o inferior a 500 ms, y la pipeline completa con Capa 3 debe mantenerse por debajo de 2 s p95. Estos valores son objetivos de evaluacion, no garantias certificadas de despliegue productivo.
+Los objetivos de latencia son exigentes: Capa 1 + Capa 2 deben responder en p95 igual o inferior a 500 ms, y la pipeline completa con Capa 3 debe aspirar a mantenerse por debajo de 2 s p95. Estos valores son objetivos de dise\~no, no garantias certificadas de despliegue productivo.
+
+El smoke test integrado con backend vivo y Ollama local reporta una latencia media de 4.897,888 ms por inferencia completa. Esta cifra evidencia la brecha entre el SLA objetivo y la ejecucion local con LLM real en hardware no dedicado. Por ello, el modo degradado no es un accesorio, sino un mecanismo de contingencia: si Ollama no responde o supera el tiempo esperado, Capa 3 genera una explicacion determinista basada en reglas activadas, probabilidades y plantillas, con latencia sub-milisegundo en las pruebas controladas. Asi, la recomendacion de Capa 2 no queda bloqueada por el componente generativo y el sistema conserva una via operativa compatible con escenarios de alta presion.
 
 \section{Trazabilidad y auditoria}
 
-Cada inferencia genera un \texttt{InferenceLog}. El log incluye hash de entrada, snapshots de las salidas por capa, versiones de modelo, latencias, herramientas invocadas, timestamp y decision del operador si existe. Esta informacion permite reconstruir por que el sistema recomendo una prioridad y que hizo finalmente la persona responsable.
+Cada inferencia genera un \texttt{InferenceLog}. El log incluye hash de entrada, snapshots de las salidas por capa, versiones de modelo, latencias, herramientas invocadas, timestamp y decision del operador si existe. Esta informacion permite reconstruir por que el sistema recomendo una prioridad y que hizo finalmente la persona responsable. La persistencia de \texttt{OperatorDecision} y la conservacion de snapshots por capa materializan los principios de supervision humana y trazabilidad exigibles en sistemas de alto impacto, en coherencia con el Reglamento Europeo de Inteligencia Artificial \cite{EUAIAct2024}.
 
 La trazabilidad sirve para tres fines. Primero, auditoria tecnica: comprobar que el sistema uso los modelos y contratos esperados. Segundo, evaluacion academica: medir errores, falsos negativos P1, calibracion y divergencias operador-sistema. Tercero, conformidad responsable: demostrar supervision humana, registro de decisiones y control de cambios.
 

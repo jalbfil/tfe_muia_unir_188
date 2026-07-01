@@ -37,15 +37,42 @@ La Capa 2 del sistema utiliza RuleFit como nucleo interpretable. RuleFit combina
 
 El proyecto mantiene tambien un baseline experto y una ejecucion diagnostica con \texttt{imodels}. El baseline experto permite disponer de una referencia transparente, construida a partir de conocimiento normativo y se\~nales operativas. La comparativa con \texttt{imodels} permite contrastar la familia RuleFit recomendada con una implementacion externa, sin sustituir el nucleo reproducible seleccionado para v0.1.0. Esta separacion evita presentar un modelo opaco o poco controlado como decision operativa en un dominio de alto impacto.
 
+La inclusion de un baseline experto basado en reglas heuristicas tradicionales y de un modelo alternativo tipo One-vs-Rest mediante \texttt{imodels.RuleFitClassifier} permite delimitar la ventaja analitica de la propuesta. El contraste experimental valida que la version optimizada RuleFit-lite seleccionada no solo mejora el rendimiento global, sino que reduce significativamente el coste computacional frente a implementaciones canonicas de la literatura.
+
 La literatura sobre interpretabilidad refuerza esta decision. Rudin \citeyear{Rudin2019} defiende que, en decisiones de alto riesgo, debe preferirse un modelo interpretable desde el dise\~no cuando sea viable, en lugar de explicar a posteriori una caja negra. Esta idea es coherente con la arquitectura del TFM: RuleFit decide la prioridad; el LLM explica y comunica, pero no decide de forma autonoma.
 
 \section{Explicabilidad, LLM local, RAG y MCP}
 
 La explicabilidad en este TFM no se reduce a mostrar una probabilidad. La recomendacion debe acompa\~narse de reglas activadas, confianza, advertencias cuando proceda y citas normativas. Para ello, la Capa 3 utiliza un LLM local cuantizado \cite{Llama3_2024,Qwen25_2024}, recuperacion aumentada sobre un corpus normativo de Castilla y Leon y herramientas MCP.
 
-El uso de un LLM local responde a dos necesidades: generar explicaciones comprensibles para el operador y preservar soberania del dato. La recuperacion aumentada (RAG) \citeA{Lewis2020RAG} evita que la explicacion dependa solo de memoria generativa: el sistema consulta fragmentos del corpus normativo, recuperados mediante embeddings tipo Sentence-BERT \cite{Reimers2019SBERT}, y los utiliza para sustentar citas legales. MCP aporta un mecanismo estandar para exponer herramientas como busqueda normativa, detalle de reglas y cita legal de prioridades; \citeA{Anthropic2024MCP} lo presento como un protocolo abierto para conectar asistentes de IA con fuentes de datos y herramientas externas.
+\begin{figure}[htbp]
+\centering
+\fbox{%
+\begin{minipage}{0.92\textwidth}
+\centering
+\small
+\textbf{Entrada de texto del incidente}
+$\rightarrow$
+\textbf{Extraccion de se\~nales (Capa 1)}
+$\rightarrow$
+\textbf{Recomendacion y reglas activas (Capa 2)}
+$\rightarrow$
+\textbf{Orquestador RAG + prompt (Capa 3)}
+$\rightarrow$
+\textbf{Explicacion para el operador (HITL)}
+\end{minipage}
+}
+\caption{Flujo conceptual XAI: separacion entre modelo decisor interpretable y capa generativa explicativa.}
+\label{fig:flujo-xai-rulefit-rag}
+\end{figure}
 
-Esta capa debe entenderse con precision metodologica. El LLM no decide la prioridad ni debe inventar fundamento juridico. Su funcion es traducir una recomendacion ya calculada en una explicacion breve, trazable y revisable, con modo degradado si el modelo no esta disponible o supera el SLA.
+El uso de un LLM local responde a dos necesidades: generar explicaciones comprensibles para el operador y preservar soberania del dato. La recuperacion aumentada (RAG) \citeA{Lewis2020RAG} evita que la explicacion dependa solo de memoria generativa: el sistema consulta fragmentos del corpus normativo, recuperados mediante embeddings tipo Sentence-BERT \cite{Reimers2019SBERT}, y los utiliza para sustentar citas legales. En el prototipo real se utiliza el codificador de sentencias \texttt{paraphrase-multilingual-MiniLM-L12-v2}, por su equilibrio entre soporte multilingue, cobertura para textos en espa\~nol e ingles y ligereza operativa en ejecucion local. MCP aporta un mecanismo estandar para exponer herramientas como busqueda normativa, detalle de reglas y cita legal de prioridades; \citeA{Anthropic2024MCP} lo presento como un protocolo abierto para conectar asistentes de IA con fuentes de datos y herramientas externas.
+
+El uso de un codificador de sentencias ligero como \texttt{paraphrase-multilingual-MiniLM-L12-v2}, con 384 dimensiones de \textit{embedding}, permite resolver busquedas semanticas sobre el corpus normativo local con baja latencia, mantener el consumo de memoria dentro del perfil de hardware local y asegurar que las explicaciones normativas se nutran de fragmentos legales exactos de forma reproducible.
+
+Esta capa debe entenderse con precision metodologica. El LLM no decide la prioridad, no la recalcula y no debe inventar fundamento juridico. Su funcion es traducir una recomendacion ya calculada por Capa 2 en una explicacion breve, trazable y revisable. La fundamentacion juridica se obtiene de fragmentos recuperados del corpus normativo y de las reglas activadas por el modelo interpretable, de modo que la orquestacion no convierte al LLM en una caja negra decisoria.
+
+El riesgo de alucinacion se mitiga mediante tres salvaguardas implementadas en el prototipo. Primero, la temperatura de inferencia se fija estrictamente en \texttt{0.0}. Segundo, la busqueda RAG queda acotada a fragmentos del corpus BOCYL/BOE incorporado al repositorio. Tercero, si el modelo local no responde o supera el SLA, se activa un modo degradado determinista que genera explicaciones automaticas a partir de plantillas, reglas activadas y metadatos de Capa 2.
 
 \section{Sistemas y referencias relacionadas}
 

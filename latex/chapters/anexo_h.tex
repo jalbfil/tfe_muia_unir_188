@@ -51,7 +51,7 @@ contratos y trazabilidad de tareas \cite{GitHubSpecKit2024}. Se ha utilizado par
 
 Docker Desktop incluye un servidor MCP (Model Context Protocol) que expone
 herramientas para asistentes de IA. Se han utilizado dos herramientas de este
-kit durante la investigacion bibliografica y de estado del arte:
+kit durante la investigacion bibliografica y de estado del arte \cite{DockerMCPToolkit2024}:
 
 \begin{itemize}
     \item \textbf{paper-search}: busqueda semantica de articulos academicos en
@@ -61,6 +61,30 @@ kit durante la investigacion bibliografica y de estado del arte:
     oficiales (BOE, BOCYL) y documentacion tecnica de herramientas empleadas en
     el prototipo.
 \end{itemize}
+
+\subsection*{H.2.4. Asistentes de codificacion basados en LLM (2026)}
+
+Tambien se han utilizado asistentes de codificacion basados en modelos de lenguaje,
+incluyendo GitHub Copilot en Visual Studio Code \cite{GitHubCopilot2023} y asistentes
+del ecosistema Google Gemini/Antigravity \cite{GoogleGemini2026}, siempre como
+herramientas auxiliares bajo supervision directa de los
+autores. Su uso se ha limitado a:
+
+\begin{itemize}
+    \item apoyo en depuracion, lectura de errores y saneamiento de integraciones entre
+    ramas;
+    \item revision de coherencia entre contratos Pydantic, tests, scripts de evaluacion
+    y documentacion tecnica;
+    \item asistencia en redaccion tecnica, formateo LaTeX y preparacion de reportes
+    comparativos;
+    \item propuesta de mejoras, que fueron aceptadas, modificadas o descartadas por los
+    autores responsables.
+\end{itemize}
+
+Todas las decisiones tecnicas finales, entrenamientos de modelos, ejecucion de scripts y
+redaccion definitiva de resultados numericos son responsabilidad directa y exclusiva de
+los autores. El uso de estos asistentes no sustituye la autoria ni la validacion humana
+del trabajo.
 
 \section*{H.3. Limite del uso declarado}
 
@@ -82,7 +106,7 @@ El historial de uso de herramientas de asistencia queda trazado implicitamente
 en el registro de commits del repositorio Git del proyecto:
 
 \begin{center}
-\url{https://github.com/bripedev-source/tfe_muia_unir_188}
+\url{https://github.com/jalbfil/tfe_muia_unir_188}
 \end{center}
 
 Cada commit referencia la tarea de la especificacion que lo motiva y el autor
