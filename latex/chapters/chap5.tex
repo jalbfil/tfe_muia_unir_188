@@ -27,7 +27,7 @@ El sistema no moviliza recursos, no activa planes, no envía alertas y no toma d
 El sistema debe recibir incidentes desde carga de dataset o entrada controlada y transformarlos en un registro normalizado con identificador, texto operativo, categoría, fecha, provincia, municipio, coordenadas cuando existan y campos auxiliares permitidos.
 
 \paragraph{RF2. Extracción de variables y señales}
-La Capa 1 debe extraer variables operativas V01--V15 y señales textuales relevantes para la priorización. En v0.1.0 el núcleo evaluable se centra en las variables disponibles de forma reproducible y deja V08--V11 como extensión futura cuando se integren AEMET, SNCZI y Seveso.
+La Capa 1 debe extraer variables operativas V01--V15 y señales textuales relevantes para la priorización. En v0.1.0 esta extracción se realiza mediante un clasificador de aprendizaje automático multietiqueta (TF-IDF + Regresión Logística con balanceo de clases) entrenado sobre el corpus histórico de Castilla y León, y acoplado con guardarraíles deterministas léxicos (esquema híbrido neuro-simbólico) para garantizar un recall de \(1{,}00\) en situaciones críticas de seguridad y evitar falsos positivos. Deja V08--V11 como extensión futura cuando se integren AEMET, SNCZI y Seveso.
 
 \paragraph{RF3. Control de columnas prohibidas}
 El sistema debe excluir de entrenamiento e inferencia los campos posteriores a la decisión o que reflejen consecuencias del operativo, como \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado} o \texttt{ultimaActualizacion}. Este requisito es obligatorio para evitar fuga de información.

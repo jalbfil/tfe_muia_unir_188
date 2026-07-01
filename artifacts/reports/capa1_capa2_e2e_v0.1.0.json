@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-17T15:28:15.185531+00:00",
+  "generated_at": "2026-07-01T16:31:00.569958+00:00",
   "scope": "T040-T049/T091 compatibility validation without LLM installation",
   "environment": {
-    "python_version": "3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 15:03:56) [MSC v.1929 64 bit (AMD64)]",
+    "python_version": "3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]",
     "rulefit_model_path": "artifacts\\models\\capa2\\v0.1.0\\rulefit.joblib",
     "rulefit_model_available": true,
     "llm_installed": false,
@@ -15,9 +15,9 @@
     "capa2_models_used": [
       "RULEFIT"
     ],
-    "mean_capa1_latency_ms": 0.74972,
-    "mean_capa2_latency_ms": 285.82126,
-    "mean_capa3_degraded_latency_ms": 0.04788
+    "mean_capa1_latency_ms": 4.58844,
+    "mean_capa2_latency_ms": 52.16898,
+    "mean_capa3_degraded_latency_ms": 0.30748
   },
   "capa1_signal_metrics": {
     "signals": {
@@ -86,12 +86,12 @@
       },
       "signal_rescate": {
         "tp": 0,
-        "fp": 0,
+        "fp": 2,
         "fn": 0,
-        "tn": 5,
-        "precision": 1.0,
+        "tn": 3,
+        "precision": 0.0,
         "recall": 1.0,
-        "f1": 1.0
+        "f1": 0.0
       },
       "signal_meteo_inundacion": {
         "tp": 1,
@@ -104,18 +104,18 @@
       },
       "riesgo_vital_textual": {
         "tp": 2,
-        "fp": 0,
+        "fp": 1,
         "fn": 0,
-        "tn": 3,
-        "precision": 1.0,
+        "tn": 2,
+        "precision": 0.666667,
         "recall": 1.0,
-        "f1": 1.0
+        "f1": 0.8
       }
     },
     "micro": {
-      "precision": 0.916667,
+      "precision": 0.733333,
       "recall": 1.0,
-      "f1": 0.956522
+      "f1": 0.846154
     }
   },
   "cases": [
@@ -151,7 +151,7 @@
         "signal_varias_llamadas": true,
         "signal_incendio": true,
         "signal_accidente_trafico": false,
-        "signal_rescate": false,
+        "signal_rescate": true,
         "signal_meteo_inundacion": false,
         "riesgo_vital_textual": true
       },
@@ -162,9 +162,9 @@
       "priority_recommended": "P1",
       "priority_ok": true,
       "probabilities": {
-        "P1": 0.97353,
-        "P2": 0.026133,
-        "P3": 0.000337,
+        "P1": 0.940525,
+        "P2": 0.059473,
+        "P3": 2e-06,
         "P4": 0.0
       },
       "confidence_level": "HIGH",
@@ -174,9 +174,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: signal_intoxicacion > 0.500 & signal_varias_llamadas > 0.500.",
       "latency_ms": {
-        "capa1": 1.1114,
-        "capa2": 1427.1465,
-        "capa3_degraded": 0.1011
+        "capa1": 5.8177,
+        "capa2": 255.5525,
+        "capa3_degraded": 1.2448
       },
       "passed": true
     },
@@ -211,9 +211,9 @@
         "signal_varias_llamadas": false,
         "signal_incendio": false,
         "signal_accidente_trafico": true,
-        "signal_rescate": false,
+        "signal_rescate": true,
         "signal_meteo_inundacion": false,
-        "riesgo_vital_textual": false
+        "riesgo_vital_textual": true
       },
       "signals_ok": true,
       "acceptable_priorities": [
@@ -223,21 +223,21 @@
       "priority_recommended": "P1",
       "priority_ok": true,
       "probabilities": {
-        "P1": 0.997046,
-        "P2": 0.000116,
-        "P3": 0.002836,
-        "P4": 2e-06
+        "P1": 0.999989,
+        "P2": 1.1e-05,
+        "P3": 0.0,
+        "P4": 0.0
       },
       "confidence_level": "HIGH",
       "model_used_capa2": "RULEFIT",
-      "activated_rules_count": 6,
+      "activated_rules_count": 1,
       "capa3_model": "degraded-static-v0.1.0",
-      "capa3_citations": 3,
-      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: Riesgo vital explícito requiere máxima prioridad académica; Herido grave atrapado combina daño personal y rescate urgente; Herido grave sin fallecimiento mantiene prioridad ",
+      "capa3_citations": 1,
+      "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: riesgo_vital_textual > 0.500 & signal_accidente_trafico > 0.500 & signal_rescate > 0.500.",
       "latency_ms": {
-        "capa1": 0.6855,
-        "capa2": 0.5714,
-        "capa3_degraded": 0.0569
+        "capa1": 3.8956,
+        "capa2": 1.3225,
+        "capa3_degraded": 0.0827
       },
       "passed": true
     },
@@ -295,9 +295,9 @@
       "capa3_citations": 2,
       "explanation_excerpt": "Incidente clasificado como MÁXIMA URGENCIA (P1). Reglas activadas: Puerta de seguridad: Presencia de fallecido, riesgo vital inminente o soporte vital detectado.; signal_intoxicacion > 0.500 & signal_varias_llamadas <= 0.500 & cat_incendio ",
       "latency_ms": {
-        "capa1": 0.7275,
-        "capa2": 0.4379,
-        "capa3_degraded": 0.0318
+        "capa1": 4.0072,
+        "capa2": 1.107,
+        "capa3_degraded": 0.0797
       },
       "passed": true
     },
@@ -356,9 +356,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como URGENCIA ALTA (P2). Reglas activadas: signal_intoxicacion <= 0.500 & signal_meteo_inundacion > 0.500 & riesgo_vital_textual <= 0.500; riesgo_vital_textual <= 0.500 & signal_accidente_trafico <= 0.500 & cat_incendi",
       "latency_ms": {
-        "capa1": 0.5525,
-        "capa2": 0.383,
-        "capa3_degraded": 0.0233
+        "capa1": 4.1927,
+        "capa2": 1.1535,
+        "capa3_degraded": 0.0777
       },
       "passed": true
     },
@@ -417,9 +417,9 @@
       "capa3_citations": 1,
       "explanation_excerpt": "Incidente clasificado como URGENCIA MEDIA (P3). Reglas activadas: Accidente de tráfico sin señal crítica conserva prioridad de seguimiento.",
       "latency_ms": {
-        "capa1": 0.6717,
-        "capa2": 0.5675,
-        "capa3_degraded": 0.0263
+        "capa1": 5.029,
+        "capa2": 1.7094,
+        "capa3_degraded": 0.0525
       },
       "passed": true
     }

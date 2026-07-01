@@ -66,6 +66,19 @@ class QwenWrapper:
                 self._resolved_model_name = name
                 return name
 
+        # Fallback si no hay coincidencia exacta o parcial: usar cualquier modelo que contenga 'llama' o 'qwen'
+        for name in models:
+            if "llama" in name.lower() or "qwen" in name.lower():
+                self._resolved_model_name = name
+                logger.warning("Modelo '%s' no encontrado. Usando fallback por familia: '%s'", self._model_name, name)
+                return name
+
+        # Fallback final: usar el primer modelo disponible en Ollama
+        if models:
+            self._resolved_model_name = models[0]
+            logger.warning("Modelo '%s' no encontrado. Usando primer modelo disponible: '%s'", self._model_name, models[0])
+            return models[0]
+
         return None
 
     def is_available(self) -> bool:
