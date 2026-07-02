@@ -62,7 +62,7 @@ La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del da
 
 \subsection{Auditoria inicial}
 
-La auditoria del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. En la version v0.1.0 esta tarea queda materializada en \texttt{scripts/audit\_dataset.py} y en los informes de \texttt{resources/dataset/audit}. El dataset final utilizado en v0.1.0 conserva 9.380 registros validos, 41 columnas, cobertura temporal entre 2008-07-28 y 2022-12-31, ausencia de fechas invalidas, 0 identificadores duplicados y cobertura de coordenadas del 99,24\%. Estos datos constituyen la base reproducible del entrenamiento y evaluacion, siempre diferenciando los datos reales del Registro 112 CyL de la etiqueta academica P1--P4 generada mediante supervision debil.
+La auditoria del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geografica y distribucion por provincia y categoria. El conjunto final conserva 9.380 registros validos, 41 columnas, cobertura temporal entre 2008-07-28 y 2022-12-31, ausencia de fechas invalidas, 0 identificadores duplicados y cobertura de coordenadas del 99,24\%. Estos datos constituyen la base empirica del entrenamiento y evaluacion, siempre diferenciando los datos reales del Registro 112 CyL de la etiqueta academica P1--P4 generada mediante supervision debil.
 
 \begin{table}[htbp]
 \centering
@@ -88,9 +88,9 @@ La auditor\'ia precede a la presentaci\'on de resultados para que las m\'etricas
 
 \section{Limpieza y normalizacion}
 
-La limpieza transforma el fichero bruto en una representacion apta para contratos. Las operaciones implementadas son: lectura robusta del CSV historico; eliminacion de columnas vacias o irrelevantes; normalizacion de nombres; limpieza de HTML; union de titulo y descripcion en un texto operativo; normalizacion para extraccion de patrones; parseo de fechas; separacion de coordenadas; derivacion de provincia; mapeo de \texttt{TipoIncidente} a categoria preliminar; e identificacion de columnas prohibidas.
+La limpieza transforma el fichero bruto en una representacion apta para el analisis. Las operaciones aplicadas son: lectura robusta del historico; eliminacion de columnas vacias o irrelevantes; normalizacion de nombres; limpieza de HTML; union de titulo y descripcion en un texto operativo; normalizacion para extraccion de patrones; parseo de fechas; separacion de coordenadas; derivacion de provincia; mapeo de \texttt{TipoIncidente} a categoria preliminar; e identificacion de columnas prohibidas.
 
-El resultado debe conservar trazabilidad con el identificador original. Cada transformacion relevante debe ser reproducible mediante script y, cuando afecte al entrenamiento, quedar versionada.
+El resultado conserva trazabilidad con el identificador original. Cada transformacion relevante queda documentada para que el entrenamiento y la evaluacion puedan reproducirse sin depender de decisiones manuales ocultas.
 
 \section{Variables V01--V15}
 
@@ -101,7 +101,7 @@ El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 tra
 \scriptsize
 \begin{tabular}{|p{1.0cm}|p{4.0cm}|p{3.9cm}|p{4.0cm}|}
 \hline
-\textbf{Var.} & \textbf{Variable} & \textbf{Origen principal} & \textbf{Estado v0.1.0} \\ \hline
+\textbf{Var.} & \textbf{Variable} & \textbf{Origen principal} & \textbf{Estado en el estudio} \\ \hline
 V01 & Riesgo vital & Texto + se\~nales + etiquetado & Activa \\ \hline
 V02 & Numero de victimas estimado & Texto + etiquetado & Activa \\ \hline
 V03 & Gravedad de lesiones & Texto + etiquetado & Activa \\ \hline
@@ -109,20 +109,20 @@ V04 & Tipo de incidente normalizado & Titulo, descripcion y categoria preliminar
 V05 & Poblacion vulnerable & Texto + reglas + revision & Activa \\ \hline
 V06 & Numero de llamadas & Texto, agrupacion o indicios de varios avisos & Activa \\ \hline
 V07 & Emplazamiento critico & Texto/localidad + reglas & Activa \\ \hline
-V08 & Aviso AEMET & Fuente externa & Diferida v0.2.0 \\ \hline
-V09 & Condicion meteorologica adversa & Texto/fuente externa & Diferida v0.2.0 \\ \hline
-V10 & Zona inundable & Cruce geoespacial & Diferida v0.2.0 \\ \hline
-V11 & Proximidad Seveso & Registro externo & Diferida v0.2.0 \\ \hline
+V08 & Aviso AEMET & Fuente externa & Diferida \\ \hline
+V09 & Condicion meteorologica adversa & Texto/fuente externa & Diferida \\ \hline
+V10 & Zona inundable & Cruce geoespacial & Diferida \\ \hline
+V11 & Proximidad Seveso & Registro externo & Diferida \\ \hline
 V12 & Riesgo de propagacion & Texto + INFOCAL & Activa \\ \hline
 V13 & Multirriesgo & Texto + concurrencia de se\~nales & Activa \\ \hline
 V14 & Avisos simultaneos en zona & Texto/agrupacion temporal-geografica & Activa \\ \hline
 V15 & Accesibilidad de recursos & Localizacion + reglas aproximadas & Activa \\ \hline
 \end{tabular}
-\caption{Variables V01--V15 y estado dentro del alcance v0.1.0.}
+\caption{Variables V01--V15 y estado dentro del alcance evaluado.}
 \label{tab:variables-cap7}
 \end{table}
 
-Las variables V08--V11 se mantienen en el contrato para preservar la evoluci\'on futura del sistema, pero no se emplean como entrada del modelo v0.1.0 ni condicionan sus resultados.
+Las variables V08--V11 se mantienen como parte del dise\~no conceptual para preservar la evoluci\'on futura del sistema, pero no se emplean como entrada del modelo evaluado ni condicionan sus resultados.
 
 \section{Se\~nales operativas textuales}
 
@@ -138,7 +138,7 @@ La guia de etiquetado define cuatro niveles: P1 critica, P2 alta, P3 media y P4 
 
 \section{Supervisi\'on d\'ebil}
 
-La supervisi\'on d\'ebil permite construir etiquetas de entrenamiento a partir de varias funciones de etiquetado imperfectas. En v0.1.0 se implementan cuatro aproximaciones deterministas:
+La supervisi\'on d\'ebil permite construir etiquetas de entrenamiento a partir de varias funciones de etiquetado imperfectas. En este trabajo se emplean cuatro aproximaciones deterministas:
 
 \begin{enumerate}
     \item \textbf{Reglas heur\'isticas}: aplica una puntuaci\'on de gravedad sobre se\~nales textuales, categor\'ia preliminar y variables permitidas.
@@ -153,11 +153,11 @@ Los votos se agregan mediante votaci\'on ponderada. Los pesos son \(0{,}85\) par
 
 El objetivo m\'inimo es Krippendorff \(\alpha \geq 0{,}67\). La ejecuci\'on can\'onica alcanza \(\alpha = 0{,}899902\), por encima del umbral establecido. Este valor aporta evidencia de consistencia entre funciones, pero debe interpretarse con cautela: las fuentes comparten patrones y dos de ellas emplean una puntuaci\'on muy similar, por lo que no constituyen anotadores plenamente independientes.
 
-Adem\'as, se ha preparado una muestra de revisi\'on interna superior al m\'inimo previsto. Sus campos de decisi\'on humana no est\'an cumplimentados en v0.1.0, por lo que constituye un instrumento preparado y no una validaci\'on humana completada.
+Adem\'as, se ha preparado una muestra de revisi\'on interna superior al m\'inimo previsto. Sus campos de decisi\'on humana no forman parte de la evaluacion cuantitativa principal, por lo que la muestra debe entenderse como instrumento de auditoria y no como validacion externa completada.
 
 \subsection{Ablacion anti-circularidad}
 
-La supervisi\'on d\'ebil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablaci\'on sin la fuente de reglas heur\'isticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten se\~nales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitaci\'on metodol\'ogica de v0.1.0.
+La supervisi\'on d\'ebil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablaci\'on sin la fuente de reglas heur\'isticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten se\~nales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitaci\'on metodol\'ogica del estudio.
 
 \section{Prevencion de leakage}
 
@@ -185,7 +185,7 @@ El sistema excluye de forma explicita variables que no estarian disponibles en e
 \label{tab:leakage-cap7}
 \end{table}
 
-Estas columnas pueden conservarse en zonas controladas de auditoria o evaluacion ex post, siempre separadas del entrenamiento e inferencia. El repositorio incluye un test de leakage que escanea los modulos de Capa 1 y Capa 2 para impedir referencias no permitidas.
+Estas columnas pueden conservarse para auditoria o evaluacion ex post, siempre separadas del entrenamiento y de la inferencia. El control aplicado impide que Capa 1 o Capa 2 dependan de informacion posterior a la primera decision.
 
 \begin{table}[htbp]
 \centering
@@ -209,7 +209,7 @@ La division de datos debe impedir que el modelo vea en entrenamiento informacion
 
 \subsection{Partici\'on estratificada}
 
-La partici\'on principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validaci\'on y 1.453 de prueba, preservando la distribuci\'on por prioridad, a\~no y provincia con semilla fija 42. La partici\'on de prueba contiene P1=655, P2=349, P3=375 y P4=74, conforme al reporte can\'onico \texttt{artifacts/reports/evaluation\_v0.1.0.json}.
+La partici\'on principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validaci\'on y 1.453 de prueba, preservando la distribuci\'on por prioridad, a\~no y provincia con semilla fija. La partici\'on de prueba contiene P1=655, P2=349, P3=375 y P4=74, y es la referencia usada posteriormente en la evaluacion final.
 
 \begin{table}[htbp]
 \centering
@@ -222,7 +222,7 @@ Validaci\'on estratificada & 1.415 & P1=658; P2=329; P3=374; P4=54 \\ \hline
 Test estratificado & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
 Test temporal 2022 & 735 & Evaluacion de estabilidad fuera del periodo principal \\ \hline
 \end{tabular}
-\caption{Distribuci\'on de las particiones adoptadas en v0.1.0.}
+\caption{Distribuci\'on de las particiones adoptadas en el estudio.}
 \label{tab:splits-final-cap7}
 \end{table}
 
@@ -230,7 +230,7 @@ Test temporal 2022 & 735 & Evaluacion de estabilidad fuera del periodo principal
 
 La partici\'on temporal eval\'ua robustez fuera del periodo de entrenamiento. La versi\'on ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tama\~nos son 7.935, 710 y 735 registros, respectivamente.
 
-Ambos splits son necesarios. El estratificado mide rendimiento general controlando distribucion; el temporal mide estabilidad ante cambio de periodo.
+Ambas particiones son necesarias. La estratificada mide rendimiento general controlando la distribucion; la temporal mide estabilidad ante cambio de periodo.
 
 \section{Uso en entrenamiento y evaluacion}
 
@@ -240,12 +240,12 @@ El dataset resultante alimenta tres usos distintos: pruebas de extraccion de Cap
 
 Las limitaciones deben quedar explicitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas debiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construccion academica trazable y reproducible. Cualquier cambio en la guia de etiquetado, en los splits o en el dataset limpio obliga a repetir la evaluacion.
 
-La segunda limitacion es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del nucleo v0.1.0. La quinta es que la validacion externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoria.
+La segunda limitacion es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del nucleo evaluado. La quinta es que la validacion externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoria.
 
 \section{Conclusiones}
 
 El dise\~no de datos presentado en este capitulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un dataset totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
 
-La aportacion metodologica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, contratos, variables operativas, supervision debil, control de leakage y splits reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
+La aportacion metodologica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, variables operativas, supervision debil, control de \textit{leakage} y particiones reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
 
 El siguiente capitulo documenta la implementacion del prototipo software que ejecuta este flujo: backend, orquestador, herramientas MCP, logging, modo degradado e interfaz minima.

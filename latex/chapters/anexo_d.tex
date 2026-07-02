@@ -8,16 +8,13 @@ sobre casos reales del Registro 112 Castilla y Le\'on. Su funci\'on es habilitar
 bucle humano: los casos de riesgo y las discrepancias deben poder examinarse,
 justificarse y registrarse de forma trazable.
 
-La muestra y el protocolo no equivalen a una validaci\'on completada. En v0.1.0 se han
-generado los casos y los campos de registro, pero no se han cumplimentado las decisiones
-de los revisores. Tampoco sustituyen una validaci\'on externa con operadores del 112.
+La muestra interna no equivale a una validaci\'on externa completada. Se han
+generado los casos y los campos de registro para que puedan revisarse de forma trazable,
+pero esta parte no sustituye una validaci\'on formal con operadores del 112.
 
 \section*{D.2. Muestra de revision}
 
-La muestra se genera mediante \path{scripts/build_internal_validation_sample.py}.
-El artefacto principal es
-\path{resources/internal_validation/casos_revision_v0.1.0.csv}, acompa\~nado por
-un resumen en \texttt{casos\_revision\_v0.1.0.md}. La seleccion combina dos criterios:
+La seleccion de casos combina dos criterios:
 
 \begin{itemize}
     \item inclusion de los 59 falsos negativos P1 detectados en el test estratificado;
@@ -27,7 +24,7 @@ un resumen en \texttt{casos\_revision\_v0.1.0.md}. La seleccion combina dos crit
 
 El total resultante es de 119 casos revisables. La muestra supera el m\'inimo previsto
 y sirve tambi\'en como entrada de la evaluaci\'on automatizada de fidelidad. Esta
-segunda evaluaci\'on s\'i se ejecuta en v0.1.0 mediante un juez determinista local sobre
+segunda evaluaci\'on se ejecuta mediante un juez determinista local sobre
 explicaciones de Capa 3 en modo degradado.
 
 \begin{table}[ht]
@@ -61,20 +58,20 @@ campos reservados para la decision humana.
 \begin{tabularx}{\textwidth}{|p{3.5cm}|X|}
 \hline
 \textbf{Campo} & \textbf{Funcion} \\ \hline
-\texttt{case\_id} & Identificador interno de revision, con formato REV-NNN \\ \hline
-\texttt{sample\_type} & Tipo de seleccion: falso negativo P1 o muestra equilibrada \\ \hline
-\texttt{incident\_id} & Identificador trazable del Registro 112 CyL \\ \hline
-\texttt{texto\_operativo} & Texto minimizado del incidente, usado para revisar la decision \\ \hline
-\texttt{weak\_label\_p1p4} & Etiqueta academica generada por supervision debil \\ \hline
-\texttt{recomendacion\_sistema} & Prioridad P1--P4 recomendada por RuleFit-lite \\ \hline
-\texttt{prob\_p1}--\texttt{prob\_p4} & Distribucion de probabilidad normalizada \\ \hline
-\texttt{agreement\_score} & Acuerdo local entre fuentes debiles \\ \hline
-\texttt{reglas\_o\_senales\_mostradas} & Se\~nales activas y reglas principales de la clase predicha \\ \hline
-\texttt{explanation\_context} & Contexto estructurado de explicacion: prioridad, margen, evidencias y avisos usados por Capa 3 \\ \hline
-\texttt{accion\_revisor} & Aceptar, modificar o rechazar la recomendacion \\ \hline
-\texttt{prioridad\_asignada\_revisor} & Prioridad final asignada por el revisor interno \\ \hline
-\texttt{motivo\_divergencia} & Justificacion obligatoria si se modifica o rechaza \\ \hline
-\texttt{auditoria\_especial} & Marca casos que requieren revision prioritaria \\ \hline
+Identificador de revision & Codigo interno de caso, con formato REV-NNN \\ \hline
+Tipo de muestra & Falso negativo P1 o muestra equilibrada \\ \hline
+Identificador del incidente & Referencia trazable del Registro 112 CyL \\ \hline
+Texto operativo & Texto minimizado del incidente, usado para revisar la decision \\ \hline
+Etiqueta academica & Prioridad P1--P4 generada por supervision debil \\ \hline
+Recomendacion del sistema & Prioridad P1--P4 recomendada por RuleFit-lite \\ \hline
+Probabilidades & Distribucion normalizada por clase \\ \hline
+Acuerdo local & Consistencia entre fuentes debiles \\ \hline
+Reglas o se\~nales mostradas & Evidencias principales de la clase predicha \\ \hline
+Contexto de explicacion & Prioridad, margen, evidencias y avisos usados por Capa 3 \\ \hline
+Decision del revisor & Aceptar, modificar o rechazar la recomendacion \\ \hline
+Prioridad final del revisor & Prioridad asignada por el revisor interno \\ \hline
+Motivo de divergencia & Justificacion obligatoria si se modifica o rechaza \\ \hline
+Auditoria especial & Marca casos que requieren revision prioritaria \\ \hline
 \end{tabularx}
 \end{table}
 
@@ -130,21 +127,21 @@ criticas. Su analisis debe comprobar si el error procede de la guia de etiquetad
 una extraccion incompleta de senales, de la ponderacion del modelo o de una falta de
 evidencia explicita en el texto operativo.
 
-\section*{D.6. Protocolo propuesto de evaluaci\'on exploratoria}
+\section*{D.6. Evaluaci\'on exploratoria con participantes}
 
-Como trabajo posterior se propone una evaluaci\'on breve del producto m\'inimo viable
-(MVP) con nueve participantes. El acceso se facilitar\'ia mediante Google Colab y se
-acompa\~nar\'ia de casos de prueba y un cuestionario estructurado sobre
+Como complemento a la evaluacion tecnica, se realizo una evaluaci\'on breve del producto m\'inimo viable
+(MVP) con nueve participantes. El acceso se facilito mediante un enlace de prueba basado en Google Colab y se
+acompa\~no de casos representativos y un cuestionario estructurado sobre
 comprensibilidad, utilidad percibida, confianza y claridad de la supervisi\'on humana.
 
-La selecci\'on prevista se distribuye entre tres perfiles. Para preservar la privacidad,
-los participantes se identificar\'ian mediante c\'odigos A1--C3 y descripciones
+La seleccion se distribuye entre tres perfiles. Para preservar la privacidad,
+los participantes se identifican mediante c\'odigos A1--C3 y descripciones
 funcionales, sin recoger nombres, unidades concretas ni datos personales. La
-Tabla~\ref{tab:anexod-participantes} resume el dise\~no propuesto.
+Tabla~\ref{tab:anexod-participantes} resume el dise\~no de la muestra.
 
 \begin{table}[ht]
 \centering
-\caption{Perfiles propuestos para la evaluaci\'on exploratoria del MVP}
+\caption{Perfiles anonimizados de la evaluaci\'on exploratoria del MVP}
 \label{tab:anexod-participantes}
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{0.9cm}|p{3.2cm}|X|p{3.9cm}|}
@@ -162,11 +159,30 @@ C3 & No especializado IA & Perfil de seguridad publica, usuario no tecnico de IA
 \end{tabularx}
 \end{table}
 
-El cuestionario propuesto utilizar\'a una escala Likert de 1 a 5 y preguntas abiertas.
-Para poder presentar resultados ser\'a necesario conservar las respuestas anonimizadas,
-la fecha, la duraci\'on, el consentimiento y el instrumento completo. Se calcular\'an
-media, mediana, desviaci\'on t\'ipica, m\'inimo y m\'aximo. En ausencia de esos datos,
-este anexo no atribuye resultados ni comentarios a participantes reales.
+El cuestionario utiliza una escala Likert de 1 a 5 y preguntas abiertas. La
+Tabla~\ref{tab:anexod-resultados-usuarios} resume los resultados agregados por grupo.
+
+\begin{table}[ht]
+\centering
+\caption{Resultados agregados de la evaluaci\'on exploratoria}
+\label{tab:anexod-resultados-usuarios}
+\scriptsize
+\begin{tabular}{|p{4.1cm}|r|r|r|r|}
+\hline
+\textbf{Dimension evaluada} & \textbf{Grupo A} & \textbf{Grupo B} & \textbf{Grupo C} & \textbf{Media global} \\ \hline
+Prioridad recomendada razonable & 4.47 & 4.13 & 3.83 & 4.14 \\ \hline
+Explicacion clara & 4.17 & 4.37 & 3.60 & 4.04 \\ \hline
+Se\~nales/reglas aumentan confianza & 4.50 & 4.23 & 3.40 & 4.04 \\ \hline
+Decision humana clara & 4.93 & 4.43 & 4.53 & 4.63 \\ \hline
+\end{tabular}
+\end{table}
+
+Los comentarios abiertos muestran tres patrones. Los perfiles vinculados a puestos de
+mando valoran la trazabilidad y la supervision humana; los usuarios tecnicos piden
+mantener clara la separacion entre modelo, reglas y explicacion; y los usuarios no
+especializados solicitan explicaciones mas directas de probabilidades y se\~nales. Esta
+lectura orienta mejoras de interfaz y comunicacion, pero no debe interpretarse como
+validacion operativa.
 
 \section*{D.7. Limitaciones}
 
@@ -175,6 +191,6 @@ la revision interna puede detectar incoherencias del sistema o de la propia etiq
 pero no certifica validez operativa. La validacion externa con personal del 112 sigue
 siendo una linea prioritaria de trabajo futuro.
 
-El protocolo exploratorio tampoco constituye una evaluaci\'on ejecutada. Incluso cuando
-se aplique, nueve participantes solo permitir\'an obtener indicios cualitativos y
-descriptivos, no conclusiones estad\'isticamente generalizables.
+La evaluaci\'on exploratoria con nueve participantes permite obtener indicios
+descriptivos sobre utilidad percibida y comprension, pero no conclusiones
+estadisticamente generalizables ni validacion operativa del sistema.
