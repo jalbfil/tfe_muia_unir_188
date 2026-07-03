@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T15:28:15.185531+00:00",
+  "generated_at": "2026-07-01T16:31:00.569958+00:00",
   "model_name": "capa1_deterministic_signal_extractor",
   "model_version_capa1": "0.1.0",
   "implementation": "src/capa1_nlp/inference/feature_extractor.py",
@@ -88,12 +88,12 @@
       },
       "signal_rescate": {
         "tp": 0,
-        "fp": 0,
+        "fp": 2,
         "fn": 0,
-        "tn": 5,
-        "precision": 1.0,
+        "tn": 3,
+        "precision": 0.0,
         "recall": 1.0,
-        "f1": 1.0
+        "f1": 0.0
       },
       "signal_meteo_inundacion": {
         "tp": 1,
@@ -106,28 +106,28 @@
       },
       "riesgo_vital_textual": {
         "tp": 2,
-        "fp": 0,
+        "fp": 1,
         "fn": 0,
-        "tn": 3,
-        "precision": 1.0,
+        "tn": 2,
+        "precision": 0.666667,
         "recall": 1.0,
-        "f1": 1.0
+        "f1": 0.8
       }
     },
     "micro": {
-      "precision": 0.916667,
+      "precision": 0.733333,
       "recall": 1.0,
-      "f1": 0.956522
+      "f1": 0.846154
     }
   },
   "latency": {
-    "mean_ms": 0.74972,
+    "mean_ms": 4.58844,
     "scenario_latencies_ms": [
-      1.1114,
-      0.6855,
-      0.7275,
-      0.5525,
-      0.6717
+      5.8177,
+      3.8956,
+      4.0072,
+      4.1927,
+      5.029
     ]
   },
   "artifacts": {

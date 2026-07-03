@@ -144,6 +144,8 @@ if "degraded_mode" not in st.session_state:
     st.session_state.degraded_mode = False
 if "session_history" not in st.session_state:
     st.session_state.session_history = []
+if "reviewing_log_id" not in st.session_state:
+    st.session_state.reviewing_log_id = None
 if "_last_scenario" not in st.session_state:
     st.session_state._last_scenario = ""
 # Campos del formulario controlados por session_state (patrón robusto Streamlit):
@@ -229,12 +231,84 @@ if st.session_state.session_history:
         _p_counts[_h["prioridad"]] = _p_counts.get(_h["prioridad"], 0) + 1
     _dist = " · ".join(f"**{k}**: {v}" for k, v in _p_counts.items() if v > 0)
     st.sidebar.caption(f"Casos: {len(st.session_state.session_history)} — {_dist}")
-    for _h in reversed(st.session_state.session_history[-5:]):
+    
+    # Selector de caso para revisión
+    history_options = ["-- Seleccionar caso para revisar --"]
+    history_log_ids = [None]
+    
+    for _h in reversed(st.session_state.session_history):
+        _time_str = ""
+        if "timestamp" in _h:
+            try:
+                _ts_dt = datetime.fromisoformat(_h["timestamp"])
+                _time_str = _ts_dt.strftime("%H:%M:%S")
+            except Exception:
+                _time_str = _h["timestamp"][:10]
         _icon = {"P1": "🔴", "P2": "🟠", "P3": "🔵", "P4": "🟢"}.get(_h["prioridad"], "⚪")
-        _dec = f" → {_h['decision']}" if _h.get("decision") else ""
-        st.sidebar.markdown(f"{_icon} {_h['titulo'][:32]}... **{_h['prioridad']}**{_dec}")
+        _dec = f" → {_h['decision']}" if _h.get("decision") else " (Pendiente)"
+        _label = f"{_time_str} | {_icon} {_h['titulo'][:20]}... **{_h['prioridad']}**{_dec}"
+        history_options.append(_label)
+        history_log_ids.append(_h["log_id"])
+        
+    def on_history_change():
+        selected_idx = st.session_state.history_select_widget
+        # Reconstruir history_log_ids para saber qué log_id corresponde a este índice
+        history_log_ids_cb = [None]
+        for _h in reversed(st.session_state.session_history):
+            history_log_ids_cb.append(_h["log_id"])
+            
+        selected_log_id = history_log_ids_cb[selected_idx]
+        
+        if selected_log_id is None:
+            # Salir de revisión
+            st.session_state.reviewing_log_id = None
+            st.session_state.predict_response = None
+            st.session_state.incident_input = None
+            st.session_state.feedback_submitted = False
+        else:
+            # Cargar caso
+            st.session_state.reviewing_log_id = selected_log_id
+            _case = next((c for c in st.session_state.session_history if c["log_id"] == selected_log_id), None)
+            if _case:
+                st.session_state.incident_input = _case["incident_input"]
+                st.session_state.predict_response = _case["predict_response"]
+                st.session_state.feedback_submitted = _case["feedback_submitted"]
+                # Forzar campos en widgets
+                _apply_fields_to_state({
+                    "titulo": _case["incident_input"].texto_titulo,
+                    "descripcion": _case["incident_input"].texto_descripcion,
+                    "localidad": _case["incident_input"].localidad,
+                    "categoria": _case["incident_input"].categoria_preliminar,
+                    "provincia": _case["incident_input"].provincia,
+                })
+                # Cargar coords
+                if _case["incident_input"].latitud is not None:
+                    st.session_state.lat_field = _case["incident_input"].latitud
+                if _case["incident_input"].longitud is not None:
+                    st.session_state.lon_field = _case["incident_input"].longitud
+
+    # Sincronización del widget antes de su instanciación:
+    # Si no estamos revisando ningún caso, forzar el índice a 0 de forma segura.
+    if st.session_state.reviewing_log_id is None:
+        st.session_state.history_select_widget = 0
+
+    selected_option_idx = history_log_ids.index(st.session_state.reviewing_log_id) if st.session_state.reviewing_log_id in history_log_ids else 0
+    
+    st.sidebar.selectbox(
+        "Revisar caso del historial:",
+        options=range(len(history_options)),
+        format_func=lambda i: history_options[i],
+        index=selected_option_idx,
+        key="history_select_widget",
+        on_change=on_history_change
+    )
+
     if st.sidebar.button("🗑️ Limpiar historial"):
         st.session_state.session_history = []
+        st.session_state.reviewing_log_id = None
+        st.session_state.predict_response = None
+        st.session_state.incident_input = None
+        st.session_state.feedback_submitted = False
         st.rerun()
 
 # Escenarios de quickstart.md
@@ -354,98 +428,143 @@ def run_feedback(decision_data: OperatorDecision) -> bool:
 
 
 # ── Grid Principal de Layout ──────────────────────────────────────────────────
+is_review_mode = st.session_state.reviewing_log_id is not None
+
+if is_review_mode:
+    st.warning(f"👀 **Modo de Revisión**: Mostrando el incidente histórico con Log ID `{st.session_state.reviewing_log_id}`.")
+    col_rev_1, col_rev_2, _ = st.columns([1.2, 1.5, 2])
+    with col_rev_1:
+        if st.button("🚪 Salir de revisión"):
+            st.session_state.reviewing_log_id = None
+            st.session_state.predict_response = None
+            st.session_state.incident_input = None
+            st.session_state.feedback_submitted = False
+            # Limpiar campos
+            st.session_state.titulo_field = ""
+            st.session_state.descripcion_field = ""
+            st.session_state.localidad_field = "Soria"
+            st.session_state.categoria_field = list(CategoriaPreliminar)[0]
+            st.session_state.provincia_field = list(ProvinciaCyL)[6]
+            st.session_state.pop("lat_field", None)
+            st.session_state.pop("lon_field", None)
+            st.rerun()
+    with col_rev_2:
+        if st.button("📋 Clonar para nuevo caso"):
+            # Salir de revisión pero mantener los campos cargados en los inputs
+            hist_incident = st.session_state.incident_input
+            
+            st.session_state.reviewing_log_id = None
+            st.session_state.predict_response = None
+            st.session_state.incident_input = None
+            st.session_state.feedback_submitted = False
+            
+            if hist_incident:
+                st.session_state.titulo_field = hist_incident.texto_titulo
+                st.session_state.descripcion_field = hist_incident.texto_descripcion
+                st.session_state.localidad_field = hist_incident.localidad
+                st.session_state.categoria_field = hist_incident.categoria_preliminar
+                st.session_state.provincia_field = hist_incident.provincia
+                if hist_incident.latitud is not None:
+                    st.session_state.lat_field = hist_incident.latitud
+                if hist_incident.longitud is not None:
+                    st.session_state.lon_field = hist_incident.longitud
+            st.rerun()
+    st.markdown("---")
+
 col_form, col_dashboard = st.columns([1, 1.2], gap="large")
 
 with col_form:
     st.markdown("### 📥 Entrada del Incidente")
 
-    # ── Entrada por voz — PRIMERA en el formulario ───────────────────────────
-    st.markdown("#### 🎙️ Entrada por voz")
-    st.caption("Graba o sube el audio de la llamada. Whisper transcribe localmente y rellena el formulario de forma inteligente.")
+    if not is_review_mode:
+        # ── Entrada por voz — PRIMERA en el formulario ───────────────────────────
+        st.markdown("#### 🎙️ Entrada por voz")
+        st.caption("Graba o sube el audio de la llamada. Whisper transcribe localmente y rellena el formulario de forma inteligente.")
 
-    # Cargar transcriptor y parser (lazy, sin crash si no instalados)
-    try:
-        from audio.transcriber import AudioTranscriber   # type: ignore[import]
-        from audio.parser import TranscriptParser        # type: ignore[import]
-        _transcriber = AudioTranscriber()
-        _parser = TranscriptParser()
-        _transcriber_available = _transcriber.is_available()
-    except Exception:
-        _transcriber = None
-        _parser = None
-        _transcriber_available = False
+        # Cargar transcriptor y parser (lazy, sin crash si no instalados)
+        try:
+            from audio.transcriber import AudioTranscriber   # type: ignore[import]
+            from audio.parser import TranscriptParser        # type: ignore[import]
+            _transcriber = AudioTranscriber()
+            _parser = TranscriptParser()
+            _transcriber_available = _transcriber.is_available()
+        except Exception:
+            _transcriber = None
+            _parser = None
+            _transcriber_available = False
 
-    if not _transcriber_available:
-        st.info("💡 Transcripción de voz disponible tras: `pip install faster-whisper`")
-    else:
-        _audio_tab1, _audio_tab2 = st.tabs(["🎤 Grabar en vivo", "📁 Subir audio"])
+        if not _transcriber_available:
+            st.info("💡 Transcripción de voz disponible tras: `pip install faster-whisper`")
+        else:
+            _audio_tab1, _audio_tab2 = st.tabs(["🎤 Grabar en vivo", "📁 Subir audio"])
 
-        with _audio_tab1:
-            st.caption("Streamlit ≥1.38 requerido. Pulsa el micrófono y habla.")
-            try:
-                _recorded = st.audio_input("Grabar llamada")
-            except AttributeError:
-                _recorded = None
-                st.warning("⚠️ Actualiza Streamlit: `pip install -U streamlit`")
-            if _recorded is not None:
-                _rec_bytes = _recorded.getvalue()
-                _rec_sig = hash(_rec_bytes)
-                # Evita re-transcribir el mismo audio en cada rerun (bucle infinito).
-                if st.session_state.get("_rec_sig") != _rec_sig:
-                    st.session_state["_rec_sig"] = _rec_sig
-                    try:
-                        with st.spinner("Transcribiendo y extrayendo campos…"):
-                            _transcript_text = _transcriber.transcribe(_rec_bytes, file_ext=".wav")
-                        if _transcript_text:
-                            _fields = _parser.parse(_transcript_text)
-                            st.session_state["_audio_fields"] = _fields
-                            _apply_fields_to_state(_fields)
-                            st.rerun()
-                        else:
-                            st.warning("No se detectó voz en la grabación.")
-                    except Exception as _exc:
-                        st.error(f"Error de transcripción: {_exc}")
+            with _audio_tab1:
+                st.caption("Streamlit ≥1.38 requerido. Pulsa el micrófono y habla.")
+                try:
+                    _recorded = st.audio_input("Grabar llamada")
+                except AttributeError:
+                    _recorded = None
+                    st.warning("⚠️ Actualiza Streamlit: `pip install -U streamlit`")
+                if _recorded is not None:
+                    _rec_bytes = _recorded.getvalue()
+                    _rec_sig = hash(_rec_bytes)
+                    # Evita re-transcribir el mismo audio en cada rerun (bucle infinito).
+                    if st.session_state.get("_rec_sig") != _rec_sig:
+                        st.session_state["_rec_sig"] = _rec_sig
+                        try:
+                            with st.spinner("Transcribiendo y extrayendo campos…"):
+                                _transcript_text = _transcriber.transcribe(_rec_bytes, file_ext=".wav")
+                            if _transcript_text:
+                                _fields = _parser.parse(_transcript_text)
+                                st.session_state["_audio_fields"] = _fields
+                                _apply_fields_to_state(_fields)
+                                st.rerun()
+                            else:
+                                st.warning("No se detectó voz en la grabación.")
+                        except Exception as _exc:
+                            st.error(f"Error de transcripción: {_exc}")
 
-        with _audio_tab2:
-            _uploaded = st.file_uploader(
-                "Sube audio (wav, mp3, m4a, ogg, webm)",
-                type=["wav", "mp3", "mp4", "m4a", "ogg", "webm"],
-                label_visibility="collapsed",
+            with _audio_tab2:
+                _uploaded = st.file_uploader(
+                    "Sube audio (wav, mp3, m4a, ogg, webm)",
+                    type=["wav", "mp3", "mp4", "m4a", "ogg", "webm"],
+                    label_visibility="collapsed",
+                )
+                if _uploaded is not None:
+                    st.audio(_uploaded)
+                    if st.button("🔤 Transcribir y rellenar formulario"):
+                        try:
+                            with st.spinner(f"Transcribiendo con Whisper '{_transcriber.model_name}'…"):
+                                _ext = Path(_uploaded.name).suffix.lower() or ".wav"
+                                _t = _transcriber.transcribe(_uploaded.getvalue(), file_ext=_ext)
+                            if _t:
+                                _fields = _parser.parse(_t)
+                                st.session_state["_audio_fields"] = _fields
+                                _apply_fields_to_state(_fields)
+                                st.rerun()
+                            else:
+                                st.warning("No se detectó voz utilizable.")
+                        except Exception as _exc:
+                            st.error(f"Error de transcripción: {_exc}")
+
+        # Estado de la extracción de audio
+        _af = st.session_state.get("_audio_fields", {})
+        if _af:
+            st.success(
+                f"✅ Formulario rellenado desde audio · "
+                f"**Título:** `{_af.get('titulo', '—') or '—'}` · "
+                f"**Categoría:** `{_af.get('categoria', '?')}` · "
+                f"**Localidad:** `{_af.get('localidad', '—') or '—'}`"
             )
-            if _uploaded is not None:
-                st.audio(_uploaded)
-                if st.button("🔤 Transcribir y rellenar formulario"):
-                    try:
-                        with st.spinner(f"Transcribiendo con Whisper '{_transcriber.model_name}'…"):
-                            _ext = Path(_uploaded.name).suffix.lower() or ".wav"
-                            _t = _transcriber.transcribe(_uploaded.getvalue(), file_ext=_ext)
-                        if _t:
-                            _fields = _parser.parse(_t)
-                            st.session_state["_audio_fields"] = _fields
-                            _apply_fields_to_state(_fields)
-                            st.rerun()
-                        else:
-                            st.warning("No se detectó voz utilizable.")
-                    except Exception as _exc:
-                        st.error(f"Error de transcripción: {_exc}")
+            if st.button("🗑️ Limpiar campos de voz"):
+                st.session_state.pop("_audio_fields", None)
+                st.session_state.pop("_rec_sig", None)
+                st.session_state.titulo_field = ""
+                st.session_state.descripcion_field = ""
+                st.rerun()
 
-    # Estado de la extracción de audio
-    _af = st.session_state.get("_audio_fields", {})
-    if _af:
-        st.success(
-            f"✅ Formulario rellenado desde audio · "
-            f"**Título:** `{_af.get('titulo', '—') or '—'}` · "
-            f"**Categoría:** `{_af.get('categoria', '?')}` · "
-            f"**Localidad:** `{_af.get('localidad', '—') or '—'}`"
-        )
-        if st.button("🗑️ Limpiar campos de voz"):
-            st.session_state.pop("_audio_fields", None)
-            st.session_state.pop("_rec_sig", None)
-            st.session_state.titulo_field = ""
-            st.session_state.descripcion_field = ""
-            st.rerun()
+        st.markdown("---")
 
-    st.markdown("---")
     st.markdown("#### ✏️ Datos del incidente")
 
     # ── Valores por defecto: audio_fields > escenario > vacío ────────────────
@@ -478,6 +597,7 @@ with col_form:
         key="titulo_field",
         max_chars=200,
         placeholder="Ej. Choque frontal de dos coches",
+        disabled=is_review_mode,
     )
 
     descripcion = st.text_area(
@@ -486,39 +606,49 @@ with col_form:
         height=150,
         max_chars=5000,
         placeholder="Anote aquí los detalles de la llamada en tiempo real…",
+        disabled=is_review_mode,
     )
 
     categoria = st.selectbox(
         "Categoría operativa preliminar:",
         options=cat_keys,
         key="categoria_field",
+        disabled=is_review_mode,
     )
 
-    incluir_coordenadas = st.checkbox("Incluir coordenadas GPS", value="lat" in default_vals)
+    has_coords_in_state = False
+    if st.session_state.incident_input is not None and st.session_state.incident_input.latitud is not None:
+        has_coords_in_state = True
+
+    incluir_coordenadas = st.checkbox(
+        "Incluir coordenadas GPS",
+        value=has_coords_in_state or ("lat" in default_vals),
+        disabled=is_review_mode
+    )
     if incluir_coordenadas:
         col_geo1, col_geo2 = st.columns(2)
         with col_geo1:
             # Bug fix 2: key en lat/lon para que el cambio de escenario los resetee
             lat = st.number_input("Latitud:", value=default_vals.get("lat", 41.6521),
-                                  key="lat_field", format="%.5f", min_value=-90.0, max_value=90.0)
+                                  key="lat_field", format="%.5f", min_value=-90.0, max_value=90.0, disabled=is_review_mode)
         with col_geo2:
             lon = st.number_input("Longitud:", value=default_vals.get("lon", -2.4632),
-                                  key="lon_field", format="%.5f", min_value=-180.0, max_value=180.0)
+                                  key="lon_field", format="%.5f", min_value=-180.0, max_value=180.0, disabled=is_review_mode)
     else:
         lat = None
         lon = None
 
-    localidad = st.text_input("Localidad:", key="localidad_field")
+    localidad = st.text_input("Localidad:", key="localidad_field", disabled=is_review_mode)
 
-    provincia = st.selectbox("Provincia:", options=prov_keys, key="provincia_field")
+    provincia = st.selectbox("Provincia:", options=prov_keys, key="provincia_field", disabled=is_review_mode)
 
-    operador_id = st.text_input("ID del Operador:", value="OP_ANCOR", max_chars=64)
+    operador_id = st.text_input("ID del Operador:", value="OP_ANCOR", max_chars=64, disabled=is_review_mode)
 
     # Validación del texto
     text_ok = any(c.isalpha() for c in (titulo + descripcion))
     
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("🚨 Analizar Incidente", disabled=not text_ok):
+    if st.button("🚨 Analizar Incidente", disabled=is_review_mode or not text_ok):
         # Crear IncidentInput
         try:
             incident = IncidentInput(
@@ -541,6 +671,24 @@ with col_form:
                 if response:
                     st.session_state.predict_response = response
                     st.success("Priorización y análisis operativo completados.")
+                    
+                    # Guardar en el historial inmediatamente
+                    p_val_temp = response["recommendation"]["priority_recommended"]
+                    p_val_str = p_val_temp.get("value") if isinstance(p_val_temp, dict) else p_val_temp
+                    
+                    st.session_state.session_history.append({
+                        "titulo": incident.texto_titulo[:48],
+                        "prioridad": p_val_str,
+                        "confianza": response.get("priority_details", {}).get("confidence_level", "—"),
+                        "log_id": response["log_id"],
+                        "decision": None,
+                        "divergencia": 0,
+                        "motivo": None,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "incident_input": incident,
+                        "predict_response": response,
+                        "feedback_submitted": False
+                    })
                 else:
                     st.session_state.predict_response = None
         except Exception as e:
@@ -754,13 +902,32 @@ with col_dashboard:
         st.markdown("---")
         st.markdown("### 🧑‍✈️ Validación e Intervención Humana (HITL)")
         
-        if st.session_state.feedback_submitted:
-            st.success("✅ **Decisión registrada correctamente en el log de auditoría.**")
-            if st.button("Crear nuevo análisis"):
-                st.session_state.predict_response = None
-                st.session_state.incident_input = None
-                st.session_state.feedback_submitted = False
-                st.rerun()
+        # Buscar si el caso bajo revisión tiene decisión ya registrada
+        reviewed_case = None
+        if is_review_mode:
+            reviewed_case = next((c for c in st.session_state.session_history if c["log_id"] == log_id), None)
+            
+        if (reviewed_case and reviewed_case.get("feedback_submitted")) or (not is_review_mode and st.session_state.feedback_submitted):
+            if reviewed_case and reviewed_case.get("feedback_submitted"):
+                st.success("✅ **Decisión del operador registrada en el log de auditoría:**")
+                dec_data = reviewed_case.get("operator_decision", {})
+                st.markdown(f"**Prioridad asignada por el operador:** `{dec_data.get('prioridad_asignada', '—')}`")
+                if dec_data.get("motivo_divergencia"):
+                    st.markdown(f"**Motivo de la divergencia / observaciones:**\n> {dec_data.get('motivo_divergencia')}")
+                st.markdown(f"**Operador:** `{dec_data.get('operador_id', '—')}`")
+                if dec_data.get("timestamp"):
+                    try:
+                        dt = datetime.fromisoformat(dec_data["timestamp"])
+                        st.markdown(f"**Registrado el:** `{dt.strftime('%d/%m/%Y %H:%M:%S UTC')}`")
+                    except Exception:
+                        st.markdown(f"**Registrado el:** `{dec_data['timestamp']}`")
+            else:
+                st.success("✅ **Decisión registrada correctamente en el log de auditoría.**")
+                if st.button("Crear nuevo análisis"):
+                    st.session_state.predict_response = None
+                    st.session_state.incident_input = None
+                    st.session_state.feedback_submitted = False
+                    st.rerun()
         else:
             st.markdown(
                 "Como operador 112, debes validar la recomendación antes de despachar los recursos:"
@@ -805,17 +972,42 @@ with col_dashboard:
                 
                 success = run_feedback(decision)
                 if success:
-                    # Guardar en historial de sesión
-                    st.session_state.session_history.append({
-                        "titulo": st.session_state.incident_input.texto_titulo[:48],
-                        "prioridad": p_val,
-                        "confianza": priority_details.get("confidence_level", "—"),
-                        "log_id": log_id,
-                        "decision": prioridad_asignada.value,
-                        "divergencia": divergence,
-                        "motivo": motivo_divergencia.strip() or None,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                    })
+                    # Guardar/Actualizar en historial de sesión
+                    found = False
+                    for item in st.session_state.session_history:
+                        if item["log_id"] == log_id:
+                            item["decision"] = prioridad_asignada.value
+                            item["divergencia"] = divergence
+                            item["motivo"] = motivo_divergencia.strip() or None
+                            item["feedback_submitted"] = True
+                            item["operator_decision"] = {
+                                "prioridad_asignada": prioridad_asignada.value,
+                                "motivo_divergencia": motivo_divergencia.strip() or None,
+                                "timestamp": datetime.now(timezone.utc).isoformat(),
+                                "operador_id": operador_id,
+                            }
+                            found = True
+                            break
+                    if not found:
+                        st.session_state.session_history.append({
+                            "titulo": st.session_state.incident_input.texto_titulo[:48],
+                            "prioridad": p_val,
+                            "confianza": priority_details.get("confidence_level", "—"),
+                            "log_id": log_id,
+                            "decision": prioridad_asignada.value,
+                            "divergencia": divergence,
+                            "motivo": motivo_divergencia.strip() or None,
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                            "incident_input": st.session_state.incident_input,
+                            "predict_response": res,
+                            "feedback_submitted": True,
+                            "operator_decision": {
+                                "prioridad_asignada": prioridad_asignada.value,
+                                "motivo_divergencia": motivo_divergencia.strip() or None,
+                                "timestamp": datetime.now(timezone.utc).isoformat(),
+                                "operador_id": operador_id,
+                            }
+                        })
                     st.session_state.feedback_submitted = True
                     st.rerun()
                 else:
