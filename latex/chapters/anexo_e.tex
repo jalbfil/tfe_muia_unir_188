@@ -16,7 +16,7 @@ una referencia transparente para determinar si RuleFit-lite aporta una mejora gl
 
 La Tabla~\ref{tab:baseline-experto-reglas} recoge las 16 reglas activas. Sus anclajes
 se apoyan en la Ley 17/2015, PLANCAL, INUNCYL y la Ley 4/2007 de Castilla y Le\'on
-\cite{Ley17_2015,PLANCAL_DEC_4_2019,INUNCYL,Ley4_2007_CYL}. Su inclusion en el anexo permite entender el criterio de comparacion sin trasladar al cuerpo principal detalles de implementacion.
+\cite{Ley17_2015,PLANCAL_DEC_4_2019,INUNCYL,Ley4_2007_CYL}. Su inclusion en el anexo permite entender el criterio de comparación sin trasladar al cuerpo principal detalles de implementación.
 
 \begin{table}[ht]
 \centering
@@ -25,23 +25,23 @@ se apoyan en la Ley 17/2015, PLANCAL, INUNCYL y la Ley 4/2007 de Castilla y Le\'
 \scriptsize
 \begin{tabularx}{\textwidth}{|l|c|r|X|X|}
 \hline
-\textbf{ID} & \textbf{P} & \textbf{Peso} & \textbf{Condicion} & \textbf{Anclaje} \\ \hline
+\textbf{ID} & \textbf{P} & \textbf{Peso} & \textbf{Condición} & \textbf{Anclaje} \\ \hline
 EXP-P1-FALLECIDO & P1 & 3.8 & \texttt{signal\_fallecido} & Ley 17/2015; PLANCAL \\ \hline
 EXP-P1-RIESGO-VITAL & P1 & 3.4 & \texttt{riesgo\_vital} o \texttt{riesgo\_vital\_textual} & Ley 17/2015; PLANCAL \\ \hline
 EXP-P1-CRITICO-ATRAPADO & P1 & 2.7 & \texttt{signal\_herido\_grave} y \texttt{signal\_atrapado} & Ley 17/2015; PLANCAL \\ \hline
-EXP-P1-MULTIVICTIMA & P1 & 2.5 & Victimas estimadas $\geq$ 3 y riesgo vital & Ley 17/2015; PLANCAL \\ \hline
+EXP-P1-MULTIVICTIMA & P1 & 2.5 & Víctimas estimadas $\geq$ 3 y riesgo vital & Ley 17/2015; PLANCAL \\ \hline
 EXP-P2-HERIDO-GRAVE & P2 & 2.1 & \texttt{signal\_herido\_grave} & Ley 17/2015; PLANCAL \\ \hline
 EXP-P2-ATRAPADO & P2 & 2.0 & \texttt{signal\_atrapado} & PLANCAL \\ \hline
-EXP-P2-INTOXICACION & P2 & 1.9 & \texttt{signal\_intoxicacion} & MPCyL; PLANCAL \\ \hline
+EXP-P2-INTOXICACION & P2 & 1.9 & \texttt{signal\_intoxicación} & MPCyL; PLANCAL \\ \hline
 EXP-P2-INCENDIO-VIVIENDA & P2 & 1.8 & Incendio en vivienda, edificio o entorno habitado & PLANCAL; Ley 4/2007 CyL \\ \hline
 EXP-P2-RESCATE & P2 & 1.7 & \texttt{signal\_rescate} & PLANCAL \\ \hline
 EXP-P2-TRAFICO-GRAVE & P2 & 1.6 & Trafico y herido grave & Ley 17/2015; Registro 112 CyL \\ \hline
 EXP-P2-METEORO-ALTO-IMPACTO & P2 & 1.4 & Meteo/inundacion y varias llamadas & INUNCYL; PLANCAL \\ \hline
 EXP-P3-ACCIDENTE-TRAFICO & P3 & 1.0 & \texttt{signal\_accidente\_trafico} & Registro 112 CyL \\ \hline
 EXP-P3-VARIAS-LLAMADAS & P3 & 0.9 & \texttt{signal\_varias\_llamadas} & Registro 112 CyL \\ \hline
-EXP-P3-INCENDIO-SIN-VICTIMAS & P3 & 0.9 & \texttt{signal\_incendio} sin victimas explicitas & Ley 4/2007 CyL; PLANCAL \\ \hline
+EXP-P3-INCENDIO-SIN-VICTIMAS & P3 & 0.9 & \texttt{signal\_incendio} sin víctimas explícitas & Ley 4/2007 CyL; PLANCAL \\ \hline
 EXP-P3-METEO-INUNDACION & P3 & 0.8 & \texttt{signal\_meteo\_inundacion} & INUNCYL \\ \hline
-EXP-P4-SIN-SENALES-CRITICAS & P4 & 0.8 & Sin senales criticas y llamada unica & Registro 112 CyL \\ \hline
+EXP-P4-SIN-SENALES-CRITICAS & P4 & 0.8 & Sin señales críticas y llamada unica & Registro 112 CyL \\ \hline
 \end{tabularx}
 \end{table}
 
@@ -51,7 +51,7 @@ Cada clase parte de una puntuaci\'on inicial: P1=\(0{,}15\), P2=\(0{,}25\),
 P3=\(0{,}35\) y P4=\(0{,}25\). A continuaci\'on se suman los pesos de las reglas
 activadas. Si existe alguna regla P1, su puntuaci\'on se eleva \(0{,}75\) por encima
 del mayor valor; si no existe P1 pero s\'i P2, esta se eleva \(0{,}35\). Finalmente,
-las puntuaciones se normalizan y se selecciona la clase con mayor probabilidad.
+las puntuaciones se normalizan y se seleccióna la clase con mayor probabilidad.
 
 Los pesos son decisiones heur\'isticas del equipo, no par\'ametros aprendidos ni
 estimaciones de probabilidad calibrada. Este detalle limita la interpretaci\'on de sus
@@ -72,7 +72,7 @@ Tabla~\ref{tab:baseline-experto-metricas} resume su comportamiento.
 \hline
 \textbf{Split} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} \\ \hline
 Train & 0.725849 & 0.706714 & 0.997278 \\ \hline
-Validacion & 0.717822 & 0.691811 & 1.000000 \\ \hline
+Validación & 0.717822 & 0.691811 & 1.000000 \\ \hline
 Test & 0.727835 & 0.703932 & 0.998457 \\ \hline
 \end{tabular}
 \end{table}
@@ -100,17 +100,17 @@ RuleFit-lite & 0.905604 & 0.909924 \\ \hline
 
 \begin{itemize}
     \item La l\'inea base refleja criterios operativos y normativos codificados manualmente por el equipo; por tanto,
-    puede sobrerrepresentar escenarios criticos y reducir precision en P2/P3.
-    \item Las reglas se validan contra etiquetas debiles academicas, no contra prioridad
-    operativa real del 112, inexistente en el dataset publico.
+    puede sobrerrepresentar escenarios críticos y reducir precisión en P2/P3.
+    \item Las reglas se validan contra etiquetas débiles académicas, no contra prioridad
+    operativa real del 112, inexistente en el dataset público.
     \item El modelo no aprende interacciones no previstas por las reglas. Esa es
     precisamente la funcion de la comparativa con RuleFit.
-    \item No utiliza columnas post-decision como recursos movilizados, pacientes
+    \item No utiliza columnas post-decisión como recursos movilizados, pacientes
     atendidos o cierre administrativo, para evitar leakage.
 \end{itemize}
 
 La l\'inea base debe entenderse como referencia comparativa. Su tendencia conservadora puede sobreactivar P1 y
-reducir la discriminacion entre clases intermedias. Por ello, el modelo seleccionado no
+reducir la discriminacion entre clases intermedias. Por ello, el modelo selecciónado no
 busca unicamente maximizar recall P1, sino mantener un comportamiento interpretable y
 mas equilibrado en el conjunto de clases P1--P4.
 
