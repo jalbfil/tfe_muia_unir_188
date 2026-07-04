@@ -11,7 +11,7 @@ La finalidad del capítulo es fijar con claridad que se pretende conseguir, que 
 
 El objetivo general de este Trabajo Fin de Master es:
 
-\textit{Dise\~nar, implementar y evaluar un prototipo software modular de apoyo a la decisión para la priorización inicial de incidentes 112 en Castilla y León, capaz de transformar texto operativo y datos parciales en una recomendación P1--P4 explicable, trazable y revisable, mediante una arquitectura de tres capas que combine extracción NLP, aprendizaje interpretable con RuleFit-lite, explicación normativa local y supervisión humana obligatoria.}
+\textit{Diseñar, implementar y evaluar un prototipo software modular de apoyo a la decisión para la priorización inicial de incidentes 112 en Castilla y León, capaz de transformar texto operativo y datos parciales en una recomendación P1--P4 explicable, trazable y revisable, mediante una arquitectura de tres capas que combine extracción NLP, aprendizaje interpretable con RuleFit-lite, explicación normativa local y supervisión humana obligatoria.}
 
 El objetivo es específico porque delimita dominio, territorio, usuario y salida esperada. Es medible porque la Capa 2 se evalua mediante métricas reproducibles como macro-F1, recall P1, matriz de confusión, falsos negativos críticos, estabilidad temporal y análisis por subgrupos. Es alcanzable porque se apoya en datos abiertos del Registro 112 Castilla y León, procedimientos reproducibles y un prototipo académico acotado. Es relevante porque aborda una decisión de alto impacto en emergencias sin sustituir al operador. Y es temporalmente delimitado porque se concreta en una evaluación cerrada dentro del alcance del TFM.
 
@@ -24,8 +24,8 @@ El objetivo general se descompone en ocho objetivos específicos:
     \item[OE2.] Revisar el marco normativo estatal y autonómico aplicable a Castilla y León, extrayendo criterios de gravedad, coordinación, escalado y trazabilidad que fundamentan el sistema.
     \item[OE3.] Definir la taxonomia operativa, la escala académica P1--P4 y las variables V01--V15, separando variables disponibles en primera decisión de variables contextuales diferidas o potencialmente sujetas a \textit{leakage}.
     \item[OE4.] Auditar el Registro de Emergencias 112 de Castilla y León, construir el dataset limpio, documentar limitaciones y generar etiquetas académicas P1--P4 mediante supervisión débil.
-    \item[OE5.] Dise\~nar e implementar una Capa 2 interpretable, comparar una l\'inea base heur\'istica con RuleFit-lite y una ejecuci\'on diagn\'ostica de \texttt{imodels}, selecciónar el modelo mediante la partici\'on de validaci\'on y reservar la partici\'on de prueba para la estimaci\'on final.
-    \item[OE6.] Dise\~nar una Capa 3 de explicación que convierta reglas, probabilidades, evidencias y citas normativas en una justificación comprensible para el operador, sin delegar la decisión en un LLM.
+    \item[OE5.] Diseñar e implementar una Capa 2 interpretable, comparar una l\'inea base heur\'istica con RuleFit-lite y una ejecuci\'on diagn\'ostica de \texttt{imodels}, selecciónar el modelo mediante la partici\'on de validaci\'on y reservar la partici\'on de prueba para la estimaci\'on final.
+    \item[OE6.] Diseñar una Capa 3 de explicación que convierta reglas, probabilidades, evidencias y citas normativas en una justificación comprensible para el operador, sin delegar la decisión en un LLM.
     \item[OE7.] Integrar las capas mediante contratos versionados, servicio web auditable, modo degradado, registros de inferencia y mecanismos de retroalimentaci\'on humana.
     \item[OE8.] Evaluar el prototipo con particiones estratificada y temporal, control de fugas de informaci\'on, estudio de errores P1, an\'alisis por subgrupos, preparaci\'on de una muestra de revisi\'on interna y evaluaci\'on automatizada de fidelidad explicativa.
 \end{enumerate}
@@ -60,15 +60,15 @@ OE8 & Evaluaci\'on final, errores P1, muestra preparada y fidelidad automatizada
 
 \section{Preguntas de investigación}
 
-Las preguntas de investigación orientan el dise\~no y la evaluación del sistema:
+Las preguntas de investigación orientan el diseño y la evaluación del sistema:
 
 \begin{enumerate}
-    \item[PI1.] ?`Puede construirse una etiqueta acad\'emica P1--P4 defendible cuando el conjunto abierto no contiene prioridad oficial?
-    \item[PI2.] ?`Qu\'e aporta un modelo interpretable como RuleFit-lite frente a una l\'inea base heur\'istica basada en se\~nales textuales y reglas operativas?
-    \item[PI3.] ?`Es posible mantener una sensibilidad P1 suficiente sin convertir el sistema en una herramienta excesivamente conservadora que degrade el rendimiento global?
-    \item[PI4.] ?`Hasta qu\'e punto los resultados se mantienen estables en una partici\'on temporal posterior?
-    \item[PI5.] ?`Qu\'e errores cr\'iticos aparecen, especialmente falsos negativos P1, y qu\'e evidencia debe mostrarse para que puedan ser revisados por humanos?
-    \item[PI6.] ?`Las explicaciones generadas por Capa 3 son fieles a las reglas, probabilidades y evidencias producidas por Capa 2?
+    \item[PI1.] ¿Puede construirse una etiqueta acad\'emica P1--P4 defendible cuando el conjunto abierto no contiene prioridad oficial?
+    \item[PI2.] ¿Qu\'e aporta un modelo interpretable como RuleFit-lite frente a una l\'inea base heur\'istica basada en señales textuales y reglas operativas?
+    \item[PI3.] ¿Es posible mantener una sensibilidad P1 suficiente sin convertir el sistema en una herramienta excesivamente conservadora que degrade el rendimiento global?
+    \item[PI4.] ¿Hasta qu\'e punto los resultados se mantienen estables en una partici\'on temporal posterior?
+    \item[PI5.] ¿Qu\'e errores cr\'iticos aparecen, especialmente falsos negativos P1, y qu\'e evidencia debe mostrarse para que puedan ser revisados por humanos?
+    \item[PI6.] ¿Las explicaciones generadas por Capa 3 son fieles a las reglas, probabilidades y evidencias producidas por Capa 2?
 \end{enumerate}
 
 Estas preguntas evitan presentar el TFM como una promesa de automatización total. El foco está en demostrar si una arquitectura responsable puede producir recomendaciones útiles, explicables y auditables dentro de un prototipo académico.
@@ -103,14 +103,14 @@ El trabajo se ha estructurado en siete fases:
     \item \textbf{Datos y variables.} Auditoría del Registro 112 CyL, definición de V01--V15, identificación de columnas prohibidas por \textit{leakage} y construcción del dataset limpio.
     \item \textbf{Supervisión débil.} Generación de etiquetas académicas P1--P4, medición de acuerdo, ablación anti-circularidad y construcción de splits estratificado y temporal.
     \item \textbf{Capa 2 interpretable.} Implementaci\'on de la l\'inea base heur\'istica, RuleFit-lite y una alternativa externa; extracci\'on de reglas, pesos, probabilidades y m\'etricas por clase.
-    \item \textbf{Capa 3 explicativa e integración.} Dise\~no del RAG normativo, herramientas MCP, modo degradado, backend, contratos y logs de inferencia.
+    \item \textbf{Capa 3 explicativa e integración.} Diseño del RAG normativo, herramientas MCP, modo degradado, backend, contratos y logs de inferencia.
     \item \textbf{Evaluaci\'on y trazabilidad.} Evaluaci\'on final, an\'alisis por subgrupos, errores P1, muestra preparada para revisi\'on, fidelidad automatizada y síntesis de evidencias.
     \item \textbf{Redacción y coherencia final.} Alineación de capítulos, anexos, métricas, limitaciones y trabajo futuro para que la defensa refleje exactamente el sistema construido.
 \end{enumerate}
 
 \section{Consideraciones eticas}
 
-El sistema se dise\~na para un dominio de alto impacto, por lo que incorpora salvaguardas desde el principio. La primera es la supervisión humana: el prototipo recomienda, pero no moviliza recursos ni activa planes. La segunda es la explicabilidad: toda recomendación debe acompa\~narse de reglas, probabilidades, evidencias y, cuando proceda, citas normativas. La tercera es el control anti-\textit{leakage}: se excluyen campos posteriores a la decisión para no entrenar un modelo que aprenda consecuencias del operativo. La cuarta es la soberanía del dato: la inferencia se concibe en local y sin dependencia de APIs externas para datos sensibles.
+El sistema se diseña para un dominio de alto impacto, por lo que incorpora salvaguardas desde el principio. La primera es la supervisión humana: el prototipo recomienda, pero no moviliza recursos ni activa planes. La segunda es la explicabilidad: toda recomendación debe acompañarse de reglas, probabilidades, evidencias y, cuando proceda, citas normativas. La tercera es el control anti-\textit{leakage}: se excluyen campos posteriores a la decisión para no entrenar un modelo que aprenda consecuencias del operativo. La cuarta es la soberanía del dato: la inferencia se concibe en local y sin dependencia de APIs externas para datos sensibles.
 
 También se documenta el uso de herramientas de IA generativa como apoyo a la elaboración del TFM. Dichas herramientas se han empleado para organización, redacción preliminar y revisión de coherencia, pero las decisiones técnicas, metodológicas y académicas corresponden al equipo y se contrastan con los artefactos reproducibles del proyecto.
 

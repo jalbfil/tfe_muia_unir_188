@@ -21,7 +21,7 @@ Anexo~\ref{cap:anexod}.
     \item \textbf{Prioridad como urgencia relativa.} P1--P4 ordena necesidad de
     atención temprana; no equivale a declaracion formal de situacion operativa.
     \item \textbf{Precaucion razonable.} Ante información incompleta, se evita tanto
-    minimizar se\~nales críticas como asumir siempre el peor caso.
+    minimizar señales críticas como asumir siempre el peor caso.
     \item \textbf{Trazabilidad.} Toda etiqueta debe poder vincularse a texto,
     categoría, señales, variables o reglas.
     \item \textbf{Independencia anti-\textit{leakage}.} No se usan medios movilizados,
@@ -41,7 +41,7 @@ Anexo~\ref{cap:anexod}.
 \textbf{Nivel} & \textbf{Nombre} & \textbf{Criterio operativo} & \textbf{Ejemplos de señales} \\ \hline
 P1 & Critica & Riesgo vital confirmado o altamente probable, fallecido, atrapamiento grave, múltiples víctimas o evolucion potencialmente critica. & fallecido, inconsciente, herido grave, atrapado crítico, intoxicación grave \\ \hline
 P2 & Alta & Gravedad relevante o potencial de escalado sin riesgo vital inmediato confirmado. Requiere atención rapida y seguimiento. & herido, atrapado no crítico, incendio en vivienda, rescate, varias llamadas \\ \hline
-P3 & Media & Incidente que requiere gestión activa, pero sin se\~nales claras de riesgo vital ni escalado alto. & accidente leve, incendio contenido, incidencia viaria, meteo limitada \\ \hline
+P3 & Media & Incidente que requiere gestión activa, pero sin señales claras de riesgo vital ni escalado alto. & accidente leve, incendio contenido, incidencia viaria, meteo limitada \\ \hline
 P4 & Baja & Consulta, incidencia menor, asistencia diferible o caso sin urgencia operativa aparente. & consulta, información, incidencia técnica menor, sin señales críticas \\ \hline
 \end{tabularx}
 \end{table}
@@ -65,8 +65,8 @@ R-P1-ATRAPADO-CRITICO & P1 & Atrapamiento con indicios de gravedad, rescate urge
 R-P2-HERIDO-GRAVE & P2 & Herido grave sin confirmacion suficiente para P1. \\ \hline
 R-P2-INTOXICACION & P2 & Intoxicación, humo o exposicion a sustancias con posible afectacion personal. \\ \hline
 R-P2-INCENDIO-HABITADO & P2 & Incendio en vivienda, edificio, local habitado o entorno con personas expuestas. \\ \hline
-R-P2-RESCATE & P2 & Rescate o salvamento sin se\~nal P1 confirmada. \\ \hline
-R-P3-TRAFICO & P3 & Accidente de trafico sin se\~nales críticas ni heridos graves. \\ \hline
+R-P2-RESCATE & P2 & Rescate o salvamento sin señal P1 confirmada. \\ \hline
+R-P3-TRAFICO & P3 & Accidente de trafico sin señales críticas ni heridos graves. \\ \hline
 R-P3-INCENDIO-SIN-VICTIMAS & P3 & Incendio sin víctimas ni atrapados descritos. \\ \hline
 R-P4-SIN-URGENCIA & P4 & Consulta, información o incidencia menor sin señales operativas de gravedad. \\ \hline
 \end{tabularx}
@@ -94,7 +94,7 @@ Los conflictos más relevantes son:
 \section*{C.6. Funciones de etiquetado, agregaci\'on y acuerdo}
 
 La etiqueta final combina cuatro funciones deterministas: reglas heur\'isticas,
-se\~nales e intensificadores, un proxy de agrupaci\'on sem\'antica y un proxy de
+señales e intensificadores, un proxy de agrupaci\'on sem\'antica y un proxy de
 anotador LLM. Los dos últimos nombres describen la funci\'on experimental prevista,
 pero en el alcance evaluado no ejecutan un agrupamiento vectorial ni invocan un modelo generativo.
 
@@ -105,7 +105,7 @@ peso, se seleccióna la m\'as urgente. La ejecuci\'on can\'onica alcanza Krippen
 \(\alpha = 0{,}834155\).
 
 Estos valores respaldan la consistencia del procedimiento, pero no demuestran
-independencia entre funciones: varias comparten patrones y se\~nales con las variables
+independencia entre funciones: varias comparten patrones y señales con las variables
 que posteriormente utiliza RuleFit-lite. La ablaci\'on confirma que el acuerdo no
 desaparece al retirar una fuente, no que se haya eliminado por completo la circularidad.
 
@@ -114,7 +114,7 @@ desaparece al retirar una fuente, no que se haya eliminado por completo la circu
 La gu\'ia reduce subjetividad, pero no elimina la necesidad de revisi\'on humana. Los
 artefactos finales identifican 59 falsos negativos P1, incluidos 7 casos P1--P4, que
 constituyen la prioridad de la muestra preparada. Estos casos permiten estudiar
-l\'imites de la gu\'ia, se\~nales insuficientes o decisiones del modelo con riesgo de
+l\'imites de la gu\'ia, señales insuficientes o decisiones del modelo con riesgo de
 infrapriorizaci\'on. La muestra completa se documenta en el
 Anexo~\ref{cap:anexod}.
 

@@ -82,7 +82,7 @@ equilibrio entre anos, provincias y etiquetas.
 La evaluación excluye todas las columnas conocidas después de la decisión operativa o
 derivadas de procesos post-hoc. En particular, no se usan campos relativos a medios movilizados, pacientes atendidos, cierre del incidente, actualizaciones posteriores, enlaces externos ni columnas auxiliares sin significado operativo.
 
-Las variables permitidas se limitan a se\~nales textuales previas a la decisi\'on y a
+Las variables permitidas se limitan a señales textuales previas a la decisi\'on y a
 variables categ\'oricas derivadas de la categor\'ia preliminar. La relaci\'on completa
 se documenta en el Cap\'itulo~\ref{cap:7}. Adem\'as, el control reproducible de fugas verifica que el motor de priorización no dependa de columnas prohibidas.
 
@@ -121,7 +121,7 @@ RuleFit externo & \(0{,}789250\) & \(0{,}584768\) & \(0{,}910400\) \\ \hline
 \end{tabular}
 \end{table}
 
-La l\'inea base obtiene sensibilidad P1 total por su dise\~no conservador, pero discrimina
+La l\'inea base obtiene sensibilidad P1 total por su diseño conservador, pero discrimina
 peor entre las cuatro clases. RuleFit-lite mejora la macro-F1 de validaci\'on y ofrece
 30 reglas exportables, mientras que la alternativa externa presenta menor rendimiento y mayor
 coste de inferencia en la configuraci\'on diagn\'ostica disponible.
@@ -190,7 +190,7 @@ evalua el mismo modelo sobre el test temporal de 2022. En este escenario se obti
 735 registros, accuracy 0.884354, macro-F1 0.877594 y recall P1 0.928767. La estabilidad
 entre ambos cortes sugiere que no hay una degradacion temporal relevante, aunque no sustituye a una validación prospectiva con datos nuevos.
 
-El an\'alisis por subgrupos se realiza por provincia, a\~no y categor\'ia operativa. En
+El an\'alisis por subgrupos se realiza por provincia, año y categor\'ia operativa. En
 el reporte can\'onico, las provincias con menor macro-F1 son Segovia
 \((0{,}887379)\), Le\'on \((0{,}893354)\) y Salamanca \((0{,}894117)\). Por
 categor\'ia, el grupo sanitario presenta macro-F1 \(0{,}792966\) y sensibilidad P1
@@ -202,8 +202,8 @@ prioritarios de revisi\'on. Las gráficas de apoyo se conservan como evidencia c
 \section{Interpretabilidad}
 
 RuleFit-lite exporta 30 reglas activas, cumpliendo el requisito de parsimonia. Las
-reglas combinan se\~nales legibles, por ejemplo riesgo vital textual, accidente de
-tr\'afico, rescate, incendio o ausencia de se\~nales cr\'iticas. Esta salida facilita
+reglas combinan señales legibles, por ejemplo riesgo vital textual, accidente de
+tr\'afico, rescate, incendio o ausencia de señales cr\'iticas. Esta salida facilita
 su uso por la Capa 3, que puede transformar las reglas activadas en una explicaci\'on
 operativa.
 
@@ -355,7 +355,7 @@ y usuarios no especializados en IA.
 
 El cuestionario empleo una escala Likert de 1 a 5 para valorar cuatro dimensiones:
 razonabilidad de la prioridad recomendada, claridad de la explicación, confianza
-aportada por se\~nales y reglas, y visibilidad de la decisión humana. La
+aportada por señales y reglas, y visibilidad de la decisión humana. La
 Tabla~\ref{tab:9-eval-usuarios} resume los resultados agregados por grupo.
 
 \begin{table}[htbp]
@@ -368,7 +368,7 @@ Tabla~\ref{tab:9-eval-usuarios} resume los resultados agregados por grupo.
 \textbf{Dimension evaluada} & \textbf{Grupo A} & \textbf{Grupo B} & \textbf{Grupo C} & \textbf{Media global} \\ \hline
 Prioridad recomendada razonable & 4.47 & 4.13 & 3.83 & 4.14 \\ \hline
 Explicación clara & 4.17 & 4.37 & 3.60 & 4.04 \\ \hline
-Se\~nales/reglas aumentan confianza & 4.50 & 4.23 & 3.40 & 4.04 \\ \hline
+Señales/reglas aumentan confianza & 4.50 & 4.23 & 3.40 & 4.04 \\ \hline
 Decisión humana clara & 4.93 & 4.43 & 4.53 & 4.63 \\ \hline
 \end{tabular}
 \end{table}
@@ -379,9 +379,9 @@ los usuarios técnicos destacan la separación entre priorización y explicació
 usuarios no especializados comprenden la finalidad general, aunque muestran mas
 dificultad con probabilidades, reglas y términologia técnica. Esta diferencia entre
 grupos apunta a una mejora concreta: simplificar la presentacion visual y textual de
-las se\~nales para perfiles no técnicos.
+las señales para perfiles no técnicos.
 
-La evaluación debe interpretarse con prudencia. El tama\~no muestral es reducido, no
+La evaluación debe interpretarse con prudencia. El tamaño muestral es reducido, no
 incluye operadores del 112 en servicio y no mide impacto real en sala. Por tanto, no
 constituye validación operativa, sino evidencia exploratoria de utilidad percibida,
 comprensibilidad y confianza explicativa.

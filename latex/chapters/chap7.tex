@@ -22,7 +22,7 @@ El flujo de datos se organiza en seis pasos:
 \begin{enumerate}
     \item Ingesta y limpieza del Registro 112 CyL.
     \item Normalización de texto, fechas, coordenadas y categorías.
-    \item Extracción de se\~nales textuales y variables V01--V15.
+    \item Extracción de señales textuales y variables V01--V15.
     \item Construcción de etiquetas P1--P4 mediante supervisión débil.
     \item Generaci\'on de particiones de entrenamiento, validaci\'on y prueba, incluida una partici\'on temporal.
     \item Evaluación de Capa 2 y análisis de sesgos, errores y \textit{leakage}.
@@ -44,9 +44,9 @@ La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del da
 \begin{tabular}{|p{3.2cm}|p{4.6cm}|p{5.4cm}|}
 \hline
 \textbf{Campo original} & \textbf{Uso en el sistema} & \textbf{Observacion metodológica} \\ \hline
-\texttt{Título} & \texttt{texto\_título} en \texttt{IncidentInput} & Fuente textual breve para se\~nales operativas \\ \hline
+\texttt{Título} & \texttt{texto\_título} en \texttt{IncidentInput} & Fuente textual breve para señales operativas \\ \hline
 \texttt{DescripcionBlob} & \texttt{texto\_descripcion} & Requiere limpieza de HTML y normalización \\ \hline
-\texttt{FechaIncidente} & \texttt{fecha\_incidente} & Permite análisis temporal y split por a\~no \\ \hline
+\texttt{FechaIncidente} & \texttt{fecha\_incidente} & Permite análisis temporal y split por año \\ \hline
 \texttt{Localidad} & \texttt{localidad} & Contexto territorial no siempre equivalente a coordenada exacta \\ \hline
 \texttt{Localidad.1} & \texttt{latitud}, \texttt{longitud} & Permite disponibilidad de coordenadas cuando el campo es válido \\ \hline
 \texttt{TipoIncidente} & \texttt{categoría\_preliminar} & Campo orientativo; no basta para priorizar \\ \hline
@@ -72,7 +72,7 @@ La auditoría del dataset documenta volumen, duplicados, nulos, cobertura tempor
 \textbf{Elemento auditado} & \textbf{Finalidad} \\ \hline
 Número de registros & Confirmar volumen util para entrenamiento y evaluación \\ \hline
 Rango temporal & Verificar coherencia 2008--2022 y detectar fechas anomalas \\ \hline
-Distribución por a\~no & Identificar cambios de registro o sesgos temporales \\ \hline
+Distribución por año & Identificar cambios de registro o sesgos temporales \\ \hline
 Distribución por provincia & Evitar que la evaluación quede dominada por una provincia \\ \hline
 Distribución por \texttt{TipoIncidente} & Conocer la heterogeneidad operativa del dataset \\ \hline
 Nulos por columna & Separar campos explotables de campos incompletos \\ \hline
@@ -94,7 +94,7 @@ El resultado conserva trazabilidad con el identificador original. Cada transform
 
 \section{Variables V01--V15}
 
-El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 transforma la entrada en \texttt{IncidentFeatures}, un contrato que contiene variables V01--V15 y se\~nales textuales. La Tabla~\ref{tab:variables-cap7} resume el origen esperado de cada variable.
+El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 transforma la entrada en \texttt{IncidentFeatures}, un contrato que contiene variables V01--V15 y señales textuales. La Tabla~\ref{tab:variables-cap7} resume el origen esperado de cada variable.
 
 \begin{table}[htbp]
 \centering
@@ -102,7 +102,7 @@ El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 tra
 \begin{tabular}{|p{1.0cm}|p{4.0cm}|p{3.9cm}|p{4.0cm}|}
 \hline
 \textbf{Var.} & \textbf{Variable} & \textbf{Origen principal} & \textbf{Estado en el estudio} \\ \hline
-V01 & Riesgo vital & Texto + se\~nales + etiquetado & Activa \\ \hline
+V01 & Riesgo vital & Texto + señales + etiquetado & Activa \\ \hline
 V02 & Número de víctimas estimado & Texto + etiquetado & Activa \\ \hline
 V03 & Gravedad de lesiones & Texto + etiquetado & Activa \\ \hline
 V04 & Tipo de incidente normalizado & Título, descripcion y categoría preliminar & Activa \\ \hline
@@ -114,7 +114,7 @@ V09 & Condición meteorológica adversa & Texto/fuente externa & Diferida \\ \hl
 V10 & Zona inundable & Cruce geoespacial & Diferida \\ \hline
 V11 & Proximidad Seveso & Registro externo & Diferida \\ \hline
 V12 & Riesgo de propagación & Texto + INFOCAL & Activa \\ \hline
-V13 & Multirriesgo & Texto + concurrencia de se\~nales & Activa \\ \hline
+V13 & Multirriesgo & Texto + concurrencia de señales & Activa \\ \hline
 V14 & Avisos simultáneos en zona & Texto/agrupacion temporal-geográfica & Activa \\ \hline
 V15 & Accesibilidad de recursos & Localización + reglas aproximadas & Activa \\ \hline
 \end{tabular}
@@ -122,13 +122,13 @@ V15 & Accesibilidad de recursos & Localización + reglas aproximadas & Activa \\
 \label{tab:variables-cap7}
 \end{table}
 
-Las variables V08--V11 se mantienen como parte del dise\~no conceptual para preservar la evoluci\'on futura del sistema, pero no se emplean como entrada del modelo evaluado ni condiciónan sus resultados.
+Las variables V08--V11 se mantienen como parte del diseño conceptual para preservar la evoluci\'on futura del sistema, pero no se emplean como entrada del modelo evaluado ni condicionan sus resultados.
 
-\section{Se\~nales operativas textuales}
+\section{Señales operativas textuales}
 
-Las se\~nales textuales son indicadores derivados del título y la descripcion. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores débiles de Capa 2. Las principales se\~nales son \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicación}, \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_meteo\_inundacion} y \texttt{riesgo\_vital\_textual}.
+Las señales textuales son indicadores derivados del título y la descripcion. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores débiles de Capa 2. Las principales señales son \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicación}, \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_meteo\_inundacion} y \texttt{riesgo\_vital\_textual}.
 
-Estas se\~nales deben tratarse como indicios. La palabra ``herido'', por ejemplo, no equivale siempre a P1; la expresión ``herido grave atrapado'' sí tiene un peso operativo mucho mayor. Por eso la extracción textual debe combinar patrones, intensificadores y validación posterior, evitando que una búsqueda literal determine por sí sola la prioridad.
+Estas señales deben tratarse como indicios. La palabra ``herido'', por ejemplo, no equivale siempre a P1; la expresión ``herido grave atrapado'' sí tiene un peso operativo mucho mayor. Por eso la extracción textual debe combinar patrones, intensificadores y validación posterior, evitando que una búsqueda literal determine por sí sola la prioridad.
 
 \section{Etiqueta académica P1--P4}
 
@@ -141,13 +141,13 @@ La guía de etiquetado define cuatro niveles: P1 critica, P2 alta, P3 media y P4
 La supervisi\'on d\'ebil permite construir etiquetas de entrenamiento a partir de varias funciones de etiquetado imperfectas. En este trabajo se emplean cuatro aproximaciones deterministas:
 
 \begin{enumerate}
-    \item \textbf{Reglas heur\'isticas}: aplica una puntuaci\'on de gravedad sobre se\~nales textuales, categor\'ia preliminar y variables permitidas.
-    \item \textbf{Se\~nales e intensificadores}: aproxima el reconocimiento de entidades nombradas (\textit{Named Entity Recognition}, NER) mediante patrones de gravedad, cantidad y urgencia, sin ejecutar un modelo NER entrenado.
+    \item \textbf{Reglas heur\'isticas}: aplica una puntuaci\'on de gravedad sobre señales textuales, categor\'ia preliminar y variables permitidas.
+    \item \textbf{Señales e intensificadores}: aproxima el reconocimiento de entidades nombradas (\textit{Named Entity Recognition}, NER) mediante patrones de gravedad, cantidad y urgencia, sin ejecutar un modelo NER entrenado.
     \item \textbf{Proxy de agrupaci\'on sem\'antica}: reutiliza en esta versi\'on una funci\'on determinista de puntuaci\'on; no ejecuta un algoritmo de agrupamiento vectorial.
     \item \textbf{Proxy de anotador LLM}: incorpora patrones adicionales de vulnerabilidad, emplazamiento y negaci\'on, pero no invoca un LLM durante el etiquetado.
 \end{enumerate}
 
-Los votos se agregan mediante votaci\'on ponderada. Los pesos son \(0{,}85\) para reglas heur\'isticas, \(1{,}00\) para se\~nales e intensificadores, \(0{,}90\) para el proxy de agrupaci\'on y \(1{,}10\) para el proxy de anotador LLM. Se suman los pesos recibidos por cada prioridad y, si existe empate, se escoge la prioridad m\'as urgente. La salida conserva los votos, la etiqueta final, la confianza derivada del peso ganador y el acuerdo local.
+Los votos se agregan mediante votaci\'on ponderada. Los pesos son \(0{,}85\) para reglas heur\'isticas, \(1{,}00\) para señales e intensificadores, \(0{,}90\) para el proxy de agrupaci\'on y \(1{,}10\) para el proxy de anotador LLM. Se suman los pesos recibidos por cada prioridad y, si existe empate, se escoge la prioridad m\'as urgente. La salida conserva los votos, la etiqueta final, la confianza derivada del peso ganador y el acuerdo local.
 
 \subsection{Acuerdo y control de calidad}
 
@@ -157,7 +157,7 @@ Adem\'as, se ha preparado una muestra de revisi\'on interna superior al m\'inimo
 
 \subsection{Ablación anti-circularidad}
 
-La supervisi\'on d\'ebil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablaci\'on sin la fuente de reglas heur\'isticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten se\~nales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitaci\'on metodol\'ogica del estudio.
+La supervisi\'on d\'ebil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablaci\'on sin la fuente de reglas heur\'isticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten señales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitaci\'on metodol\'ogica del estudio.
 
 \section{Prevencion de leakage}
 
@@ -193,9 +193,9 @@ Estas columnas pueden conservarse para auditoría o evaluación ex post, siempre
 \begin{tabular}{|p{3.4cm}|p{4.6cm}|p{5.1cm}|}
 \hline
 \textbf{Grupo} & \textbf{Columnas o variables} & \textbf{Uso permitido} \\ \hline
-Texto inicial & \texttt{Título}, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extracción de se\~nales \\ \hline
+Texto inicial & \texttt{Título}, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extracción de señales \\ \hline
 Contexto predecisiónal & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalización, taxonomia, análisis temporal y territorial \\ \hline
-Variables derivadas permitidas & V01--V07, V12--V15 y se\~nales textuales & Entrada de Capa 2 y explicabilidad \\ \hline
+Variables derivadas permitidas & V01--V07, V12--V15 y señales textuales & Entrada de Capa 2 y explicabilidad \\ \hline
 Identificadores & \texttt{Identificador} & Trazabilidad, splits y auditoría; no como predictor \\ \hline
 Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{últimaActúalizacion} y derivados & Solo auditoría o análisis ex post; nunca entrenamiento ni inferencia \\ \hline
 \end{tabular}
@@ -209,7 +209,7 @@ La división de datos debe impedir que el modelo vea en entrenamiento informaci�
 
 \subsection{Partici\'on estratificada}
 
-La partici\'on principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validaci\'on y 1.453 de prueba, preservando la distribuci\'on por prioridad, a\~no y provincia con semilla fija. La partici\'on de prueba contiene P1=655, P2=349, P3=375 y P4=74, y es la referencia usada posteriormente en la evaluación final.
+La partici\'on principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validaci\'on y 1.453 de prueba, preservando la distribuci\'on por prioridad, año y provincia con semilla fija. La partici\'on de prueba contiene P1=655, P2=349, P3=375 y P4=74, y es la referencia usada posteriormente en la evaluación final.
 
 \begin{table}[htbp]
 \centering
@@ -228,7 +228,7 @@ Test temporal 2022 & 735 & Evaluación de estabilidad fuera del periodo principa
 
 \subsection{Partici\'on temporal}
 
-La partici\'on temporal eval\'ua robustez fuera del periodo de entrenamiento. La versi\'on ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tama\~nos son 7.935, 710 y 735 registros, respectivamente.
+La partici\'on temporal eval\'ua robustez fuera del periodo de entrenamiento. La versi\'on ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tamaños son 7.935, 710 y 735 registros, respectivamente.
 
 Ambas particiones son necesarias. La estratificada mide rendimiento general controlando la distribución; la temporal mide estabilidad ante cambio de periodo.
 
@@ -244,7 +244,7 @@ La segunda limitacion es la granularidad limitada: el dataset contiene registros
 
 \section{Conclusiones}
 
-El dise\~no de datos presentado en este capítulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un dataset totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
+El diseño de datos presentado en este capítulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un dataset totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
 
 La aportacion metodológica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, variables operativas, supervisión débil, control de \textit{leakage} y particiones reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
 
