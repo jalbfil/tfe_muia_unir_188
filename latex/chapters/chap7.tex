@@ -9,7 +9,7 @@ El proyecto trabaja con registros reales, pero no dispone de una prioridad ofici
 
 \section{Estrategia general de datos}
 
-La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y León como fuente empírica principal \cite{Registro112CyL}. Esta decisión aporta coherencia territorial y normativa: el dataset procede de un servicio autonómico 112 real, y el marco de interpretacion se apoya en normativa estatal y de Castilla y León, especialmente Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL.
+La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y León como fuente empírica principal \cite{Registro112CyL}. Esta decisión aporta coherencia territorial y normativa: el conjunto de datos procede de un servicio autonómico 112 real, y el marco de interpretacion se apoya en normativa estatal y de Castilla y León, especialmente Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL.
 
 El conjunto abierto permite trabajar con texto operativo, fecha, localidad, provincia,
 coordenadas aproximadas, identificador y categor\'ia preliminar. Sin embargo, no
@@ -36,7 +36,7 @@ Su valor principal es el realismo. Los registros no son ejemplos artificiales cr
 
 \subsection{Campos de entrada}
 
-La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del dataset y su relacion con los contratos del sistema.
+La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del conjunto de datos y su relacion con la entrada estructurada del sistema.
 
 \begin{table}[htbp]
 \centering
@@ -62,7 +62,7 @@ La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del da
 
 \subsection{Auditoría inicial}
 
-La auditoría del dataset documenta volumen, duplicados, nulos, cobertura temporal, cobertura geográfica y distribución por provincia y categoría. El conjunto final conserva 9.380 registros válidos, 41 columnas, cobertura temporal entre 2008-07-28 y 2022-12-31, ausencia de fechas inválidas, 0 identificadores duplicados y cobertura de coordenadas del 99,24\%. Estos datos constituyen la base empírica del entrenamiento y evaluación, siempre diferenciando los datos reales del Registro 112 CyL de la etiqueta académica P1--P4 generada mediante supervisión débil.
+La auditoría del conjunto de datos documenta volumen, duplicados, nulos, cobertura temporal, cobertura geográfica y distribución por provincia y categoría. El conjunto final conserva 9.380 registros válidos, 41 columnas, cobertura temporal entre 2008-07-28 y 2022-12-31, ausencia de fechas inválidas, 0 identificadores duplicados y cobertura de coordenadas del 99,24\%. Estos datos constituyen la base empírica del entrenamiento y evaluación, siempre diferenciando los datos reales del Registro 112 CyL de la etiqueta académica P1--P4 generada mediante supervisión débil.
 
 \begin{table}[htbp]
 \centering
@@ -74,13 +74,13 @@ Número de registros & Confirmar volumen util para entrenamiento y evaluación \
 Rango temporal & Verificar coherencia 2008--2022 y detectar fechas anomalas \\ \hline
 Distribución por año & Identificar cambios de registro o sesgos temporales \\ \hline
 Distribución por provincia & Evitar que la evaluación quede dominada por una provincia \\ \hline
-Distribución por \texttt{TipoIncidente} & Conocer la heterogeneidad operativa del dataset \\ \hline
+Distribución por \texttt{TipoIncidente} & Conocer la heterogeneidad operativa del conjunto de datos \\ \hline
 Nulos por columna & Separar campos explotables de campos incompletos \\ \hline
 Duplicados o registros equivalentes & Evitar fuga entre train/test por incidentes repetidos \\ \hline
 Cobertura de coordenadas & Medir disponibilidad de localización para variables contextuales \\ \hline
 Campos ex post & Identificar columnas prohibidas para evitar \textit{leakage} \\ \hline
 \end{tabular}
-\caption{Elementos obligatorios de la auditoría del dataset.}
+\caption{Elementos obligatorios de la auditoría del conjunto de datos.}
 \label{tab:auditoria-dataset-cap7}
 \end{table}
 
@@ -94,7 +94,7 @@ El resultado conserva trazabilidad con el identificador original. Cada transform
 
 \section{Variables V01--V15}
 
-El sistema no utiliza directamente todas las columnas del dataset. La Capa 1 transforma la entrada en \texttt{IncidentFeatures}, un contrato que contiene variables V01--V15 y señales textuales. La Tabla~\ref{tab:variables-cap7} resume el origen esperado de cada variable.
+El sistema no utiliza directamente todas las columnas del conjunto de datos. La Capa 1 transforma la entrada en \texttt{IncidentFeatures}, una representación estructurada que contiene variables V01--V15 y señales textuales. La Tabla~\ref{tab:variables-cap7} resume el origen esperado de cada variable.
 
 \begin{table}[htbp]
 \centering
@@ -196,7 +196,7 @@ Estas columnas pueden conservarse para auditoría o evaluación ex post, siempre
 Texto inicial & \texttt{Título}, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extracción de señales \\ \hline
 Contexto predecisiónal & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalización, taxonomia, análisis temporal y territorial \\ \hline
 Variables derivadas permitidas & V01--V07, V12--V15 y señales textuales & Entrada de Capa 2 y explicabilidad \\ \hline
-Identificadores & \texttt{Identificador} & Trazabilidad, splits y auditoría; no como predictor \\ \hline
+Identificadores & \texttt{Identificador} & Trazabilidad, particiones y auditoría; no como predictor \\ \hline
 Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{últimaActúalizacion} y derivados & Solo auditoría o análisis ex post; nunca entrenamiento ni inferencia \\ \hline
 \end{tabular}
 \caption{Columnas permitidas y prohibidas segun disponibilidad en la primera decisión.}
@@ -234,18 +234,18 @@ Ambas particiones son necesarias. La estratificada mide rendimiento general cont
 
 \section{Uso en entrenamiento y evaluación}
 
-El dataset resultante alimenta tres usos distintos: pruebas de extracción de Capa 1, entrenamiento y evaluación de Capa 2, y evaluación transversal de sesgo, falsos negativos P1, calibración y matriz de confusión. La Capa 3 no se entrena con el dataset operativo; utiliza las salidas de Capa 2 y el corpus normativo para generar explicaciones.
+El conjunto de datos resultante alimenta tres usos distintos: pruebas de extracción de Capa 1, entrenamiento y evaluación de Capa 2, y evaluación transversal de sesgo, falsos negativos P1, calibración y matriz de confusión. La Capa 3 no se entrena con el conjunto operativo; utiliza las salidas de Capa 2 y el corpus normativo para generar explicaciones.
 
-\section{Limitaciones del dataset}
+\section{Limitaciones del conjunto de datos}
 
-Las limitaciones deben quedar explícitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas débiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construcción académica trazable y reproducible. Cualquier cambio en la guía de etiquetado, en los splits o en el dataset limpio obliga a repetir la evaluación.
+Las limitaciones deben quedar explícitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas débiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construcción académica trazable y reproducible. Cualquier cambio en la guía de etiquetado, en las particiones o en el conjunto de datos limpio obliga a repetir la evaluación.
 
-La segunda limitacion es la granularidad limitada: el dataset contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del núcleo evaluado. La quinta es que la validación externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoría.
+La segunda limitacion es la granularidad limitada: el conjunto contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del núcleo evaluado. La quinta es que la validación externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoría.
 
 \section{Conclusiones}
 
-El diseño de datos presentado en este capítulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un dataset totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
+El diseño de datos presentado en este capítulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un conjunto totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
 
 La aportacion metodológica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, variables operativas, supervisión débil, control de \textit{leakage} y particiones reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
 
-El siguiente capítulo documenta la implementación del prototipo software que ejecuta este flujo: backend, orquestador, herramientas MCP, logging, modo degradado e interfaz mínima.
+El siguiente capítulo documenta la implementación del prototipo software que ejecuta este flujo: orquestación del sistema, recuperación normativa, trazabilidad, respuesta alternativa determinista e interfaz mínima.

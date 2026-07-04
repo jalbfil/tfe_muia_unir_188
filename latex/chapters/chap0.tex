@@ -24,7 +24,7 @@ Juan Carlos asume, adem\'as, la coordinaci\'on metodol\'ogica y el cierre del bl
 \subsection{Capa 3: LLM local, RAG normativo, MCP y backend}
 \textbf{Responsable principal:} Brian Mathias Pesci Juliani.
 
-Su bloque de trabajo comprende la capa de explicación y la integración software del prototipo. Incluye la ingesta del corpus normativo de Castilla y León, la construcción del índice RAG, el wrapper del LLM local, el diseño de prompts, las herramientas MCP para búsqueda normativa y detalle de reglas, el modo degradado sin LLM, el backend FastAPI, el orquestador de capas y el sistema de logs auditables. Su contribución principal desde la IA consiste en convertir la salida del modelo interpretable en una recomendación comprensible, trazable y respaldada por citas normativas, manteniendo la soberanía del dato y evitando APIs externas en producción.
+Su bloque de trabajo comprende la capa de explicación y la integración del prototipo. Incluye la orquestación del prototipo, la recuperación normativa, la explicación generativa local y la trazabilidad de la inferencia. Su contribución principal desde la IA consiste en convertir la salida del modelo interpretable en una recomendación comprensible, trazable y respaldada por citas normativas, manteniendo la soberanía del dato y evitando APIs externas en producción.
 
 \subsection{Capa 1: extracci\'on de variables operativas}
 \textbf{Responsable principal:} Ancor González Carballo.
@@ -78,7 +78,7 @@ La Tabla~\ref{tab:capas-responsables} sintetiza la contribución académica prin
 \textbf{Capa} & \textbf{Responsable principal} & \textbf{Contribución académica} \\ \hline
 Capa 1 & Ancor González Carballo & Procesamiento de lenguaje natural operativo para transformar texto libre en señales y variables estructuradas. \\ \hline
 Capa 2 & Juan Carlos Albert Fillol & Priorizaci\'on interpretable P1--P4 mediante supervisi\'on d\'ebil, comparativa de alternativas, RuleFit-lite, an\'alisis de errores y trazabilidad hacia Capa 3. \\ \hline
-Capa 3 & Brian Mathias Pesci Juliani & Explicación de la prioridad mediante LLM local, recuperación normativa, modo degradado y soporte a la supervisión humana. \\ \hline
+Capa 3 & Brian Mathias Pesci Juliani & Explicación de la prioridad mediante LLM local, recuperación normativa, respuesta alternativa determinista y soporte a la supervisión humana. \\ \hline
 \end{tabular}
 \caption{Contribución académica principal por capa del prototipo.}
 \label{tab:capas-responsables}
@@ -92,7 +92,7 @@ Capa 3 & Brian Mathias Pesci Juliani & Explicación de la prioridad mediante LLM
 
 La coordinaci\'on se ha apoyado en reuniones peri\'odicas, control de versiones y una planificaci\'on por tareas trazables. Las decisiones de alcance se documentan de forma común y los contratos de datos permiten que cada capa avance sin romper la integraci\'on.
 
-El equipo ha trabajado con una lógica iterativa e incremental. Primero se fijaron los contratos y la constitución del proyecto; después se definieron el dataset, la guía de etiquetado y el corpus normativo; posteriormente se implementaron las capas técnica y explicativa; y finalmente se orienta el trabajo hacia la evaluación, la redacción y la defensa. Esta organización permite mantener alineados el prototipo software, la memoria académica y la evidencia reproducible.
+El equipo ha trabajado con una lógica iterativa e incremental. Primero se fijaron los acuerdos de integración y la constitución del proyecto; después se definieron el conjunto de datos, la guía de etiquetado y el corpus normativo; posteriormente se implementaron las capas técnica y explicativa; y finalmente se orienta el trabajo hacia la evaluación, la redacción y la defensa. Esta organización permite mantener alineados el prototipo software, la memoria académica y la evidencia reproducible.
 
 De este modo, la organización del trabajo refleja la idea central del TFM: diseñar, implementar y evaluar un sistema de apoyo a la decisión para incidentes 112 en Castilla y León, con prioridad explicable P1--P4, supervisión humana, soberanía del dato y trazabilidad normativa.
 

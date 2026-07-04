@@ -2,7 +2,7 @@
 \label{cap:9}
 
 Los capítulos anteriores han definido el problema, el marco normativo, la arquitectura
-del sistema, el dataset y el procedimiento de construcción de etiquetas académicas
+del sistema, el conjunto de datos y el procedimiento de construcción de etiquetas académicas
 P1--P4. Este capítulo cierra el ciclo experimental evaluando la Capa 2 de priorización
 interpretable sobre un flujo reproducible: conjunto limpio, etiquetas d\'ebiles,
 particiones, l\'inea base heur\'istica, modelos RuleFit y controles contra fugas de
@@ -39,13 +39,13 @@ de seguridad, ya que los falsos negativos críticos tienen mayor coste potencial
 
 La evaluaci\'on se estructura en tres niveles complementarios. Primero, una evaluaci\'on
 de Capa 2 sobre las particiones definidas, donde se comparan la l\'inea base heur\'istica,
-RuleFit-lite y una implementación diagnostica. Segundo, una validación integrada reproducible de
+RuleFit-lite y una implementación diagnostica. Segundo, una prueba técnica integrada reproducible de
 escenarios Capa 1--Capa 2--Capa 3, orientada a comprobar que la cadena completa conserva
-coherencia funcional. Tercero, un \textit{smoke test} del prototipo con backend y
-    Ollama, cuyo objetivo no es medir rendimiento estad\'istico, sino comprobar la ejecuci\'on
+coherencia funcional. Tercero, una prueba funcional integrada del prototipo con LLM local,
+cuyo objetivo no es medir rendimiento estad\'istico, sino comprobar la ejecuci\'on
 extremo a extremo en casos P1--P4.
 
-\section{Datos, etiquetas y splits}
+\section{Datos, etiquetas y particiones}
 
 El experimento usa el conjunto limpio, formado por 9.380 registros del Registro 112 Castilla y León. La etiqueta objetivo P1--P4 se
 obtiene mediante supervisi\'on d\'ebil con cuatro funciones deterministas. La ejecuci\'on principal
@@ -54,18 +54,18 @@ ablaci\'on sin reglas heur\'isticas mantiene \(\alpha = 0{,}834155\). Este resul
 demuestra que el acuerdo no desaparece al retirar una fuente, pero no garantiza
 independencia entre las etiquetas y las variables predictivas.
 
-Los splits se generan de forma estratificada por ano, provincia inferida y etiqueta
+Las particiones se generan de forma estratificada por ano, provincia inferida y etiqueta
 P1--P4, con semilla fija 42. La Tabla~\ref{tab:9-splits} resume los tamanos y la
 distribución de etiquetas.
 
 \begin{table}[ht]
 \centering
-\caption{Distribución de etiquetas por split}
+\caption{Distribución de etiquetas por partición}
 \label{tab:9-splits}
 \small
 \begin{tabular}{|l|r|r|r|r|r|}
 \hline
-\textbf{Split} & \textbf{Registros} & \textbf{P1} & \textbf{P2} & \textbf{P3} & \textbf{P4} \\ \hline
+\textbf{Partición} & \textbf{Registros} & \textbf{P1} & \textbf{P2} & \textbf{P3} & \textbf{P4} \\ \hline
 Train & 6.512 & 3.049 & 1.504 & 1.701 & 258 \\ \hline
 Validación & 1.415 & 658 & 329 & 374 & 54 \\ \hline
 Test & 1.453 & 655 & 349 & 375 & 74 \\ \hline
@@ -246,12 +246,12 @@ generada debe ser coherente con la prioridad y reglas producidas por Capa 2. No 
 evalua Capa 3 como modelo alternativo de decisión. La rubrica verifica seis criterios:
 alineación con la prioridad recomendada, trazabilidad de reglas, cobertura de señales,
 citas legales en P1/P2, ausencia de contradicciones y presencia de disclaimer de
-confianza o modo degradado. Sobre los 119 casos se obtiene una tasa de cumplimiento de
+confianza o respuesta alternativa determinista. Sobre los 119 casos se obtiene una tasa de cumplimiento de
 \(1{,}000000\), fidelidad media \(0{,}957367\) y m\'inima \(0{,}933333\). En los
 59 falsos negativos P1, la fidelidad media es \(0{,}952494\).
 
 Estos resultados no prueban calidad linguistica ni aceptacion por operadores, pero si
-aportan una garantía importante: incluso en modo degradado, las explicaciones no
+aportan una garantía importante: incluso con respuesta alternativa determinista, las explicaciones no
 contradicen la salida de Capa 2 y conservan la trazabilidad mínima exigida. Una
 evaluación futura con LLM-as-Judge independiente, en la línea propuesta por
 \citeA{Zheng2023LLMJudge}, puede reutilizar los mismos 119 casos.
@@ -287,9 +287,9 @@ Las ventajas diferenciales del enfoque son: (1)~datos empíricos reales del 112 
 \section{Pruebas integradas del prototipo}
 
 Ademas de la evaluación offline de Capa 2, se han ejecutado dos pruebas integradas del
-prototipo. La primera valida la cadena reproducible Capa 1--Capa 2--Capa 3 en
-modo degradado sobre escenarios curados. La segunda comprueba el backend en vivo con
-Ollama local. Ninguna sustituye a las métricas de test ni a la validación externa, pero
+prototipo. La primera comprueba la cadena reproducible Capa 1--Capa 2--Capa 3 con
+respuesta alternativa determinista sobre escenarios curados. La segunda verifica la ejecución completa con
+LLM local. Ninguna sustituye a las métricas de test ni a la validación externa, pero
 ambas verifican que la cadena software real funciona de extremo a extremo: texto del
 incidente, extracción de señales en Capa 1, priorización RuleFit-lite en Capa 2,
 explicación en Capa 3 y respuesta consumible por la interfaz.
@@ -300,14 +300,14 @@ intoxicación, inundacion sin víctimas e incidencia vial ordinaria. Este últim
 incluye negaciones explícitas (``no hay heridos ni vehiculos atrapados'') y confirma
 que Capa 1 no activa falsos positivos de atrapamiento tras el saneamiento realizado.
 
-La ejecucion confirma disponibilidad del LLM local mediante Ollama. Los cuatro casos representativos P1--P4 se
+La ejecucion confirma la disponibilidad del LLM local. Los cuatro casos representativos P1--P4 se
 clasifican conforme a la prioridad esperada, con RuleFit activo y sin recurrir al modo
-degradado de Capa 3. La latencia media observada es \(4{,}90\) s por inferencia
+alternativo determinista de Capa 3. La latencia media observada es \(4{,}90\) s por inferencia
 integrada.
 
 \begin{table}[ht]
 \centering
-\caption{Resultado del smoke test P1--P4 con Ollama}
+\caption{Resultado de la prueba funcional integrada P1--P4 con LLM local}
 \label{tab:9-smoke-prototipo}
 \small
 \begin{tabular}{|l|c|c|l|}
@@ -321,8 +321,8 @@ Consulta vecinal sin riesgo & P4 & P4 & P4 98.54\%, P3 1.40\% \\ \hline
 \end{table}
 
 Esta evidencia permite separar la evaluación cuantitativa de Capa 2, ya realizada sobre test estratificado y
-temporal, de la validación técnica del prototipo completo, todavia limitada a
-escenarios curados y prueba de humo controlada.
+temporal, de la prueba técnica del prototipo completo, todavia limitada a
+escenarios curados y ejecución controlada.
 
 La Tabla~\ref{tab:9-e2e-capa1-capa2} resume la validación reproducible posterior a la
 integración de Capa 1. En ella, las latencias medias son 0.31106 ms para Capa 1,

@@ -23,10 +23,10 @@ El objetivo general se descompone en ocho objetivos específicos:
     \item[OE1.] Analizar el problema de la priorización temprana de incidentes 112, identificando necesidades del operador, restricciones de información y riesgos de automatización en un dominio crítico.
     \item[OE2.] Revisar el marco normativo estatal y autonómico aplicable a Castilla y León, extrayendo criterios de gravedad, coordinación, escalado y trazabilidad que fundamentan el sistema.
     \item[OE3.] Definir la taxonomia operativa, la escala académica P1--P4 y las variables V01--V15, separando variables disponibles en primera decisión de variables contextuales diferidas o potencialmente sujetas a \textit{leakage}.
-    \item[OE4.] Auditar el Registro de Emergencias 112 de Castilla y León, construir el dataset limpio, documentar limitaciones y generar etiquetas académicas P1--P4 mediante supervisión débil.
+    \item[OE4.] Auditar el Registro de Emergencias 112 de Castilla y León, construir el conjunto de datos limpio, documentar limitaciones y generar etiquetas académicas P1--P4 mediante supervisión débil.
     \item[OE5.] Diseñar e implementar una Capa 2 interpretable, comparar una l\'inea base heur\'istica con RuleFit-lite y una ejecuci\'on diagn\'ostica de \texttt{imodels}, selecciónar el modelo mediante la partici\'on de validaci\'on y reservar la partici\'on de prueba para la estimaci\'on final.
     \item[OE6.] Diseñar una Capa 3 de explicación que convierta reglas, probabilidades, evidencias y citas normativas en una justificación comprensible para el operador, sin delegar la decisión en un LLM.
-    \item[OE7.] Integrar las capas mediante contratos versionados, servicio web auditable, modo degradado, registros de inferencia y mecanismos de retroalimentaci\'on humana.
+    \item[OE7.] Integrar las capas mediante contratos versionados, servicio web auditable, respuesta alternativa determinista, registros de inferencia y mecanismos de retroalimentaci\'on humana.
     \item[OE8.] Evaluar el prototipo con particiones estratificada y temporal, control de fugas de informaci\'on, estudio de errores P1, an\'alisis por subgrupos, preparaci\'on de una muestra de revisi\'on interna y evaluaci\'on automatizada de fidelidad explicativa.
 \end{enumerate}
 
@@ -48,8 +48,8 @@ OE2 & Marco estatal, autonómico y europeo & Capítulo 3; Tabla de fuentes norma
 OE3 & Taxonomia, variables V01--V15 y política anti-\textit{leakage} & Anexos A y B; Capítulo 7 & Variables disponibles y prohibidas documentadas \\ \hline
 OE4 & Conjunto limpio, auditor\'ia, particiones y etiquetas d\'ebiles & Cap\'itulo 7; Anexo C & Conjunto reproducible y etiqueta acad\'emica trazable \\ \hline
 OE5 & L\'inea base heur\'istica, RuleFit-lite y comparativa con alternativa externa & Cap\'itulo 9; Anexo E & Modelo selecciónado en validaci\'on y salida consumible por Capa 3 \\ \hline
-OE6 & Explicación con LLM local, RAG, MCP y modo degradado & Capítulos 6 y 8; Anexo L & Capa 3 explica sin recalcular prioridad \\ \hline
-OE7 & Integraci\'on Capa 1--Capa 2--Capa 3 y prueba de funcionamiento & Cap\'itulos 8 y 9 & 5/5 escenarios integrados y 4/4 casos con Ollama \\ \hline
+OE6 & Explicación con LLM local, RAG, MCP y respuesta alternativa determinista & Capítulos 6 y 8; Anexo L & Capa 3 explica sin recalcular prioridad \\ \hline
+OE7 & Integraci\'on Capa 1--Capa 2--Capa 3 y prueba de funcionamiento & Cap\'itulos 8 y 9 & 5/5 escenarios integrados y 4/4 casos con LLM local \\ \hline
 OE8 & Evaluaci\'on final, errores P1, muestra preparada y fidelidad automatizada & Cap\'itulo 9; Anexo D & 59 falsos negativos P1, 119 casos preparados y fidelidad reproducible \\ \hline
 \end{tabular}
 \caption{Relacion entre objetivos específicos, evidencias y criterios de cumplimiento.}
@@ -80,7 +80,7 @@ Estas preguntas evitan presentar el TFM como una promesa de automatización tota
 La contribuci\'on de IA comprende la transformaci\'on de informaci\'on operativa en
 variables estructuradas, la construcci\'on de etiquetas mediante supervisi\'on d\'ebil,
 la comparaci\'on de alternativas interpretables y la separaci\'on entre priorizaci\'on y
-explicaci\'on. La evaluaci\'on se respalda con m\'etricas, artefactos reproducibles, una
+explicaci\'on. La evaluaci\'on se respalda con m\'etricas, evidencias reproducibles, una
 muestra preparada para revisi\'on y un an\'alisis automatizado de fidelidad.
 
 La selecci\'on de RuleFit-lite se justifica por su rendimiento en validaci\'on, su sensibilidad ante P1, la posibilidad de exportar reglas y su menor coste respecto a una implementación canonica alternativa de RuleFit. La partici\'on de prueba se reserva para estimar el rendimiento final del modelo ya selecciónado.
@@ -92,7 +92,7 @@ equipo ha trabajado por bloques trazables: definici\'on del dominio, datos, arqu
 Capa 2, Capa 3, integraci\'on, evaluaci\'on y redacci\'on. Este enfoque permiti\'o
 contrastar la l\'inea base heur\'istica con RuleFit-lite y una alternativa externa de la familia RuleFit.
 
-La metodología no se presenta como Scrum formal. No hay roles ni sprints cerrados en sentido industrial. Se adopta, en cambio, la lógica incremental: cada bloque genera un artefacto verificable, se contrasta con el capítulo correspondiente y se integra en la planificación de tareas. Esta forma de trabajo resulta adecuada porque el TFM combina investigación aplicada, desarrollo software y redacción académica.
+La metodología no se presenta como Scrum formal. No hay roles ni sprints cerrados en sentido industrial. Se adopta, en cambio, la lógica incremental: cada bloque genera una evidencia verificable, se contrasta con el capítulo correspondiente y se integra en la planificación de tareas. Esta forma de trabajo resulta adecuada porque el TFM combina investigación aplicada, desarrollo software y redacción académica.
 
 La metodolog\'ia prioriza la evidencia reproducible frente a afirmaciones operativas no verificadas. Cada decisi\'on relevante se vincula con una evidencia académica: conjunto limpio, gu\'ia de etiquetado, particiones, l\'inea base heur\'istica, RuleFit-lite, evaluaci\'on final y pruebas integradas. Esta trazabilidad permite defender que los resultados no dependen de una narracion posterior, sino de un flujo experimental documentado.
 
@@ -102,10 +102,10 @@ El trabajo se ha estructurado en siete fases:
 
 \begin{enumerate}
     \item \textbf{Delimitación del dominio.} Análisis del problema 112, marco normativo estatal y autonómico, alcance territorial CyL y principios de supervisión humana.
-    \item \textbf{Datos y variables.} Auditoría del Registro 112 CyL, definición de V01--V15, identificación de columnas prohibidas por \textit{leakage} y construcción del dataset limpio.
-    \item \textbf{Supervisión débil.} Generación de etiquetas académicas P1--P4, medición de acuerdo, ablación anti-circularidad y construcción de splits estratificado y temporal.
+    \item \textbf{Datos y variables.} Auditoría del Registro 112 CyL, definición de V01--V15, identificación de columnas prohibidas por \textit{leakage} y construcción del conjunto de datos limpio.
+    \item \textbf{Supervisión débil.} Generación de etiquetas académicas P1--P4, medición de acuerdo, ablación anti-circularidad y construcción de particiones estratificada y temporal.
     \item \textbf{Capa 2 interpretable.} Implementaci\'on de la l\'inea base heur\'istica, RuleFit-lite y una alternativa externa; extracci\'on de reglas, pesos, probabilidades y m\'etricas por clase.
-    \item \textbf{Capa 3 explicativa e integración.} Diseño del RAG normativo, herramientas MCP, modo degradado, backend, contratos y logs de inferencia.
+    \item \textbf{Capa 3 explicativa e integración.} Arquitectura explicativa, trazabilidad, registro auditable e integración del flujo de inferencia.
     \item \textbf{Evaluaci\'on y trazabilidad.} Evaluaci\'on final, an\'alisis por subgrupos, errores P1, muestra preparada para revisi\'on, fidelidad automatizada y síntesis de evidencias.
     \item \textbf{Redacción y coherencia final.} Alineación de capítulos, anexos, métricas, limitaciones y trabajo futuro para que la defensa refleje exactamente el sistema construido.
 \end{enumerate}
@@ -114,7 +114,7 @@ El trabajo se ha estructurado en siete fases:
 
 El sistema se diseña para un dominio de alto impacto, por lo que incorpora salvaguardas desde el principio. La primera es la supervisión humana: el prototipo recomienda, pero no moviliza recursos ni activa planes. La segunda es la explicabilidad: toda recomendación debe acompañarse de reglas, probabilidades, evidencias y, cuando proceda, citas normativas. La tercera es el control anti-\textit{leakage}: se excluyen campos posteriores a la decisión para no entrenar un modelo que aprenda consecuencias del operativo. La cuarta es la soberanía del dato: la inferencia se concibe en local y sin dependencia de APIs externas para datos sensibles.
 
-También se documenta el uso de herramientas de IA generativa como apoyo a la elaboración del TFM. Dichas herramientas se han empleado para organización, redacción preliminar y revisión de coherencia, pero las decisiones técnicas, metodológicas y académicas corresponden al equipo y se contrastan con los artefactos reproducibles del proyecto.
+También se documenta el uso de herramientas de IA generativa como apoyo a la elaboración del TFM. Dichas herramientas se han empleado para organización, redacción preliminar y revisión de coherencia, pero las decisiones técnicas, metodológicas y académicas corresponden al equipo y se contrastan con las evidencias reproducibles del proyecto.
 
 \section{Conclusiones del capítulo}
 
