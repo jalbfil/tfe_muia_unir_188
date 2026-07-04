@@ -270,14 +270,16 @@ La Tabla~\ref{tab:9-comparativa-autores} contrasta el enfoque propuesto con los 
 \hline
 \textbf{Enfoque} & \textbf{Datos reales} & \textbf{Interp.} & \textbf{Expl. norm.} & \textbf{On-prem.} & \textbf{Superv.} & \textbf{Métrica clave} \\ \hline
 AIDR~\cite{Imran2014AIDR} & Redes sociales & No (DNN) & No & No & Fuerte & Acc. multi-label \\ \hline
-CrisisTransformers~\cite{Lamsal2024} & Crisis real & No (transformer) & No & Parcial & Fuerte & F1 clasificación \\ \hline
+\begin{tabular}[t]{@{}l@{}}Crisis\\Transformers~\cite{Lamsal2024}\end{tabular} & Crisis real & No (transformer) & No & Parcial & Fuerte & F1 clasificación \\ \hline
 TREC-IS~\cite{TRECIS2021} & Twitter & No (ensemble) & No & No & Fuerte & Benchmarks \\ \hline
 L\'inea base heur\'istica (este TFM) & 112 CyL & S\'i (reglas) & Parcial & S\'i & D\'ebil & F1 0{,}704; sensibilidad P1 0{,}998 \\ \hline
 \textbf{RuleFit-lite~+~Capa~3} & \textbf{112 CyL} & \textbf{Si} & \textbf{Si} & \textbf{Si} & \textbf{Débil} & \textbf{F1 0{,}906; P1 0{,}910} \\ \hline
 \end{tabular}
 \end{table}
 
-\noindent\textit{Fuente: elaboración propia a partir de los trabajos citados.}
+\begin{center}
+\textit{Fuente: elaboración propia a partir de los trabajos citados.}
+\end{center}
 
 \smallskip
 Las ventajas diferenciales del enfoque son: (1)~datos empíricos reales del 112 CyL frente a redes sociales; (2)~núcleo interpretable con reglas auditables; (3)~explicación normativa local sin APIs externas; y (4)~supervisión débil que evita la dependencia de etiquetado manual masivo. La limitacion principal es la etiqueta académica P1--P4, no validada por personal operativo.

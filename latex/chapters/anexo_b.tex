@@ -44,18 +44,10 @@ V15 & Accesibilidad al punto & Ordinal & Dificultad de acceso, entorno rural, mo
 \section*{B.3. Variables implementadas en Capa 2 v0.1.0}
 
 El modelo RuleFit-lite seleccionado no consume directamente todas las variables V01--V15
-como campos completos. Consume un conjunto compacto de senales predecisionales derivadas
-del texto y de la categoria preliminar:
-
-\begin{itemize}
-    \item \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave},
-    \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion};
-    \item \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio},
-    \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate},
-    \texttt{signal\_meteo\_inundacion};
-    \item \texttt{riesgo\_vital\_textual};
-    \item variables \texttt{cat\_*} derivadas de la taxonomia.
-\end{itemize}
+como campos completos. Consume un conjunto compacto de señales predecisionales derivadas
+del texto y de la categoria preliminar: fallecimiento, herido grave, atrapamiento,
+intoxicación, varias llamadas, incendio, accidente de tráfico, rescate, meteorología
+o inundación, riesgo vital textual y variables categóricas derivadas de la taxonomía.
 
 Esta decision mantiene reproducibilidad y evita introducir variables contextuales
 incompletas. Las variables V08--V11 se conservan en el dise\~no porque son relevantes

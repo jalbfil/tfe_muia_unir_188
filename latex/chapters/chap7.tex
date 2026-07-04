@@ -126,7 +126,7 @@ Las variables V08--V11 se mantienen como parte del diseño conceptual para prese
 
 \section{Señales operativas textuales}
 
-Las señales textuales son indicadores derivados del título y la descripcion. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores débiles de Capa 2. Las principales señales son \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicación}, \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_meteo\_inundacion} y \texttt{riesgo\_vital\_textual}.
+Las señales textuales son indicadores derivados del título y la descripcion. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores débiles de Capa 2. Las principales señales cubren fallecimiento, herido grave, atrapamiento, intoxicación, varias llamadas, incendio, accidente de tráfico, rescate, riesgo meteorológico por inundación y riesgo vital textual.
 
 Estas señales deben tratarse como indicios. La palabra ``herido'', por ejemplo, no equivale siempre a P1; la expresión ``herido grave atrapado'' sí tiene un peso operativo mucho mayor. Por eso la extracción textual debe combinar patrones, intensificadores y validación posterior, evitando que una búsqueda literal determine por sí sola la prioridad.
 
@@ -173,7 +173,7 @@ El sistema excluye de forma explícita variables que no estarían disponibles en
 \textbf{Columna} & \textbf{Razon de exclusion como feature} \\ \hline
 \texttt{MediosMov} & Refleja recursos movilizados, es decir, una consecuencia de la decisión operativa \\ \hline
 \texttt{medios\_mov\_limpio} & Derivado de \texttt{MediosMov}; mantiene la misma fuga \\ \hline
-\texttt{medios\_mov\_uso\_recomendado} & Codificacion auxiliar ex post; no disponible en primera decisión \\ \hline
+\begin{tabular}[t]{@{}l@{}}\texttt{medios\_mov\_uso}\\\texttt{\_recomendado}\end{tabular} & Codificacion auxiliar ex post; no disponible en primera decisión \\ \hline
 \texttt{PacientesAten} & Resultado clinico o asistencia posterior \\ \hline
 \texttt{pacientes\_aten\_limpio} & Derivado de \texttt{PacientesAten}; conserva información posterior \\ \hline
 \texttt{IncidenteCerrado} & Estado final del incidente \\ \hline

@@ -22,13 +22,13 @@ La especificacion tecnica completa se concreta en los contratos Pydantic \cite{P
 \begin{tabularx}{\textwidth}{|p{3.0cm}|X|p{3.5cm}|}
 \hline
 \textbf{Contrato} & \textbf{Funcion} & \textbf{Evidencia} \\ \hline
-\texttt{IncidentInput} & Entrada normalizada del incidente: identificador, texto, fecha, provincia, municipio, coordenadas y categoria preliminar. & \texttt{IncidentInput.schema.json} \\ \hline
-\texttt{IncidentFeatures} & Variables V01--V15 y senales textuales extraidas por Capa 1 o derivadas del dataset. & \texttt{IncidentFeatures.schema.json} \\ \hline
-\texttt{WeakLabel} & Etiqueta academica P1--P4, fuentes debiles, acuerdo y metadatos de trazabilidad. & \texttt{WeakLabel.schema.json} \\ \hline
-\texttt{PriorityRecommendation} & Salida de Capa 2: prioridad recomendada, probabilidades, reglas activadas y version del modelo. & \texttt{PriorityRecommendation.schema.json} \\ \hline
-\texttt{OperatorRecommendation} & Explicacion entregada al operador, citas legales, advertencias y modo degradado si aplica. & \texttt{OperatorRecommendation.schema.json} \\ \hline
-\texttt{OperatorDecision} & Decision humana: aceptar, modificar o rechazar, prioridad final y justificacion. & \texttt{OperatorDecision.schema.json} \\ \hline
-\texttt{InferenceLog} & Registro auditable de entrada, salida, hashes, versiones, tiempos y advertencias. & \texttt{InferenceLog.schema.json} \\ \hline
+\texttt{IncidentInput} & Entrada normalizada del incidente: identificador, texto, fecha, provincia, municipio, coordenadas y categoria preliminar. & Esquema JSON \\ \hline
+\texttt{IncidentFeatures} & Variables V01--V15 y senales textuales extraidas por Capa 1 o derivadas del dataset. & Esquema JSON \\ \hline
+\texttt{WeakLabel} & Etiqueta academica P1--P4, fuentes debiles, acuerdo y metadatos de trazabilidad. & Esquema JSON \\ \hline
+\begin{tabular}[t]{@{}l@{}}\texttt{Priority}\\\texttt{Recommendation}\end{tabular} & Salida de Capa 2: prioridad recomendada, probabilidades, reglas activadas y version del modelo. & Esquema JSON \\ \hline
+\begin{tabular}[t]{@{}l@{}}\texttt{Operator}\\\texttt{Recommendation}\end{tabular} & Explicacion entregada al operador, citas legales, advertencias y modo degradado si aplica. & Esquema JSON \\ \hline
+\texttt{OperatorDecision} & Decision humana: aceptar, modificar o rechazar, prioridad final y justificacion. & Esquema JSON \\ \hline
+\texttt{InferenceLog} & Registro auditable de entrada, salida, hashes, versiones, tiempos y advertencias. & Esquema JSON \\ \hline
 \end{tabularx}
 \end{table}
 
@@ -52,21 +52,17 @@ auditar cada paso de forma independiente.
 \section*{F.3.1. Validadores de integridad}
 
 Los contratos no son meras estructuras de datos; incorporan validadores que actuan como
-puertas de integridad entre capas. En \texttt{IncidentInput}, el validador
-\texttt{\_require\_tz\_aware} exige que \texttt{fecha\_incidente} incluya zona horaria,
-evitando mezclar eventos sin referencia temporal clara. El validador
-\texttt{\_coords\_paired} impide que latitud y longitud se definan a medias: ambas deben
-existir juntas o quedar ausentes. Finalmente, \texttt{\_text\_has\_alphabetic} evita
-entradas sin contenido textual util.
+puertas de integridad entre capas. En \texttt{IncidentInput}, los validadores exigen
+fecha con zona horaria, coherencia entre latitud y longitud, y presencia de contenido
+textual util. Con ello se evitan eventos sin referencia temporal clara, coordenadas
+definidas a medias y entradas vacias.
 
-En \texttt{PriorityRecommendation}, el validador
-\texttt{\_probs\_complete\_and\_sum\_to\_one} comprueba que la distribucion de
+En \texttt{PriorityRecommendation}, los validadores comprueban que la distribucion de
 probabilidades contenga exactamente P1, P2, P3 y P4 y que sume \(1,0 \pm 10^{-6}\).
-El validador \texttt{\_argmax\_matches\_recommended} fuerza que la prioridad recomendada
-coincida con la clase de mayor probabilidad. Por su parte,
-\texttt{\_rulefit\_sparsity\_and\_p1p2\_rules} limita RuleFit a un maximo de 30 reglas
-activas y exige que toda recomendacion P1 o P2 incluya al menos una regla, manteniendo
-la trazabilidad exigida para incidentes de mayor gravedad.
+Tambien fuerzan que la prioridad recomendada coincida con la clase de mayor
+probabilidad, limitan RuleFit a un maximo de 30 reglas activas y exigen que toda
+recomendacion P1 o P2 incluya al menos una regla, manteniendo la trazabilidad exigida
+para incidentes de mayor gravedad.
 
 \section*{F.4. Politica anti-\textit{leakage}}
 
