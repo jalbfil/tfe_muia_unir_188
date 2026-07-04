@@ -19,14 +19,14 @@ central para no sobredimensionar los resultados.
 La evaluación experimental persigue cinco objetivos:
 
 \begin{enumerate}
-    \item verificar que la Capa 2 aprende a reproducir la etiqueta académica P1--P4 con
+    \item Verificar que la Capa 2 aprende a reproducir la etiqueta académica P1--P4 con
     mejor rendimiento que una l\'inea base heur\'istica;
-    \item comprobar que el recall de P1 se mantiene por encima del umbral de seguridad
+    \item Comprobar que el recall de P1 se mantiene por encima del umbral de seguridad
     fijado en 0.85;
-    \item preservar la interpretabilidad mediante un limite de 30 reglas activas
+    \item Preservar la interpretabilidad mediante un limite de 30 reglas activas
     exportadas;
-    \item comparar una implementaci\'on RuleFit eficiente frente a una alternativa externa;
-    \item garantizar que no se utilizan columnas posteriores a la decisi\'on.
+    \item Comparar una implementaci\'on RuleFit eficiente frente a una alternativa externa;
+    \item Garantizar que no se utilizan columnas posteriores a la decisi\'on.
 \end{enumerate}
 
 Las métricas principales son accuracy, macro-F1, precisión/recall/F1 por clase,
@@ -152,7 +152,7 @@ P4 & 0.880952 & 1.000000 & 0.936709 & 74 \\ \hline
 \end{table}
 
 El comportamiento por clase muestra un equilibrio razonable. P1 mantiene alto recall
-y alta precisión, lo que es especialmente relevante para seguridad operativa. P2 es la
+y alta precisión, siendo relevante para seguridad operativa. P2 es la
 clase mas dificil, con F1 inferior al resto, un resultado esperable al tratarse de una
 zona frontera entre gravedad critica y seguimiento ordinario. P4 obtiene recall total
 en test, aunque con menor precisión por su baja frecuencia relativa.
@@ -374,7 +374,7 @@ Decisión humana clara & 4.93 & 4.43 & 4.53 & 4.63 \\ \hline
 \end{table}
 
 Los resultados sugieren aceptacion positiva del MVP como demostrador académico. Los
-perfiles profesionales valoran especialmente la trazabilidad y la supervisión humana;
+perfiles profesionales valoran la trazabilidad y la supervisión humana;
 los usuarios técnicos destacan la separación entre priorización y explicación; y los
 usuarios no especializados comprenden la finalidad general, aunque muestran mas
 dificultad con probabilidades, reglas y términologia técnica. Esta diferencia entre
