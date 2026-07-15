@@ -34,7 +34,7 @@
 \title{Sistema inteligente de apoyo a la decisión para puestos de mando de emergencias}
 \titulacion{Máster Universitario en Inteligencia Artificial}
 \author{Juan Carlos Albert Fillol, Ancor González Carballo y Brian Mathias Pesci Juliani}
-\date{24 de junio de 2026}
+\date{15 de julio de 2026}
 \director{Dr. Andrés Soto Villaverde}
 \nombreciudad{Madrid, Tenerife y Alicante}
 
@@ -93,18 +93,18 @@
 \chapter*{Resumen}
 \addcontentsline{toc}{chapter}{Resumen}
 
-La gestión de emergencias civiles exige decisiones rápidas y fundamentadas bajo entornos de alta presión temporal e incertidumbre. Este trabajo diseña, implementa y evalúa un prototipo neuro-simbólico modular de apoyo a la decisión para la priorización explicable de incidentes 112 en Castilla y León. El sistema utiliza el Registro de Emergencias (2008--2022) para definir una escala académica de prioridad P1--P4 mediante supervisión débil. La arquitectura consta de tres capas: Capa 1 (procesamiento de lenguaje natural en español e ingesta experimental de llamadas de voz mediante ASR local con Whisper), Capa 2 (núcleo decisor interpretable con RuleFit-lite respaldado por salvaguardas deterministas) y Capa 3 (generación de explicaciones normativas mediante LLM local, RAG y Model Context Protocol). Evaluamos cuantitativamente la propuesta frente a un baseline experto de 19 reglas y una variante diagnóstica con \texttt{imodels} usando validación estratificada y temporal, control anti-\textit{leakage} y análisis de sesgos. Además, se analizan la fidelidad de las explicaciones y la usabilidad percibida mediante un estudio piloto con 9 participantes. Los resultados confirman que RuleFit-lite alcanza una macro-F1 de 0,905 y una sensibilidad P1 del 0,910, mejorando significativamente a la línea base y manteniendo la latencia y trazabilidad requeridas en salas de control. El prototipo se valida como una base académica reproducible para el diseño de sistemas interactivos (Human-in-the-loop) alineados con la normativa de IA europea.
+La gestión de emergencias civiles exige decisiones rápidas y fundamentadas bajo presión temporal e incertidumbre. Este trabajo diseña, implementa y evalúa un prototipo modular de apoyo a la primera decisión para incidentes 112 en Castilla y León. El sistema utiliza el Registro de Emergencias de 2008--2022 y una escala académica P1--P4 construida mediante supervisión débil. La arquitectura consta de tres capas: una extracción simbólica y auditable de señales operativas, basada en detección semántica, tratamiento de negaciones, normalización y confianza; un núcleo de priorización interpretable con RuleFit-lite; y una capa de explicación normativa mediante un modelo de lenguaje local, generación aumentada por recuperación y Model Context Protocol. La evaluación compara una línea base de 19 reglas, RuleFit-lite y una implementación diagnóstica de \texttt{imodels}, mediante una partición estratificada y otra temporal, control anti-\textit{leakage}, análisis por subgrupos y revisión de errores críticos. RuleFit-lite alcanza una macro-F1 de 0,905 y una sensibilidad P1 de 0,910; mejora el rendimiento global de la línea base y conserva una salida trazable. También se evalúa de forma automatizada la fidelidad de las explicaciones sobre una muestra preparada de 119 casos. Los resultados corresponden a un entorno académico controlado y no constituyen validación operativa ni certificación para su uso en un servicio 112 real.
 
 \medskip
-\textbf{Palabras clave:} emergencias 112, sistemas de apoyo a la decisión (DSS), inteligencia artificial explicable (XAI), arquitectura neuro-simbólica, supervisión débil, RuleFit, reconocimiento del habla (ASR).
+\textbf{Palabras clave:} emergencias 112, sistemas de apoyo a la decisión (DSS), inteligencia artificial explicable (XAI), supervisión débil, RuleFit, reconocimiento del habla (ASR).
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Civil emergency management requires rapid, evidence-based decisions under high time pressure and uncertainty. This thesis designs, implements, and evaluates a modular neuro-symbolic decision-support prototype for explainable 112 incident prioritization in Castilla y Leon. The system leverages the 2008--2022 Emergency Registry to build an academic P1--P4 priority scale using weak supervision. The architecture is organized in three layers: Layer 1 (Spanish NLP processing and experimental voice call ingestion via local ASR with Whisper), Layer 2 (interpretable decision core using RuleFit-lite backed by deterministic safeguards), and Layer 3 (normative explanation generation through a local LLM, RAG, and Model Context Protocol). The proposal is quantitatively evaluated against a 19-rule expert baseline and a diagnostic \texttt{imodels} variant using stratified and temporal splits, anti-leakage controls, and bias checks. In addition, explanation fidelity and perceived usability are assessed via a pilot study with 9 participants. Results show that RuleFit-lite achieves a macro-F1 of 0.905 and a P1 recall of 0.910, significantly outperforming the baseline while preserving the latency and traceability required in control rooms. The prototype validates a reproducible academic basis for human-in-the-loop systems aligned with European AI regulations.
+Civil emergency management requires rapid, evidence-based decisions under time pressure and uncertainty. This thesis designs, implements, and evaluates a modular prototype to support the first decision for 112 incidents in Castile and Leon. The system uses the 2008--2022 Emergency Registry and an academic P1--P4 scale built through weak supervision. Its three layers provide symbolic and auditable extraction of operational signals through semantic detection, negation handling, normalization, and confidence estimation; interpretable prioritization with RuleFit-lite; and normative explanation through a local language model, retrieval-augmented generation, and Model Context Protocol. The evaluation compares a 19-rule baseline, RuleFit-lite, and a diagnostic \texttt{imodels} implementation using stratified and temporal partitions, anti-leakage controls, subgroup analysis, and critical-error review. RuleFit-lite achieves a macro-F1 of 0.905 and a P1 recall of 0.910; it improves the baseline's overall performance while preserving traceable outputs. Explanation fidelity is also assessed automatically on a prepared sample of 119 cases. These results were obtained in a controlled academic setting and do not constitute operational validation or certification for use in a real 112 service.
 
 \medskip
-\textbf{Keywords:} 112 emergencies, decision support systems (DSS), explainable artificial intelligence (XAI), neuro-symbolic architecture, weak supervision, RuleFit, automatic speech recognition (ASR).
+\textbf{Keywords:} 112 emergencies, decision support systems (DSS), explainable artificial intelligence (XAI), weak supervision, RuleFit, automatic speech recognition (ASR).
 
 
 
@@ -134,11 +134,9 @@ Civil emergency management requires rapid, evidence-based decisions under high t
 \input{chapters/anexo_f}
 \input{chapters/anexo_g}
 \input{chapters/anexo_h}
-% Se omite deliberadamente anexo_i.tex para evitar ambiguedad visual entre la letra I
-% y el numero romano I. La documentacion de contratos prevista inicialmente se consolida
-% en el Anexo F.
-\input{chapters/anexo_j}
-\input{chapters/anexo_k}
+% Los antiguos anexos J y K se consolidan en la model card de Capa 3 para evitar
+% detalle tecnico redundante. Se conserva la letra L de su nomenclatura original.
+\setcounter{chapter}{11}
 \input{chapters/anexo_l}
 
 \end{document}

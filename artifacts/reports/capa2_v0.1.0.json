@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-26T17:47:16.530025+00:00",
+  "generated_at": "2026-07-15T19:59:49.710087+00:00",
   "scope": "Capa 2 interpretable priority recommendation P1-P4",
   "quality_targets": {
     "recall_p1_min": 0.85,
@@ -14,8 +14,8 @@
       "Exported rule count respects the <=30 interpretability constraint.",
       "Inference latency is materially lower than the diagnostic imodels run."
     ],
-    "selected_test_macro_f1": 0.884163,
-    "selected_recall_p1": 0.938272,
+    "selected_test_macro_f1": 0.905604,
+    "selected_recall_p1": 0.909924,
     "selected_active_rules": 30
   },
   "models": {
@@ -25,171 +25,171 @@
       "model_version_capa2": "0.1.0",
       "engine": "baseline_expert",
       "fit_rows": null,
-      "active_rules": 16,
+      "active_rules": 19,
       "training_seconds": null,
       "mean_inference_ms_per_row": null,
       "model_size_bytes": null,
       "artifacts": {},
       "metrics": {
         "train": {
-          "rows": 6511,
-          "accuracy": 0.725849,
-          "macro_f1": 0.706714,
-          "recall_p1": 0.997278,
+          "rows": 6512,
+          "accuracy": 0.701014,
+          "macro_f1": 0.46514,
+          "recall_p1": 0.995736,
           "per_class": {
             "P1": {
-              "precision": 0.745612,
-              "recall": 0.997278,
-              "f1": 0.853275
+              "precision": 0.768413,
+              "recall": 0.995736,
+              "f1": 0.867428
             },
             "P2": {
-              "precision": 0.393899,
-              "recall": 0.201083,
-              "f1": 0.266248
+              "precision": 0.373641,
+              "recall": 0.182846,
+              "f1": 0.245536
             },
             "P3": {
-              "precision": 0.792536,
-              "recall": 0.68209,
-              "f1": 0.733177
+              "precision": 0.687019,
+              "recall": 0.734274,
+              "f1": 0.709861
             },
             "P4": {
-              "precision": 1.0,
-              "recall": 0.949612,
-              "f1": 0.974155
+              "precision": 0.714286,
+              "recall": 0.01938,
+              "f1": 0.037736
             }
           },
           "confusion_matrix": {
             "P1": {
-              "P1": 2931,
-              "P2": 8,
+              "P1": 3036,
+              "P2": 11,
+              "P3": 2,
+              "P4": 0
+            },
+            "P2": {
+              "P1": 915,
+              "P2": 275,
+              "P3": 314,
+              "P4": 0
+            },
+            "P3": {
+              "P1": 0,
+              "P2": 450,
+              "P3": 1249,
+              "P4": 2
+            },
+            "P4": {
+              "P1": 0,
+              "P2": 0,
+              "P3": 253,
+              "P4": 5
+            }
+          }
+        },
+        "val": {
+          "rows": 1415,
+          "accuracy": 0.717314,
+          "macro_f1": 0.498785,
+          "recall_p1": 0.995441,
+          "per_class": {
+            "P1": {
+              "precision": 0.776987,
+              "recall": 0.995441,
+              "f1": 0.872752
+            },
+            "P2": {
+              "precision": 0.436709,
+              "recall": 0.209726,
+              "f1": 0.283367
+            },
+            "P3": {
+              "precision": 0.70073,
+              "recall": 0.770053,
+              "f1": 0.733758
+            },
+            "P4": {
+              "precision": 1.0,
+              "recall": 0.055556,
+              "f1": 0.105264
+            }
+          },
+          "confusion_matrix": {
+            "P1": {
+              "P1": 655,
+              "P2": 3,
               "P3": 0,
               "P4": 0
             },
             "P2": {
-              "P1": 865,
-              "P2": 297,
-              "P3": 315,
+              "P1": 188,
+              "P2": 69,
+              "P3": 72,
               "P4": 0
             },
             "P3": {
-              "P1": 135,
-              "P2": 449,
-              "P3": 1253,
+              "P1": 0,
+              "P2": 86,
+              "P3": 288,
               "P4": 0
             },
             "P4": {
               "P1": 0,
               "P2": 0,
-              "P3": 13,
-              "P4": 245
+              "P3": 51,
+              "P4": 3
             }
           }
         },
-        "val": {
-          "rows": 1414,
-          "accuracy": 0.717822,
-          "macro_f1": 0.691811,
-          "recall_p1": 1.0,
+        "test": {
+          "rows": 1453,
+          "accuracy": 0.694425,
+          "macro_f1": 0.464284,
+          "recall_p1": 0.998473,
           "per_class": {
             "P1": {
-              "precision": 0.737028,
-              "recall": 1.0,
-              "f1": 0.848608
+              "precision": 0.765808,
+              "recall": 0.998473,
+              "f1": 0.866799
             },
             "P2": {
-              "precision": 0.361702,
-              "recall": 0.155015,
-              "f1": 0.217021
+              "precision": 0.430464,
+              "recall": 0.186246,
+              "f1": 0.26
             },
             "P3": {
-              "precision": 0.770667,
-              "recall": 0.711823,
-              "f1": 0.740077
+              "precision": 0.647982,
+              "recall": 0.770667,
+              "f1": 0.70402
             },
             "P4": {
-              "precision": 1.0,
-              "recall": 0.925926,
-              "f1": 0.961539
+              "precision": 0.5,
+              "recall": 0.013514,
+              "f1": 0.026317
             }
           },
           "confusion_matrix": {
             "P1": {
-              "P1": 625,
+              "P1": 654,
               "P2": 0,
-              "P3": 0,
+              "P3": 1,
               "P4": 0
             },
             "P2": {
-              "P1": 196,
-              "P2": 51,
-              "P3": 82,
-              "P4": 0
+              "P1": 200,
+              "P2": 65,
+              "P3": 83,
+              "P4": 1
             },
             "P3": {
-              "P1": 27,
-              "P2": 90,
+              "P1": 0,
+              "P2": 86,
               "P3": 289,
               "P4": 0
             },
             "P4": {
               "P1": 0,
               "P2": 0,
-              "P3": 4,
-              "P4": 50
-            }
-          }
-        },
-        "test": {
-          "rows": 1455,
-          "accuracy": 0.727835,
-          "macro_f1": 0.703932,
-          "recall_p1": 0.998457,
-          "per_class": {
-            "P1": {
-              "precision": 0.744534,
-              "recall": 0.998457,
-              "f1": 0.852999
-            },
-            "P2": {
-              "precision": 0.388889,
-              "recall": 0.1875,
-              "f1": 0.253012
-            },
-            "P3": {
-              "precision": 0.788732,
-              "recall": 0.70529,
-              "f1": 0.744681
-            },
-            "P4": {
-              "precision": 1.0,
-              "recall": 0.932432,
-              "f1": 0.965035
-            }
-          },
-          "confusion_matrix": {
-            "P1": {
-              "P1": 647,
-              "P2": 1,
-              "P3": 0,
-              "P4": 0
-            },
-            "P2": {
-              "P1": 203,
-              "P2": 63,
-              "P3": 70,
-              "P4": 0
-            },
-            "P3": {
-              "P1": 19,
-              "P2": 98,
-              "P3": 280,
-              "P4": 0
-            },
-            "P4": {
-              "P1": 0,
-              "P2": 0,
-              "P3": 5,
-              "P4": 69
+              "P3": 73,
+              "P4": 1
             }
           }
         }
@@ -197,7 +197,7 @@
       "quality_checks": {
         "recall_p1_pass": true,
         "sparsity_pass": true,
-        "macro_f1_test": 0.703932
+        "macro_f1_test": 0.464284
       }
     },
     "rulefit_lite": {
@@ -332,54 +332,54 @@
           }
         },
         "test": {
-          "rows": 1455,
-          "accuracy": 0.885911,
-          "macro_f1": 0.884163,
-          "recall_p1": 0.938272,
+          "rows": 1453,
+          "accuracy": 0.903648,
+          "macro_f1": 0.905604,
+          "recall_p1": 0.909924,
           "per_class": {
             "P1": {
-              "precision": 0.932515,
-              "recall": 0.938272,
-              "f1": 0.935385,
-              "support": 648
+              "precision": 0.941548,
+              "recall": 0.909924,
+              "f1": 0.925466,
+              "support": 655
             },
             "P2": {
-              "precision": 0.763736,
-              "recall": 0.827381,
-              "f1": 0.794286,
-              "support": 336
+              "precision": 0.822888,
+              "recall": 0.86533,
+              "f1": 0.843575,
+              "support": 349
             },
             "P3": {
-              "precision": 0.929379,
-              "recall": 0.828715,
-              "f1": 0.876165,
-              "support": 397
+              "precision": 0.924119,
+              "recall": 0.909333,
+              "f1": 0.916667,
+              "support": 375
             },
             "P4": {
-              "precision": 0.870588,
+              "precision": 0.880952,
               "recall": 1.0,
-              "f1": 0.930818,
+              "f1": 0.936709,
               "support": 74
             }
           },
           "confusion_matrix": {
             "P1": {
-              "P1": 608,
-              "P2": 22,
+              "P1": 596,
+              "P2": 34,
               "P3": 18,
-              "P4": 0
+              "P4": 7
             },
             "P2": {
-              "P1": 44,
-              "P2": 278,
-              "P3": 7,
-              "P4": 7
+              "P1": 37,
+              "P2": 302,
+              "P3": 10,
+              "P4": 0
             },
             "P3": {
               "P1": 0,
-              "P2": 64,
-              "P3": 329,
-              "P4": 4
+              "P2": 31,
+              "P3": 341,
+              "P4": 3
             },
             "P4": {
               "P1": 0,
@@ -393,7 +393,7 @@
       "quality_checks": {
         "recall_p1_pass": true,
         "sparsity_pass": true,
-        "macro_f1_test": 0.884163
+        "macro_f1_test": 0.905604
       }
     },
     "rulefit_imodels": {
@@ -594,15 +594,18 @@
     }
   },
   "model_selection_source": {
-    "generated_at": "2026-05-26T17:32:52.685478+00:00",
+    "generated_at": "2026-07-15T19:59:49.639287+00:00",
     "models": [
       {
         "model": "baseline_expert",
         "available": true,
-        "test_accuracy": 0.727835,
-        "test_macro_f1": 0.703932,
-        "test_recall_p1": 0.998457,
-        "active_rules": 16,
+        "validation_accuracy": 0.717314,
+        "validation_macro_f1": 0.498785,
+        "validation_recall_p1": 0.995441,
+        "test_accuracy": 0.694425,
+        "test_macro_f1": 0.464284,
+        "test_recall_p1": 0.998473,
+        "active_rules": 19,
         "training_seconds": null,
         "mean_inference_ms_per_row": null,
         "model_size_bytes": null
@@ -612,9 +615,13 @@
         "available": true,
         "engine": "lite",
         "fit_rows": 3000,
-        "test_accuracy": 0.885911,
-        "test_macro_f1": 0.884163,
-        "test_recall_p1": 0.938272,
+        "validation_accuracy": 0.881188,
+        "validation_macro_f1": 0.879592,
+        "validation_recall_p1": 0.9344,
+        "test_accuracy": 0.903648,
+        "test_macro_f1": 0.905604,
+        "test_recall_p1": 0.909924,
+        "test_source": "final_evaluation",
         "active_rules": 30,
         "training_seconds": 6.504204,
         "mean_inference_ms_per_row": 0.450127,
@@ -625,9 +632,13 @@
         "available": true,
         "engine": "imodels",
         "fit_rows": 50,
+        "validation_accuracy": 0.78925,
+        "validation_macro_f1": 0.584768,
+        "validation_recall_p1": 0.9104,
         "test_accuracy": 0.768385,
         "test_macro_f1": 0.568239,
         "test_recall_p1": 0.902778,
+        "test_source": "model_report",
         "active_rules": 30,
         "training_seconds": 13.191647,
         "mean_inference_ms_per_row": 7.496081,
@@ -636,9 +647,10 @@
     ],
     "recommendation": {
       "recommended_model": "rulefit_lite",
-      "criterion": "Maximize test macro-F1, keep high P1 recall, prefer fewer rules on ties."
+      "criterion": "Maximize validation macro-F1, keep high validation P1 recall, prefer fewer rules on ties. Test is reserved for final estimation."
     }
   },
+  "final_test_source": "artifacts\\reports\\evaluation_v0.1.0.json",
   "anti_leakage": {
     "policy": "Only pre-decision textual signals and derived V01-V15 proxies are used.",
     "excluded_columns": [

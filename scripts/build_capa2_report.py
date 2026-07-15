@@ -13,6 +13,7 @@ DEFAULT_BASELINE = PROJECT_ROOT / "artifacts" / "reports" / "baseline_expert_v0.
 DEFAULT_LITE = PROJECT_ROOT / "artifacts" / "reports" / "rulefit_lite_v0.1.0.json"
 DEFAULT_IMODELS = PROJECT_ROOT / "artifacts" / "reports" / "rulefit_imodels_v0.1.0.json"
 DEFAULT_SELECTION = PROJECT_ROOT / "artifacts" / "reports" / "capa2_model_selection_v0.1.0.json"
+DEFAULT_EVALUATION = PROJECT_ROOT / "artifacts" / "reports" / "evaluation_v0.1.0.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "artifacts" / "reports" / "capa2_v0.1.0.json"
 DEFAULT_OUTPUT_MD = PROJECT_ROOT / "artifacts" / "reports" / "capa2_v0.1.0.md"
 
@@ -143,6 +144,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--lite", type=Path, default=DEFAULT_LITE)
     parser.add_argument("--imodels", type=Path, default=DEFAULT_IMODELS)
     parser.add_argument("--selection", type=Path, default=DEFAULT_SELECTION)
+    parser.add_argument("--evaluation", type=Path, default=DEFAULT_EVALUATION)
     parser.add_argument("--output-json", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--output-md", type=Path, default=DEFAULT_OUTPUT_MD)
     args = parser.parse_args(argv)
@@ -151,11 +153,20 @@ def main(argv: list[str] | None = None) -> int:
     lite = _load(args.lite)
     imodels = _load(args.imodels)
     selection = _load(args.selection)
+    evaluation = _load(args.evaluation)
     models = {
         "baseline_expert": _model_block("baseline_expert", baseline, model_family="expert_rules"),
         "rulefit_lite": _model_block("rulefit_lite", lite, model_family="rulefit_style"),
         "rulefit_imodels": _model_block("rulefit_imodels", imodels, model_family="imodels_rulefit"),
     }
+    final_test = evaluation["evaluation"]["stratified_test"]["metrics"]
+    models["rulefit_lite"]["metrics"]["test"] = final_test
+    models["rulefit_lite"]["quality_checks"].update(
+        {
+            "recall_p1_pass": final_test["recall_p1"] >= QUALITY_TARGETS["recall_p1_min"],
+            "macro_f1_test": final_test["macro_f1"],
+        }
+    )
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "scope": "Capa 2 interpretable priority recommendation P1-P4",
@@ -163,6 +174,7 @@ def main(argv: list[str] | None = None) -> int:
         "decision": _decision(selection, models),
         "models": models,
         "model_selection_source": selection,
+        "final_test_source": str(args.evaluation.relative_to(PROJECT_ROOT)),
         "anti_leakage": {
             "policy": "Only pre-decision textual signals and derived V01-V15 proxies are used.",
             "excluded_columns": ANTI_LEAKAGE_COLUMNS,

@@ -11,7 +11,7 @@ La versión actual del TFM abandona el diseño inicial basado únicamente en reg
 
 \begin{itemize}
     \item \textbf{Capa 1: NLP operativo}. Extrae variables V01--V15 y señales textuales desde el título, descripción, categoría preliminar y contexto básico del incidente.
-    \item \textbf{Capa 2: priorización interpretable}. Produce una recomendación P1--P4 mediante RuleFit-lite, entrenado sobre etiquetas académicas generadas por supervisión débil, y comparado contra un baseline experto y una ejecución diagnóstica con \texttt{imodels}.
+    \item \textbf{Capa 2: priorización interpretable}. Produce una recomendación P1--P4 mediante RuleFit-lite, entrenado sobre etiquetas académicas generadas por supervisión débil, y comparado con una línea base experta y una ejecución diagnóstica con \texttt{imodels}.
     \item \textbf{Capa 3: explicación normativa}. Genera una explicación breve para el operador mediante LLM local, recuperación aumentada sobre corpus normativo de Castilla y León y herramientas MCP.
 \end{itemize}
 
@@ -35,7 +35,7 @@ El diseño se apoya en seis principios que conectan los capítulos previos con l
 
 \section{Vista general de la arquitectura}
 
-La arquitectura se representa como una cadena de transformaciones controladas. La entrada inicial es un \texttt{IncidentInput}; la Capa 1 produce \texttt{IncidentFeatures}; la Capa 2 produce \texttt{PriorityRecommendation}; la Capa 3 produce \texttt{OperatorRecommendation}; y la decisión final del operador se registra como \texttt{OperatorDecision}. Todo el proceso queda recogido en un \texttt{InferenceLog}. Esta secuencia estructurada asegura que no existan dependencias circulares entre las diferentes fases del ciclo de inferencia. Para facilitar la emulación operativa, el prototipo permite opcionalmente que la interfaz de usuario genere el objeto \texttt{IncidentInput} a partir de la transcripción local de una llamada de voz, delegando en un componente de ASR (basado en \texttt{faster-whisper}) y un parser estructurador.
+La arquitectura se representa como una cadena de transformaciones controladas. La entrada inicial es un \texttt{IncidentInput}; la Capa 1 produce \texttt{IncidentFeatures}; la Capa 2 produce \texttt{PriorityRecommendation}; la Capa 3 produce \texttt{OperatorRecommendation}; y la decisión final del operador se registra como \texttt{OperatorDecision}. Todo el proceso queda recogido en un \texttt{InferenceLog}. Esta secuencia evita dependencias circulares entre las fases de inferencia. De forma opcional, la interfaz puede proponer la entrada a partir de audio de prueba mediante reconocimiento automático del habla (ASR) con \texttt{faster-whisper}; el resultado debe revisarse y no se presenta como transcripción validada de llamadas reales.
 
 \begin{figure}[htbp]
 \centering
@@ -71,11 +71,11 @@ Los contratos son la pieza que convierte la arquitectura en un sistema verificab
 \begin{tabular}{|p{3.4cm}|p{4.1cm}|p{6.2cm}|}
 \hline
 \textbf{Contrato} & \textbf{Momento de uso} & \textbf{Función principal} \\ \hline
-\texttt{Incident Input} & Entrada cruda & Representa texto, categoría, localización, fecha, provincia y operador antes de cualquier inferencia \\ \hline
-\texttt{Incident Features} & Salida Capa 1 & Contiene variables V01--V15, señales textuales, confianza y metadatos de extracción \\ \hline
-\texttt{Priority Recommendation} & Salida Capa 2 & Contiene prioridad P1--P4, probabilidades, reglas activadas, nivel de confianza y modelo usado \\ \hline
-\texttt{Operator Recommendation} & Salida Capa 3 & Contiene explicación textual, citas legales, recomendaciones no vinculantes y resumen de reglas \\ \hline
-\texttt{Operator Decision} & Feedback humano & Registra prioridad final asignada por el operador y posible divergencia \\ \hline
+\texttt{IncidentInput} & Entrada inicial & Representa texto, categoría, localización, fecha, provincia y operador antes de cualquier inferencia \\ \hline
+\texttt{IncidentFeatures} & Salida Capa 1 & Contiene variables V01--V15, señales textuales, confianza y metadatos de extracción \\ \hline
+\begin{tabular}[c]{@{}l@{}}\texttt{Priority}\\\texttt{Recommendation}\end{tabular} & Salida Capa 2 & Contiene prioridad P1--P4, probabilidades, reglas activadas, nivel de confianza y modelo usado \\ \hline
+\begin{tabular}[c]{@{}l@{}}\texttt{Operator}\\\texttt{Recommendation}\end{tabular} & Salida Capa 3 & Contiene explicación textual, citas legales, recomendaciones no vinculantes y resumen de reglas \\ \hline
+\texttt{OperatorDecision} & Retroalimentación humana & Registra prioridad final asignada por el operador y posible divergencia \\ \hline
 \texttt{InferenceLog} & Auditoría & Conserva snapshots, latencias, versiones de modelo, herramientas invocadas y hash de entrada \\ \hline
 \end{tabular}
 \caption{Contratos principales del flujo de inferencia.}
@@ -98,14 +98,14 @@ La Capa 1 transforma texto libre y metadatos básicos en una representación est
 
 \subsection{Variables activas y diferidas}
 
-El alcance v0.1.0 activa V01--V07 y V12--V15. Las variables V08--V11 permanecen en el contrato como extension futura, pero no se entrenan ni se exigen para la evaluación principal. Esta decisión mantiene el sistema reproducible y evita depender de integraciones geoespaciales o meteorologicas todavia no consolidadas.
+El alcance evaluado activa V01--V07 y V12--V15. Las variables V08--V11 permanecen en el contrato como extensión futura, pero no se entrenan ni se exigen para la evaluación principal. Esta decisión mantiene el sistema reproducible y evita depender de integraciones geoespaciales o meteorológicas todavía no consolidadas.
 
 \begin{table}[htbp]
 \centering
 \scriptsize
 \begin{tabular}{|p{1.1cm}|p{4.4cm}|p{4.1cm}|p{3.5cm}|}
 \hline
-\textbf{Var.} & \textbf{Nombre operativo} & \textbf{Función en el sistema} & \textbf{Estado v0.1.0} \\ \hline
+\textbf{Var.} & \textbf{Nombre operativo} & \textbf{Función en el sistema} & \textbf{Estado evaluado} \\ \hline
 V01 & Riesgo vital & Detectar amenaza directa a la vida & Activa \\ \hline
 V02 & Número de víctimas estimado & Aproximar magnitud humana & Activa \\ \hline
 V03 & Gravedad de lesiones & Distinguir leve, grave o crítica & Activa \\ \hline
@@ -113,24 +113,25 @@ V04 & Tipo de incidente normalizado & Conectar texto con taxonomía & Activa \\ 
 V05 & Población vulnerable & Elevar sensibilidad por colectivos vulnerables & Activa \\ \hline
 V06 & Número de llamadas & Captar confirmación o simultaneidad & Activa \\ \hline
 V07 & Emplazamiento crítico & Identificar hospitales, colegios, residencias u otros puntos sensibles & Activa \\ \hline
-V08--V11 & AEMET, inundabilidad, Seveso & Enriquecimiento contextual avanzado & Diferidas v0.2.0 \\ \hline
+V08--V11 & AEMET, inundabilidad, Seveso & Enriquecimiento contextual avanzado & Diferidas \\ \hline
 V12 & Riesgo de propagación & Captar incendios u otros incidentes expansivos & Activa \\ \hline
 V13 & Multirriesgo & Detectar concurrencia de amenazas & Activa \\ \hline
 V14 & Avisos simultáneos en zona & Aproximar presión operativa y confirmación externa & Activa \\ \hline
 V15 & Accesibilidad de recursos & Modular complejidad de intervención & Activa \\ \hline
 \end{tabular}
-\caption{Variables operativas del sistema y alcance en v0.1.0.}
+\caption{Variables operativas del sistema y alcance evaluado.}
 \label{tab:variables-cap6}
 \end{table}
 
 \subsection{Señales textuales}
 
-Además de variables estructuradas, la Capa 1 extrae señales textuales booleanas con confianza asociada. Algunas son críticas para no infraestimar incidentes graves: \texttt{signal\_ herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_fallecido} o \texttt{riesgo\_ vital\_textual}. Otras ayudan a contextualizar: \texttt{signal\_incendio}, \texttt{signal\_accidente\_ trafico}, \texttt{signal\_rescate}, \texttt{signal\_varias\_llamadas} y \texttt{signal\_meteo\_inundacion}.
+Además de variables estructuradas, la Capa 1 extrae señales textuales booleanas con confianza asociada. Las señales críticas representan lesiones graves, atrapamiento, intoxicación, fallecimiento o riesgo vital. Otras aportan contexto sobre incendios, accidentes de tráfico, rescates, avisos simultáneos y fenómenos meteorológicos o inundaciones. La correspondencia con los identificadores de software se documenta en el Anexo~\ref{cap:anexof}.
 
-En la versión \texttt{v0.1.0}, la Capa 1 se implementa como extractor determinista
-auditable. Reglas léxicas, patrones de negación y diccionarios operativos detectan
-señales robustas de alto impacto, como atrapamiento, herido grave, incendio,
-intoxicación o riesgo vital textual. Esta decisión reduce dependencias externas,
+La Capa 1 se implementa mediante NLP simbólico y auditable. La detección semántica
+basada en reglas y diccionarios operativos, los patrones de negación, la normalización
+y la estimación de confianza permiten reconocer señales de alto impacto, como
+atrapamiento, herido grave, incendio, intoxicación o riesgo vital textual. Esta
+decisión reduce dependencias externas,
 facilita los tests de contrato y evita presentar como validado un modelo neuronal que
 no dispone de checkpoint congelado. El uso de modelos transformer para extracción
 contextual queda reservado como línea futura, condicionada a entrenamiento, versionado
@@ -148,43 +149,47 @@ La escala no equivale a situaciones operativas 0--3. Una situación operativa es
 
 \subsection{Supervisión débil}
 
-Como el Registro 112 CyL no contiene prioridad oficial P1--P4, el entrenamiento de Capa 2 requiere construir una etiqueta académica. La estrategia es la supervisión débil: varios anotadores imperfectos generan votos que se agregan en una etiqueta final con confianza. En la versión v0.1.0 se emplean cuatro fuentes: reglas heurísticas, extracción NLP con intensificadores, proxy semántico por agrupación y LLM-as-annotator proxy controlado.
+Como el Registro 112 CyL no contiene prioridad oficial P1--P4, el entrenamiento de Capa 2 requiere construir una etiqueta académica. La estrategia es la supervisión débil: varios anotadores imperfectos generan votos que se agregan en una etiqueta final con confianza. Se emplean cuatro fuentes: reglas heurísticas, extracción NLP con intensificadores, aproximación semántica por agrupación y anotación auxiliar controlada con LLM.
 
-La etiqueta débil no se presenta como verdad institucional. Es un artefacto de investigación que permite entrenar y comparar modelos sobre datos reales abiertos. Por ello debe acompañarse de acuerdo inter-anotador, análisis de discrepancias y una ablación anti-circularidad que compare el resultado sin la fuente de reglas heurísticas.
+La etiqueta débil no se presenta como verdad institucional. Es un recurso metodológico que permite entrenar y comparar modelos sobre datos reales abiertos. Por ello debe acompañarse de acuerdo entre fuentes de etiquetado, análisis de discrepancias y una ablación anti-circularidad que compare el resultado sin la fuente de reglas heurísticas.
 
 \subsection{RuleFit como modelo principal}
 
-RuleFit se selecciona porque combina aprendizaje estadístico e interpretabilidad. El modelo genera o utiliza reglas derivadas de árboles y las pondera mediante regularización, produciendo un conjunto de reglas con coeficientes inspeccionables \cite{Friedman2008RuleFit}. En este TFM se impone una restricción de sparsity: el modelo productivo debe mantener como máximo 30 reglas activas con peso distinto de cero.
+RuleFit se selecciona porque combina aprendizaje estadístico e interpretabilidad. El modelo genera o utiliza reglas derivadas de árboles y las pondera mediante regularización, produciendo un conjunto de reglas con coeficientes inspeccionables \cite{Friedman2008RuleFit}. En este TFM se impone una restricción de parsimonia: el modelo seleccionado debe mantener como máximo 30 reglas activas con peso distinto de cero.
 
 Esta restricción es académica, no estética. Un modelo con cientos de reglas sería difícil de defender ante un operador o un tribunal. En cambio, un conjunto reducido de reglas permite revisar por qué P1 aumenta, qué variables influyen y qué anclajes normativos sostienen la recomendación.
 
-\subsection{Baseline experto, RuleFit-lite e \texttt{imodels}}
+\subsection{Línea base experta, RuleFit-lite e \texttt{imodels}}
 
-La Capa 2 no se evalúa en aislamiento. Se compara con dos referencias. El baseline experto es un conjunto de reglas transparentes basadas en señales y variables V01--V15, con anclaje normativo. Sirve como mínimo defendible: RuleFit debe aportar mejora cuantitativa sin perder explicabilidad.
+La Capa 2 no se evalúa en aislamiento. Se compara con dos referencias. La línea base experta es un conjunto de reglas transparentes basadas en señales y variables V01--V15, con anclaje normativo. Sirve como referencia mínima: RuleFit debe aportar mejora cuantitativa sin perder explicabilidad.
 
 La segunda referencia es \texttt{imodels.RuleFitClassifier}, utilizada como implementación canónica de RuleFit. Dado que la librería trabaja en clasificación binaria, se adopta un esquema one-vs-rest P1--P4. La versión productiva del TFM selecciona RuleFit-lite porque mantiene la filosofía RuleFit, respeta el límite de reglas activas y ofrece mejor equilibrio entre rendimiento, latencia y reproducibilidad local.
 
-La ejecución diagnóstica con \texttt{imodels} queda como contraste externo de la familia RuleFit. Su utilidad es comprobar si una implementación canónica aporta ventaja frente al núcleo reproducible seleccionado. En v0.1.0, RuleFit-lite se mantiene como motor principal por su equilibrio entre rendimiento, interpretabilidad, coste local y trazabilidad.
+La ejecución diagnóstica con \texttt{imodels} queda como contraste externo de la familia RuleFit. Su utilidad es comprobar si una implementación canónica aporta ventaja frente al núcleo reproducible seleccionado. RuleFit-lite se mantiene como motor principal por su equilibrio entre rendimiento, interpretabilidad, coste local y trazabilidad.
 
 \subsection{Probabilidad, confianza e invariantes}
 
-La salida de Capa 2 incluye una distribución de probabilidad sobre P1--P4. El contrato exige que las probabilidades sumen 1, que la prioridad recomendada coincida con el argmax y que los incidentes P1/P2 incluyan al menos una regla activada cuando el modelo usado sea RuleFit o baseline experto. Este requerimiento de consistencia matemática y lógica impide la generación de clasificaciones contradictorias. Asimismo, obliga a que toda asignación crítica cuente con un sustento explícito y auditable en forma de predicados lógicos.
+La salida de Capa 2 incluye una distribución de probabilidad sobre P1--P4. El contrato exige que las probabilidades sumen 1, que la prioridad recomendada coincida con el argmax y que los incidentes P1/P2 incluyan al menos una regla activada cuando el modelo usado sea RuleFit o la línea base. Este requerimiento de consistencia matemática y lógica impide la generación de clasificaciones contradictorias. Asimismo, obliga a que toda asignación crítica cuente con un sustento explícito y auditable en forma de predicados lógicos.
 
 El nivel de confianza se deriva estrictamente de la probabilidad máxima del vector contractual: alta si \(p_{max} \geq 0{,}80\), media entre 0,60 y 0,80, baja entre 0,40 y 0,60, y desconocida por debajo de 0,40. Esta confianza no mide la gravedad física del suceso. Un incidente puede ser P1 con confianza baja o media si hay indicios críticos pero información fragmentaria; del mismo modo, un caso P4 puede tener confianza alta si las señales disponibles son claras.
 
 \subsection{Puerta de Seguridad}
 
-Para garantizar la alineación con PLANCAL y la Ley 17/2015 de Protección Civil, el diseño de la Capa 2 incorpora un módulo post-procesador denominado Puerta de Seguridad (\textit{Safety Gate}). Este componente implementa un patrón de aseguramiento y confiabilidad en sistemas inteligentes de decisión táctica; Kollipara et al. \citeA{Kollipara2025TrustworthyML} describen cómo los "decision gates" verificables en flujos de Machine Learning actúan como barreras de seguridad necesarias para evitar fallos catastróficos o falsos negativos graves en dominios misión-crítica donde existen riesgos vitales humanos.
+Para reforzar la alineación conceptual con PLANCAL y la Ley 17/2015 de Protección Civil, el diseño de la Capa 2 incorpora un posprocesador denominado Puerta de Seguridad (\textit{Safety Gate}). Este componente aplica una salvaguarda determinista y trazable sobre la salida del modelo. Kollipara et al. \citeA{Kollipara2025TrustworthyML} describen el uso de puertas de decisión verificables como mecanismo de control frente a errores graves en sistemas de aprendizaje automático de dominios críticos. En este TFM su aplicación constituye una decisión de diseño conservadora, no una garantía certificada de seguridad operacional.
 
-Técnicamente, el Safety Gate actúa como un sistema de filtrado duro sobre el argmax probabilístico generado por RuleFit-lite. Su función no es sustituir el modelado interpretable estadístico, sino impedir que determinados patrones predecisionales de alto riesgo queden infrapriorizados por ruido en el texto de entrada, escasez de muestras en el entrenamiento, o ambigüedad. Para lograr esto, evalúa condiciones deterministas basadas en el conocimiento experto de los protocolos de despacho. Este mecanismo proporciona una red de seguridad indispensable en entornos tácticos donde la velocidad de respuesta y la precisión son críticas para salvar vidas.
+Técnicamente, la Puerta de Seguridad actúa como un filtro duro sobre el argmax probabilístico generado por RuleFit-lite. Su función no es sustituir el modelo interpretable, sino reducir el riesgo de que determinados patrones predecisionales de alta gravedad queden infrapriorizados por ruido textual, escasez de muestras o ambigüedad. Para ello evalúa condiciones deterministas basadas en los criterios documentados del proyecto. Su efecto se comprueba mediante escenarios funcionales, mientras que las métricas comparativas de RuleFit-lite se calculan sin este posprocesamiento para no mezclar el rendimiento del estimador con la salvaguarda.
 
-Conceptualmente, si RuleFit-lite produce una prioridad \(\hat{y}=\arg\max_{c \in \{P1,P2,P3,P4\}} p(c)\), la Puerta de Seguridad evalúa un conjunto de predicados deterministas \(S_i(x)\) sobre \texttt{Incident Features}. Cuando alguno de los predicados críticos se activa, la prioridad se fuerza a \(P1\) o \(P2\), se inyecta una regla de seguridad con peso alto y se adjuntan anclajes normativos para la explicación posterior. El vector de probabilidad se redistribuye de forma determinista con probabilidad dominante:
+Conceptualmente, RuleFit-lite produce la prioridad
+\[
+\hat{y}=\arg\max_{c \in \{P1,P2,P3,P4\}} p(c).
+\]
+La Puerta de Seguridad evalúa después un conjunto de predicados deterministas \(S_i(x)\) sobre las variables de entrada. Cuando se activa un predicado crítico, la prioridad se fuerza a \(P1\) o \(P2\), se incorpora una regla de seguridad con peso alto y se adjuntan anclajes normativos para la explicación posterior. El vector de probabilidad se redistribuye de forma determinista:
 
 \[
 p'(y_{seguro}) = 0{,}97,\qquad p'(c \neq y_{seguro}) = 0{,}01.
 \]
 
-En v0.1.0, la Puerta de Seguridad fuerza P1 ante riesgo vital, fallecido, riesgo vital textual, multirriesgo en emplazamiento crítico, incendio forestal con propagación, incendio con propagación en emplazamiento crítico, intoxicación grave, rescate complejo con baja accesibilidad o múltiples víctimas estimadas. Fuerza P2 cuando existen señales operativas relevantes como herido grave, atrapamiento, intoxicación, rescate activo o episodio meteorológico/inundación en emplazamiento crítico, siempre que no se cumpla un criterio P1. Esta lógica mantiene el principio de prudencia: ante indicadores predecisionales críticos, el sistema prefiere elevar la prioridad y exigir revisión humana.
+La Puerta de Seguridad fuerza P1 ante riesgo vital, fallecido, riesgo vital textual, multirriesgo en emplazamiento crítico, incendio forestal con propagación, incendio con propagación en emplazamiento crítico, intoxicación grave, rescate complejo con baja accesibilidad o múltiples víctimas estimadas. Fuerza P2 cuando existen señales operativas relevantes como herido grave, atrapamiento, intoxicación, rescate activo o episodio meteorológico/inundación en emplazamiento crítico, siempre que no se cumpla un criterio P1. Esta lógica mantiene el principio de prudencia: ante indicadores predecisionales críticos, el sistema prefiere elevar la prioridad y exigir revisión humana.
 
 La regla inyectada por la Puerta de Seguridad se incorpora a \texttt{activated\_rules} con identificadores como \texttt{SAFE-GATE-P1-RIESGO-VITAL} o \texttt{SAFE-GATE-P2-OPERATIVO}. De este modo, Capa 3 puede explicar que la recomendación no procede solo del argmax estadístico, sino también de una salvaguarda determinista trazable. La salida forzada marca \texttt{requires\_human\_attention=true}, reforzando que el operador conserva la decisión final.
 
@@ -206,9 +211,9 @@ La función del RAG no es entrenar el modelo de prioridad. Su papel es proporcio
 
 \subsection{Herramientas MCP}
 
-La Capa 3 expone tres herramientas MCP en v0.1.0: \texttt{search\_normative}, \texttt{get\_rule\_details} y \texttt{cite\_legal\_basis}. La herramienta meteorológica \texttt{get\_aemet\_context} queda diferida a v0.2.0, de acuerdo con el alcance R-13. Estas funciones definen el catálogo básico de operaciones que el asistente inteligente puede realizar de forma controlada.
+La Capa 3 expone tres herramientas MCP para la búsqueda normativa, la consulta del detalle de reglas y la construcción controlada de citas. La consulta meteorológica contextual queda diferida como ampliación futura. Estas funciones definen el catálogo básico de operaciones que el asistente puede realizar de forma controlada.
 
-Estas herramientas permiten consultar corpus, recuperar detalle de reglas y construir citas legales. El uso de MCP separa la capacidad del LLM de las funciones verificables del sistema: buscar, citar y explicar reglas son operaciones con entradas y salidas controladas. Con ello se garantiza la auditabilidad del proceso de generación de explicaciones a nivel de llamada API.
+Estas herramientas permiten consultar el corpus, recuperar el detalle de reglas y construir citas legales. El uso de MCP separa la capacidad del LLM de las funciones verificables del sistema: buscar, citar y explicar reglas son operaciones con entradas y salidas controladas. Esta separación facilita la auditoría del proceso de generación de explicaciones a nivel de llamada API.
 
 \subsection{Cache de sesión en Capa 3}
 
@@ -240,24 +245,24 @@ El backend actúa como orquestador. Recibe la entrada, valida el contrato, ejecu
 \label{fig:secuencia-inferencia-cap6}
 \end{figure}
 
-El diseño contempla varios mecanismos de contingencia para asegurar la disponibilidad del sistema. Estos fallback intervienen de manera automática cuando se detectan fallos en las capas individuales. En concreto, el orquestador implementa las siguientes salvaguardas:
+El diseño contempla varios mecanismos de contingencia para mantener una respuesta del prototipo cuando se detectan fallos en componentes individuales. En concreto, el orquestador implementa las siguientes salvaguardas:
 
 \begin{itemize}
-    \item Si Capa 1 produce baja confianza, Capa 2 puede apoyarse en baseline experto o fallback conservador.
-    \item Si RuleFit no está disponible, se puede usar baseline experto.
-    \item Si Capa 3 supera el SLA o el LLM no está disponible, se devuelve una explicación estática basada en reglas activadas.
+    \item Si Capa 1 produce baja confianza, Capa 2 puede apoyarse en la línea base experta o en una respuesta conservadora.
+    \item Si RuleFit no está disponible, se puede usar la línea base experta.
+    \item Si Capa 3 supera el umbral temporal configurado o el LLM no está disponible, se devuelve una explicación estática basada en reglas activadas.
     \item Si la entrada contiene campos prohibidos, el sistema rechaza la solicitud en lugar de degradar silenciosamente.
 \end{itemize}
 
-Los objetivos de latencia son exigentes: Capa 1 + Capa 2 deben responder en p95 igual o inferior a 500 ms, y la pipeline completa con Capa 3 debe aspirar a mantenerse por debajo de 2 s p95. Estos valores son objetivos de diseño, no garantías certificadas de despliegue productivo. La definición de estas metas permite guiar la optimización futura de los componentes locales.
+Los objetivos internos de latencia se fijaron en un p95 igual o inferior a 500 ms para Capa 1 y Capa 2, y por debajo de 2 s p95 para el flujo completo con Capa 3. Son referencias de diseño para orientar la optimización, no un acuerdo de nivel de servicio del 112 ni garantías de despliegue productivo.
 
-El smoke test integrado con backend vivo y Ollama local reporta una latencia media de 4.897,888 ms por inferencia completa. Esta cifra evidencia la brecha entre el SLA objetivo y la ejecución local con LLM real en hardware no dedicado. Por ello, el modo degradado no es un accesorio, sino un mecanismo de contingencia: si Ollama no responde o supera el tiempo esperado, Capa 3 genera una explicación determinista basada en reglas activadas, probabilidades y plantillas, con latencia sub-milisegundo en las pruebas controladas. Así, la recomendación de Capa 2 no queda bloqueada por el componente generativo y el sistema conserva una vía operativa compatible con escenarios de alta presión.
+La latencia media observada en el entorno experimental con el LLM local es de \(4{,}898\) s por inferencia completa. Esta cifra supera el objetivo interno y muestra la limitación del hardware no dedicado. Como contingencia, si el modelo local no responde o supera el tiempo esperado, Capa 3 genera una explicación determinista basada en reglas activadas, probabilidades y plantillas, con latencia submilisegundo en las pruebas controladas. Así, la recomendación de Capa 2 no queda bloqueada por el componente generativo; este resultado acredita funcionamiento técnico, no cumplimiento de un acuerdo de nivel de servicio operativo.
 
 \section{Trazabilidad y auditoría}
 
 Cada inferencia genera un \texttt{InferenceLog}. El log incluye hash de entrada, snapshots de las salidas por capa, versiones de modelo, latencias, herramientas invocadas, timestamp y decisión del operador si existe. Esta información permite reconstruir por qué el sistema recomendó una prioridad y qué hizo finalmente la persona responsable. La persistencia de \texttt{OperatorDecision} y la conservación de snapshots por capa materializan los principios de supervisión humana y trazabilidad exigibles en sistemas de alto impacto, en coherencia con el Reglamento Europeo de Inteligencia Artificial \cite{EUAIAct2024}.
 
-La trazabilidad sirve para tres fines. Primero, auditoría técnica: comprobar que el sistema usó los modelos y contratos esperados. Segundo, evaluación académica: medir errores, falsos negativos P1, calibración y divergencias operador-sistema. Tercero, conformidad responsable: demostrar supervisión humana, registro de decisiones y control de cambios.
+La trazabilidad sirve para tres fines. Primero, auditoría técnica: comprobar que el sistema usó los modelos y contratos esperados. Segundo, evaluación académica: medir errores, falsos negativos P1, calibración y divergencias operador-sistema. Tercero, alineación responsable del diseño: documentar supervisión humana, registro de decisiones y control de cambios, sin atribuir al prototipo una conformidad regulatoria certificada.
 
 \section{Ejemplo de funcionamiento}
 
@@ -267,7 +272,7 @@ Considérese el incidente:
 Varón inconsciente tras choque frontal en N-122, herido grave atrapado en el habitáculo. Han llamado varios testigos.
 \end{quote}
 
-La Capa 1 extrae \texttt{signal\_atrapado=true}, \texttt{signal\_herido\_grave=true}, riesgo vital probable, \texttt{signal\_varias\_llamadas=true}, gravedad grave y tipo de incidente tráfico. La Capa 2 recomienda P1, con probabilidad alta si RuleFit activa reglas asociadas a atrapamiento y lesión grave. La Capa 3 recupera normativa relacionada con protección de personas y PLANCAL, y redacta una explicación breve:
+La Capa 1 detecta atrapamiento, lesión grave, riesgo vital probable, avisos simultáneos y un accidente de tráfico. La Capa 2 recomienda P1 cuando RuleFit activa las reglas asociadas a atrapamiento y lesión grave. La Capa 3 recupera normativa relacionada con la protección de personas y PLANCAL, y redacta una explicación breve:
 
 \begin{quote}
 Prioridad P1 por indicios de riesgo vital. La descripción menciona herido grave y persona atrapada tras choque frontal, con varios avisos de testigos. La recomendación se basa en reglas de afectación a personas y requiere supervisión inmediata del operador.
@@ -277,7 +282,7 @@ El operador puede aceptar la prioridad, modificarla o rechazarla. En cualquier c
 
 \section{Evaluación del diseño}
 
-El Capítulo 9 mide si el diseño cumple sus objetivos. Las métricas principales de Capa 2 son F1 macro, recall@P1, sparsity del modelo, latencia, rendimiento temporal, análisis por subgrupos y matriz de confusión. El objetivo crítico es recall P1 igual o superior a 0,85, porque los falsos negativos graves son el riesgo más importante. La calibración ECE queda identificada como mejora futura si el modelo se congela para demostración, y RuleFit debe respetar el límite de 30 reglas activas.
+El Capítulo 9 mide si el diseño cumple sus objetivos. Las métricas principales de Capa 2 son F1 macro, sensibilidad P1, parsimonia del modelo, latencia, rendimiento temporal, análisis por subgrupos y matriz de confusión. El objetivo crítico es una sensibilidad P1 igual o superior a 0,85, porque los falsos negativos graves son el riesgo más importante. La calibración ECE queda identificada como mejora futura, y RuleFit debe respetar el límite de 30 reglas activas.
 
 La Capa 3 se evaluará por validez contractual, latencia, presencia de citas en P1/P2 y fidelidad de explicación respecto a reglas activadas. La validación interna entre autores servirá para comparar etiquetas humanas, etiqueta débil y recomendación del sistema sobre un subconjunto de casos. Ambas líneas de evaluación permiten contrastar la coherencia de la arquitectura antes de planificar un piloto controlado.
 

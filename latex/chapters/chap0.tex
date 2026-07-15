@@ -17,19 +17,19 @@ El equipo está formado por tres estudiantes del Máster Universitario en Inteli
 \subsection{Capa 2: supervisión débil, RuleFit y evaluación}
 \textbf{Responsable principal:} Juan Carlos Albert Fillol.
 
-Su bloque de trabajo se centra en convertir datos reales e incompletos del Registro 112 Castilla y León en una recomendación de prioridad interpretable, evaluable y trazable. Para ello formaliza la escala académica P1--P4, audita el conjunto de datos, construye etiquetas mediante supervisión débil, define una línea base heurística, seleccióna RuleFit-lite como motor interpretable y evalúa el comportamiento del sistema mediante macro-F1, sensibilidad de P1, estabilidad temporal, análisis por subgrupos y errores críticos.
+Su bloque de trabajo se centra en convertir datos reales e incompletos del Registro 112 Castilla y León en una recomendación de prioridad interpretable, evaluable y trazable. Para ello formaliza la escala académica P1--P4, audita el conjunto de datos, construye etiquetas mediante supervisión débil, define una línea base heurística, selecciona RuleFit-lite como motor interpretable y evalúa el comportamiento del sistema mediante macro-F1, sensibilidad de P1, estabilidad temporal, análisis por subgrupos y errores críticos.
 
 Juan Carlos asume, además, la coordinación metodológica y el cierre del bloque de datos, supervisión débil, línea base heurística, priorización interpretable, evaluación, preparación de la revisión interna y trazabilidad de Capa 2. Su aportación conecta la salida de Capa 1 con la explicación de Capa 3, sin asumir la autoría de las capas desarrolladas por los demás integrantes.
 
-\subsection{Capa 3: LLM local, RAG normativo, MCP y backend}
+\subsection{Capa 3: explicación generativa y recuperación normativa}
 \textbf{Responsable principal:} Brian Mathias Pesci Juliani.
 
-Su bloque de trabajo comprende la capa de explicación y la integración del prototipo. Incluye la orquestación del prototipo, la recuperación normativa, la explicación generativa local y la trazabilidad de la inferencia. Su contribución principal desde la IA consiste en convertir la salida del modelo interpretable en una recomendación comprensible, trazable y respaldada por citas normativas, manteniendo la soberanía del dato y evitando APIs externas en producción.
+Su bloque de trabajo comprende la explicación y la integración conceptual del prototipo. Incluye la recuperación normativa, la explicación generativa local y la trazabilidad de la inferencia. Su contribución principal desde la IA consiste en convertir la salida del modelo interpretable en una recomendación comprensible y revisable, sin modificar la prioridad calculada por Capa 2 y manteniendo la ejecución local de los datos sensibles.
 
 \subsection{Capa 1: extracción de variables operativas}
 \textbf{Responsable principal:} Ancor González Carballo.
 
-Su bloque de trabajo se orienta a la transformación del texto libre del incidente en una representación estructurada compatible con la priorización posterior. Esta capa combina procesamiento del lenguaje natural auditable, detección de señales operativas, tratamiento de negaciones y normalización de variables V01--V15. Cuando no existe evidencia suficiente para validar un modelo neuronal específico, el trabajo se presenta de forma prudente como extracción reproducible con posible apoyo experimental de LLM multietiqueta. Esta contribución es importante porque la calidad de la priorización depende de que el sistema represente correctamente el incidente antes de aplicar reglas o modelos.
+Su bloque de trabajo se orienta a la transformación del texto libre del incidente en una representación estructurada compatible con la priorización posterior. Esta capa combina procesamiento del lenguaje natural auditable, detección de señales operativas, tratamiento de negaciones y normalización de variables V01--V15. En la versión evaluada se presenta como un extractor determinista y reproducible; la incorporación de clasificadores aprendidos queda como evolución futura sujeta a una validación específica. Esta contribución es importante porque la calidad de la priorización depende de que el sistema represente correctamente el incidente antes de aplicar reglas o modelos.
 
 \section{Distribución de capítulos y anexos}
 
@@ -47,41 +47,18 @@ La Tabla~\ref{tab:tab1secCTF} recoge la distribución de responsabilidades sobre
 \texttt{chap2.tex} & Brian & Contexto, estado del arte y bibliografía APA 7 \\ \hline
 \texttt{chap3.tex} & Ancor & Marco operativo, normativo y contexto 112 CyL \\ \hline
 \texttt{chap4.tex} & Juan Carlos & Objetivos, preguntas de investigación y metodología \\ \hline
-\texttt{chap5.tex} & Ancor & Requisitos y específicación funcional \\ \hline
+\texttt{chap5.tex} & Ancor & Requisitos y especificación funcional \\ \hline
 \texttt{chap6.tex} & Brian & Arquitectura, contratos y diseño del sistema \\ \hline
 \texttt{chap7.tex} & Juan Carlos & Datos de Castilla y León, supervisión débil, prevención de fugas y particiones \\ \hline
-\texttt{chap8.tex} & Brian & Prototipo software, backend, UI, logs y despliegue \\ \hline
+\texttt{chap8.tex} & Brian & Integración del prototipo y demostración funcional \\ \hline
 \texttt{chap9.tex} & Juan Carlos & Evaluación de Capa 2, integración, revisión preparada y análisis por subgrupos \\ \hline
 \texttt{chap10.tex} & Ancor & Conclusiones, limitaciones y trabajo futuro \\ \hline
 \texttt{anexo\_a.tex}, \texttt{anexo\_b.tex}, \texttt{anexo\_g.tex} & Ancor & Taxonomía, variables y guía de uso \\ \hline
 \texttt{anexo\_c.tex}, \texttt{anexo\_d.tex}, \texttt{anexo\_e.tex} & Juan Carlos & Guía P1--P4, protocolo de revisión y línea base heurística \\ \hline
-\texttt{anexo\_f.tex}, \texttt{anexo\_h.tex}, \texttt{anexo\_j.tex}, \texttt{anexo\_k.tex}, \texttt{anexo\_l.tex}; \texttt{bibliografía.bib} & Brian & Contratos, corpus, instrucciones, servicio web, ficha de modelo y bibliografía \\ \hline
+\texttt{anexo\_f.tex}, \texttt{anexo\_h.tex}, \texttt{anexo\_l.tex}; \texttt{bibliografia.bib} & Brian & Correspondencia conceptual-software, transparencia, corpus normativo consolidado, fichas de modelo y bibliografía \\ \hline
 \end{tabular}
 \caption{Distribución de capítulos, responsables y tipo de contribución.}
 \label{tab:tab1secCTF}
-\end{table}
-
-\begin{center}
-\textit{Fuente: elaboración propia.}
-\end{center}
-
-\section{Síntesis de contribuciones por capa}
-
-La Tabla~\ref{tab:capas-responsables} sintetiza la contribución académica principal de cada capa. Esta síntesis no elimina la revisión cruzada, pero ayuda a mostrar que el trabajo no es una suma de módulos aislados: cada capa resuelve un problema distinto de IA aplicada y entrega una salida necesaria para la siguiente.
-
-\begin{table}[htbp]
-\centering
-\scriptsize
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{|p{2.6cm}|p{3.2cm}|p{7.0cm}|}
-\hline
-\textbf{Capa} & \textbf{Responsable principal} & \textbf{Contribución académica} \\ \hline
-Capa 1 & Ancor González Carballo & Procesamiento de lenguaje natural operativo para transformar texto libre en señales y variables estructuradas. \\ \hline
-Capa 2 & Juan Carlos Albert Fillol & Priorización interpretable P1--P4 mediante supervisión débil, comparativa de alternativas, RuleFit-lite, análisis de errores y trazabilidad hacia Capa 3. \\ \hline
-Capa 3 & Brian Mathias Pesci Juliani & Explicación de la prioridad mediante LLM local, recuperación normativa, respuesta alternativa determinista y soporte a la supervisión humana. \\ \hline
-\end{tabular}
-\caption{Contribución académica principal por capa del prototipo.}
-\label{tab:capas-responsables}
 \end{table}
 
 \begin{center}

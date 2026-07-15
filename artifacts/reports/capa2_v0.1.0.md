@@ -1,16 +1,16 @@
 # Reporte Capa 2 v0.1.0
 
 - Modelo seleccionado: rulefit_lite
-- Macro-F1 test: 0.884163
-- Recall P1 test: 0.938272
+- Macro-F1 test: 0.905604
+- Recall P1 test: 0.909924
 - Reglas activas exportadas: 30
 
 ## Comparativa Test
 
 | Modelo | Accuracy | Macro-F1 | Recall P1 | Reglas | Train s | Infer ms/fila |
 |---|---:|---:|---:|---:|---:|---:|
-| baseline_expert | 0.727835 | 0.703932 | 0.998457 | 16 | None | None |
-| rulefit_lite | 0.885911 | 0.884163 | 0.938272 | 30 | 6.504204 | 0.450127 |
+| baseline_expert | 0.694425 | 0.464284 | 0.998473 | 19 | None | None |
+| rulefit_lite | 0.903648 | 0.905604 | 0.909924 | 30 | 6.504204 | 0.450127 |
 | rulefit_imodels | 0.768385 | 0.568239 | 0.902778 | 30 | 13.191647 | 7.496081 |
 
 ## Checks

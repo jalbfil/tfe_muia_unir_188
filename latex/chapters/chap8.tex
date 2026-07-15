@@ -1,4 +1,4 @@
-\chapter{Descripción del prototipo software desarrollado}
+\chapter{Prototipo integrado}
 \label{cap:8}
 
 Este capítulo presenta de manera detallada el desarrollo e implementación del prototipo software concebido para validar la arquitectura de tres capas. A través de los componentes descritos, se muestra la traducción práctica de los modelos predictivos y las interfaces de datos en una aplicación funcional. De este modo, se demuestra la viabilidad técnica del sistema inteligente en un entorno local y reproducible.
@@ -15,7 +15,7 @@ El sistema se organiza en cinco bloques principales:
 
 \begin{enumerate}
     \item \textbf{Pipeline de datos y Capa 1.} Limpia el Registro 112 Castilla y León, normaliza campos, construye variables y, en ejecución, extrae señales textuales predecisionales desde el texto operativo del incidente.
-    \item \textbf{Capa 2 RuleFit.} Implementa supervisión débil, baseline experto, RuleFit-lite, comparativa con \texttt{imodels}, evaluación e inferencia.
+    \item \textbf{Capa 2 RuleFit.} Implementa supervisión débil, línea base experta, RuleFit-lite, comparativa con \texttt{imodels}, evaluación e inferencia.
     \item \textbf{Capa 3 explicativa.} Genera explicaciones a partir de la salida de la Capa 2, evidencias disponibles y corpus normativo recuperado mediante RAG/MCP. En la versión integrada se ejecuta localmente mediante Ollama.
     \item \textbf{Backend e interfaz de contratos.} Expone la inferencia y validación del flujo de IA mediante esquemas de validación FastAPI \cite{FastAPI2026} y una interfaz Streamlit \cite{Streamlit2026} de control del operador.
     \item \textbf{Trazabilidad y validación.} Registra salidas, métricas, muestra de revisión humana y artefactos de evaluación.
@@ -27,7 +27,7 @@ La separación entre capas evita que el LLM decida la prioridad. La prioridad pr
 
 La parte de priorización se estructura en el módulo del motor de reglas y estimadores interpretables. Su lógica contiene la generación de etiquetas académicas P1--P4, la implementación de las reglas expertas que sirven como referencia y el cálculo comparativo con alternativas.
 
-Esta estructura permite que el modelo seleccionado, RuleFit-lite, no quede mezclado con scripts de preparación de datos ni con lógica de explicación. También facilita comparar alternativas sin alterar el contrato de salida que recibe la Capa 3. Asimismo, la organización interna simplifica las tareas de depuración en caso de fallos en la inferencia. De esta manera, el equipo de desarrollo puede realizar mejoras iterativas en el estimador de manera aislada.
+Esta estructura mantiene separado el modelo RuleFit-lite de la preparación de datos y de la lógica de explicación. También facilita comparar alternativas sin alterar el contrato de salida que recibe la Capa 3 y permite revisar cada componente de forma independiente.
 
 En el prototipo integrado, el modelo seleccionado se empaqueta como un artefacto persistente y se carga durante la inferencia. Esta decisión permite separar el entrenamiento de la ejecución del demostrador y evita reentrenamientos accidentales. Además, el módulo incorpora comprobaciones de compatibilidad para asegurar la carga correcta de los parámetros del modelo, protegiendo la reproducibilidad del prototipo ante diferencias menores en el entorno de ejecución.
 
@@ -44,11 +44,11 @@ El flujo funcional del prototipo es el siguiente:
     \item El sistema registra la inferencia para auditoría y revisión humana.
 \end{enumerate}
 
-El resultado no es una orden operativa, sino una recomendación estructurada. El operador mantiene la capacidad de aceptar, modificar o rechazar la salida. Esta decisión de diseño preserva en todo momento el principio de control humano en el lazo de decisión. Por consiguiente, el software actúa exclusivamente como una herramienta de apoyo para agilizar la respuesta y reducir la fatiga cognitiva del despachador.
+El resultado no es una orden operativa, sino una recomendación estructurada. El operador mantiene la capacidad de aceptar, modificar o rechazar la salida. Esta decisión de diseño preserva el principio de control humano en el lazo de decisión. La posible reducción del tiempo de respuesta o de la carga cognitiva deberá medirse en una validación posterior con personal operativo; no se considera demostrada por las pruebas actuales.
 
-\section{Prototipo ejecutable v0.1.0}
+\section{Prototipo ejecutable}
 
-La versión \texttt{v0.1.0} ya dispone de una ejecución integrada del flujo completo: texto del incidente, Capa 1 determinista, Capa 2 RuleFit-lite, Capa 3 con LLM local y registro de la respuesta. Para ello, FastAPI se concibe como un motor de verificación que expone los contratos Pydantic de la IA (salud del modelo, versión, predicción y feedback), mientras que la interfaz Streamlit se limita a ser una visualización para que el operador interactúe con el modelo: permite introducir incidentes de prueba, simulando la entrada manual o por voz, y visualizar la recomendación de prioridad calculada por la Capa 2 (con su confianza, distribución de probabilidades P1--P4 y reglas activadas) junto con la explicación de la Capa 3. Las capturas incorporadas en el Anexo~\ref{cap:anexog} documentan visualmente esta ejecución local del MVP, incluyendo entrada manual, entrada por voz, resultados P1, P3 y P4, explicación generada y registro de feedback humano.
+El prototipo dispone de una ejecución integrada del flujo completo: texto del incidente, Capa 1 simbólica, Capa 2 RuleFit-lite, Capa 3 con LLM local y registro de la respuesta. El servicio de inferencia expone contratos de datos para comprobar la entrada y la salida, mientras que la interfaz permite introducir incidentes sintéticos por texto o por voz y visualizar la recomendación de Capa 2 junto con la explicación de Capa 3. El Anexo~\ref{cap:anexog} conserva solo las capturas indispensables: entrada manual, entrada de voz experimental, resultado P1 y registro de la decisión humana.
 
 Para facilitar una evaluación exploratoria con participantes externos, el equipo preparó
 también un acceso de prueba mediante un cuaderno en Google Colab. Este acceso no se
@@ -59,30 +59,29 @@ obtener valoración preliminar de utilidad, comprensibilidad, confianza, trazabi
 claridad de la supervisión humana sin exponer datos reales ni depender de una sala de
 operaciones.
 
-La integración con LLM se realiza mediante Ollama con
-\texttt{llama3.1:8b-instruct-q4\_K\_M}. El LLM no decide la prioridad: recibe la
+La integración generativa se realiza mediante Ollama con un modelo Llama 3.1 de 8.000 millones de parámetros, cuantizado para ejecución local. El LLM no decide la prioridad: recibe la
 recomendación ya calculada por RuleFit-lite y la convierte en una explicación
 estructurada. Si Ollama no responde, el prototipo conserva el modo degradado
 determinista descrito en la sección siguiente.
 
-Como comprobación técnica, se ha ejecutado un \textit{smoke test} P1--P4 contra el
-backend en vivo. Los resultados se conservan en los reportes reproducibles de validación
+Como comprobación técnica, se ha ejecutado una prueba funcional P1--P4 contra el
+servicio web activo. Los resultados se conservan en los reportes reproducibles de evaluación
 integrada del repositorio. La prueba verifica cuatro incidentes representativos, uno por
 prioridad, con Capa 2 RuleFit activa y Capa 3 no degradada.
 
-Adicionalmente, tras integrar la rama de Capa 1, se ha regenerado una validación
-reproducible Capa 1--Capa 2--Capa 3. Estos informes se conservan como artefactos de
-validación en el repositorio. Su finalidad es comprobar que la salida real de Capa 1
+Adicionalmente, tras integrar la Capa 1, se ha regenerado una prueba técnica reproducible
+Capa 1--Capa 2--Capa 3. Los informes resultantes se conservan como evidencias de
+evaluación en el repositorio. Su finalidad es comprobar que la salida real de Capa 1
 alimenta correctamente el motor RuleFit, incluyendo casos P1 con atrapamiento,
 inconsciencia, incendio, intoxicación, inundación y una incidencia vial ordinaria con
 negaciones explícitas como ``no hay heridos ni vehículos atrapados''.
 
 \subsection{Interfaz de voz e inferencia inteligente}
 
-Para emular de forma controlada el flujo de trabajo de un despachador del 112, la
-interfaz Streamlit incorpora un módulo experimental de entrada por voz. El usuario puede
-grabar audio desde el micrófono o cargar un archivo de llamada; el audio se procesa
-localmente mediante \texttt{faster-whisper} \cite{FasterWhisper2026}. La transcripción
+Como demostración controlada, la interfaz incorpora un módulo experimental de entrada
+por voz. El usuario puede grabar audio desde el micrófono o cargar un archivo de audio
+de prueba; el reconocimiento automático del habla (ASR) se ejecuta localmente mediante
+\texttt{faster-whisper} \cite{FasterWhisper2026}. La transcripción
 resultante alimenta un parser estructurado que intenta extraer automáticamente título,
 descripción, categoría, localidad y provincia. Cuando Ollama está disponible, el parser
 emplea el modelo local \texttt{llama3.1:8b-instruct-q4\_K\_M} con temperatura 0.0; si el
@@ -93,12 +92,13 @@ El resultado de esta etapa no se envía directamente como decisión, sino que in
 reactivamente el estado de sesión de Streamlit mediante el patrón \textit{key-only}. El
 operador conserva la posibilidad de revisar y corregir los campos antes de lanzar la
 predicción. Esta funcionalidad pertenece al bloque de interfaz e integración del
-prototipo y refuerza la orientación práctica del MVP, aunque se mantiene como capacidad
-experimental y no como requisito de validación externa.
+prototipo y refuerza la orientación práctica del demostrador. No se ha evaluado con
+llamadas reales, ruido de sala ni un corpus representativo de locutores, por lo que no
+se presenta como un sistema de transcripción validado.
 
 \begin{table}[ht]
 \centering
-\caption{Smoke test integrado del prototipo v0.1.0}
+\caption{Prueba funcional integrada del prototipo}
 \label{tab:8-smoke-prototipo}
 \small
 \begin{tabular}{|l|c|c|r|c|}
@@ -112,19 +112,19 @@ Consulta vecinal sin riesgo & P4 & P4 & 98.54\% & Ollama \\ \hline
 \end{table}
 
 La prueba supera los cuatro casos esperados y observa una latencia media de
-4.897,888 ms por inferencia integrada, condicionada por el uso local del LLM. Esta
+\(4{,}898\) s por inferencia integrada, condicionada por el uso local del LLM. Esta
 cifra no se interpreta como rendimiento operativo final, sino como primera evidencia de
 integración funcional del prototipo completo. En el contexto de investigación académica
-y ejecución sobre hardware doméstico con recursos compartidos, esta latencia es
-aceptable para demostrar el flujo completo. En un despliegue operativo certificado, el
-tiempo de respuesta debería optimizarse mediante hardware dedicado, configuración
-específica del servidor LLM o activación del modo degradado determinista.
+y ejecución sobre hardware doméstico con recursos compartidos, la medida sirve para
+caracterizar el flujo completo, pero supera el objetivo interno de diseño. Una evolución
+posterior debería estudiar hardware dedicado, una configuración específica del servidor
+LLM o el uso de la respuesta alternativa determinista.
 
-La validación reproducible Capa 1--Capa 2--Capa 3 alcanza 5/5 casos correctos, con
-modelo \texttt{RULEFIT} disponible, precisión micro de señales 0.846154, recall micro
-1.000000 y F1 micro 0.916667 para Capa 1. Las latencias medias observadas son
-0.31106 ms en Capa 1, 347.0036 ms en Capa 2 y 0.30772 ms en la explicación degradada
-de Capa 3. Esta prueba no sustituye al smoke test con Ollama, pero deja evidencia
+La prueba reproducible Capa 1--Capa 2--Capa 3 alcanza 5/5 casos correctos, con
+modelo \texttt{RULEFIT} disponible, precisión micro de señales 0.733333, recall micro
+1.000000 y F1 micro 0.846154 para Capa 1. Las latencias medias observadas son
+4.58844 ms en Capa 1, 52.16898 ms en Capa 2 y 0.30748 ms en la explicación degradada
+de Capa 3. Esta comprobación no sustituye a la prueba con el LLM local, pero deja evidencia
 automática de que, tras la integración con Ancor, el sistema completo mantiene la
 coherencia del flujo de datos.
 
@@ -132,19 +132,19 @@ coherencia del flujo de datos.
 
 El prototipo utiliza contratos versionados para separar responsabilidades entre capas. La salida de Capa 2 debe incluir, como mínimo, identificador del incidente, prioridad recomendada, probabilidades por clase, reglas o señales relevantes, versión del modelo y advertencias asociadas. La Capa 3 consume esa información y debe conservar la correspondencia entre explicación y evidencia.
 
-La trazabilidad se apoya en artefactos reproducibles: dataset auditado, weak labels, splits, modelos entrenados, métricas, errores P1, muestra de validación interna y reporte final de evaluación. Este diseño permite reconstruir qué datos se usaron, qué modelo produjo la recomendación y qué explicación se generó. Dicha cadena de custodia resulta indispensable en proyectos académicos con impacto en seguridad pública. A través de este registro continuo, cualquier evaluador puede reproducir de forma exacta los experimentos llevados a cabo en el proyecto.
+La trazabilidad se apoya en evidencias reproducibles: conjunto de datos auditado, etiquetas débiles, particiones, modelos entrenados, métricas, errores P1, muestra preparada para revisión interna y síntesis final de evaluación. Este diseño permite reconstruir qué datos se usaron, qué modelo produjo la recomendación y qué explicación se generó.
 
 \section{Modo degradado}
 
 El prototipo contempla un modo degradado para la explicación. Si el LLM local no está disponible o no cumple el tiempo esperado, el sistema puede generar una explicación determinista basada en reglas, probabilidades y evidencias de la Capa 2. Este modo evita que la ausencia del componente generativo bloquee la recomendación o fuerce dependencia de servicios externos.
 
-El modo degradado también ha permitido evaluar fidelidad explicativa de forma controlada sobre la muestra de 119 casos de validación interna, como se documenta en el Capítulo~\ref{cap:9}. En las pruebas reproducibles Capa 1--Capa 2--Capa 3, este modo ofrece respuestas submilisegundo y actúa como mecanismo de contingencia cuando el LLM local no está disponible o no cumple el tiempo esperado.
+La respuesta alternativa determinista también ha permitido evaluar fidelidad explicativa de forma controlada sobre la muestra preparada de 119 casos, como se documenta en el Capítulo~\ref{cap:9}. En las pruebas reproducibles Capa 1--Capa 2--Capa 3, este modo ofrece respuestas submilisegundo y actúa como mecanismo de contingencia cuando el LLM local no está disponible o no cumple el tiempo esperado.
 
 \section{Relación con la evaluación}
 
-El prototipo no se evalúa por apariencia visual, sino por su capacidad para producir artefactos verificables. La evaluación experimental utiliza los mismos scripts, features, splits y modelos que la arquitectura declara. Por eso los resultados del Capítulo~\ref{cap:9} pueden enlazarse con el diseño de Capítulo~\ref{cap:6}, los datos del Capítulo~\ref{cap:7} y los anexos de validación.
+El prototipo no se evalúa por apariencia visual, sino por su capacidad para producir evidencias verificables. La evaluación experimental utiliza los mismos procedimientos, variables de entrada, particiones y modelos declarados por la arquitectura. Por eso los resultados del Capítulo~\ref{cap:9} pueden enlazarse con el diseño del Capítulo~\ref{cap:6}, los datos del Capítulo~\ref{cap:7} y los anexos de evaluación.
 
-Un índice maestro estructurado actúa como registro de trazabilidad de esta relación entre prototipo, resultados y documentación. En este archivo de control se indexan los hashes de los conjuntos de datos de prueba, los pesos del modelo y las métricas calculadas. Esta estructura facilita una validación externa rápida y automatizada de los resultados declarados en la memoria.
+Un índice maestro estructurado actúa como registro de trazabilidad de esta relación entre prototipo, resultados y documentación. En este archivo de control se indexan las huellas de los conjuntos de datos de prueba, los pesos del modelo y las métricas calculadas. Esta estructura facilita la comprobación reproducible de los resultados declarados en la memoria.
 
 \section{Repositorio del código fuente}
 
@@ -163,4 +163,4 @@ El código fuente completo, los scripts de datos, entrenamiento y evaluación, l
 
 El prototipo software desarrollado materializa la propuesta del TFM en una cadena ejecutable y auditable. Su diseño mantiene separadas la extracción, la priorización, la explicación y la validación humana, evitando cualquier tipo de fuga de información o leakage. Gracias a este enfoque, resulta factible comparar diversos modelos interpretables y dejar evidencias suficientes para defender los resultados de forma reproducible.
 
-Con este prototipo, la evaluación del Capítulo~\ref{cap:9} no se apoya en una descripción teórica, sino en una implementación concreta de la arquitectura v0.1.0. Las métricas que se exponen a continuación proceden directamente de la ejecución de este código sobre el conjunto de test. Se demuestra con ello que los resultados obtenidos son robustos y reproducibles en el hardware local detallado.
+Con este prototipo, la evaluación del Capítulo~\ref{cap:9} no se apoya solo en una descripción teórica, sino en una implementación concreta de la arquitectura. Las métricas expuestas proceden de su ejecución sobre la partición de prueba. Los procedimientos y evidencias conservados permiten reproducir esos resultados en el entorno documentado, sin atribuirles validez operativa externa.

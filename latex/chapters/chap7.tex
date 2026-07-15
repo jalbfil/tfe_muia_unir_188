@@ -9,7 +9,7 @@ El proyecto trabaja con registros reales, pero no dispone de una prioridad ofici
 
 \section{Estrategia general de datos}
 
-La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y León como fuente empírica principal \cite{Registro112CyL}. Esta decisión aporta coherencia territorial y normativa: el conjunto de datos procede de un servicio autonómico 112 real, y el marco de interpretacion se apoya en normativa estatal y de Castilla y León, especialmente Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL.
+La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y León como fuente empírica principal \cite{Registro112CyL}. Esta decisión aporta coherencia territorial y normativa: el conjunto de datos procede de un servicio autonómico 112 real, y el marco de interpretación se apoya en normativa estatal y de Castilla y León, especialmente Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL.
 
 El conjunto abierto permite trabajar con texto operativo, fecha, localidad, provincia,
 coordenadas aproximadas, identificador y categoría preliminar. Sin embargo, no
@@ -30,31 +30,31 @@ El flujo de datos se organiza en seis pasos:
 
 \section{Registro de Emergencias del 112 de Castilla y León}
 
-El Registro de Emergencias del 112 de Castilla y León es un conjunto de datos público públicado por la Junta de Castilla y León bajo licencia Creative Commons Reconocimiento 4.0 \cite{Registro112CyL}. En este TFM se utiliza el fichero histórico 2008--2022 como fuente real de incidentes para probar el pipeline de datos y alimentar la construcción de etiquetas académicas.
+El Registro de Emergencias del 112 de Castilla y León es un conjunto de datos público publicado por la Junta de Castilla y León bajo licencia Creative Commons Reconocimiento 4.0 \cite{Registro112CyL}. En este TFM se utiliza el fichero histórico 2008--2022 como fuente empírica de incidentes para comprobar el procedimiento de preparación de datos y construir las etiquetas académicas.
 
-Su valor principal es el realismo. Los registros no son ejemplos artificiales creados para el TFM, sino incidentes gestiónados por un servicio autonómico 112. Esto permite trabajar con lenguaje operativo, categorías heterogéneas, coordenadas, localidades, duplicidades potenciales, ruido textual y limitaciones propias de datos administrativos reales.
+Su valor principal es el realismo. Los registros no son ejemplos artificiales creados para el TFM, sino incidentes gestionados por un servicio autonómico 112. Esto permite trabajar con lenguaje operativo, categorías heterogéneas, coordenadas, localidades, duplicidades potenciales, ruido textual y limitaciones propias de datos administrativos reales.
 
 \subsection{Campos de entrada}
 
-La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del conjunto de datos y su relacion con la entrada estructurada del sistema.
+La Tabla~\ref{tab:campos-registro-cyl-cap7} resume los campos principales del conjunto de datos y su relación con la entrada estructurada del sistema.
 
 \begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{|p{3.2cm}|p{4.6cm}|p{5.4cm}|}
 \hline
-\textbf{Campo original} & \textbf{Uso en el sistema} & \textbf{Observacion metodológica} \\ \hline
-\texttt{Título} & \texttt{texto\_título} en \texttt{IncidentInput} & Fuente textual breve para señales operativas \\ \hline
+\textbf{Campo original} & \textbf{Uso en el sistema} & \textbf{Observación metodológica} \\ \hline
+Título & \texttt{texto\_titulo} en \texttt{IncidentInput} & Fuente textual breve para señales operativas \\ \hline
 \texttt{DescripcionBlob} & \texttt{texto\_descripcion} & Requiere limpieza de HTML y normalización \\ \hline
-\texttt{FechaIncidente} & \texttt{fecha\_incidente} & Permite análisis temporal y split por año \\ \hline
+\texttt{FechaIncidente} & \texttt{fecha\_incidente} & Permite el análisis y la partición temporal por año \\ \hline
 \texttt{Localidad} & \texttt{localidad} & Contexto territorial no siempre equivalente a coordenada exacta \\ \hline
 \texttt{Localidad.1} & \texttt{latitud}, \texttt{longitud} & Permite disponibilidad de coordenadas cuando el campo es válido \\ \hline
-\texttt{TipoIncidente} & \texttt{categoría\_preliminar} & Campo orientativo; no basta para priorizar \\ \hline
-\texttt{Identificador} & Trazabilidad interna & No se usa como feature predictiva \\ \hline
+\texttt{TipoIncidente} & \texttt{categoria\_preliminar} & Campo orientativo; no basta para priorizar \\ \hline
+\texttt{Identificador} & Trazabilidad interna & No se usa como variable predictiva \\ \hline
 \texttt{MediosMov} & Solo evaluación ex post si procede & Variable prohibida como entrada por \textit{leakage} \\ \hline
 \texttt{PacientesAten} & Solo evaluación ex post si procede & Resultado posterior, no disponible en primera decisión \\ \hline
-\texttt{IncidenteCerrado} & Exclusion & Estado final del incidente \\ \hline
-\texttt{últimaActúalizacion} & Exclusion & Información posterior al inicio \\ \hline
+\texttt{IncidenteCerrado} & Exclusión & Estado final del incidente \\ \hline
+\begin{tabular}[c]{@{}l@{}}\texttt{ultima}\\\texttt{Actualizacion}\end{tabular} & Exclusión & Información posterior al inicio \\ \hline
 \end{tabular}
 \caption{Campos principales del Registro 112 CyL y uso previsto en el sistema.}
 \label{tab:campos-registro-cyl-cap7}
@@ -70,13 +70,13 @@ La auditoría del conjunto de datos documenta volumen, duplicados, nulos, cobert
 \begin{tabular}{|p{4.4cm}|p{8.4cm}|}
 \hline
 \textbf{Elemento auditado} & \textbf{Finalidad} \\ \hline
-Número de registros & Confirmar volumen util para entrenamiento y evaluación \\ \hline
-Rango temporal & Verificar coherencia 2008--2022 y detectar fechas anomalas \\ \hline
+Número de registros & Confirmar volumen útil para entrenamiento y evaluación \\ \hline
+Rango temporal & Verificar coherencia 2008--2022 y detectar fechas anómalas \\ \hline
 Distribución por año & Identificar cambios de registro o sesgos temporales \\ \hline
 Distribución por provincia & Evitar que la evaluación quede dominada por una provincia \\ \hline
 Distribución por \texttt{TipoIncidente} & Conocer la heterogeneidad operativa del conjunto de datos \\ \hline
 Nulos por columna & Separar campos explotables de campos incompletos \\ \hline
-Duplicados o registros equivalentes & Evitar fuga entre train/test por incidentes repetidos \\ \hline
+Duplicados o registros equivalentes & Evitar fugas entre entrenamiento y prueba por incidentes repetidos \\ \hline
 Cobertura de coordenadas & Medir disponibilidad de localización para variables contextuales \\ \hline
 Campos ex post & Identificar columnas prohibidas para evitar \textit{leakage} \\ \hline
 \end{tabular}
@@ -88,7 +88,7 @@ La auditoría precede a la presentación de resultados para que las métricas pu
 
 \section{Limpieza y normalización}
 
-La limpieza transforma el fichero bruto en una representación apta para el análisis. Las operaciónes aplicadas son: lectura robusta del histórico; eliminación de columnas vacias o irrelevantes; normalización de nombres; limpieza de HTML; unión de título y descripcion en un texto operativo; normalización para extracción de patrones; parseo de fechas; separación de coordenadas; derivación de provincia; mapeo de \texttt{TipoIncidente} a categoría preliminar; e identificación de columnas prohibidas.
+La limpieza transforma el fichero bruto en una representación apta para el análisis. Las operaciones aplicadas son: lectura robusta del histórico; eliminación de columnas vacías o irrelevantes; normalización de nombres; limpieza de HTML; unión de título y descripción en un texto operativo; normalización para extracción de patrones; parseo de fechas; separación de coordenadas; derivación de provincia; mapeo de \texttt{TipoIncidente} a categoría preliminar; e identificación de columnas prohibidas.
 
 El resultado conserva trazabilidad con el identificador original. Cada transformación relevante queda documentada para que el entrenamiento y la evaluación puedan reproducirse sin depender de decisiones manuales ocultas.
 
@@ -105,9 +105,9 @@ El sistema no utiliza directamente todas las columnas del conjunto de datos. La 
 V01 & Riesgo vital & Texto + señales + etiquetado & Activa \\ \hline
 V02 & Número de víctimas estimado & Texto + etiquetado & Activa \\ \hline
 V03 & Gravedad de lesiones & Texto + etiquetado & Activa \\ \hline
-V04 & Tipo de incidente normalizado & Título, descripcion y categoría preliminar & Activa \\ \hline
+V04 & Tipo de incidente normalizado & Título, descripción y categoría preliminar & Activa \\ \hline
 V05 & Población vulnerable & Texto + reglas + revisión & Activa \\ \hline
-V06 & Número de llamadas & Texto, agrupacion o indicios de varios avisos & Activa \\ \hline
+V06 & Número de llamadas & Texto, agrupación o indicios de varios avisos & Activa \\ \hline
 V07 & Emplazamiento crítico & Texto/localidad + reglas & Activa \\ \hline
 V08 & Aviso AEMET & Fuente externa & Diferida \\ \hline
 V09 & Condición meteorológica adversa & Texto/fuente externa & Diferida \\ \hline
@@ -115,7 +115,7 @@ V10 & Zona inundable & Cruce geoespacial & Diferida \\ \hline
 V11 & Proximidad Seveso & Registro externo & Diferida \\ \hline
 V12 & Riesgo de propagación & Texto + INFOCAL & Activa \\ \hline
 V13 & Multirriesgo & Texto + concurrencia de señales & Activa \\ \hline
-V14 & Avisos simultáneos en zona & Texto/agrupacion temporal-geográfica & Activa \\ \hline
+V14 & Avisos simultáneos en zona & Texto/agrupación temporal-geográfica & Activa \\ \hline
 V15 & Accesibilidad de recursos & Localización + reglas aproximadas & Activa \\ \hline
 \end{tabular}
 \caption{Variables V01--V15 y estado dentro del alcance evaluado.}
@@ -126,7 +126,7 @@ Las variables V08--V11 se mantienen como parte del diseño conceptual para prese
 
 \section{Señales operativas textuales}
 
-Las señales textuales son indicadores derivados del título y la descripcion. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores débiles de Capa 2. Las principales señales cubren fallecimiento, herido grave, atrapamiento, intoxicación, varias llamadas, incendio, accidente de tráfico, rescate, riesgo meteorológico por inundación y riesgo vital textual.
+Las señales textuales son indicadores derivados del título y la descripción. No son etiquetas oficiales, pero ayudan a alimentar tanto la Capa 1 como los anotadores débiles de Capa 2. Las principales señales cubren fallecimiento, herido grave, atrapamiento, intoxicación, varias llamadas, incendio, accidente de tráfico, rescate, riesgo meteorológico por inundación y riesgo vital textual.
 
 Estas señales deben tratarse como indicios. La palabra ``herido'', por ejemplo, no equivale siempre a P1; la expresión ``herido grave atrapado'' sí tiene un peso operativo mucho mayor. Por eso la extracción textual debe combinar patrones, intensificadores y validación posterior, evitando que una búsqueda literal determine por sí sola la prioridad.
 
@@ -134,7 +134,7 @@ Estas señales deben tratarse como indicios. La palabra ``herido'', por ejemplo,
 
 La etiqueta P1--P4 es una construcción académica del TFM. No existe como campo oficial en el Registro 112 CyL y no debe presentarse como prioridad institucional. Su función es permitir entrenamiento, comparación y evaluación del sistema.
 
-La guía de etiquetado define cuatro niveles: P1 critica, P2 alta, P3 media y P4 baja. La etiqueta se asigna en el momento teorico de la primera decisión. Por tanto, no puede utilizar información posterior como medios movilizados, pacientes atendidos o cierre del incidente. La incertidumbre se refleja en la confianza, no rebajando automáticamente la prioridad.
+La guía de etiquetado define cuatro niveles: P1 crítica, P2 alta, P3 media y P4 baja. La etiqueta se asigna en el momento teórico de la primera decisión. Por tanto, no puede utilizar información posterior como medios movilizados, pacientes atendidos o cierre del incidente. La incertidumbre se refleja en la confianza, no rebajando automáticamente la prioridad.
 
 \section{Supervisión débil}
 
@@ -159,7 +159,7 @@ Además, se ha preparado una muestra de revisión interna superior al mínimo pr
 
 La supervisión débil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablación sin la fuente de reglas heurísticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten señales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitación metodológica del estudio.
 
-\section{Prevencion de leakage}
+\section{Prevención de leakage}
 
 El \textit{leakage} es uno de los riesgos metodológicos más graves del proyecto. Se produce cuando el modelo utiliza información que no estaria disponible en el momento de la primera decisión. En el Registro 112 CyL existen campos que pueden reflejar actuaciónes posteriores o resultados finales. La Tabla~\ref{tab:leakage-cap7} resume las columnas prohibidas.
 
@@ -170,16 +170,16 @@ El sistema excluye de forma explícita variables que no estarían disponibles en
 \small
 \begin{tabular}{|p{4.2cm}|p{8.2cm}|}
 \hline
-\textbf{Columna} & \textbf{Razon de exclusion como feature} \\ \hline
+\textbf{Columna} & \textbf{Razón de exclusión como entrada} \\ \hline
 \texttt{MediosMov} & Refleja recursos movilizados, es decir, una consecuencia de la decisión operativa \\ \hline
 \texttt{medios\_mov\_limpio} & Derivado de \texttt{MediosMov}; mantiene la misma fuga \\ \hline
-\begin{tabular}[t]{@{}l@{}}\texttt{medios\_mov\_uso}\\\texttt{\_recomendado}\end{tabular} & Codificacion auxiliar ex post; no disponible en primera decisión \\ \hline
-\texttt{PacientesAten} & Resultado clinico o asistencia posterior \\ \hline
+\begin{tabular}[t]{@{}l@{}}\texttt{medios\_mov\_uso}\\\texttt{\_recomendado}\end{tabular} & Codificación auxiliar ex post; no disponible en primera decisión \\ \hline
+\texttt{PacientesAten} & Resultado clínico o asistencia posterior \\ \hline
 \texttt{pacientes\_aten\_limpio} & Derivado de \texttt{PacientesAten}; conserva información posterior \\ \hline
 \texttt{IncidenteCerrado} & Estado final del incidente \\ \hline
-\texttt{últimaActúalizacion} & Actúalizacion posterior al registro inicial \\ \hline
-\texttt{Enlace al contenido} & Identificador externo; util para trazabilidad, no como predictor \\ \hline
-\texttt{Unnamed: 13} & Columna vacia o no informativa \\ \hline
+\texttt{ultimaActualizacion} & Actualización posterior al registro inicial \\ \hline
+\texttt{Enlace al contenido} & Identificador externo; útil para trazabilidad, no como predictor \\ \hline
+\texttt{Unnamed: 13} & Columna vacía o no informativa \\ \hline
 \end{tabular}
 \caption{Columnas prohibidas como entrada del motor por riesgo de \textit{leakage}.}
 \label{tab:leakage-cap7}
@@ -193,11 +193,11 @@ Estas columnas pueden conservarse para auditoría o evaluación ex post, siempre
 \begin{tabular}{|p{3.4cm}|p{4.6cm}|p{5.1cm}|}
 \hline
 \textbf{Grupo} & \textbf{Columnas o variables} & \textbf{Uso permitido} \\ \hline
-Texto inicial & \texttt{Título}, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extracción de señales \\ \hline
+Texto inicial & Título, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extracción de señales \\ \hline
 Contexto predecisiónal & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalización, taxonomia, análisis temporal y territorial \\ \hline
 Variables derivadas permitidas & V01--V07, V12--V15 y señales textuales & Entrada de Capa 2 y explicabilidad \\ \hline
 Identificadores & \texttt{Identificador} & Trazabilidad, particiones y auditoría; no como predictor \\ \hline
-Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{últimaActúalizacion} y derivados & Solo auditoría o análisis ex post; nunca entrenamiento ni inferencia \\ \hline
+Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} y derivados & Solo auditoría o análisis ex post; nunca entrenamiento ni inferencia \\ \hline
 \end{tabular}
 \caption{Columnas permitidas y prohibidas segun disponibilidad en la primera decisión.}
 \label{tab:permitidas-prohibidas-leakage-cap7}
@@ -205,7 +205,7 @@ Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{Incide
 
 \section{Particiones de entrenamiento, validación y prueba}
 
-La división de datos debe impedir que el modelo vea en entrenamiento información demasiado parecida a la de test. Se plantean dos estrategias complementarias.
+La división de datos debe impedir que el modelo vea durante el entrenamiento información demasiado parecida a la partición de prueba. Se plantean dos estrategias complementarias.
 
 \subsection{Partición estratificada}
 
@@ -219,8 +219,8 @@ La partición principal divide el conjunto en 6.512 registros de entrenamiento, 
 \textbf{Partición} & \textbf{Filas} & \textbf{Distribución P1--P4} \\ \hline
 Entrenamiento estratificado & 6.512 & P1=3.049; P2=1.504; P3=1.701; P4=258 \\ \hline
 Validación estratificada & 1.415 & P1=658; P2=329; P3=374; P4=54 \\ \hline
-Test estratificado & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
-Test temporal 2022 & 735 & Evaluación de estabilidad fuera del periodo principal \\ \hline
+Prueba estratificada & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
+Prueba temporal 2022 & 735 & Evaluación de estabilidad fuera del periodo principal \\ \hline
 \end{tabular}
 \caption{Distribución de las particiones adoptadas en el estudio.}
 \label{tab:splits-final-cap7}
@@ -240,12 +240,12 @@ El conjunto de datos resultante alimenta tres usos distintos: pruebas de extracc
 
 Las limitaciones deben quedar explícitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas débiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construcción académica trazable y reproducible. Cualquier cambio en la guía de etiquetado, en las particiones o en el conjunto de datos limpio obliga a repetir la evaluación.
 
-La segunda limitacion es la granularidad limitada: el conjunto contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del núcleo evaluado. La quinta es que la validación externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoría.
+La segunda limitación es la granularidad limitada: el conjunto contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del núcleo evaluado. La quinta es que la validación externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoría.
 
 \section{Conclusiones}
 
 El diseño de datos presentado en este capítulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un conjunto totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
 
-La aportacion metodológica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, variables operativas, supervisión débil, control de \textit{leakage} y particiones reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
+La aportación metodológica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, variables operativas, supervisión débil, control de \textit{leakage} y particiones reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
 
 El siguiente capítulo documenta la implementación del prototipo software que ejecuta este flujo: orquestación del sistema, recuperación normativa, trazabilidad, respuesta alternativa determinista e interfaz mínima.

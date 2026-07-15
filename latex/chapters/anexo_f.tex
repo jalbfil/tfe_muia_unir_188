@@ -1,111 +1,74 @@
-\chapter{Esquema de datos y contratos}
+\chapter{Conceptos y software}
 \label{cap:anexof}
 
-Este anexo expone la especificación detallada de los esquemas y estructuras que sustentan la comunicación interna del prototipo. Mediante contratos de datos fuertemente tipados, se asegura el flujo consistente de información y se validan las restricciones metodológicas en cada fase. Con esta formalización se persigue dotar al software de una robustez y auditabilidad alineadas con los requisitos de la ingeniería del software y el apoyo a la decisión.
+\section*{F.1. Finalidad}
 
-\section*{F.1. Finalidad del anexo}
+Este anexo relaciona los conceptos académicos utilizados en la memoria con su
+materialización en el prototipo y con las evidencias que permiten comprobarlos. Su
+objetivo es mantener el cuerpo principal centrado en el problema, la metodología y los
+resultados, sin perder la trazabilidad hacia la implementación reproducible.
 
-Este anexo resume el esquema de datos que conecta las tres capas del prototipo. Su función es garantizar que la entrada del incidente, las variables extraídas, la recomendación de la Capa 2, la explicación de la Capa 3 y el feedback humano se intercambien mediante contratos estables y auditables. Gracias a este enfoque, cada transformación del pipeline se valida de forma automática contra tipos de datos estrictos. De esta manera, se minimiza la posibilidad de fallos de integración durante la inferencia en producción.
+La correspondencia no implica que cada concepto se reduzca a una clase de software.
+Por ejemplo, la interpretabilidad de la Capa 2 depende conjuntamente del diseño del
+modelo, de las variables permitidas, de las reglas exportadas y del análisis de errores.
+Del mismo modo, la supervisión humana comprende tanto el contrato de decisión como el
+procedimiento de revisión y registro.
 
-La especificación técnica completa se concreta en los contratos Pydantic \cite{Pydantic2026} ubicados en \texttt{src/contracts/contracts/} y en los esquemas JSON exportados en \texttt{src/contracts/docs/schemas/}. Estos ficheros de configuración definen el formato exacto de intercambio de información. Con ello se facilita el trabajo en paralelo de los miembros del equipo y se asegura la compatibilidad futura con otros clientes API.
+\section*{F.2. Correspondencia principal}
 
-\section*{F.2. Objetos principales}
-
-\begin{table}[ht]
+\begin{table}[htbp]
 \centering
-\caption{Contratos principales del prototipo}
+\caption{Correspondencia entre conceptos académicos, software y evidencias}
+\label{tab:anexof-correspondencia}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{|p{2.8cm}|p{3.5cm}|X|p{2.2cm}|}
+\hline
+\textbf{Concepto académico} & \textbf{Implementación software} & \textbf{Evidencia principal} & \textbf{Responsable} \\ \hline
+Extracción NLP simbólica y auditable & Extractores semánticos de señales, patrones de negación, normalización y confianza & Prueba funcional sobre cinco escenarios curados y salida estructurada de variables predecisionales & Ancor \\ \hline
+Supervisión débil & Funciones de etiquetado y contrato \texttt{WeakLabel} & Guía P1--P4, acuerdo de Krippendorff y ablación de fuentes débiles & Juan Carlos \\ \hline
+Prevención de fugas de información & Validadores y lista de columnas excluidas & Auditoría de variables disponibles antes de la primera decisión y pruebas de exclusión & Juan Carlos \\ \hline
+Línea base heurística & Motor de 19 reglas expertas & Métricas sobre las mismas particiones que el modelo seleccionado & Juan Carlos \\ \hline
+Priorización interpretable & \texttt{RuleSetClassifierModel}, implementación local de RuleFit-lite & Comparación con la línea base y con RuleFit externo; reglas, pesos y métricas por clase & Juan Carlos \\ \hline
+Salvaguarda conservadora & Función de posprocesamiento \texttt{\_apply\_safety\_gate} & Escenarios funcionales de inferencia integrada; se evalúa separadamente del estimador & Juan Carlos \\ \hline
+Recuperación normativa & Índice semántico local y herramientas de consulta controlada & Corpus de fuentes oficiales, pruebas de recuperación y limitación documental declarada & Brian \\ \hline
+Explicación generativa local & Orquestador de explicaciones con LLM local y respuesta alternativa determinista & Prueba funcional integrada y rúbrica automatizada de fidelidad & Brian \\ \hline
+Entrada de voz experimental & Reconocimiento automático del habla con \texttt{faster-whisper} y estructuración de campos & Demostración en interfaz con audio de prueba; sin validación sobre llamadas reales & Brian \\ \hline
+Supervisión humana y trazabilidad & Contratos \texttt{OperatorDecision} e \texttt{InferenceLog} & Muestra de 119 casos preparada para revisión y registro auditable de inferencias & Equipo \\ \hline
+\end{tabularx}
+\end{table}
+
+\clearpage
+
+\section*{F.3. Contratos entre capas}
+
+La arquitectura se apoya en contratos de datos tipados \cite{Pydantic2026}. La entrada
+normalizada del incidente se transforma en variables predecisionales; la Capa 2 produce
+la prioridad, las probabilidades y las reglas activadas; y la Capa 3 genera una
+explicación subordinada a esa salida. La decisión final corresponde siempre a la
+persona operadora.
+
+\begin{table}[htbp]
+\centering
+\caption{Secuencia conceptual de los contratos del prototipo}
 \label{tab:anexof-contratos}
 \small
-\begin{tabularx}{\textwidth}{|p{3.0cm}|X|p{3.5cm}|}
+\begin{tabularx}{\textwidth}{|p{3.4cm}|X|}
 \hline
-\textbf{Contrato} & \textbf{Función} & \textbf{Evidencia} \\ \hline
-\texttt{IncidentInput} & Entrada normalizada del incidente: identificador, texto, fecha, provincia, municipio, coordenadas y categoría preliminar. & Esquema JSON \\ \hline
-\texttt{IncidentFeatures} & Variables V01--V15 y señales textuales extraídas por la Capa 1 o derivadas del dataset. & Esquema JSON \\ \hline
-\texttt{WeakLabel} & Etiqueta académica P1--P4, fuentes débiles, acuerdo y metadatos de trazabilidad. & Esquema JSON \\ \hline
-\begin{tabular}[t]{@{}l@{}}\texttt{Priority}\\\texttt{Recommendation}\end{tabular} & Salida de la Capa 2: prioridad recomendada, probabilidades, reglas activadas y versión del modelo. & Esquema JSON \\ \hline
-\begin{tabular}[t]{@{}l@{}}\texttt{Operator}\\\texttt{Recommendation}\end{tabular} & Explicación entregada al operador, citas legales, advertencias y modo degradado si aplica. & Esquema JSON \\ \hline
-\texttt{OperatorDecision} & Decisión humana: aceptar, modificar o rechazar, prioridad final y justificación. & Esquema JSON \\ \hline
-\texttt{InferenceLog} & Registro auditable de entrada, salida, hashes, versiones, tiempos y advertencias. & Esquema JSON \\ \hline
+\textbf{Contrato} & \textbf{Papel metodológico} \\ \hline
+\texttt{IncidentInput} & Representa la información inicial disponible sobre el incidente. \\ \hline
+\texttt{IncidentFeatures} & Contiene variables y señales predecisionales extraídas por la Capa 1. \\ \hline
+\begin{tabular}[t]{@{}l@{}}\texttt{Priority}\\\texttt{Recommendation}\end{tabular} & Conserva la recomendación de Capa 2, sus probabilidades y la trazabilidad de reglas. \\ \hline
+\begin{tabular}[t]{@{}l@{}}\texttt{Operator}\\\texttt{Recommendation}\end{tabular} & Presenta la explicación de Capa 3 sin recalcular la prioridad. \\ \hline
+\texttt{OperatorDecision} & Registra la aceptación, modificación o rechazo por parte de la persona operadora. \\ \hline
+\texttt{InferenceLog} & Permite reconstruir entradas, salidas, tiempos y decisiones asociadas. \\ \hline
 \end{tabularx}
 \end{table}
 
-\section*{F.3. Flujo de datos}
+\section*{F.4. Criterio de interpretación}
 
-El flujo de datos del prototipo sigue una secuencia deliberadamente simple:
-
-\begin{enumerate}
-    \item \texttt{IncidentInput} recibe el incidente desde el dataset o una entrada controlada.
-    \item \texttt{IncidentFeatures} representa las variables V01--V15 y señales permitidas.
-    \item La Capa 2 consume solo features predecisionales y genera
-    \texttt{PriorityRecommendation}.
-    \item La Capa 3 transforma la recomendación en \texttt{OperatorRecommendation}.
-    \item El operador registra, si procede, una \texttt{OperatorDecision}.
-    \item \texttt{InferenceLog} conserva la trazabilidad completa de la inferencia.
-\end{enumerate}
-
-Esta separación evita que una explicación generativa modifique la prioridad y permite auditar cada paso de forma independiente. Asimismo, garantiza que los fallos en una de las capas no comprometan la disponibilidad del resto del sistema. Esta resiliencia estructural resulta vital para demostrar la seguridad informática del prototipo desarrollado.
-
-\section*{F.3.1. Validadores de integridad}
-
-Los contratos no son meras estructuras de datos; incorporan validadores que actúan como
-puertas de integridad entre capas. En \texttt{IncidentInput}, los validadores exigen
-fecha con zona horaria, coherencia entre latitud y longitud, y presencia de contenido
-textual útil. Con ello se evitan eventos sin referencia temporal clara, coordenadas
-definidas a medias y entradas vacías.
-
-En \texttt{PriorityRecommendation}, los validadores comprueban que la distribución de
-probabilidades contenga exactamente P1, P2, P3 y P4 y que sume \(1,0 \pm 10^{-6}\).
-También fuerzan que la prioridad recomendada coincida con la clase de mayor
-probabilidad, limitan RuleFit a un máximo de 30 reglas activas y exigen que toda
-recomendación P1 o P2 incluya al menos una regla, manteniendo la trazabilidad exigida
-para incidentes de mayor gravedad.
-
-\section*{F.4. Política anti-\textit{leakage}}
-
-Los contratos y el pipeline rechazan columnas posteriores a la primera decisión. En
-particular, no se admiten como entrada de la Capa 2 campos como \texttt{MediosMov},
-\texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} ni
-derivados directos. Estos campos pueden emplearse, como máximo, en análisis auxiliar o
-validación posterior, pero no en entrenamiento ni inferencia.
-
-La política queda documentada en \texttt{src/contracts/contracts/leakage\_columns.py} y se verifica mediante tests de puerta anti-\textit{leakage}. Estas pruebas se ejecutan de manera automática en el entorno de desarrollo y validación. Dicho control proactivo garantiza que ningún componente nuevo vulrene la exclusión de variables ex post.
-
-\section*{F.5. Trazabilidad}
-
-Cada inferencia debe poder reconstruirse con:
-
-\begin{itemize}
-    \item versión del dataset y split utilizado;
-    \item versión del modelo de la Capa 2;
-    \item features permitidas presentes en la entrada;
-    \item prioridad, probabilidades y reglas activadas;
-    \item explicación generada y citas normativas;
-    \item decisión humana, si existe;
-    \item hash de entrada y marca temporal.
-\end{itemize}
-
-Este esquema sostiene la evaluación de los Capítulos~\ref{cap:7}, \ref{cap:8} y \ref{cap:9}, y permite conectar los resultados con la model card del Anexo~\ref{cap:anexol}. A través de esta interconexión formal de artefactos, se facilita la reproducibilidad completa del estudio académico. De igual modo, se asegura que cualquier auditoría externa disponga de los esquemas y pesos originales para su verificación.
-
-\section*{F.6. Correspondencia entre términos conceptuales y componentes de software}
-
-De acuerdo con las directrices académicas orientadas a priorizar la conceptualización metodológica sobre los detalles puramente de desarrollo de software, la Tabla~\ref{tab:anexof-correspondencia} establece la correspondencia formal entre los términos conceptuales empleados a lo largo del cuerpo principal de la memoria y los componentes técnicos o artefactos del prototipo implementado.
-
-\begin{table}[ht]
-\centering
-\caption{Correspondencia entre terminología conceptual y componentes de software}
-\label{tab:anexof-correspondencia}
-\small
-\begin{tabularx}{\textwidth}{|p{3.2cm}|p{3.0cm}|X|p{3.2cm}|}
-\hline
-\textbf{Término Conceptual} & \textbf{Capa o Módulo} & \textbf{Componente de Software / Código} & \textbf{Evidencia o Validación} \\ \hline
-Clasificador Multietiqueta Neuro-Simbólico & Capa 1 (NLP) & Clase \texttt{FeatureExtractor} y extractor determinista \texttt{SignalExtractor} & Guardarraíles de seguridad y warnings del extractor \\ \hline
-Modelo de Inferencia y priorización RuleFit-lite & Capa 2 (Decisión) & Implementación local \texttt{RuleFitClassifier} con estimación logística lineal y de reglas & Archivo \texttt{rulefit\_lite\_v0.1.0.json} y métricas del modelo \\ \hline
-Salvaguarda de Prioridad crítica & Capa 2 (Seguridad) & Módulo \texttt{SafetyGate} y reglas predecisionales de desempate heurístico & Métricas comparadas de la Línea Base \\ \hline
-Bucle de Intervención Humana (HITL) & Módulo de Control & Contrato \texttt{OperatorDecision} y punto de acceso API \texttt{/feedback} & Registro de logs en base de datos local SQLite \\ \hline
-Generador de Explicaciones Locales y Normativas & Capa 3 (Explicabilidad) & Servidor de protocolo MCP local, consultas a Ollama y almacenamiento ChromaDB & Rúbrica de 6 criterios en \texttt{explanation\_fidelity\_report} \\ \hline
-Proxy Académico de Prioridad & Datos de entrada & Algoritmo de supervisión débil en \texttt{scripts/build\_weak\_labels.py} & Reporte de Krippendorff \(\alpha\) y archivos del dataset \\ \hline
-Filtro de Exclusión de Fuga (*leakage*) & Puerta de Inferencia & Validadores del contrato e índice prohibido de columnas en \texttt{leakage\_columns.py} & Test reproducible de fuga en la suite de desarrollo \\ \hline
-Registro e Historial Auditable de Inferencia & Base de Datos & Contrato de auditoría \texttt{InferenceLog} y almacenamiento relacional persistente & Base de datos SQLite y tabla maestra de trazabilidad \\ \hline
-\end{tabularx}
-\end{table}
-
+Las evidencias enumeradas acreditan reproducibilidad y funcionamiento técnico en el
+entorno experimental. No equivalen a validación operativa en un centro 112, a
+certificación de seguridad ni a conformidad regulatoria. Esta distinción permite
+relacionar conceptos, software y resultados sin trasladar a la memoria principal un
+inventario de carpetas, rutas o ficheros internos.

@@ -16,7 +16,7 @@ una referencia transparente para determinar si RuleFit-lite aporta una mejora gl
 
 La Tabla~\ref{tab:baseline-experto-reglas} recoge las 19 reglas activas. Sus anclajes
 se apoyan en la Ley 17/2015, PLANCAL, INUNCYL y la Ley 4/2007 de Castilla y León
-\cite{Ley17_2015,PLANCAL_DEC_4_2019,INUNCYL,Ley4_2007_CYL}. Su inclusion en el anexo permite entender el criterio de comparación sin trasladar al cuerpo principal detalles de implementación.
+\cite{Ley17_2015,PLANCAL_DEC_4_2019,INUNCYL,Ley4_2007_CYL}. Su inclusión en el anexo permite entender el criterio de comparación sin trasladar al cuerpo principal detalles de implementación.
 
 \begin{table}[ht]
 \centering
@@ -32,19 +32,19 @@ EXP-P1-CRITICO-ATRAPADO & P1 & 2.7 & \texttt{signal\_herido\_grave} y \texttt{si
 EXP-P1-MULTIVICTIMA & P1 & 2.5 & Víctimas estimadas $\geq$ 3 y riesgo vital & Ley 17/2015; PLANCAL \\ \hline
 EXP-P2-HERIDO-GRAVE & P2 & 2.1 & \texttt{signal\_herido\_grave} & Ley 17/2015; PLANCAL \\ \hline
 EXP-P2-ATRAPADO & P2 & 2.0 & \texttt{signal\_atrapado} & PLANCAL \\ \hline
-EXP-P2-INTOXICACION & P2 & 1.9 & \texttt{signal\_intoxicación} & MPCyL; PLANCAL \\ \hline
+EXP-P2-INTOXICACION & P2 & 1.9 & \texttt{signal\_intoxicacion} & MPCyL; PLANCAL \\ \hline
 EXP-P2-INCENDIO-VIVIENDA & P2 & 1.8 & Incendio en vivienda, edificio o entorno habitado & PLANCAL; Ley 4/2007 CyL \\ \hline
 EXP-P2-RESCATE & P2 & 1.7 & Rescate o salvamento & PLANCAL \\ \hline
-EXP-P2-TRAFICO-GRAVE & P2 & 1.6 & Trafico y herido grave & Ley 17/2015; Registro 112 CyL \\ \hline
-EXP-P2-METEORO-ALTO-IMPACTO & P2 & 1.4 & Meteo/inundacion y varias llamadas & INUNCYL; PLANCAL \\ \hline
+EXP-P2-TRAFICO-GRAVE & P2 & 1.6 & Tráfico y herido grave & Ley 17/2015; Registro 112 CyL \\ \hline
+EXP-P2-METEORO-ALTO-IMPACTO & P2 & 1.4 & Meteo/inundación y varias llamadas & INUNCYL; PLANCAL \\ \hline
 EXP-P3-SANITARIO-ORDINARIO & P3 & 1.2 & Traslado o ambulancia ordinaria & Registro 112 CyL \\ \hline
-EXP-P3-ACCIDENTE-TRAFICO & P3 & 1.0 & Accidente de trafico & Registro 112 CyL \\ \hline
+EXP-P3-ACCIDENTE-TRAFICO & P3 & 1.0 & Accidente de tráfico & Registro 112 CyL \\ \hline
 EXP-P3-VARIAS-LLAMADAS & P3 & 0.9 & Varias llamadas & Registro 112 CyL \\ \hline
 EXP-P3-INCENDIO-SIN-VICTIMAS & P3 & 0.9 & Incendio sin víctimas explícitas & Ley 4/2007 CyL; PLANCAL \\ \hline
-EXP-P3-METEO-INUNDACION & P3 & 0.8 & Meteo o inundacion & INUNCYL \\ \hline
+EXP-P3-METEO-INUNDACION & P3 & 0.8 & Meteo o inundación & INUNCYL \\ \hline
 EXP-P4-INCENDIO-MENOR & P4 & 1.5 & \texttt{signal\_incendio} y contenedor/basura/papelera & Registro 112 CyL \\ \hline
-EXP-P4-ACCIDENTE-MENOR & P4 & 1.5 & \texttt{signal\_accidente\_trafico} sin heridos & Registro 112 CyL \\ \hline
-EXP-P4-SIN-SENALES-CRITICAS & P4 & 0.8 & Sin señales críticas y llamada unica & Registro 112 CyL \\ \hline
+EXP-P4-ACCIDENTE-MENOR & P4 & 1.5 & \texttt{signal\_accidente\_}\allowbreak\texttt{trafico} sin heridos & Registro 112 CyL \\ \hline
+EXP-P4-SIN-SENALES-CRITICAS & P4 & 0.8 & Sin señales críticas y llamada única & Registro 112 CyL \\ \hline
 \end{tabularx}
 \end{table}
 
@@ -54,7 +54,7 @@ Cada clase parte de una puntuación inicial: P1=\(0{,}15\), P2=\(0{,}25\),
 P3=\(0{,}35\) y P4=\(0{,}25\). A continuación se suman los pesos de las reglas
 activadas. Si existe alguna regla P1, su puntuación se eleva \(0{,}75\) por encima
 del mayor valor; si no existe P1 pero sí P2, esta se eleva \(0{,}35\). Finalmente,
-las puntuaciones se normalizan y se seleccióna la clase con mayor probabilidad.
+las puntuaciones se normalizan y se selecciona la clase con mayor probabilidad.
 
 Los pesos son decisiones heurísticas del equipo, no parámetros aprendidos ni
 estimaciones de probabilidad calibrada. Este detalle limita la interpretación de sus
@@ -73,16 +73,16 @@ Tabla~\ref{tab:baseline-experto-metricas} resume su comportamiento.
 \small
 \begin{tabular}{|l|r|r|r|}
 \hline
-\textbf{Split} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{Recall P1} \\ \hline
-Train & 0.725849 & 0.706714 & 0.997278 \\ \hline
-Validación & 0.717822 & 0.691811 & 1.000000 \\ \hline
-Test & 0.727835 & 0.703932 & 0.998457 \\ \hline
+\textbf{Partición} & \textbf{Exactitud} & \textbf{Macro-F1} & \textbf{Sensibilidad P1} \\ \hline
+Entrenamiento & 0.701014 & 0.465140 & 0.995736 \\ \hline
+Validación & 0.717314 & 0.498785 & 0.995441 \\ \hline
+Prueba & 0.694425 & 0.464284 & 0.998473 \\ \hline
 \end{tabular}
 \end{table}
 
-La línea base alcanza en prueba macro-F1 \(0{,}703932\) y sensibilidad P1
-\(0{,}998457\). Su elevada sensibilidad responde al diseño conservador, pero reduce
-la discriminación entre clases intermedias. RuleFit-lite obtiene macro-F1
+La línea base de 19 reglas alcanza en prueba macro-F1 \(0{,}464284\) y sensibilidad P1
+\(0{,}998473\). Su elevada sensibilidad responde al diseño conservador, pero su
+discriminación global entre las cuatro clases es limitada. RuleFit-lite obtiene macro-F1
 \(0{,}905604\) y sensibilidad P1 \(0{,}909924\), un equilibrio más adecuado entre
 rendimiento global, detección de P1 e interpretabilidad.
 
@@ -93,8 +93,8 @@ rendimiento global, detección de P1 e interpretabilidad.
 \small
 \begin{tabular}{|l|r|r|}
 \hline
-\textbf{Modelo} & \textbf{Macro-F1 test} & \textbf{Recall P1 test} \\ \hline
-Línea base heurística & 0.703932 & 0.998457 \\ \hline
+\textbf{Modelo} & \textbf{Macro-F1 en prueba} & \textbf{Sensibilidad P1 en prueba} \\ \hline
+Línea base heurística & 0.464284 & 0.998473 \\ \hline
 RuleFit-lite & 0.905604 & 0.909924 \\ \hline
 \end{tabular}
 \end{table}
@@ -105,17 +105,17 @@ RuleFit-lite & 0.905604 & 0.909924 \\ \hline
     \item La línea base refleja criterios operativos y normativos codificados manualmente por el equipo; por tanto,
     puede sobrerrepresentar escenarios críticos y reducir precisión en P2/P3.
     \item Las reglas se validan contra etiquetas débiles académicas, no contra prioridad
-    operativa real del 112, inexistente en el dataset público.
+    operativa real del 112, inexistente en el conjunto de datos público.
     \item El modelo no aprende interacciones no previstas por las reglas. Esa es
-    precisamente la funcion de la comparativa con RuleFit.
+    precisamente la función de la comparativa con RuleFit.
     \item No utiliza columnas post-decisión como recursos movilizados, pacientes
     atendidos o cierre administrativo, para evitar leakage.
 \end{itemize}
 
 La línea base debe entenderse como referencia comparativa. Su tendencia conservadora puede sobreactivar P1 y
-reducir la discriminacion entre clases intermedias. Por ello, el modelo selecciónado no
-busca unicamente maximizar recall P1, sino mantener un comportamiento interpretable y
-mas equilibrado en el conjunto de clases P1--P4.
+reducir la discriminación entre clases intermedias. Por ello, el modelo seleccionado no
+busca únicamente maximizar la sensibilidad P1, sino mantener un comportamiento interpretable y
+más equilibrado en el conjunto de clases P1--P4.
 
 La mejora de macro-F1 obtenida por RuleFit-lite, manteniendo una sensibilidad P1 alta,
 respalda su selección para el prototipo académico.

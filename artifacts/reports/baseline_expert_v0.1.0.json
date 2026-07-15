@@ -1,226 +1,235 @@
 {
-  "generated_at": "2026-05-26T11:36:36.944462+00:00",
+  "generated_at": "2026-07-15T18:31:39.214679+00:00",
   "model": "baseline_expert",
   "model_version_capa2": "0.1.0",
-  "rule_count": 16,
+  "rule_count": 19,
   "splits": {
     "train": {
-      "rows": 6511,
-      "evaluated_rows": 6511,
+      "rows": 6512,
+      "evaluated_rows": 6512,
       "missing_clean_rows": 0,
-      "accuracy": 0.725849,
-      "macro_f1": 0.706714,
-      "recall_p1": 0.997278,
+      "accuracy": 0.701014,
+      "macro_f1": 0.46514,
+      "recall_p1": 0.995736,
       "per_class": {
         "P1": {
-          "precision": 0.745612,
-          "recall": 0.997278,
-          "f1": 0.853275
+          "precision": 0.768413,
+          "recall": 0.995736,
+          "f1": 0.867428
         },
         "P2": {
-          "precision": 0.393899,
-          "recall": 0.201083,
-          "f1": 0.266248
+          "precision": 0.373641,
+          "recall": 0.182846,
+          "f1": 0.245536
         },
         "P3": {
-          "precision": 0.792536,
-          "recall": 0.68209,
-          "f1": 0.733177
+          "precision": 0.687019,
+          "recall": 0.734274,
+          "f1": 0.709861
         },
         "P4": {
-          "precision": 1.0,
-          "recall": 0.949612,
-          "f1": 0.974155
+          "precision": 0.714286,
+          "recall": 0.01938,
+          "f1": 0.037736
         }
       },
       "confusion_matrix": {
         "P1": {
-          "P1": 2931,
-          "P2": 8,
+          "P1": 3036,
+          "P2": 11,
+          "P3": 2,
+          "P4": 0
+        },
+        "P2": {
+          "P1": 915,
+          "P2": 275,
+          "P3": 314,
+          "P4": 0
+        },
+        "P3": {
+          "P1": 0,
+          "P2": 450,
+          "P3": 1249,
+          "P4": 2
+        },
+        "P4": {
+          "P1": 0,
+          "P2": 0,
+          "P3": 253,
+          "P4": 5
+        }
+      },
+      "top_rules": {
+        "EXP-P3-SANITARIO-ORDINARIO": 5173,
+        "EXP-P3-ACCIDENTE-TRAFICO": 4491,
+        "EXP-P1-RIESGO-VITAL": 3789,
+        "EXP-P2-RESCATE": 2489,
+        "EXP-P2-ATRAPADO": 1981,
+        "EXP-P1-FALLECIDO": 1566,
+        "EXP-P3-VARIAS-LLAMADAS": 1191,
+        "EXP-P2-HERIDO-GRAVE": 1085,
+        "EXP-P2-TRAFICO-GRAVE": 918,
+        "EXP-P2-INTOXICACION": 823,
+        "EXP-P3-INCENDIO-SIN-VICTIMAS": 747,
+        "EXP-P2-INCENDIO-VIVIENDA": 568,
+        "EXP-P3-METEO-INUNDACION": 509,
+        "EXP-P1-CRITICO-ATRAPADO": 303,
+        "EXP-P4-SIN-SENALES-CRITICAS": 298,
+        "EXP-P2-METEORO-ALTO-IMPACTO": 139,
+        "EXP-P4-ACCIDENTE-MENOR": 79,
+        "EXP-P4-INCENDIO-MENOR": 8
+      }
+    },
+    "val": {
+      "rows": 1415,
+      "evaluated_rows": 1415,
+      "missing_clean_rows": 0,
+      "accuracy": 0.717314,
+      "macro_f1": 0.498785,
+      "recall_p1": 0.995441,
+      "per_class": {
+        "P1": {
+          "precision": 0.776987,
+          "recall": 0.995441,
+          "f1": 0.872752
+        },
+        "P2": {
+          "precision": 0.436709,
+          "recall": 0.209726,
+          "f1": 0.283367
+        },
+        "P3": {
+          "precision": 0.70073,
+          "recall": 0.770053,
+          "f1": 0.733758
+        },
+        "P4": {
+          "precision": 1.0,
+          "recall": 0.055556,
+          "f1": 0.105264
+        }
+      },
+      "confusion_matrix": {
+        "P1": {
+          "P1": 655,
+          "P2": 3,
           "P3": 0,
           "P4": 0
         },
         "P2": {
-          "P1": 865,
-          "P2": 297,
-          "P3": 315,
+          "P1": 188,
+          "P2": 69,
+          "P3": 72,
           "P4": 0
         },
         "P3": {
-          "P1": 135,
-          "P2": 449,
-          "P3": 1253,
+          "P1": 0,
+          "P2": 86,
+          "P3": 288,
           "P4": 0
         },
         "P4": {
           "P1": 0,
           "P2": 0,
-          "P3": 13,
-          "P4": 245
+          "P3": 51,
+          "P4": 3
         }
       },
       "top_rules": {
-        "EXP-P3-ACCIDENTE-TRAFICO": 4479,
-        "EXP-P1-RIESGO-VITAL": 3772,
-        "EXP-P2-RESCATE": 2486,
-        "EXP-P2-ATRAPADO": 1975,
-        "EXP-P1-FALLECIDO": 1553,
-        "EXP-P3-VARIAS-LLAMADAS": 1180,
-        "EXP-P2-HERIDO-GRAVE": 1102,
-        "EXP-P2-TRAFICO-GRAVE": 926,
-        "EXP-P2-INTOXICACION": 821,
-        "EXP-P3-INCENDIO-SIN-VICTIMAS": 775,
-        "EXP-P2-INCENDIO-VIVIENDA": 601,
-        "EXP-P3-METEO-INUNDACION": 494,
-        "EXP-P1-CRITICO-ATRAPADO": 322,
-        "EXP-P4-SIN-SENALES-CRITICAS": 303,
-        "EXP-P2-METEORO-ALTO-IMPACTO": 135
+        "EXP-P3-SANITARIO-ORDINARIO": 1139,
+        "EXP-P3-ACCIDENTE-TRAFICO": 986,
+        "EXP-P1-RIESGO-VITAL": 805,
+        "EXP-P2-RESCATE": 523,
+        "EXP-P2-ATRAPADO": 415,
+        "EXP-P1-FALLECIDO": 333,
+        "EXP-P3-VARIAS-LLAMADAS": 259,
+        "EXP-P2-HERIDO-GRAVE": 254,
+        "EXP-P2-TRAFICO-GRAVE": 214,
+        "EXP-P2-INTOXICACION": 161,
+        "EXP-P3-INCENDIO-SIN-VICTIMAS": 156,
+        "EXP-P2-INCENDIO-VIVIENDA": 120,
+        "EXP-P3-METEO-INUNDACION": 97,
+        "EXP-P1-CRITICO-ATRAPADO": 69,
+        "EXP-P4-SIN-SENALES-CRITICAS": 69,
+        "EXP-P2-METEORO-ALTO-IMPACTO": 24,
+        "EXP-P4-ACCIDENTE-MENOR": 15,
+        "EXP-P4-INCENDIO-MENOR": 1
       }
     },
-    "val": {
-      "rows": 1414,
-      "evaluated_rows": 1414,
+    "test": {
+      "rows": 1453,
+      "evaluated_rows": 1453,
       "missing_clean_rows": 0,
-      "accuracy": 0.717822,
-      "macro_f1": 0.691811,
-      "recall_p1": 1.0,
+      "accuracy": 0.694425,
+      "macro_f1": 0.464284,
+      "recall_p1": 0.998473,
       "per_class": {
         "P1": {
-          "precision": 0.737028,
-          "recall": 1.0,
-          "f1": 0.848608
+          "precision": 0.765808,
+          "recall": 0.998473,
+          "f1": 0.866799
         },
         "P2": {
-          "precision": 0.361702,
-          "recall": 0.155015,
-          "f1": 0.217021
+          "precision": 0.430464,
+          "recall": 0.186246,
+          "f1": 0.26
         },
         "P3": {
-          "precision": 0.770667,
-          "recall": 0.711823,
-          "f1": 0.740077
+          "precision": 0.647982,
+          "recall": 0.770667,
+          "f1": 0.70402
         },
         "P4": {
-          "precision": 1.0,
-          "recall": 0.925926,
-          "f1": 0.961539
+          "precision": 0.5,
+          "recall": 0.013514,
+          "f1": 0.026317
         }
       },
       "confusion_matrix": {
         "P1": {
-          "P1": 625,
+          "P1": 654,
           "P2": 0,
-          "P3": 0,
+          "P3": 1,
           "P4": 0
         },
         "P2": {
-          "P1": 196,
-          "P2": 51,
-          "P3": 82,
-          "P4": 0
+          "P1": 200,
+          "P2": 65,
+          "P3": 83,
+          "P4": 1
         },
         "P3": {
-          "P1": 27,
-          "P2": 90,
+          "P1": 0,
+          "P2": 86,
           "P3": 289,
           "P4": 0
         },
         "P4": {
           "P1": 0,
           "P2": 0,
-          "P3": 4,
-          "P4": 50
+          "P3": 73,
+          "P4": 1
         }
       },
       "top_rules": {
-        "EXP-P3-ACCIDENTE-TRAFICO": 1000,
-        "EXP-P1-RIESGO-VITAL": 810,
-        "EXP-P2-RESCATE": 499,
-        "EXP-P2-ATRAPADO": 407,
-        "EXP-P1-FALLECIDO": 343,
-        "EXP-P3-VARIAS-LLAMADAS": 269,
-        "EXP-P2-HERIDO-GRAVE": 229,
-        "EXP-P2-TRAFICO-GRAVE": 198,
-        "EXP-P2-INTOXICACION": 171,
-        "EXP-P3-INCENDIO-SIN-VICTIMAS": 143,
-        "EXP-P2-INCENDIO-VIVIENDA": 119,
-        "EXP-P3-METEO-INUNDACION": 111,
-        "EXP-P4-SIN-SENALES-CRITICAS": 63,
-        "EXP-P1-CRITICO-ATRAPADO": 50,
-        "EXP-P2-METEORO-ALTO-IMPACTO": 29
-      }
-    },
-    "test": {
-      "rows": 1455,
-      "evaluated_rows": 1455,
-      "missing_clean_rows": 0,
-      "accuracy": 0.727835,
-      "macro_f1": 0.703932,
-      "recall_p1": 0.998457,
-      "per_class": {
-        "P1": {
-          "precision": 0.744534,
-          "recall": 0.998457,
-          "f1": 0.852999
-        },
-        "P2": {
-          "precision": 0.388889,
-          "recall": 0.1875,
-          "f1": 0.253012
-        },
-        "P3": {
-          "precision": 0.788732,
-          "recall": 0.70529,
-          "f1": 0.744681
-        },
-        "P4": {
-          "precision": 1.0,
-          "recall": 0.932432,
-          "f1": 0.965035
-        }
-      },
-      "confusion_matrix": {
-        "P1": {
-          "P1": 647,
-          "P2": 1,
-          "P3": 0,
-          "P4": 0
-        },
-        "P2": {
-          "P1": 203,
-          "P2": 63,
-          "P3": 70,
-          "P4": 0
-        },
-        "P3": {
-          "P1": 19,
-          "P2": 98,
-          "P3": 280,
-          "P4": 0
-        },
-        "P4": {
-          "P1": 0,
-          "P2": 0,
-          "P3": 5,
-          "P4": 69
-        }
-      },
-      "top_rules": {
-        "EXP-P3-ACCIDENTE-TRAFICO": 992,
-        "EXP-P1-RIESGO-VITAL": 835,
-        "EXP-P2-RESCATE": 539,
-        "EXP-P2-ATRAPADO": 428,
-        "EXP-P1-FALLECIDO": 332,
-        "EXP-P3-VARIAS-LLAMADAS": 263,
-        "EXP-P2-HERIDO-GRAVE": 254,
-        "EXP-P2-TRAFICO-GRAVE": 216,
-        "EXP-P3-INCENDIO-SIN-VICTIMAS": 197,
-        "EXP-P2-INTOXICACION": 186,
-        "EXP-P2-INCENDIO-VIVIENDA": 154,
-        "EXP-P3-METEO-INUNDACION": 105,
-        "EXP-P4-SIN-SENALES-CRITICAS": 85,
+        "EXP-P3-SANITARIO-ORDINARIO": 1131,
+        "EXP-P3-ACCIDENTE-TRAFICO": 994,
+        "EXP-P1-RIESGO-VITAL": 823,
+        "EXP-P2-RESCATE": 512,
+        "EXP-P2-ATRAPADO": 414,
+        "EXP-P1-FALLECIDO": 329,
+        "EXP-P3-VARIAS-LLAMADAS": 262,
+        "EXP-P2-HERIDO-GRAVE": 246,
+        "EXP-P2-TRAFICO-GRAVE": 208,
+        "EXP-P3-INCENDIO-SIN-VICTIMAS": 201,
+        "EXP-P2-INTOXICACION": 194,
+        "EXP-P2-INCENDIO-VIVIENDA": 147,
+        "EXP-P3-METEO-INUNDACION": 104,
+        "EXP-P4-SIN-SENALES-CRITICAS": 84,
         "EXP-P1-CRITICO-ATRAPADO": 74,
-        "EXP-P2-METEORO-ALTO-IMPACTO": 25
+        "EXP-P2-METEORO-ALTO-IMPACTO": 26,
+        "EXP-P4-ACCIDENTE-MENOR": 14,
+        "EXP-P4-INCENDIO-MENOR": 2
       }
     }
   },
