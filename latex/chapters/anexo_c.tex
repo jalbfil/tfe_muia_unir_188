@@ -1,19 +1,16 @@
 \chapter{Guía de etiquetado P1--P4}
 \label{cap:anexoc}
 
-Este anexo expone de forma pormenorizada las directrices metodológicas utilizadas para la asignación de los niveles de prioridad P1--P4. A través de este manual conceptual, se establecen los límites de cada categoría y se definen las heurísticas de acuerdo aplicadas a las etiquetas. Con este protocolo se busca consolidar un criterio homogéneo que guíe tanto el etiquetado probabilístico como la revisión manual.
-
 \section*{C.1. Finalidad del anexo}
 
-Este anexo documenta la guía empleada para construir mediante supervisión débil
-la escala académica P1--P4. El Registro 112 Castilla y León no contiene una
-prioridad oficial equivalente; por ello, la guía define un criterio reproducible para
+Este anexo documenta la gu\'ia empleada para construir mediante supervisi\'on d\'ebil
+la escala acad\'emica P1--P4. El Registro 112 Castilla y Le\'on no contiene una
+prioridad oficial equivalente; por ello, la gu\'ia define un criterio reproducible para
 entrenar, comparar y evaluar la Capa 2 sin atribuir validez institucional a la etiqueta.
 
-La versión operativa se corresponde con
-\texttt{resources/labeling\_guide\_p1p4.md} y con la decisión metodológica de tratar
-P1--P4 como escala académica, no jurídica ni institucional.
-La muestra preparada para una futura revisión humana se documenta en el
+La guía se apoya en la decisión metodológica de tratar
+P1--P4 como escala académica, no juridica ni institucional.
+La muestra preparada para una futura revisi\'on humana se documenta en el
 Anexo~\ref{cap:anexod}.
 
 \section*{C.2. Principios generales}
@@ -22,8 +19,8 @@ Anexo~\ref{cap:anexod}.
     \item \textbf{Momento de primera decisión.} La etiqueta debe reflejar la urgencia
     con la información disponible al inicio, no con el desenlace final del incidente.
     \item \textbf{Prioridad como urgencia relativa.} P1--P4 ordena necesidad de
-    atención temprana; no equivale a declaración formal de situación operativa.
-    \item \textbf{Precaución razonable.} Ante información incompleta, se evita tanto
+    atención temprana; no equivale a declaracion formal de situacion operativa.
+    \item \textbf{Precaucion razonable.} Ante información incompleta, se evita tanto
     minimizar señales críticas como asumir siempre el peor caso.
     \item \textbf{Trazabilidad.} Toda etiqueta debe poder vincularse a texto,
     categoría, señales, variables o reglas.
@@ -42,8 +39,8 @@ Anexo~\ref{cap:anexod}.
 \begin{tabularx}{\textwidth}{|p{1.0cm}|p{2.5cm}|X|X|}
 \hline
 \textbf{Nivel} & \textbf{Nombre} & \textbf{Criterio operativo} & \textbf{Ejemplos de señales} \\ \hline
-P1 & Crítica & Riesgo vital confirmado o altamente probable, fallecido, atrapamiento grave, múltiples víctimas o evolución potencialmente crítica. & fallecido, inconsciente, herido grave, atrapado crítico, intoxicación grave \\ \hline
-P2 & Alta & Gravedad relevante o potencial de escalado sin riesgo vital inmediato confirmado. Requiere atención rápida y seguimiento. & herido, atrapado no crítico, incendio en vivienda, rescate, varias llamadas \\ \hline
+P1 & Critica & Riesgo vital confirmado o altamente probable, fallecido, atrapamiento grave, múltiples víctimas o evolucion potencialmente critica. & fallecido, inconsciente, herido grave, atrapado crítico, intoxicación grave \\ \hline
+P2 & Alta & Gravedad relevante o potencial de escalado sin riesgo vital inmediato confirmado. Requiere atención rapida y seguimiento. & herido, atrapado no crítico, incendio en vivienda, rescate, varias llamadas \\ \hline
 P3 & Media & Incidente que requiere gestión activa, pero sin señales claras de riesgo vital ni escalado alto. & accidente leve, incendio contenido, incidencia viaria, meteo limitada \\ \hline
 P4 & Baja & Consulta, incidencia menor, asistencia diferible o caso sin urgencia operativa aparente. & consulta, información, incidencia técnica menor, sin señales críticas \\ \hline
 \end{tabularx}
@@ -52,7 +49,7 @@ P4 & Baja & Consulta, incidencia menor, asistencia diferible o caso sin urgencia
 \section*{C.4. Reglas de etiquetado}
 
 Las reglas siguientes orientan la asignación académica. No se presentan como reglas
-oficiales del 112, sino como criterios reproducibles de supervisión débil:
+oficiales del 112, sino como criterios reproducibles de supervisi\'on d\'ebil:
 
 \begin{table}[ht]
 \centering
@@ -61,26 +58,26 @@ oficiales del 112, sino como criterios reproducibles de supervisión débil:
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{2.8cm}|p{1.2cm}|X|}
 \hline
-\textbf{Regla} & \textbf{Nivel mínimo} & \textbf{Criterio} \\ \hline
-R-P1-FALLECIDO & P1 & El texto menciona fallecido, muerto, cadáver o equivalente. \\ \hline
-R-P1-RIESGO-VITAL & P1 & Riesgo vital textual, inconsciencia, parada, herido muy grave o situación crítica. \\ \hline
+\textbf{Regla} & \textbf{Nivel minimo} & \textbf{Criterio} \\ \hline
+R-P1-FALLECIDO & P1 & El texto menciona fallecido, muerto, cadaver o equivalente. \\ \hline
+R-P1-RIESGO-VITAL & P1 & Riesgo vital textual, inconsciencia, parada, herido muy grave o situacion critica. \\ \hline
 R-P1-ATRAPADO-CRITICO & P1 & Atrapamiento con indicios de gravedad, rescate urgente o imposibilidad de salida. \\ \hline
-R-P2-HERIDO-GRAVE & P2 & Herido grave sin confirmación suficiente para P1. \\ \hline
-R-P2-INTOXICACION & P2 & Intoxicación, humo o exposición a sustancias con posible afectación personal. \\ \hline
+R-P2-HERIDO-GRAVE & P2 & Herido grave sin confirmacion suficiente para P1. \\ \hline
+R-P2-INTOXICACION & P2 & Intoxicación, humo o exposicion a sustancias con posible afectacion personal. \\ \hline
 R-P2-INCENDIO-HABITADO & P2 & Incendio en vivienda, edificio, local habitado o entorno con personas expuestas. \\ \hline
 R-P2-RESCATE & P2 & Rescate o salvamento sin señal P1 confirmada. \\ \hline
-R-P3-TRAFICO & P3 & Accidente de tráfico sin señales críticas ni heridos graves. \\ \hline
+R-P3-TRAFICO & P3 & Accidente de trafico sin señales críticas ni heridos graves. \\ \hline
 R-P3-INCENDIO-SIN-VICTIMAS & P3 & Incendio sin víctimas ni atrapados descritos. \\ \hline
 R-P4-SIN-URGENCIA & P4 & Consulta, información o incidencia menor sin señales operativas de gravedad. \\ \hline
 \end{tabularx}
 \end{table}
 
-\section*{C.5. Resolucion de conflictos}
+\section*{C.5. Resolución de conflictos}
 
-Cuando varias señales sugieren prioridades diferentes, se aplica la prioridad más alta
+Cuando varias señales sugieren prioridades diferentes, se aplica la prioridad mas alta
 compatible con la información inicial. La incertidumbre no debe rebajar una prioridad:
 debe reflejarse como menor confianza o como caso para revisión humana. Si la evidencia
-solo permite una lectura ambigua entre dos niveles, se selecciona el nivel superior
+solo permite una lectura ambigua entre dos niveles, se seleccióna el nivel superior
 cuando existan señales de personas afectadas, vulnerabilidad o posible escalado.
 
 Los conflictos más relevantes son:
@@ -94,31 +91,32 @@ Los conflictos más relevantes son:
     o incidencia menor.
 \end{itemize}
 
-\section*{C.6. Funciones de etiquetado, agregación y acuerdo}
+\section*{C.6. Funciones de etiquetado, agregaci\'on y acuerdo}
 
-La etiqueta final combina cuatro funciones deterministas: reglas heurísticas,
-señales e intensificadores, un proxy de agrupación semántica y un proxy de
-anotador LLM. Los dos últimos nombres describen la función experimental prevista,
-pero en v0.1.0 no ejecutan un agrupamiento vectorial ni invocan un modelo generativo.
+La etiqueta final combina cuatro funciones deterministas: reglas heur\'isticas,
+señales e intensificadores, un proxy de agrupaci\'on sem\'antica y un proxy de
+anotador LLM. Los dos últimos nombres describen la funci\'on experimental prevista,
+pero en el alcance evaluado no ejecutan un agrupamiento vectorial ni invocan un modelo generativo.
 
 Los votos se agregan mediante suma ponderada. Los pesos son \(0{,}85\), \(1{,}00\),
 \(0{,}90\) y \(1{,}10\), respectivamente. Si varias prioridades obtienen el mismo
-peso, se selecciona la más urgente. La ejecución canónica alcanza Krippendorff
-\(\alpha = 0{,}899902\); la ablación sin reglas heurísticas mantiene
+peso, se seleccióna la m\'as urgente. La ejecuci\'on can\'onica alcanza Krippendorff
+\(\alpha = 0{,}899902\); la ablaci\'on sin reglas heur\'isticas mantiene
 \(\alpha = 0{,}834155\).
 
 Estos valores respaldan la consistencia del procedimiento, pero no demuestran
 independencia entre funciones: varias comparten patrones y señales con las variables
-que posteriormente utiliza RuleFit-lite. La ablación confirma que el acuerdo no
+que posteriormente utiliza RuleFit-lite. La ablaci\'on confirma que el acuerdo no
 desaparece al retirar una fuente, no que se haya eliminado por completo la circularidad.
 
 \section*{C.7. Limitaciones}
 
-La guía reduce subjetividad, pero no elimina la necesidad de revisión humana. Los
+La gu\'ia reduce subjetividad, pero no elimina la necesidad de revisi\'on humana. Los
 artefactos finales identifican 59 falsos negativos P1, incluidos 7 casos P1--P4, que
 constituyen la prioridad de la muestra preparada. Estos casos permiten estudiar
-límites de la guía, señales insuficientes o decisiones del modelo con riesgo de
-infrapriorización. La muestra completa se documenta en el
+l\'imites de la gu\'ia, señales insuficientes o decisiones del modelo con riesgo de
+infrapriorizaci\'on. La muestra completa se documenta en el
 Anexo~\ref{cap:anexod}.
 
-La validación externa con operadores del 112 queda como trabajo futuro. Hasta entonces, P1--P4 debe citarse siempre como escala académica del prototipo. Esta cautela metodológica previene malentendidos sobre el alcance y la madurez de la solución inteligente. De este modo, se mantiene una postura honesta y rigurosa en el plano de la investigación universitaria.
+La validación externa con operadores del 112 queda como trabajo futuro. Hasta entonces,
+P1--P4 debe citarse siempre como escala académica del prototipo.
