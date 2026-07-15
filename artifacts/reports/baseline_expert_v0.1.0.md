@@ -1,13 +1,13 @@
 # Baseline experto Capa 2 v0.1.0
 
-- Reglas expertas: 16
-- Generado: 2026-05-26T11:36:36.944462+00:00
+- Reglas expertas: 19
+- Generado: 2026-07-15T18:31:39.214679+00:00
 
 ## Metricas por split
 
-- train: accuracy=0.725849, macro_f1=0.706714, recall_p1=0.997278
-- val: accuracy=0.717822, macro_f1=0.691811, recall_p1=1.0
-- test: accuracy=0.727835, macro_f1=0.703932, recall_p1=0.998457
+- train: accuracy=0.701014, macro_f1=0.46514, recall_p1=0.995736
+- val: accuracy=0.717314, macro_f1=0.498785, recall_p1=0.995441
+- test: accuracy=0.694425, macro_f1=0.464284, recall_p1=0.998473
 
 ## Criterio experimental
 

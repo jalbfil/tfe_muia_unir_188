@@ -12,6 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_BASELINE = PROJECT_ROOT / "artifacts" / "reports" / "baseline_expert_v0.1.0.json"
 DEFAULT_LITE = PROJECT_ROOT / "artifacts" / "reports" / "rulefit_lite_v0.1.0.json"
 DEFAULT_IMODELS = PROJECT_ROOT / "artifacts" / "reports" / "rulefit_imodels_v0.1.0.json"
+DEFAULT_EVALUATION = PROJECT_ROOT / "artifacts" / "reports" / "evaluation_v0.1.0.json"
 DEFAULT_OUTPUT = PROJECT_ROOT / "artifacts" / "reports" / "capa2_model_selection_v0.1.0.json"
 DEFAULT_OUTPUT_MD = PROJECT_ROOT / "artifacts" / "reports" / "capa2_model_selection_v0.1.0.md"
 
@@ -41,7 +42,12 @@ def _baseline_row(report: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _rulefit_row(name: str, report: dict[str, Any] | None) -> dict[str, Any]:
+def _rulefit_row(
+    name: str,
+    report: dict[str, Any] | None,
+    *,
+    final_test: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if report is None:
         return {
             "model": name,
@@ -49,7 +55,7 @@ def _rulefit_row(name: str, report: dict[str, Any] | None) -> dict[str, Any]:
             "reason": "report_not_found",
         }
     val = report["splits"]["val"]
-    test = report["splits"]["test"]
+    test = final_test or report["splits"]["test"]
     return {
         "model": name,
         "available": True,
@@ -61,6 +67,7 @@ def _rulefit_row(name: str, report: dict[str, Any] | None) -> dict[str, Any]:
         "test_accuracy": test["accuracy"],
         "test_macro_f1": test["macro_f1"],
         "test_recall_p1": test["recall_p1"],
+        "test_source": "final_evaluation" if final_test is not None else "model_report",
         "active_rules": report.get("active_rule_count_exported"),
         "training_seconds": report.get("training_seconds"),
         "mean_inference_ms_per_row": report.get("mean_inference_ms_per_row"),
@@ -129,15 +136,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--baseline", type=Path, default=DEFAULT_BASELINE)
     parser.add_argument("--lite", type=Path, default=DEFAULT_LITE)
     parser.add_argument("--imodels", type=Path, default=DEFAULT_IMODELS)
+    parser.add_argument("--evaluation", type=Path, default=DEFAULT_EVALUATION)
     parser.add_argument("--output-json", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--output-md", type=Path, default=DEFAULT_OUTPUT_MD)
     args = parser.parse_args(argv)
 
     baseline = _load_optional(args.baseline)
+    evaluation = _load_optional(args.evaluation)
+    final_test = None
+    if evaluation is not None:
+        final_test = evaluation.get("evaluation", {}).get("stratified_test", {}).get("metrics")
     rows = []
     if baseline is not None:
         rows.append(_baseline_row(baseline))
-    rows.append(_rulefit_row("rulefit_lite", _load_optional(args.lite)))
+    rows.append(
+        _rulefit_row("rulefit_lite", _load_optional(args.lite), final_test=final_test)
+    )
     rows.append(_rulefit_row("rulefit_imodels", _load_optional(args.imodels)))
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

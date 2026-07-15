@@ -1,17 +1,17 @@
 \chapter{Variables V01--V15 de priorización}
 \label{cap:anexob}
 
-Este anexo expone la definición y especificación técnica de las quince variables de priorización diseñadas para estructurar la información del incidente. A través de este conjunto estructurado de características, se establece un lenguaje común que unifica la extracción de señales de la Capa 1 y el aprendizaje de la Capa 2. Con esta modelización se persigue asegurar que el modelo cuente con los atributos necesarios para justificar su recomendación ante el operador.
+Este anexo define las quince variables académicas utilizadas para estructurar la información del incidente y conectar la extracción de señales de Capa 1 con la priorización de Capa 2.
 
 \section*{B.1. Finalidad del anexo}
 
 Este anexo especifica las variables V01--V15 utilizadas como marco común entre datos,
-weak labels, Capa 2, explicación y validación humana. La matriz no debe interpretarse
+etiquetas débiles, Capa 2, explicación y revisión humana. La matriz no debe interpretarse
 como un formulario operativo oficial, sino como una representación académica de factores
 relevantes para priorizar incidentes 112 en Castilla y León.
 
-La versión v0.1.0 distingue entre variables implementadas de forma reproducible con el
-Registro 112 CyL y variables previstas para v0.2.0. Esta distinción es clave para evitar
+El alcance distingue entre variables implementadas de forma reproducible con el
+Registro 112 CyL y variables previstas como ampliación futura. Esta distinción es clave para evitar
 fuga de información y para no atribuir al modelo datos contextuales que todavía no se
 han integrado.
 
@@ -24,7 +24,7 @@ han integrado.
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{1.0cm}|p{3.0cm}|p{2.1cm}|X|p{2.1cm}|}
 \hline
-\textbf{ID} & \textbf{Variable} & \textbf{Tipo} & \textbf{Función en el sistema} & \textbf{Estado v0.1.0} \\ \hline
+\textbf{ID} & \textbf{Variable} & \textbf{Tipo} & \textbf{Función en el sistema} & \textbf{Estado evaluado} \\ \hline
 V01 & Riesgo vital inmediato & Binaria & Captura fallecido, inconsciente, herido grave, atrapado crítico o riesgo vital textual. & Implementada por señales \\ \hline
 V02 & Víctimas confirmadas o probables & Ordinal & Aproxima magnitud humana inicial cuando el texto permite inferir afectados. & Parcial por texto \\ \hline
 V03 & Tipo de daño principal & Categórica & Diferencia daño a personas, bienes, medioambiente o incidente menor. & Implementada indirecta \\ \hline
@@ -32,10 +32,10 @@ V04 & Tipo de incidente & Categórica & Mapea el incidente a la taxonomía del A
 V05 & Población vulnerable & Binaria & Identifica menores, mayores, dependientes o colectivos especialmente expuestos. & Parcial por texto \\ \hline
 V06 & Personas en riesgo estimadas & Ordinal & Representa exposición potencial más allá de víctimas confirmadas. & Parcial \\ \hline
 V07 & Emplazamiento crítico & Categórica & Hospitales, residencias, centros educativos, infraestructuras o lugares sensibles. & Parcial por texto \\ \hline
-V08 & Nivel de aviso AEMET & Ordinal & Contexto meteorológico oficial para elevar riesgo cuando sea pertinente. & Diferida v0.2.0 \\ \hline
-V09 & Fenómeno meteorológico activo & Categórica & Lluvia, nieve, viento, tormenta, temperatura u otro fenómeno coherente. & Diferida v0.2.0 \\ \hline
-V10 & Peligrosidad por inundación & Binaria & Cruce territorial con zonas inundables SNCZI. & Diferida v0.2.0 \\ \hline
-V11 & Proximidad Seveso & Binaria & Identifica instalaciones sujetas a RD 840/2015 o riesgo tecnológico. & Diferida v0.2.0 \\ \hline
+V08 & Nivel de aviso AEMET & Ordinal & Contexto meteorológico oficial para elevar riesgo cuando sea pertinente. & Diferida \\ \hline
+V09 & Fenómeno meteorológico activo & Categórica & Lluvia, nieve, viento, tormenta, temperatura u otro fenómeno coherente. & Diferida \\ \hline
+V10 & Peligrosidad por inundación & Binaria & Cruce territorial con zonas inundables SNCZI. & Diferida \\ \hline
+V11 & Proximidad Seveso & Binaria & Identifica instalaciones sujetas a RD 840/2015 o riesgo tecnológico. & Diferida \\ \hline
 V12 & Tendencia del incidente & Ordinal & Estable, agravamiento, mejora o desconocida; orienta escalado. & Parcial por texto \\ \hline
 V13 & Fiabilidad del informador & Ordinal & Modula confianza, no gravedad. & No disponible directa \\ \hline
 V14 & Número de avisos simultáneos & Ordinal & Varias llamadas elevan confianza y posible impacto. & Implementada por señal \\ \hline
@@ -43,27 +43,26 @@ V15 & Accesibilidad al punto & Ordinal & Dificultad de acceso, entorno rural, mo
 \end{tabularx}
 \end{table}
 
-\section*{B.3. Variables implementadas en Capa 2 v0.1.0}
+\section*{B.3. Variables implementadas en Capa 2}
 
 El modelo RuleFit-lite seleccionado no consume directamente todas las variables V01--V15
 como campos completos. Consume un conjunto compacto de señales predecisionales derivadas
-del texto y de la categoría preliminar, extraídas por el clasificador híbrido multietiqueta
-de la Capa 1 (TF-IDF + Regresión Logística + guardarraíles deterministas):
+del texto y de la categoría preliminar. Estas señales se obtienen mediante NLP
+simbólico y auditable en Capa 1: detección semántica basada en reglas, tratamiento de
+negaciones, normalización y confianza:
 
 \begin{itemize}
-    \item \texttt{signal\_fallecido}, \texttt{signal\_herido\_grave},
-    \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion};
-    \item \texttt{signal\_varias\_llamadas}, \texttt{signal\_incendio},
-    \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate},
-    \texttt{signal\_meteo\_inundacion};
-    \item \texttt{riesgo\_vital\_textual};
-    \item variables \texttt{cat\_*} derivadas de la taxonomía.
+    \item señales de fallecimiento, herido grave, atrapamiento e intoxicación;
+    \item llamadas múltiples, incendio, accidente de tráfico, rescate y riesgo
+    meteorológico o de inundación;
+    \item riesgo vital expresado en el texto;
+    \item variables categóricas normalizadas derivadas de la taxonomía.
 \end{itemize}
 
 Esta decisión mantiene reproducibilidad y evita introducir variables contextuales
 incompletas. Las variables V08--V11 se conservan en el diseño porque son relevantes
-para una versión futura, pero no se contabilizan como evidencia ya disponible en la
-evaluación v0.1.0.
+para una ampliación futura, pero no se contabilizan como evidencia disponible en la
+evaluación actual.
 
 \section*{B.4. Columnas prohibidas por leakage y políticas de privacidad}
 
@@ -77,9 +76,9 @@ El sistema excluye rigurosamente del entrenamiento e inferencia cualquier variab
     \item Enlaces, identificadores de despacho y metadatos ex post.
 \end{itemize}
 
-La exclusión de estas columnas ex post posee una justificación metodológica crítica: si el modelo RuleFit tuviera acceso a variables como el número de ambulancias movilizadas o el estado de cierre del incidente, aprendería a deducir la prioridad directamente de estas consecuencias operativas en lugar de identificar las señales tempranas de riesgo. Esto provocaría un sobreaprendizaje destructivo (target leakage), invalidando la utilidad del sistema como apoyo en tiempo real cuando el operador aún no ha movilizado ningún recurso.
+La exclusión de estas columnas ex post posee una justificación metodológica crítica: si el modelo RuleFit tuviera acceso a variables como el número de ambulancias movilizadas o el estado de cierre del incidente, aprendería consecuencias operativas posteriores en lugar de señales tempranas de riesgo. Esto provocaría fuga de la variable objetivo (\textit{target leakage}) e invalidaría la utilidad del sistema en el momento de la primera decisión.
 
-Asimismo, en cumplimiento del Reglamento General de Protección de Datos (RGPD) \cite{RGPD} y de la Ley Orgánica 3/2018 (LOPDGDD) \cite{LOPDGDD}, el sistema aplica políticas estrictas de anonimización y minimización de datos. Las coordenadas geográficas exactas (latitud y longitud) del Registro 112 CyL se procesan de forma restringida (por ejemplo, truncando decimales para conservar solo la precisión municipal) para evitar la reidentificación de personas o domicilios, garantizando el tratamiento confidencial y seguro del texto operativo.
+En alineación con los principios de minimización del Reglamento General de Protección de Datos (RGPD) \cite{RGPD} y de la Ley Orgánica 3/2018 (LOPDGDD) \cite{LOPDGDD}, el diseño contempla anonimización y tratamiento restringido de datos. Las coordenadas geográficas exactas del Registro 112 CyL pueden reducirse a precisión municipal para limitar el riesgo de reidentificación. Estas medidas son decisiones de diseño académico y no constituyen una certificación de conformidad regulatoria.
 
 \section*{B.5. Ausencia de datos}
 
@@ -95,6 +94,6 @@ no está disponible, el sistema debe:
 
 \section*{B.6. Limitaciones y riesgos}
 
-La matriz V01--V15 es más amplia que la implementación v0.1.0, lo cual es una decisión deliberada de diseño para documentar la evolución futura hacia v0.2.0 sin sesgar la evaluación del núcleo reproducible actual (excluyendo AEMET, SNCZI y Seveso).
+La matriz V01--V15 es más amplia que la implementación evaluada. Esta decisión documenta la evolución futura sin atribuir al modelo información de AEMET, SNCZI o Seveso que todavía no utiliza.
 
 Existe un riesgo crítico de leakage residual si en el futuro se introducen nuevas variables o integraciones del sistema de despacho sin verificar rigurosamente su disponibilidad temporal en la llamada de entrada. Cualquier campo que se incorpore al modelo debe someterse a una auditoría de línea de tiempo para asegurar que se genera en los primeros instantes de la llamada del ciudadano y no durante la posterior coordinación de la emergencia.

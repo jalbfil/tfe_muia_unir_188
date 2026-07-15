@@ -1,4 +1,4 @@
-\chapter{Identificación de requisitos del sistema}
+\chapter{Requisitos del sistema}
 \label{cap:5}
 
 \section{Introducción al capítulo}
@@ -24,10 +24,10 @@ El sistema no moviliza recursos, no activa planes, no envía alertas y no toma d
 \section{Requisitos funcionales}
 
 \paragraph{RF1. Recepción y normalización del incidente}
-El sistema debe recibir incidentes desde carga de dataset o entrada controlada y transformarlos en un registro normalizado con identificador, texto operativo, categoría, fecha, provincia, municipio, coordenadas cuando existan y campos auxiliares permitidos.
+El sistema debe recibir incidentes desde la carga de conjuntos de datos o la entrada textual manual y transformarlos en un registro normalizado con identificador, texto operativo, categoría, fecha, provincia, municipio, coordenadas cuando existan y campos auxiliares permitidos. La transcripción local de audio se conserva como entrada experimental sometida a revisión antes de la inferencia.
 
 \paragraph{RF2. Extracción de variables y señales}
-La Capa 1 debe extraer variables operativas V01--V15 y señales textuales relevantes para la priorización. En v0.1.0 esta extracción se realiza mediante un clasificador de aprendizaje automático multietiqueta (TF-IDF + Regresión Logística con balanceo de clases) entrenado sobre el corpus histórico de Castilla y León, y acoplado con guardarraíles deterministas léxicos (esquema híbrido neuro-simbólico) para garantizar un recall de \(1{,}00\) en situaciones críticas de seguridad y evitar falsos positivos. Deja V08--V11 como extensión futura cuando se integren AEMET, SNCZI y Seveso.
+La Capa 1 debe extraer variables operativas V01--V15 y señales textuales relevantes para la priorización. La extracción aplica NLP simbólico y auditable: detección semántica mediante reglas y diccionarios, patrones de negación, normalización y estimación de confianza. Las variables V08--V11 quedan como extensión futura cuando se integren AEMET, SNCZI y Seveso. La posible incorporación de un clasificador aprendido requerirá un modelo congelado y una evaluación independiente antes de considerarse parte evaluada del prototipo.
 
 \paragraph{RF3. Control de columnas prohibidas}
 El sistema debe excluir de entrenamiento e inferencia los campos posteriores a la decisión o que reflejen consecuencias del operativo, como \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado} o \texttt{ultimaActualizacion}. Este requisito es obligatorio para evitar fuga de información.
@@ -36,7 +36,7 @@ El sistema debe excluir de entrenamiento e inferencia los campos posteriores a l
 Cuando no exista prioridad oficial P1--P4, el sistema debe construir etiquetas académicas mediante supervisión débil, usando fuentes de señal separadas y midiendo acuerdo. La etiqueta resultante debe documentarse como aproximación metodológica, no como verdad operativa oficial.
 
 \paragraph{RF5. Recomendación de prioridad P1--P4}
-La Capa 2 debe generar una recomendación de prioridad mediante un modelo interpretable. En v0.1.0 el modelo seleccionado es RuleFit-lite, comparado con un baseline experto y con una ejecución diagnóstica \texttt{imodels}. La salida debe incluir prioridad, probabilidades por clase, reglas o señales activadas y versión del modelo.
+La Capa 2 debe generar una recomendación de prioridad mediante un modelo interpretable. El modelo seleccionado es RuleFit-lite, comparado con una línea base experta y con una ejecución diagnóstica de \texttt{imodels}. La salida debe incluir prioridad, probabilidades por clase, reglas o señales activadas e identificación del modelo.
 
 \paragraph{RF6. Cálculo de confianza e incertidumbre}
 El sistema debe exponer información sobre confianza o incertidumbre asociada a la recomendación, especialmente cuando falten variables relevantes o cuando la predicción se apoye en señales débiles. La confianza no debe confundirse con gravedad.
@@ -48,7 +48,9 @@ La Capa 3 debe generar una explicación breve y trazable que conecte la priorida
 El sistema debe permitir que una persona (operador del 112) revise la recomendación del DSS y registre una decisión explícita (aceptación, modificación o rechazo). Esta intervención humana (HITL) debe ser obligatoria para cerrar el caso y guardarse a nivel de base de datos mediante la persistencia del contrato estructurado \texttt{OperatorDecision}, vinculando la prioridad asignada y la justificación de cualquier discrepancia.
 
 \paragraph{RF9. Registro auditable}
-Cada inferencia debe quedar registrada de forma inalterable y asociada a su entrada original, variables extraídas por la Capa 1, modelo de Capa 2 y su versión, prioridad recomendada, probabilidades calculadas, explicación de Capa 3, y la decisión humana final (\texttt{OperatorDecision}) si ya fue registrada. Esta persistencia garantiza la trazabilidad exigida por las normativas de IA de alto riesgo \cite{EUAIAct2024}, sustentando la auditoría técnica y la defensa académica.
+Cada inferencia debe quedar registrada y asociada a su entrada original, variables extraídas por la Capa 1, modelo de Capa 2 y su versión, prioridad recomendada, probabilidades calculadas, explicación de Capa 3, y la decisión humana final (\texttt{OperatorDecision}) si ya fue registrada. Esta persistencia aporta la trazabilidad técnica prevista en el diseño y se alinea con principios aplicables a sistemas de IA de alto riesgo
+
+\cite{EUAIAct2024}, sustentando la auditoría técnica y la defensa académica.
 
 \paragraph{RF10. Reevaluación}
 El sistema debe poder reevaluar un incidente cuando cambien los datos de entrada, conservando el historial de recomendaciones para reconstruir la evolución del caso.
@@ -61,7 +63,7 @@ La recomendación debe ser interpretable para un operador. Este requisito justif
 
 \subsection{Trazabilidad}
 
-Toda salida debe poder reconstruirse desde los datos de entrada hasta la explicación final. La trazabilidad incluye scripts de datos, weak labels, splits, modelo entrenado, reglas activas, métricas, logs y decisiones humanas registradas.
+Toda salida debe poder reconstruirse desde los datos de entrada hasta la explicación final. La trazabilidad incluye los procedimientos de preparación de datos, las etiquetas débiles, las particiones, el modelo entrenado, las reglas activas, las métricas, los registros de inferencia y las decisiones humanas registradas.
 
 \subsection{Supervisión humana}
 
@@ -73,7 +75,7 @@ El sistema debe funcionar con información parcial, porque esa es la situación 
 
 \subsection{Reproducibilidad}
 
-Los resultados deben poder regenerarse con scripts versionados. Esto incluye auditoría del dataset, construcción de etiquetas, splits, entrenamiento, evaluación, análisis de errores, muestra de validación interna y reporte final.
+Los resultados deben poder regenerarse mediante procedimientos versionados. Esto incluye auditoría del conjunto de datos, construcción de etiquetas, particiones, entrenamiento, evaluación, análisis de errores, revisión interna de la muestra y síntesis final.
 
 \subsection{Soberanía del dato}
 
@@ -82,16 +84,16 @@ El prototipo debe priorizar ejecución local y evitar dependencias cloud para da
 \section{Restricciones y supuestos}
 
 \subsection{Restricciones metodológicas y del prototipo}
-La primera restricción es que se trabaja con un prototipo académico, no con un sistema certificado ni desplegado en una sala 112 real. La segunda es que el Registro 112 de Castilla y León no contiene prioridad oficial P1--P4, por lo que la evaluación se realiza contra una etiqueta académica de supervisión débil. La tercera es que no se dispone todavía de validación externa con operadores del 112; por eso se prepara una muestra de validación interna y se documenta como paso previo.
+La primera restricción es que se trabaja con un prototipo académico, no con un sistema certificado ni desplegado en una sala 112 real. La segunda es que el Registro 112 de Castilla y León no contiene prioridad oficial P1--P4, por lo que la evaluación se realiza contra una etiqueta académica de supervisión débil. La tercera es que no se dispone todavía de validación externa con operadores del 112; por eso se prepara una muestra para revisión interna y se documenta como paso previo.
 
-La cuarta restricción es que algunas variables contextuales de alto interés, como AEMET histórico, inundabilidad SNCZI y proximidad Seveso, quedan diferidas a v0.2.0. La quinta es que la evaluación no mide reducción real del tiempo de decisión en sala, sino rendimiento técnico, estabilidad temporal, errores críticos, fidelidad explicativa y trazabilidad documental.
+La cuarta restricción es que algunas variables contextuales de alto interés, como AEMET histórico, inundabilidad SNCZI y proximidad Seveso, quedan diferidas como ampliación futura. La quinta es que la evaluación no mide reducción real del tiempo de decisión en sala, sino rendimiento técnico, estabilidad temporal, errores críticos, fidelidad explicativa y trazabilidad documental.
 
-Estas restricciones no invalidan el trabajo. Lo delimitan y evitan prometer más de lo que el prototipo puede demostrar. La excelencia del TFM se apoya precisamente en reconocer esas fronteras y en dejar un camino verificable para ampliarlas.
+Estas restricciones delimitan el alcance del trabajo y evitan extrapolar los resultados más allá de la evidencia disponible. También establecen un punto de partida verificable para futuras ampliaciones y evaluaciones externas.
 
 \subsection{Supuestos y dependencias tecnológicas}
-El funcionamiento y la viabilidad operativa del prototipo v0.1.0 dependen de varios supuestos tecnológicos específicos de ejecución local. En primer lugar, se asume el tipado estricto y la validación automática en tiempo de ejecución mediante contratos de datos desarrollados con la librería \texttt{Pydantic}, lo que garantiza que los datos fluyan sin corrupción entre las capas. En segundo lugar, se asume la disponibilidad y correcta ejecución local de la suite de inferencia \texttt{Ollama} cargando el modelo compacto \texttt{Llama 3.1:8B} (o su equivalente configurado \texttt{Qwen 2.5:7B-instruct}) para la generación de explicaciones textuales coherentes y sin alucinaciones.
+El funcionamiento del prototipo depende de varios supuestos tecnológicos específicos de ejecución local. En primer lugar, se emplean contratos de datos desarrollados con \texttt{Pydantic} para comprobar tipos y restricciones en tiempo de ejecución, reduciendo el riesgo de incompatibilidades entre capas. En segundo lugar, la explicación generativa requiere la disponibilidad de \texttt{Ollama} con el modelo local \texttt{Llama 3.1:8B} (o el equivalente configurado \texttt{Qwen 2.5:7B-instruct}). Esta configuración busca generar explicaciones coherentes, pero no elimina por completo el riesgo de error o alucinación; por ello se mantienen recuperación normativa, validación contractual y una respuesta alternativa determinista.
 
-Existe un riesgo tecnológico relevante asociado a la latencia y la disponibilidad: si el hardware del puesto de trabajo local carece de una GPU dedicada o compartida suficiente para albergar y ejecutar Ollama, el tiempo de inferencia del LLM puede aumentar significativamente o fallar, comprometiendo la disponibilidad del DSS en entornos de alta presión de despacho, lo que obliga al sistema a recurrir de forma segura a su modo de operación degradado (basado en plantillas deterministas).
+Existe un riesgo tecnológico relevante asociado a la latencia y la disponibilidad: si el hardware local no dispone de recursos suficientes para ejecutar Ollama, el tiempo de inferencia del LLM puede aumentar o la generación puede fallar. En ese caso, el prototipo recurre a una respuesta alternativa basada en plantillas deterministas. Este mecanismo se ha comprobado en el entorno académico, sin que ello implique disponibilidad certificada para un contexto operativo.
 
 \section{Trazabilidad entre requisitos y componentes}
 
@@ -99,25 +101,25 @@ Existe un riesgo tecnológico relevante asociado a la latencia y la disponibilid
 \centering
 \scriptsize
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{|p{1.4cm}|p{4.4cm}|p{4.3cm}|p{4.1cm}|}
+\begin{tabularx}{\textwidth}{|p{1.1cm}|X|X|X|}
 \hline
 \textbf{Req.} & \textbf{Descripción resumida} & \textbf{Componente asociado} & \textbf{Evidencia} \\ \hline
 RF1 & Recepción y normalización & Pipeline de datos y backend & Dataset limpio y contratos \\ \hline
 RF2 & Extracción de variables & Capa 1 NLP & Variables V01--V15 y señales \\ \hline
 RF3 & Anti-\textit{leakage} & Pipeline y Capa 2 & Columnas prohibidas excluidas \\ \hline
-RF4 & Weak labels P1--P4 & Supervisión débil & Acuerdo y ablación \\ \hline
+RF4 & Etiquetas débiles P1--P4 & Supervisión débil & Acuerdo y ablación \\ \hline
 RF5 & Prioridad P1--P4 & RuleFit-lite & Modelo, reglas y métricas \\ \hline
 RF6 & Confianza & Capa 2 e inferencia & Probabilidades por clase \\ \hline
 RF7 & Explicación & Capa 3 LLM+RAG+MCP & Explicación y citas \\ \hline
-RF8 & Validación humana & UI y feedback & Muestra de revisión interna \\ \hline
+RF8 & Revisión humana & Interfaz y retroalimentación & Muestra de revisión interna \\ \hline
 RF9 & Registro auditable & Backend y logs & \texttt{InferenceLog} \\ \hline
 RF10 & Reevaluación & Orquestador & Historial de inferencias \\ \hline
-\end{tabular}
+\end{tabularx}
 \caption{Trazabilidad entre requisitos y componentes del sistema.}
 \label{tab:trazabilidad-requisitos-componentes}
+\smallskip
+{\small\textit{Fuente: elaboración propia.}\par}
 \end{table}
-
-\noindent\textit{Fuente: elaboración propia.}
 
 \section{Conclusiones del capítulo}
 

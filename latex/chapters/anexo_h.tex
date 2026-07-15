@@ -1,96 +1,46 @@
-\chapter{Declaración de uso de herramientas de inteligencia artificial generativa}
+\chapter{Declaración de uso de inteligencia artificial generativa}
 \label{cap:anexoh}
 
-Este anexo expone la declaración formal sobre el uso de tecnologías de inteligencia artificial generativa y asistentes automáticos durante la realización del trabajo. Su propósito es actuar con total transparencia y honestidad académica respecto a las herramientas de apoyo al desarrollo y a la redacción técnica. Con ello se sigue la normativa vigente de la UNIR para la presentación de trabajos de fin de máster.
+\section*{H.1. Declaración}
 
-\section*{H.1. Contexto y alcance}
+Durante el desarrollo del TFM se utilizaron asistentes de inteligencia artificial
+generativa como herramientas auxiliares de programación, consulta y revisión textual.
+Su uso se realizó bajo supervisión de los autores y no sustituyó las decisiones
+metodológicas, la ejecución de experimentos, la comprobación de resultados ni la
+responsabilidad sobre la versión final de la memoria.
 
-De conformidad con las instrucciones para la elaboración del Trabajo Fin de Estudios de la Universidad Internacional de La Rioja (UNIR), la presente memoria declara explícitamente el uso de herramientas de inteligencia artificial generativa durante su elaboración. El uso descrito ha sido informado al director del TFE, Dr. Andrés Soto Villaverde, quien ha valorado su adecuación al marco ético y académico de la universidad. Esta comunicación previa asegura la transparencia del proceso en todas las fases del desarrollo de la memoria. Así, se cumple rigurosamente con los requisitos formales de la institución.
+\section*{H.2. Herramientas, finalidad y control}
 
-El uso de estas herramientas ha sido auxiliar y supervisado: las decisiones técnicas,
-metodológicas y académicas son responsabilidad del equipo de trabajo. Los modelos de
-IA no tomaron decisiones autónomas sobre el contenido del sistema ni sobre los
-resultados reportados. Los artefactos del prototipo son reproducibles de forma
-independiente a partir del código fuente versionado y los scripts del repositorio.
+\begin{table}[htbp]
+\centering
+\caption{Uso declarado de herramientas de IA generativa}
+\label{tab:anexoh-herramientas}
+\small
+\begin{tabularx}{\textwidth}{|p{3.1cm}|X|p{4.0cm}|}
+\hline
+\textbf{Herramienta} & \textbf{Uso auxiliar} & \textbf{Control aplicado} \\ \hline
+GitHub Copilot \cite{GitHubCopilot2023} & Completado de código, apoyo en depuración y revisión de comentarios técnicos. & Revisión manual, ejecución de pruebas y aceptación expresa de cada cambio. \\ \hline
+Asistentes basados en LLM, incluido Google Gemini \cite{GoogleGemini2026} & Consulta técnica, contraste de alternativas, corrección lingüística y apoyo en LaTeX. & Verificación contra código, resultados experimentales y fuentes primarias. \\ \hline
+Herramientas de búsqueda asistida & Localización inicial de bibliografía y normativa oficial. & Validación posterior de autoría, fecha, DOI y procedencia oficial. \\ \hline
+\end{tabularx}
+\end{table}
 
-\section*{H.2. Herramientas utilizadas}
+El equipo utilizó además un enfoque de desarrollo guiado por especificaciones para
+coordinar tareas y conservar trazabilidad. Esta organización no genera resultados
+académicos por sí misma: las métricas incluidas en la memoria proceden de ejecuciones
+reproducibles y fueron revisadas por los autores.
 
-\subsection*{H.2.1. GitHub Copilot (Microsoft~/ GitHub, 2023--2026)}
+\section*{H.3. Límites y responsabilidad}
 
-GitHub Copilot es un asistente de programación basado en modelos de lenguaje de gran tamaño, integrado en Visual Studio Code \cite{GitHubCopilot2023}. A través de sugerencias contextuales, esta herramienta agiliza las tareas repetitivas de codificación y depuración. Se ha utilizado específicamente para:
+Las herramientas generativas no asignaron las etiquetas P1--P4 finales, no eligieron el
+modelo de Capa 2 y no determinaron las conclusiones del estudio. La auditoría del
+conjunto de datos, el diseño de supervisión débil, el entrenamiento, la evaluación y el
+análisis de errores fueron ejecutados mediante procedimientos controlados por el equipo.
 
-\begin{itemize}
-    \item Sugerencias de completado de código en Python (contratos Pydantic,
-    scripts de entrenamiento, tests).
-    \item Revisión y refactorización de funciones en \texttt{src/} bajo
-    supervisión del autor responsable de cada módulo.
-    \item Asistencia en la redacción de comentarios, docstrings y corrección ortográfica.
-    \item Modo agente (Copilot Chat) para consultas técnicas, diagnóstico de
-    errores y revisión de coherencia documental.
-\end{itemize}
-
-\subsection*{H.2.2. GitHub Spec Kit (GitHub, 2024--2026)}
-
-El GitHub Spec Kit es un marco de desarrollo controlado por especificaciones que permite estructurar proyectos de software mediante especificaciones formales, contratos y trazabilidad de tareas \cite{GitHubSpecKit2024}. Su empleo contribuye a mantener una estricta coherencia entre la especificación técnica inicial y el código definitivo. Se ha utilizado específicamente para:
-
-\begin{itemize}
-    \item Definición de la especificación del sistema en \texttt{specs/001-priorización-112-cyl/}.
-    \item Gestión de tareas trazables (archivo \texttt{tasks.md}) vinculadas a la
-    constitución del proyecto.
-    \item Coordinación del desarrollo iterativo entre los tres integrantes del equipo.
-\end{itemize}
-
-\subsection*{H.2.3. Docker Desktop MCP Toolkit (Docker Inc., 2024--2026)}
-
-Docker Desktop incluye un servidor MCP (Model Context Protocol) que expone herramientas para asistentes de IA. Se han utilizado dos herramientas de este kit durante la investigación bibliográfica y de estado del arte \cite{DockerMCPToolkit2024}. La integración de estos recursos facilita el acceso directo a catálogos bibliográficos de forma estructurada. En concreto, el uso se ha centrado en:
-
-\begin{itemize}
-    \item \textbf{paper-search}: búsqueda semántica de artículos académicos en
-    bases de datos (arXiv, Crossref, Semantic Scholar), utilizada para verificar
-    autores, fechas y DOI de las referencias bibliográficas del Capítulo~\ref{cap:2}.
-    \item \textbf{duckduckgo}: búsqueda web para localizar fuentes normativas
-    oficiales (BOE, BOCYL) y documentación técnica de herramientas empleadas en
-    el prototipo.
-\end{itemize}
-
-\subsection*{H.2.4. Asistentes de codificación basados en LLM (2026)}
-
-También se han utilizado asistentes de codificación basados en modelos de lenguaje, incluyendo GitHub Copilot en Visual Studio Code \cite{GitHubCopilot2023} y asistentes del ecosistema Google Gemini/Antigravity \cite{GoogleGemini2026}, siempre como herramientas auxiliares bajo supervisión directa de los autores. El empleo de esta tecnología permite contrastar y verificar la coherencia lógica de las explicaciones generadas. Su uso se ha limitado específicamente a:
-
-\begin{itemize}
-    \item apoyo en depuración, lectura de errores y saneamiento de integraciones entre
-    ramas;
-    \item revisión de coherencia entre contratos Pydantic, tests, scripts de evaluación
-    y documentación técnica;
-    \item asistencia en redacción técnica, formateo LaTeX y preparación de reportes
-    comparativos;
-    \item propuesta de mejoras, que fueron aceptadas, modificadas o descartadas por los
-    autores responsables.
-\end{itemize}
-
-Todas las decisiones técnicas finales, entrenamientos de modelos, ejecución de scripts y redacción definitiva de resultados numéricos son responsabilidad directa y exclusiva de los autores. El uso de estos asistentes no sustituye la autoría ni la validación humana del trabajo. Los juicios de valor metodológicos y conceptuales han sido aportados enteramente por los integrantes del equipo. De esta forma, se mantiene la integridad de la labor investigadora de principio a fin.
-
-\section*{H.3. Límite del uso declarado}
-
-Las siguientes actividades se realizaron sin asistencia de IA generativa:
-
-\begin{itemize}
-    \item El diseño de la arquitectura de tres capas y las decisiones de alcance.
-    \item El entrenamiento, validación y evaluación de los modelos (scripts
-    reproducibles en \texttt{scripts/}).
-    \item La auditoría del dataset 112 CyL y la construcción de weak labels.
-    \item Los resultados numéricos reportados en el Capítulo~\ref{cap:9}.
-    \item Las decisiones de rechazo de alternativas documentadas en el estado
-    del arte y en los ADR del proyecto.
-\end{itemize}
-
-\section*{H.4. Trazabilidad}
-
-El historial de uso de herramientas de asistencia queda trazado implícitamente
-en el registro de commits del repositorio Git del proyecto:
+Los autores asumen la responsabilidad sobre el código, la selección de fuentes, los
+resultados numéricos y la redacción final. El historial del repositorio conserva la
+trazabilidad del desarrollo:
 
 \begin{center}
 \url{https://github.com/jalbfil/tfe_muia_unir_188}
 \end{center}
-
-La presencia de IA como auxiliar no altera la autoría del trabajo: el código, los modelos, los datos de evaluación y la memoria son obra del equipo. Con esta auditoría de código se garantiza el cumplimiento del reglamento y las buenas prácticas metodológicas. De este modo, se aporta total transparencia sobre la aportación intelectual de los autores.

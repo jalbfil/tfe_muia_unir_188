@@ -8,7 +8,7 @@
 \numberwithin{equation}{chapter}
 %\usepackage{caption}
 \numberwithin{figure}{chapter}
-\usepackage{longtable, booktabs, ragged2e, multirow, tabularx}
+\usepackage{longtable, booktabs, ragged2e, multirow, tabularx, float}
 %\usepackage{chngcntr}
 %\counterwithin{equation}{chapter}
 %\counterwithin{figure}{chapter}
@@ -34,7 +34,7 @@
 \title{Sistema inteligente de apoyo a la decisión para puestos de mando de emergencias}
 \titulacion{Máster Universitario en Inteligencia Artificial}
 \author{Juan Carlos Albert Fillol, Ancor González Carballo y Brian Mathias Pesci Juliani}
-\date{24 de junio de 2026}
+\date{15 de julio de 2026}
 \director{Dr. Andrés Soto Villaverde}
 \nombreciudad{Madrid, Tenerife y Alicante}
 
@@ -47,9 +47,9 @@
 %---------------------------
 %---------------------------
 \begin{document}
-\renewcommand{\listfigurename}{Indice de Ilustraciones}
-\renewcommand{\listtablename}{Indice de Tablas}
-\renewcommand{\contentsname}{Indice de Contenidos}
+\renewcommand{\listfigurename}{Índice de ilustraciones}
+\renewcommand{\listtablename}{Índice de tablas}
+\renewcommand{\contentsname}{Índice de contenidos}
 \renewcommand{\figurename}{Figura}
 \renewcommand{\tablename}{Tabla} 
 
@@ -93,18 +93,20 @@
 \chapter*{Resumen}
 \addcontentsline{toc}{chapter}{Resumen}
 
-La gestión de emergencias civiles exige decisiones rápidas y fundamentadas ante información heterogénea, incompleta y fragmentaria. En este contexto, los operadores del 112 y los responsables de coordinación necesitan herramientas que ayuden a estructurar la información inicial sin sustituir el criterio humano. Este trabajo diseña, implementa y evalúa un prototipo modular de apoyo a la decisión para la priorización temprana de incidentes 112 en Castilla y León. La propuesta se apoya en el Registro de Emergencias del 112 de Castilla y León 2008--2022, una escala académica P1--P4 construida mediante supervisión débil y una arquitectura de tres capas: extracción de variables y señales, priorización interpretable con RuleFit-lite y explicación normativa mediante LLM local, RAG y herramientas MCP. La evaluación compara un baseline experto, RuleFit-lite y una ejecución diagnóstica con \texttt{imodels}, usando splits estratificado y temporal, control anti-\textit{leakage}, análisis de falsos negativos P1, sesgos por subgrupo y fidelidad de explicaciones. Los resultados muestran que RuleFit-lite mejora el rendimiento global frente al baseline experto, mantiene recall P1 por encima del umbral definido y conserva trazabilidad suficiente para revisión humana. El prototipo no se presenta como producto operativo ni como sistema certificado, sino como una base académica reproducible para estudiar IA responsable, explicable y supervisada en apoyo a la primera decisión de emergencia.
+La gestión de emergencias civiles exige decisiones rápidas y fundamentadas bajo presión temporal e incertidumbre. Este trabajo diseña, implementa y evalúa un prototipo modular de apoyo a la primera decisión para incidentes 112 en Castilla y León. El sistema utiliza el Registro de Emergencias de 2008--2022 y una escala académica P1--P4 construida mediante supervisión débil. La arquitectura consta de tres capas: una extracción simbólica y auditable de señales operativas, basada en detección semántica, tratamiento de negaciones, normalización y confianza; un núcleo de priorización interpretable con RuleFit-lite; y una capa de explicación normativa mediante un modelo de lenguaje local, generación aumentada por recuperación y Model Context Protocol. La evaluación compara una línea base de 19 reglas, RuleFit-lite y una implementación diagnóstica de \texttt{imodels}, mediante una partición estratificada y otra temporal, control anti-\textit{leakage}, análisis por subgrupos y revisión de errores críticos. RuleFit-lite alcanza una macro-F1 de 0,905 y una sensibilidad P1 de 0,910; mejora el rendimiento global de la línea base y conserva una salida trazable. También se evalúa de forma automatizada la fidelidad de las explicaciones sobre una muestra de 119 casos revisada conjuntamente por los tres autores. Los resultados corresponden a un entorno académico controlado y no constituyen validación operativa ni certificación para su uso en un servicio 112 real.
 
 \medskip
-\textbf{Palabras clave:} emergencias 112, apoyo a la decisión, priorización de incidentes, RuleFit, supervisión débil, inteligencia artificial explicable.
+\textbf{Palabras clave:} emergencias 112, sistemas de apoyo a la decisión (DSS), inteligencia artificial explicable (XAI), supervisión débil, RuleFit, reconocimiento del habla (ASR).
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Civil emergency management requires rapid and evidence-based decisions under heterogeneous, incomplete and fragmented information. In this context, 112 operators and coordination staff need tools that help structure early information without replacing human judgement. This thesis designs, implements and evaluates a modular decision-support prototype for early prioritisation of 112 incidents in Castilla y Leon. The proposal relies on the 2008--2022 Castilla y Leon 112 emergency registry, an academic P1--P4 priority scale built through weak supervision, and a three-layer architecture: feature and signal extraction, interpretable prioritisation with RuleFit-lite, and normative explanation through a local LLM, RAG and MCP tools. The evaluation compares an expert baseline, RuleFit-lite and a diagnostic \texttt{imodels} run, using stratified and temporal splits, anti-leakage controls, P1 false-negative analysis, subgroup bias checks and explanation fidelity assessment. Results show that RuleFit-lite improves global performance over the expert baseline, keeps P1 recall above the predefined threshold and preserves sufficient traceability for human review. The prototype is not presented as an operational product or certified system, but as a reproducible academic basis for studying responsible, explainable and supervised AI in support of the first emergency decision.
+Civil emergency management requires rapid, evidence-based decisions under time pressure and uncertainty. This thesis designs, implements, and evaluates a modular prototype to support the first decision for 112 incidents in Castile and Leon. The system uses the 2008--2022 Emergency Registry and an academic P1--P4 scale built through weak supervision. Its three layers provide symbolic and auditable extraction of operational signals through semantic detection, negation handling, normalization, and confidence estimation; interpretable prioritization with RuleFit-lite; and normative explanation through a local language model, retrieval-augmented generation, and Model Context Protocol. The evaluation compares a 19-rule baseline, RuleFit-lite, and a diagnostic \texttt{imodels} implementation using stratified and temporal partitions, anti-leakage controls, subgroup analysis, and critical-error review. RuleFit-lite achieves a macro-F1 of 0.905 and a P1 recall of 0.910; it improves the baseline's overall performance while preserving traceable outputs. Explanation fidelity is also assessed automatically on a 119-case sample jointly reviewed by the three authors. These results were obtained in a controlled academic setting and do not constitute operational validation or certification for use in a real 112 service.
 
 \medskip
-\textbf{Keywords:} 112 emergencies, decision support system, incident prioritisation, RuleFit, weak supervision, explainable artificial intelligence.
+\textbf{Keywords:} 112 emergencies, decision support systems (DSS), explainable artificial intelligence (XAI), weak supervision, RuleFit, automatic speech recognition (ASR).
+
+
 
 
 \mainmatter
@@ -132,11 +134,9 @@ Civil emergency management requires rapid and evidence-based decisions under het
 \input{chapters/anexo_f}
 \input{chapters/anexo_g}
 \input{chapters/anexo_h}
-% Se omite deliberadamente anexo_i.tex para evitar ambiguedad visual entre la letra I
-% y el numero romano I. La documentacion de contratos prevista inicialmente se consolida
-% en el Anexo F.
-\input{chapters/anexo_j}
-\input{chapters/anexo_k}
+% Los antiguos anexos J y K se consolidan en la model card de Capa 3 para evitar
+% detalle técnico redundante. Se conserva la letra L de su nomenclatura original.
+\setcounter{chapter}{11}
 \input{chapters/anexo_l}
 
 \end{document}
