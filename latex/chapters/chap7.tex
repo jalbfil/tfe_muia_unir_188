@@ -1,21 +1,21 @@
-\chapter{Datos, conjunto de datos y supervisi\'on d\'ebil}
+\chapter{Datos, conjunto de datos y supervisión débil}
 \label{cap:7}
 
 \section{Finalidad del capítulo}
 
-El cap\'itulo anterior ha definido la arquitectura del sistema. Este cap\'itulo desarrolla la base emp\'irica que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y Le\'on, las variables V01--V15, la construcci\'on de la etiqueta acad\'emica P1--P4, la supervisi\'on d\'ebil, la prevenci\'on de fugas de informaci\'on y las particiones de entrenamiento, validaci\'on y prueba.
+El capítulo anterior ha definido la arquitectura del sistema. Este capítulo desarrolla la base empírica que permite alimentar, entrenar y evaluar esa arquitectura. En particular, explica el uso del Registro de Emergencias del 112 de Castilla y León, las variables V01--V15, la construcción de la etiqueta académica P1--P4, la supervisión débil, la prevención de fugas de información y las particiones de entrenamiento, validación y prueba.
 
-El proyecto trabaja con registros reales, pero no dispone de una prioridad oficial. Por ello, el conjunto no puede tratarse como una fuente supervisada tradicional. Se adopta un procedimiento metodol\'ogico trazable: datos abiertos, limpieza reproducible, variables justificadas, etiqueta acad\'emica documentada, modelos interpretables y evaluaci\'on prudente.
+El proyecto trabaja con registros reales, pero no dispone de una prioridad oficial. Por ello, el conjunto no puede tratarse como una fuente supervisada tradicional. Se adopta un procedimiento metodológico trazable: datos abiertos, limpieza reproducible, variables justificadas, etiqueta académica documentada, modelos interpretables y evaluación prudente.
 
 \section{Estrategia general de datos}
 
 La estrategia de datos del TFM se apoya en el Registro de Emergencias del 112 de Castilla y León como fuente empírica principal \cite{Registro112CyL}. Esta decisión aporta coherencia territorial y normativa: el conjunto de datos procede de un servicio autonómico 112 real, y el marco de interpretacion se apoya en normativa estatal y de Castilla y León, especialmente Ley 4/2007, PLANCAL, INFOCAL, INUNCYL y MPCyL.
 
 El conjunto abierto permite trabajar con texto operativo, fecha, localidad, provincia,
-coordenadas aproximadas, identificador y categor\'ia preliminar. Sin embargo, no
+coordenadas aproximadas, identificador y categoría preliminar. Sin embargo, no
 contiene una prioridad oficial P1--P4 ni todas las variables estructuradas requeridas.
-El objetivo es construir una referencia acad\'emica mediante supervisi\'on d\'ebil y
-dejar preparada su revisi\'on humana.
+El objetivo es construir una referencia académica mediante supervisión débil y
+dejar preparada su revisión humana.
 
 El flujo de datos se organiza en seis pasos:
 
@@ -24,7 +24,7 @@ El flujo de datos se organiza en seis pasos:
     \item Normalización de texto, fechas, coordenadas y categorías.
     \item Extracción de señales textuales y variables V01--V15.
     \item Construcción de etiquetas P1--P4 mediante supervisión débil.
-    \item Generaci\'on de particiones de entrenamiento, validaci\'on y prueba, incluida una partici\'on temporal.
+    \item Generación de particiones de entrenamiento, validación y prueba, incluida una partición temporal.
     \item Evaluación de Capa 2 y análisis de sesgos, errores y \textit{leakage}.
 \end{enumerate}
 
@@ -84,7 +84,7 @@ Campos ex post & Identificar columnas prohibidas para evitar \textit{leakage} \\
 \label{tab:auditoria-dataset-cap7}
 \end{table}
 
-La auditor\'ia precede a la presentaci\'on de resultados para que las m\'etricas puedan interpretarse a partir de la calidad y las limitaciones de los datos.
+La auditoría precede a la presentación de resultados para que las métricas puedan interpretarse a partir de la calidad y las limitaciones de los datos.
 
 \section{Limpieza y normalización}
 
@@ -122,7 +122,7 @@ V15 & Accesibilidad de recursos & Localización + reglas aproximadas & Activa \\
 \label{tab:variables-cap7}
 \end{table}
 
-Las variables V08--V11 se mantienen como parte del diseño conceptual para preservar la evoluci\'on futura del sistema, pero no se emplean como entrada del modelo evaluado ni condicionan sus resultados.
+Las variables V08--V11 se mantienen como parte del diseño conceptual para preservar la evolución futura del sistema, pero no se emplean como entrada del modelo evaluado ni condicionan sus resultados.
 
 \section{Señales operativas textuales}
 
@@ -136,28 +136,28 @@ La etiqueta P1--P4 es una construcción académica del TFM. No existe como campo
 
 La guía de etiquetado define cuatro niveles: P1 critica, P2 alta, P3 media y P4 baja. La etiqueta se asigna en el momento teorico de la primera decisión. Por tanto, no puede utilizar información posterior como medios movilizados, pacientes atendidos o cierre del incidente. La incertidumbre se refleja en la confianza, no rebajando automáticamente la prioridad.
 
-\section{Supervisi\'on d\'ebil}
+\section{Supervisión débil}
 
-La supervisi\'on d\'ebil permite construir etiquetas de entrenamiento a partir de varias funciones de etiquetado imperfectas. En este trabajo se emplean cuatro aproximaciones deterministas:
+La supervisión débil permite construir etiquetas de entrenamiento a partir de varias funciones de etiquetado imperfectas. En este trabajo se emplean cuatro aproximaciones deterministas:
 
 \begin{enumerate}
-    \item \textbf{Reglas heur\'isticas}: aplica una puntuaci\'on de gravedad sobre señales textuales, categor\'ia preliminar y variables permitidas.
+    \item \textbf{Reglas heurísticas}: aplica una puntuación de gravedad sobre señales textuales, categoría preliminar y variables permitidas.
     \item \textbf{Señales e intensificadores}: aproxima el reconocimiento de entidades nombradas (\textit{Named Entity Recognition}, NER) mediante patrones de gravedad, cantidad y urgencia, sin ejecutar un modelo NER entrenado.
-    \item \textbf{Proxy de agrupaci\'on sem\'antica}: reutiliza en esta versi\'on una funci\'on determinista de puntuaci\'on; no ejecuta un algoritmo de agrupamiento vectorial.
-    \item \textbf{Proxy de anotador LLM}: incorpora patrones adicionales de vulnerabilidad, emplazamiento y negaci\'on, pero no invoca un LLM durante el etiquetado.
+    \item \textbf{Proxy de agrupación semántica}: reutiliza en esta versión una función determinista de puntuación; no ejecuta un algoritmo de agrupamiento vectorial.
+    \item \textbf{Proxy de anotador LLM}: incorpora patrones adicionales de vulnerabilidad, emplazamiento y negación, pero no invoca un LLM durante el etiquetado.
 \end{enumerate}
 
-Los votos se agregan mediante votaci\'on ponderada. Los pesos son \(0{,}85\) para reglas heur\'isticas, \(1{,}00\) para señales e intensificadores, \(0{,}90\) para el proxy de agrupaci\'on y \(1{,}10\) para el proxy de anotador LLM. Se suman los pesos recibidos por cada prioridad y, si existe empate, se escoge la prioridad m\'as urgente. La salida conserva los votos, la etiqueta final, la confianza derivada del peso ganador y el acuerdo local.
+Los votos se agregan mediante votación ponderada. Los pesos son \(0{,}85\) para reglas heurísticas, \(1{,}00\) para señales e intensificadores, \(0{,}90\) para el proxy de agrupación y \(1{,}10\) para el proxy de anotador LLM. Se suman los pesos recibidos por cada prioridad y, si existe empate, se escoge la prioridad más urgente. La salida conserva los votos, la etiqueta final, la confianza derivada del peso ganador y el acuerdo local.
 
 \subsection{Acuerdo y control de calidad}
 
-El objetivo m\'inimo es Krippendorff \(\alpha \geq 0{,}67\). La ejecuci\'on can\'onica alcanza \(\alpha = 0{,}899902\), por encima del umbral establecido. Este valor aporta evidencia de consistencia entre funciones, pero debe interpretarse con cautela: las fuentes comparten patrones y dos de ellas emplean una puntuaci\'on muy similar, por lo que no constituyen anotadores plenamente independientes.
+El objetivo mínimo es Krippendorff \(\alpha \geq 0{,}67\). La ejecución canónica alcanza \(\alpha = 0{,}899902\), por encima del umbral establecido. Este valor aporta evidencia de consistencia entre funciones, pero debe interpretarse con cautela: las fuentes comparten patrones y dos de ellas emplean una puntuación muy similar, por lo que no constituyen anotadores plenamente independientes.
 
-Adem\'as, se ha preparado una muestra de revisi\'on interna superior al m\'inimo previsto. Sus campos de decisi\'on humana no forman parte de la evaluación cuantitativa principal, por lo que la muestra debe entenderse como instrumento de auditoría y no como validación externa completada.
+Además, se ha preparado una muestra de revisión interna superior al mínimo previsto. Sus campos de decisión humana no forman parte de la evaluación cuantitativa principal, por lo que la muestra debe entenderse como instrumento de auditoría y no como validación externa completada.
 
 \subsection{Ablación anti-circularidad}
 
-La supervisi\'on d\'ebil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablaci\'on sin la fuente de reglas heur\'isticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten señales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitaci\'on metodol\'ogica del estudio.
+La supervisión débil introduce el riesgo de que el modelo reproduzca los patrones empleados para construir la propia etiqueta. La ablación sin la fuente de reglas heurísticas mantiene \(\alpha = 0{,}834155\), lo que demuestra que el acuerdo no desaparece al retirar esa fuente. Sin embargo, no garantiza independencia entre la etiqueta y las variables predictivas, porque las funciones restantes comparten señales y criterios con las entradas de Capa 2. Esta dependencia constituye una limitación metodológica del estudio.
 
 \section{Prevencion de leakage}
 
@@ -203,32 +203,32 @@ Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{Incide
 \label{tab:permitidas-prohibidas-leakage-cap7}
 \end{table}
 
-\section{Particiones de entrenamiento, validaci\'on y prueba}
+\section{Particiones de entrenamiento, validación y prueba}
 
 La división de datos debe impedir que el modelo vea en entrenamiento información demasiado parecida a la de test. Se plantean dos estrategias complementarias.
 
-\subsection{Partici\'on estratificada}
+\subsection{Partición estratificada}
 
-La partici\'on principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validaci\'on y 1.453 de prueba, preservando la distribuci\'on por prioridad, año y provincia con semilla fija. La partici\'on de prueba contiene P1=655, P2=349, P3=375 y P4=74, y es la referencia usada posteriormente en la evaluación final.
+La partición principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validación y 1.453 de prueba, preservando la distribución por prioridad, año y provincia con semilla fija. La partición de prueba contiene P1=655, P2=349, P3=375 y P4=74, y es la referencia usada posteriormente en la evaluación final.
 
 \begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{|p{3.2cm}|p{3.0cm}|p{5.4cm}|}
 \hline
-\textbf{Partici\'on} & \textbf{Filas} & \textbf{Distribuci\'on P1--P4} \\ \hline
+\textbf{Partición} & \textbf{Filas} & \textbf{Distribución P1--P4} \\ \hline
 Entrenamiento estratificado & 6.512 & P1=3.049; P2=1.504; P3=1.701; P4=258 \\ \hline
-Validaci\'on estratificada & 1.415 & P1=658; P2=329; P3=374; P4=54 \\ \hline
+Validación estratificada & 1.415 & P1=658; P2=329; P3=374; P4=54 \\ \hline
 Test estratificado & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
 Test temporal 2022 & 735 & Evaluación de estabilidad fuera del periodo principal \\ \hline
 \end{tabular}
-\caption{Distribuci\'on de las particiones adoptadas en el estudio.}
+\caption{Distribución de las particiones adoptadas en el estudio.}
 \label{tab:splits-final-cap7}
 \end{table}
 
-\subsection{Partici\'on temporal}
+\subsection{Partición temporal}
 
-La partici\'on temporal eval\'ua robustez fuera del periodo de entrenamiento. La versi\'on ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tamaños son 7.935, 710 y 735 registros, respectivamente.
+La partición temporal evalúa robustez fuera del periodo de entrenamiento. La versión ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tamaños son 7.935, 710 y 735 registros, respectivamente.
 
 Ambas particiones son necesarias. La estratificada mide rendimiento general controlando la distribución; la temporal mide estabilidad ante cambio de periodo.
 

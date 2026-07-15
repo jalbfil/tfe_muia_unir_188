@@ -1,26 +1,26 @@
-\chapter{L\'inea base heur\'istica de priorizaci\'on}
+\chapter{Línea base heurística de priorización}
 \label{cap:anexoe}
 
 \section*{E.1. Objetivo}
 
-Este anexo documenta la l\'inea base heur\'istica empleada como primera referencia de
+Este anexo documenta la línea base heurística empleada como primera referencia de
 Capa 2. Fue diseñada por el equipo a partir de criterios operativos y normativos,
 pero no ha sido validada por un panel externo de expertos. Toma exclusivamente
-señales previas a la decisi\'on y las variables activas V01--V07 y V12--V15.
+señales previas a la decisión y las variables activas V01--V07 y V12--V15.
 
-El criterio es conservador: las reglas priorizan la detecci\'on de incidentes P1,
-aunque ello reduzca la precisi\'on en clases intermedias. Su funci\'on es proporcionar
+El criterio es conservador: las reglas priorizan la detección de incidentes P1,
+aunque ello reduzca la precisión en clases intermedias. Su función es proporcionar
 una referencia transparente para determinar si RuleFit-lite aporta una mejora global.
 
-\section*{E.2. Reglas heur\'isticas}
+\section*{E.2. Reglas heurísticas}
 
-La Tabla~\ref{tab:baseline-experto-reglas} recoge las 16 reglas activas. Sus anclajes
-se apoyan en la Ley 17/2015, PLANCAL, INUNCYL y la Ley 4/2007 de Castilla y Le\'on
+La Tabla~\ref{tab:baseline-experto-reglas} recoge las 19 reglas activas. Sus anclajes
+se apoyan en la Ley 17/2015, PLANCAL, INUNCYL y la Ley 4/2007 de Castilla y León
 \cite{Ley17_2015,PLANCAL_DEC_4_2019,INUNCYL,Ley4_2007_CYL}. Su inclusion en el anexo permite entender el criterio de comparación sin trasladar al cuerpo principal detalles de implementación.
 
 \begin{table}[ht]
 \centering
-\caption{Reglas de la l\'inea base heur\'istica de Capa 2}
+\caption{Reglas de la línea base heurística de Capa 2}
 \label{tab:baseline-experto-reglas}
 \scriptsize
 \begin{tabularx}{\textwidth}{|l|c|r|X|X|}
@@ -37,35 +37,38 @@ EXP-P2-INCENDIO-VIVIENDA & P2 & 1.8 & Incendio en vivienda, edificio o entorno h
 EXP-P2-RESCATE & P2 & 1.7 & Rescate o salvamento & PLANCAL \\ \hline
 EXP-P2-TRAFICO-GRAVE & P2 & 1.6 & Trafico y herido grave & Ley 17/2015; Registro 112 CyL \\ \hline
 EXP-P2-METEORO-ALTO-IMPACTO & P2 & 1.4 & Meteo/inundacion y varias llamadas & INUNCYL; PLANCAL \\ \hline
+EXP-P3-SANITARIO-ORDINARIO & P3 & 1.2 & Traslado o ambulancia ordinaria & Registro 112 CyL \\ \hline
 EXP-P3-ACCIDENTE-TRAFICO & P3 & 1.0 & Accidente de trafico & Registro 112 CyL \\ \hline
 EXP-P3-VARIAS-LLAMADAS & P3 & 0.9 & Varias llamadas & Registro 112 CyL \\ \hline
 EXP-P3-INCENDIO-SIN-VICTIMAS & P3 & 0.9 & Incendio sin víctimas explícitas & Ley 4/2007 CyL; PLANCAL \\ \hline
 EXP-P3-METEO-INUNDACION & P3 & 0.8 & Meteo o inundacion & INUNCYL \\ \hline
+EXP-P4-INCENDIO-MENOR & P4 & 1.5 & \texttt{signal\_incendio} y contenedor/basura/papelera & Registro 112 CyL \\ \hline
+EXP-P4-ACCIDENTE-MENOR & P4 & 1.5 & \texttt{signal\_accidente\_trafico} sin heridos & Registro 112 CyL \\ \hline
 EXP-P4-SIN-SENALES-CRITICAS & P4 & 0.8 & Sin señales críticas y llamada unica & Registro 112 CyL \\ \hline
 \end{tabularx}
 \end{table}
 
-\subsection*{E.2.1. Agregaci\'on y desempate}
+\subsection*{E.2.1. Agregación y desempate}
 
-Cada clase parte de una puntuaci\'on inicial: P1=\(0{,}15\), P2=\(0{,}25\),
-P3=\(0{,}35\) y P4=\(0{,}25\). A continuaci\'on se suman los pesos de las reglas
-activadas. Si existe alguna regla P1, su puntuaci\'on se eleva \(0{,}75\) por encima
-del mayor valor; si no existe P1 pero s\'i P2, esta se eleva \(0{,}35\). Finalmente,
+Cada clase parte de una puntuación inicial: P1=\(0{,}15\), P2=\(0{,}25\),
+P3=\(0{,}35\) y P4=\(0{,}25\). A continuación se suman los pesos de las reglas
+activadas. Si existe alguna regla P1, su puntuación se eleva \(0{,}75\) por encima
+del mayor valor; si no existe P1 pero sí P2, esta se eleva \(0{,}35\). Finalmente,
 las puntuaciones se normalizan y se seleccióna la clase con mayor probabilidad.
 
-Los pesos son decisiones heur\'isticas del equipo, no par\'ametros aprendidos ni
-estimaciones de probabilidad calibrada. Este detalle limita la interpretaci\'on de sus
-salidas probabil\'isticas, aunque mantiene el procedimiento completamente auditable.
+Los pesos son decisiones heurísticas del equipo, no parámetros aprendidos ni
+estimaciones de probabilidad calibrada. Este detalle limita la interpretación de sus
+salidas probabilísticas, aunque mantiene el procedimiento completamente auditable.
 
-\section*{E.3. M\'etricas principales}
+\section*{E.3. Métricas principales}
 
-La evaluaci\'on se realiza frente a las etiquetas acad\'emicas P1--P4 generadas por
-supervisi\'on d\'ebil y con las mismas particiones que el modelo final. La
+La evaluación se realiza frente a las etiquetas académicas P1--P4 generadas por
+supervisión débil y con las mismas particiones que el modelo final. La
 Tabla~\ref{tab:baseline-experto-metricas} resume su comportamiento.
 
 \begin{table}[ht]
 \centering
-\caption{M\'etricas de la l\'inea base heur\'istica}
+\caption{Métricas de la línea base heurística}
 \label{tab:baseline-experto-metricas}
 \small
 \begin{tabular}{|l|r|r|r|}
@@ -77,21 +80,21 @@ Test & 0.727835 & 0.703932 & 0.998457 \\ \hline
 \end{tabular}
 \end{table}
 
-La l\'inea base alcanza en prueba macro-F1 \(0{,}703932\) y sensibilidad P1
+La línea base alcanza en prueba macro-F1 \(0{,}703932\) y sensibilidad P1
 \(0{,}998457\). Su elevada sensibilidad responde al diseño conservador, pero reduce
-la discriminaci\'on entre clases intermedias. RuleFit-lite obtiene macro-F1
-\(0{,}905604\) y sensibilidad P1 \(0{,}909924\), un equilibrio m\'as adecuado entre
-rendimiento global, detecci\'on de P1 e interpretabilidad.
+la discriminación entre clases intermedias. RuleFit-lite obtiene macro-F1
+\(0{,}905604\) y sensibilidad P1 \(0{,}909924\), un equilibrio más adecuado entre
+rendimiento global, detección de P1 e interpretabilidad.
 
 \begin{table}[ht]
 \centering
-\caption{Comparaci\'on resumida entre la l\'inea base y RuleFit-lite}
+\caption{Comparación resumida entre la línea base y RuleFit-lite}
 \label{tab:baseline-vs-rulefit-lite}
 \small
 \begin{tabular}{|l|r|r|}
 \hline
 \textbf{Modelo} & \textbf{Macro-F1 test} & \textbf{Recall P1 test} \\ \hline
-L\'inea base heur\'istica & 0.703932 & 0.998457 \\ \hline
+Línea base heurística & 0.703932 & 0.998457 \\ \hline
 RuleFit-lite & 0.905604 & 0.909924 \\ \hline
 \end{tabular}
 \end{table}
@@ -99,7 +102,7 @@ RuleFit-lite & 0.905604 & 0.909924 \\ \hline
 \section*{E.4. Limitaciones}
 
 \begin{itemize}
-    \item La l\'inea base refleja criterios operativos y normativos codificados manualmente por el equipo; por tanto,
+    \item La línea base refleja criterios operativos y normativos codificados manualmente por el equipo; por tanto,
     puede sobrerrepresentar escenarios críticos y reducir precisión en P2/P3.
     \item Las reglas se validan contra etiquetas débiles académicas, no contra prioridad
     operativa real del 112, inexistente en el dataset público.
@@ -109,10 +112,10 @@ RuleFit-lite & 0.905604 & 0.909924 \\ \hline
     atendidos o cierre administrativo, para evitar leakage.
 \end{itemize}
 
-La l\'inea base debe entenderse como referencia comparativa. Su tendencia conservadora puede sobreactivar P1 y
+La línea base debe entenderse como referencia comparativa. Su tendencia conservadora puede sobreactivar P1 y
 reducir la discriminacion entre clases intermedias. Por ello, el modelo selecciónado no
 busca unicamente maximizar recall P1, sino mantener un comportamiento interpretable y
 mas equilibrado en el conjunto de clases P1--P4.
 
 La mejora de macro-F1 obtenida por RuleFit-lite, manteniendo una sensibilidad P1 alta,
-respalda su selecci\'on para el prototipo acad\'emico.
+respalda su selección para el prototipo académico.
