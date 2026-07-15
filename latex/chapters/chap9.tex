@@ -25,7 +25,7 @@ La evaluación experimental persigue cinco objetivos:
     fijado en 0.85;
     \item Preservar la interpretabilidad mediante un límite de 30 reglas activas
     exportadas;
-    \item Comparar una implementación RuleFit eficiente frente a una alternativa externa;
+    \item Contrastar RuleFit-lite con una implementación externa de la misma familia en una prueba diagnóstica;
     \item Verificar que no se utilizan columnas posteriores a la decisión.
 \end{enumerate}
 
@@ -52,7 +52,7 @@ extremo a extremo en casos P1--P4.
 \begin{tabular}{c}
 \textbf{Conjunto de Datos Limpio} (9.380 registros del Registro 112 CyL) \\
 \(\downarrow\) \\
-\textbf{Supervisión Débil} (4 funciones de etiquetado \(\rightarrow\) Krippendorff \(\alpha = 0{,}899\)) \\
+\textbf{Supervisión Débil} (4 funciones heurísticas correlacionadas \(\rightarrow\) Krippendorff \(\alpha = 0{,}899\)) \\
 \(\downarrow\) \\
 \textbf{Etiqueta Académica Proxy} (Clases P1--P4) \\
 \(\downarrow\) \\
@@ -67,7 +67,7 @@ extremo a extremo en casos P1--P4.
 \textbf{Fidelidad Explicativa} (seis criterios y 119 casos) \\
 \(\downarrow\) \\
 \textbf{Evaluación Exploratoria con Usuarios} \\
-(protocolo pendiente de evidencia individual)
+(nueve participantes; estudio descriptivo no probabilístico)
 \end{tabular}
 }
 \caption{Secuencia metodológica del flujo de evaluación experimental.}
@@ -77,7 +77,7 @@ extremo a extremo en casos P1--P4.
 \section{Datos, etiquetas y particiones}
 
 El experimento usa el conjunto limpio, formado por 9.380 registros del Registro 112 Castilla y León. La etiqueta objetivo P1--P4 se
-obtiene mediante supervisión débil con cuatro funciones deterministas. La ejecución principal
+obtiene mediante supervisión débil con cuatro funciones heurísticas correlacionadas que comparten una puntuación programática de gravedad. No se trata de anotadores independientes ni de modelos NER, agrupamiento semántico o LLM ejecutados durante el etiquetado. La ejecución principal
 alcanza Krippendorff \(\alpha = 0{,}899902\), superior al umbral de \(0{,}67\). La
 ablación sin reglas heurísticas mantiene \(\alpha = 0{,}834155\). Este resultado
 demuestra que el acuerdo no desaparece al retirar una fuente, pero no garantiza
@@ -124,17 +124,19 @@ Se comparan tres aproximaciones:
     descritas en el Anexo~\ref{cap:anexoe}. Su función es actuar como línea base
     interpretable a batir.
     \item[RuleFit-lite.] Modelo seleccionado para Capa 2. Combina reglas de
-    árboles poco profundos con una capa logística dispersa. Exporta 30 reglas activas y
-    mantiene una inferencia rápida.
+    árboles poco profundos con una capa logística dispersa. Se ajusta con un submuestreo
+    estratificado de 3.000 casos de los 6.512 disponibles y exporta 30 reglas activas.
     \item[RuleFit externo.] Implementación canónica de la familia RuleFit. Como la configuración utilizada trabaja en clasificación binaria,
-    se emplea un esquema one-vs-rest P1--P4. Su papel es diagnóstico: comprobar si una implementación externa aporta ventaja frente al núcleo reproducible elegido.
+    se emplea un esquema one-vs-rest P1--P4. Se ajusta con 50 casos y su papel es exclusivamente diagnóstico; no constituye una comparación equilibrada con RuleFit-lite.
 \end{description}
 
 \section{Selección del modelo}
 
-La selección se realiza sobre la partición de validación de la comparativa
-diagnóstica. La Tabla~\ref{tab:9-comparativa} muestra que RuleFit-lite obtiene la
-mejor macro-F1 y mantiene la sensibilidad P1 por encima del umbral de \(0{,}85\).
+La selección se realiza sobre la partición de validación de la configuración
+experimental disponible. La Tabla~\ref{tab:9-comparativa} muestra que RuleFit-lite obtiene la
+mejor macro-F1 y mantiene la sensibilidad P1 por encima del umbral de \(0{,}85\). No obstante,
+los resultados de \texttt{imodels} deben leerse solo como referencia diagnóstica, dado que su
+muestra de ajuste es mucho menor.
 
 \begin{table}[ht]
 \centering
@@ -152,8 +154,9 @@ RuleFit externo & \(0{,}789250\) & \(0{,}584768\) & \(0{,}910400\) \\ \hline
 
 La línea base obtiene una sensibilidad P1 muy elevada por su diseño conservador, pero discrimina
 peor entre las cuatro clases. RuleFit-lite mejora la macro-F1 de validación y ofrece
-30 reglas exportables, mientras que la alternativa externa presenta menor rendimiento y mayor
-coste de inferencia en la configuración diagnóstica disponible.
+30 reglas exportables. La alternativa externa presenta menor rendimiento en la ejecución
+reducida disponible, pero la diferencia de tamaños de ajuste impide inferir superioridad
+computacional o estadística de RuleFit-lite en condiciones equivalentes.
 
 Por ello, RuleFit-lite se selecciona antes de consultar la evaluación final. La
 partición de prueba canónica, regenerada posteriormente y formada por 1.453 casos, se
@@ -245,12 +248,13 @@ operativa.
 La línea base heurística queda documentada en el Anexo~\ref{cap:anexoe}; la ficha de modelo de
 Capa 2 y la comparativa completa se recogen en el Anexo~\ref{cap:anexol}. La evidencia reproducible de cierre enlaza métricas finales, partición temporal, tablas de análisis por subgrupos, falsos negativos P1, muestra de revisión y fidelidad explicativa.
 
-\section{Preparación de la revisión interna y trazabilidad}
+\section{Revisión interna y trazabilidad}
 
-La evaluación automática se complementa con un procedimiento preparado para la
-revisión interna. Su objetivo es que cada recomendación pueda examinarse con
-evidencias suficientes y que las futuras discrepancias queden registradas de forma
-auditable.
+La evaluación automática se complementa con una revisión interna conjunta realizada
+por los tres autores. Su objetivo es examinar cada recomendación con evidencias suficientes,
+centrando la atención en los errores críticos y en la trazabilidad de la decisión. Esta
+revisión cualitativa no equivale a tres anotaciones independientes ni permite calcular
+acuerdo interrevisor.
 
 Cada ficha preparada muestra el texto operativo minimizado, provincia, fecha,
 categoría preliminar, etiqueta académica, acuerdo de supervisión débil,
@@ -259,14 +263,14 @@ variables permitidas, columnas excluidas por anti-\textit{leakage} y, cuando la 
 disponible, la explicación normativa asociada. Esta ficha permite que el revisor acepte
 la recomendación, la modifique o la rechace.
 
-La retroalimentación podrá registrarse como decisión humana asociada a la inferencia,
+La plantilla permite registrar una futura decisión humana independiente asociada a la inferencia,
 incluyendo identificador del caso, prioridad recomendada, prioridad final asignada,
-motivo de divergencia, revisor, marca temporal y huella de entrada. Las divergencias de dos o más niveles se marcan como casos de auditoría especial.
+motivo de divergencia, revisor, marca temporal y huella de entrada. En la revisión conjunta de los autores se utilizaron las fichas como instrumento cualitativo, sin emplear esos campos para construir una nueva referencia supervisada. Las divergencias de dos o más niveles se consideran casos de auditoría especial.
 
-La muestra preparada incluye todos los falsos negativos P1 de la
+La muestra revisada incluye todos los falsos negativos P1 de la
 partición de prueba estratificada, junto con casos frontera P1/P2, P1/P3, P1/P4 y P2/P3. En la
 ejecución final se detectan 59 falsos negativos P1: 34 P1--P2, 18 P1--P3 y 7 P1--P4.
-La muestra generada para revisión contiene 119 casos: los 59 falsos negativos P1 y 60 casos equilibrados, 15 por cada clase P1--P4. Por tanto, esta evidencia demuestra la preparación de un instrumento de auditoría centrado en los errores críticos, no una validación externa con operadores del 112.
+La muestra contiene 119 casos: los 59 falsos negativos P1 y 60 casos equilibrados, 15 por cada clase P1--P4. La revisión conjunta aporta una auditoría interna centrada en los errores críticos, pero no constituye validación externa con operadores del 112 ni una evaluación independiente entre revisores.
 
 \section{Fidelidad de explicaciones}
 
@@ -381,36 +385,75 @@ Inundación en garajes & P2 & Sí & meteo/inundación \\ \hline
 \end{tabularx}
 \end{table}
 
-\section{Protocolo de evaluación exploratoria con participantes}
+\section{Evaluación exploratoria con participantes}
 
-Como complemento de la evaluación técnica, se ha preparado un protocolo breve para
-estudiar usabilidad, confianza y utilidad percibida del prototipo. El diseño contempla
-un acceso controlado mediante Google Colab, casos representativos y un cuestionario
-con escala Likert de 1 a 5 sobre razonabilidad de la prioridad, claridad de la
-explicación, confianza aportada por las señales y visibilidad de la decisión humana.
+Como complemento de la evaluación técnica, se realizó un estudio exploratorio breve
+para analizar la utilidad percibida y la comprensibilidad del prototipo. Se aplicó un
+muestreo no probabilístico e intencional de nueve participantes, con acceso controlado
+mediante Google Colab, casos representativos y un cuestionario de respuesta breve. El
+instrumento empleó una escala Likert de 1 a 5 para valorar la razonabilidad de la
+prioridad, la claridad de la explicación, la confianza aportada por las señales y la
+visibilidad de la decisión humana, además de una pregunta abierta.
 
-La muestra prevista comprende nueve perfiles anonimizados distribuidos entre
-profesionales vinculados a puestos de mando, comunicaciones críticas y emergencias;
-usuarios técnicos familiarizados con IA; y usuarios no especializados en IA. En el
-momento de cierre solo se conservan resultados agregados, sin las respuestas
-individuales anonimizadas necesarias para reconstruir los cálculos. Por rigor
-metodológico, esas medias no se incorporan como evidencia empírica y el estudio se
-documenta como protocolo preparado. Su ejecución reproducible y el análisis de
-resultados quedan condicionados a conservar las respuestas individuales y el
-consentimiento correspondiente.
+La muestra se distribuye en tres grupos de tres perfiles. El Grupo A reúne profesionales
+vinculados a puestos de mando, comunicaciones críticas y emergencias; el Grupo B,
+usuarios técnicos familiarizados con herramientas de IA; y el Grupo C, usuarios no
+especializados en IA con distintos niveles de familiaridad operativa. Esta segmentación
+permite contrastar perspectivas operativas, técnicas y de comprensibilidad general. El
+Grupo A no se presenta como una muestra de operadores del 112: dos de sus perfiles se
+especializan principalmente en comunicaciones y sistemas CIS, mientras que uno aporta
+experiencia más próxima al despliegue de puestos de mando en emergencias. Los perfiles
+funcionales anonimizados A1--C3 se detallan en el Anexo~\ref{cap:anexod}.
+
+La Tabla~\ref{tab:9-evaluacion-exploratoria} presenta las medias observadas. La dimensión
+mejor valorada es la claridad de que la decisión final corresponde a una persona, con
+una media global de 4,63. La razonabilidad de la prioridad alcanza 4,14,
+mientras que la claridad de la explicación y la confianza aportada por las señales
+obtienen 4,04. Estos valores indican una percepción favorable del principio de
+supervisión humana y una aceptación preliminar de la recomendación y su explicación.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados agregados de la evaluación exploratoria con participantes}
+\label{tab:9-evaluacion-exploratoria}
+\small
+\begin{tabularx}{\textwidth}{|X|c|c|c|c|}
+\hline
+\textbf{Dimensión evaluada} & \textbf{Grupo A} & \textbf{Grupo B} & \textbf{Grupo C} & \textbf{Global} \\ \hline
+Prioridad recomendada razonable & 4,47 & 4,13 & 3,83 & 4,14 \\ \hline
+Explicación clara & 4,17 & 4,37 & 3,60 & 4,04 \\ \hline
+Señales o reglas aumentan la confianza & 4,50 & 4,23 & 3,40 & 4,04 \\ \hline
+Decisión humana claramente identificada & 4,93 & 4,43 & 4,53 & 4,63 \\ \hline
+\end{tabularx}
+\end{table}
+
+El análisis por perfiles aporta matices relevantes. El Grupo A valora especialmente la
+supervisión humana (4,93) y la trazabilidad proporcionada por las señales
+(4,50); el Grupo B otorga su mayor puntuación a la claridad de la explicación
+(4,37); y el Grupo C presenta las valoraciones más bajas en señales o reglas
+(3,40) y explicación (3,60). Los comentarios abiertos son coherentes con
+este patrón: los perfiles operativos destacan la trazabilidad y la visibilidad de las
+señales críticas, los perfiles técnicos solicitan una separación clara entre
+priorización y explicación, y los no especializados demandan un lenguaje más directo.
+
+La evaluación constituye evidencia descriptiva de utilidad percibida, no una validación
+de aceptación ni una prueba operativa. El tamaño de la muestra, su selección intencional
+y la ausencia de operadores del 112 impiden generalizar los resultados o inferir
+efectos sobre el desempeño en una sala de emergencias.
 
 \section{Limitaciones}
 
-La evaluación presenta siete limitaciones principales:
+La evaluación presenta ocho limitaciones principales:
 
 \begin{enumerate}
     \item La referencia P1--P4 es académica y débil, no una etiqueta operativa oficial
     del 112.
-    \item El acuerdo de la supervisión débil es alto, pero no sustituye a una validación
-    externa con personal experto del servicio.
-    \item La ejecución de la alternativa RuleFit externa se ha realizado de forma diagnóstica reducida
-    por coste computacional local; una ejecución completa podría modificar sus
-    resultados.
+    \item El acuerdo de la supervisión débil es alto, pero las cuatro funciones comparten
+    una puntuación heurística y no equivalen a anotadores independientes; tampoco sustituyen
+    a una validación externa con personal experto del servicio.
+    \item RuleFit-lite se ajusta con 3.000 de los 6.512 casos disponibles y la alternativa
+    RuleFit externa con 50. Esta diferencia obliga a tratar \texttt{imodels} como prueba
+    diagnóstica y no permite comparar eficiencia en condiciones equivalentes.
     \item El error de calibración esperado (\textit{Expected Calibration Error}, ECE)
     con objetivo \(ECE \leq 0{,}10\) queda pendiente de una evaluación específica
     \cite{Guo2017Calibration}.
@@ -423,6 +466,10 @@ La evaluación presenta siete limitaciones principales:
     \item Los 7 errores P1--P4 de la partición de prueba estratificada son el principal foco de riesgo
     del modelo y deben analizarse individualmente antes de cualquier validación
     operativa externa.
+    \item La evaluación exploratoria incluye nueve participantes seleccionados de forma
+    intencional y no incorpora operadores del 112. Sus resultados describen percepciones
+    de la muestra, pero no son estadísticamente generalizables ni acreditan aceptación
+    operativa.
 \end{enumerate}
 
 Pese a estas limitaciones, la evaluación permite concluir que la Capa 2 seleccionada
@@ -432,3 +479,24 @@ ello, RuleFit-lite se adopta como núcleo interpretable de Capa 2, siempre dentr
 frente a etiquetas débiles P1--P4 y no frente a prioridades oficiales del 112, por lo
 que la validación externa con personal experto sigue siendo necesaria antes de cualquier
 uso operativo.
+
+\clearpage
+\begin{table}[p]
+\centering
+\caption{Síntesis final de la evaluación experimental}
+\label{tab:9-sintesis-final}
+\small
+\begin{tabularx}{\textwidth}{|>{\RaggedRight\arraybackslash}p{3.0cm}|>{\RaggedRight\arraybackslash}p{4.2cm}|>{\RaggedRight\arraybackslash}X|}
+\hline
+\textbf{Elemento} & \textbf{Resultado principal} & \textbf{Interpretación y alcance} \\ \hline
+Línea base heurística & 19 reglas; exactitud 0,694425; macro-F1 0,464284; sensibilidad P1 0,998473 & Referencia transparente y conservadora; detecta P1 con alta sensibilidad, pero discrimina peor entre las cuatro clases. \\ \hline
+RuleFit-lite & Ajuste con 3.000 de 6.512 registros; exactitud 0,903648; macro-F1 0,905604; sensibilidad P1 0,909924; 30 reglas & Modelo seleccionado por su rendimiento de validación e interpretabilidad. Las métricas corresponden al estimador sin Puerta de Seguridad. \\ \hline
+RuleFit externo & Ajuste diagnóstico con 50 registros; exactitud 0,768385; macro-F1 0,568239; sensibilidad P1 0,902778 & Contraste externo reducido. No permite inferir superioridad estadística ni computacional en condiciones equivalentes. \\ \hline
+Prueba temporal 2022 & 735 casos; exactitud 0,884354; macro-F1 0,877594; sensibilidad P1 0,928767 & Primera evidencia de estabilidad temporal; no sustituye una validación prospectiva. \\ \hline
+Falsos negativos P1 & 59 casos: 34 P1--P2, 18 P1--P3 y 7 P1--P4 & Los siete errores P1--P4 constituyen el principal riesgo y requieren especial atención. \\ \hline
+Puerta de Seguridad & Posprocesamiento determinista comprobado en escenarios funcionales integrados & Salvaguarda separada de la evaluación estadística; su efecto no está incluido en las métricas offline de RuleFit-lite. \\ \hline
+Evaluación exploratoria & Nueve participantes; medias globales entre 4,04 y 4,63 sobre 5 & Indicios descriptivos favorables, con mayor dificultad de comprensión de señales y reglas entre perfiles no especializados. \\ \hline
+Limitaciones principales & Etiquetas académicas; funciones heurísticas correlacionadas; submuestreo de ajuste; contraste externo reducido; revisión interna conjunta & Los resultados son académicos y reproducibles, pero no acreditan validación operativa, acuerdo entre revisores independientes ni uso en un servicio 112 real. \\ \hline
+\end{tabularx}
+\end{table}
+\clearpage

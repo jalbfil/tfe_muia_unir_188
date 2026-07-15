@@ -138,22 +138,22 @@ La guía de etiquetado define cuatro niveles: P1 crítica, P2 alta, P3 media y P
 
 \section{Supervisión débil}
 
-La supervisión débil permite construir etiquetas de entrenamiento a partir de varias funciones de etiquetado imperfectas. En este trabajo se emplean cuatro aproximaciones deterministas:
+La supervisión débil permite construir etiquetas de entrenamiento a partir de funciones programáticas imperfectas. En este trabajo se emplean cuatro funciones de etiquetado heurísticas y correlacionadas, todas derivadas de una misma puntuación de gravedad:
 
 \begin{enumerate}
-    \item \textbf{Reglas heurísticas}: aplica una puntuación de gravedad sobre señales textuales, categoría preliminar y variables permitidas.
-    \item \textbf{Señales e intensificadores}: aproxima el reconocimiento de entidades nombradas (\textit{Named Entity Recognition}, NER) mediante patrones de gravedad, cantidad y urgencia, sin ejecutar un modelo NER entrenado.
-    \item \textbf{Proxy de agrupación semántica}: reutiliza en esta versión una función determinista de puntuación; no ejecuta un algoritmo de agrupamiento vectorial.
-    \item \textbf{Proxy de anotador LLM}: incorpora patrones adicionales de vulnerabilidad, emplazamiento y negación, pero no invoca un LLM durante el etiquetado.
+    \item \textbf{Puntuación con categoría}: combina señales textuales, categoría preliminar y variables permitidas.
+    \item \textbf{Puntuación sin categoría}: aplica la misma lógica de gravedad sin utilizar la categoría preliminar.
+    \item \textbf{Réplica heurística con categoría}: reproduce la puntuación con categoría como voto programático adicional.
+    \item \textbf{Puntuación heurística ampliada}: añade patrones de vulnerabilidad, emplazamiento y negación a la puntuación sin categoría.
 \end{enumerate}
 
-Los votos se agregan mediante votación ponderada. Los pesos son \(0{,}85\) para reglas heurísticas, \(1{,}00\) para señales e intensificadores, \(0{,}90\) para el proxy de agrupación y \(1{,}10\) para el proxy de anotador LLM. Se suman los pesos recibidos por cada prioridad y, si existe empate, se escoge la prioridad más urgente. La salida conserva los votos, la etiqueta final, la confianza derivada del peso ganador y el acuerdo local.
+Los nombres internos conservados en la implementación responden a etapas previstas del diseño, pero no deben interpretarse como cuatro modelos independientes: la ejecución evaluada no utiliza un modelo NER, un algoritmo de agrupamiento semántico ni un LLM anotador. Los votos se agregan mediante votación ponderada con pesos \(0{,}85\), \(1{,}00\), \(0{,}90\) y \(1{,}10\), respectivamente. Se suman los pesos recibidos por cada prioridad y, si existe empate, se escoge la prioridad más urgente. La salida conserva los votos, la etiqueta final, la confianza derivada del peso ganador y el acuerdo local.
 
 \subsection{Acuerdo y control de calidad}
 
 El objetivo mínimo es Krippendorff \(\alpha \geq 0{,}67\). La ejecución canónica alcanza \(\alpha = 0{,}899902\), por encima del umbral establecido. Este valor aporta evidencia de consistencia entre funciones, pero debe interpretarse con cautela: las fuentes comparten patrones y dos de ellas emplean una puntuación muy similar, por lo que no constituyen anotadores plenamente independientes.
 
-Además, se ha preparado una muestra de revisión interna superior al mínimo previsto. Sus campos de decisión humana no forman parte de la evaluación cuantitativa principal, por lo que la muestra debe entenderse como instrumento de auditoría y no como validación externa completada.
+Además, los tres autores han revisado conjuntamente una muestra interna superior al mínimo previsto. La revisión fue cualitativa y no generó tres anotaciones independientes ni una medida de acuerdo interrevisor; por ello, debe entenderse como auditoría interna y no como validación externa completada.
 
 \subsection{Ablación anti-circularidad}
 
@@ -209,7 +209,7 @@ La división de datos debe impedir que el modelo vea durante el entrenamiento in
 
 \subsection{Partición estratificada}
 
-La partición principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validación y 1.453 de prueba, preservando la distribución por prioridad, año y provincia con semilla fija. La partición de prueba contiene P1=655, P2=349, P3=375 y P4=74, y es la referencia usada posteriormente en la evaluación final.
+La partición principal divide el conjunto en 6.512 registros de entrenamiento, 1.415 de validación y 1.453 de prueba, preservando la distribución por prioridad, año y provincia con semilla fija. Para ajustar RuleFit-lite se toma de la partición de entrenamiento un submuestreo proporcional de 3.000 registros, reproducible con semilla 42, mientras que la validación y la prueba se evalúan completas. Esta decisión acota el coste en el entorno local y mantiene fija la configuración experimental, aunque limita el aprovechamiento de los 6.512 registros disponibles. La partición de prueba contiene P1=655, P2=349, P3=375 y P4=74, y es la referencia usada posteriormente en la evaluación final.
 
 \begin{table}[htbp]
 \centering
@@ -240,7 +240,7 @@ El conjunto de datos resultante alimenta tres usos distintos: pruebas de extracc
 
 Las limitaciones deben quedar explícitadas para evitar sobreprometer. La primera es la ausencia de prioridad oficial. Los resultados obtenidos deben interpretarse en el marco de etiquetas débiles: la etiqueta P1--P4 no procede del servicio 112 ni de una prioridad oficial, sino de una construcción académica trazable y reproducible. Cualquier cambio en la guía de etiquetado, en las particiones o en el conjunto de datos limpio obliga a repetir la evaluación.
 
-La segunda limitación es la granularidad limitada: el conjunto contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La tercera es que muchas variables deben inferirse del texto. La cuarta es que AEMET, inundabilidad y Seveso quedan fuera del núcleo evaluado. La quinta es que la validación externa con personal operativo del 112 queda como trabajo futuro. La sexta es el posible sesgo territorial, temporal o por categoría.
+La segunda limitación es que las cuatro funciones de etiquetado comparten la misma puntuación heurística y, por tanto, su acuerdo no equivale al de anotadores independientes. La tercera es el submuestreo de 3.000 casos usado para ajustar RuleFit-lite sobre una partición de entrenamiento de 6.512 registros. La cuarta es la granularidad limitada: el conjunto contiene registros administrativos, no la secuencia completa de llamadas minuto a minuto. La quinta es que muchas variables deben inferirse del texto. La sexta es que AEMET, inundabilidad y Seveso quedan fuera del núcleo evaluado. La séptima es que la validación externa con personal operativo del 112 queda como trabajo futuro. La octava es el posible sesgo territorial, temporal o por categoría.
 
 \section{Conclusiones}
 

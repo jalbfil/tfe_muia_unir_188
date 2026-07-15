@@ -27,12 +27,12 @@ El objetivo general se descompone en ocho objetivos específicos:
     \item[OE5.] Diseñar e implementar una Capa 2 interpretable, comparar una línea base heurística con RuleFit-lite y una ejecución diagnóstica de \texttt{imodels}, seleccionar el modelo mediante la partición de validación y reservar la partición de prueba para la estimación final.
     \item[OE6.] Diseñar una Capa 3 de explicación que convierta reglas, probabilidades, evidencias y citas normativas en una justificación comprensible para el operador, sin delegar la decisión en un LLM.
     \item[OE7.] Integrar las capas mediante contratos versionados, servicio web auditable, respuesta alternativa determinista, registros de inferencia y mecanismos de retroalimentación humana.
-    \item[OE8.] Evaluar el prototipo con una partición estratificada y otra temporal, control de fugas de información, estudio de errores P1, análisis por subgrupos, preparación de una muestra de revisión interna y evaluación automatizada de fidelidad explicativa.
+    \item[OE8.] Evaluar el prototipo con una partición estratificada y otra temporal, control de fugas de información, estudio de errores P1, análisis por subgrupos, revisión interna de una muestra de casos, evaluación automatizada de fidelidad explicativa y evaluación exploratoria con participantes.
 \end{enumerate}
 
 En relación con OE5, la Capa 2 queda preparada para su consumo por Capa 3 mediante una salida explicable que incluye prioridad recomendada, reglas activadas, detalles de decisión y contexto estructurado para explicación. Esta salida permite que Capa 3 genere una explicación operativa sin recalcular ni sustituir la prioridad asignada por el modelo interpretable.
 
-En relación con OE8, se ha preparado una muestra de 119 casos, compuesta por 59 falsos negativos P1 y 60 casos equilibrados adicionales. La plantilla permite registrar futuras decisiones humanas, aunque no constituye por sí sola una validación externa completada. De forma independiente, la fidelidad de las explicaciones se evalúa automáticamente sobre esos mismos casos mediante un juez determinista reproducible.
+En relación con OE8, los tres autores han revisado conjuntamente una muestra de 119 casos, compuesta por 59 falsos negativos P1 y 60 casos equilibrados adicionales. Esta revisión interna es cualitativa y no equivale a tres anotaciones independientes ni a una validación externa con operadores del 112. De forma separada, la fidelidad de las explicaciones se evalúa automáticamente sobre esos mismos casos mediante un juez determinista reproducible. La evaluación se completa con un estudio exploratorio de nueve participantes, cuyos resultados describen utilidad percibida y comprensibilidad sin pretensión de representatividad estadística.
 
 Esta secuencia mantiene una progresión lógica: primero se delimita el dominio, después se construye una base empírica defendible, a continuación se implementa el modelo interpretable y finalmente se evalúa su comportamiento desde una perspectiva técnica, explicativa y humana.
 
@@ -50,7 +50,7 @@ OE4 & Conjunto limpio, auditoría, particiones y etiquetas débiles & Capítulo 
 OE5 & Línea base heurística, RuleFit-lite y comparativa con alternativa externa & Capítulo 9; Anexo E & Modelo seleccionado en validación y salida consumible por Capa 3 \\ \hline
 OE6 & Explicación con LLM local, RAG, MCP y respuesta alternativa determinista & Capítulos 6 y 8; Anexo L & Capa 3 explica sin recalcular prioridad \\ \hline
 OE7 & Integración Capa 1--Capa 2--Capa 3 y prueba de funcionamiento & Capítulos 8 y 9 & 5/5 escenarios integrados y 4/4 casos con LLM local \\ \hline
-OE8 & Evaluación final, errores P1, muestra preparada y fidelidad automatizada & Capítulo 9; Anexo D & 59 falsos negativos P1, 119 casos preparados y fidelidad reproducible \\ \hline
+OE8 & Evaluación final, errores P1, revisión interna, fidelidad automatizada y estudio exploratorio & Capítulo 9; Anexo D & 59 falsos negativos P1, 119 casos revisados y nueve participantes \\ \hline
 \end{tabular}
 \caption{Relación entre objetivos específicos, evidencias y criterios de cumplimiento.}
 \label{tab:objetivos-evidencias-cumplimiento}
@@ -81,9 +81,9 @@ La contribución de IA comprende la transformación de información operativa en
 variables estructuradas, la construcción de etiquetas mediante supervisión débil,
 la comparación de alternativas interpretables y la separación entre priorización y
 explicación. La evaluación se respalda con métricas, evidencias reproducibles, una
-muestra preparada para revisión y un análisis automatizado de fidelidad.
+muestra revisada internamente y un análisis automatizado de fidelidad.
 
-La selección de RuleFit-lite se justifica por su rendimiento en validación, su sensibilidad ante P1, la posibilidad de exportar reglas y su menor coste respecto a una implementación canónica alternativa de RuleFit. La partición de prueba se reserva para estimar el rendimiento final del modelo ya seleccionado.
+La selección de RuleFit-lite se justifica por su rendimiento en validación, su sensibilidad ante P1 y la posibilidad de exportar reglas. La implementación canónica alternativa se emplea únicamente como contraste diagnóstico con una muestra de ajuste reducida, por lo que sus costes no permiten establecer una comparación computacional en condiciones equivalentes. La partición de prueba se reserva para estimar el rendimiento final del modelo ya seleccionado.
 
 \section{Enfoque metodológico}
 
@@ -106,7 +106,7 @@ El trabajo se ha estructurado en siete fases:
     \item \textbf{Supervisión débil.} Generación de etiquetas académicas P1--P4, medición de acuerdo, ablación anti-circularidad y construcción de particiones estratificada y temporal.
     \item \textbf{Capa 2 interpretable.} Implementación de la línea base heurística, RuleFit-lite y una alternativa externa; extracción de reglas, pesos, probabilidades y métricas por clase.
     \item \textbf{Capa 3 explicativa e integración.} Arquitectura explicativa, trazabilidad, registro auditable e integración del flujo de inferencia.
-    \item \textbf{Evaluación y trazabilidad.} Evaluación final, análisis por subgrupos, errores P1, muestra preparada para revisión, fidelidad automatizada y síntesis de evidencias.
+    \item \textbf{Evaluación y trazabilidad.} Evaluación final, análisis por subgrupos, errores P1, revisión interna conjunta, fidelidad automatizada y síntesis de evidencias.
     \item \textbf{Redacción y coherencia final.} Alineación de capítulos, anexos, métricas, limitaciones y trabajo futuro para que la defensa refleje exactamente el sistema construido.
 \end{enumerate}
 

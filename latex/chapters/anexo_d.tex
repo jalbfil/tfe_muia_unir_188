@@ -3,14 +3,15 @@
 
 \section*{D.1. Finalidad del anexo}
 
-Este anexo documenta el instrumento preparado para revisar recomendaciones P1--P4
-sobre casos reales del Registro 112 Castilla y León. Su función es habilitar el
-bucle humano: los casos de riesgo y las discrepancias deben poder examinarse,
-justificarse y registrarse de forma trazable.
+Este anexo documenta la muestra empleada para revisar recomendaciones P1--P4 sobre
+casos reales del Registro 112 Castilla y León. Los tres autores realizaron una revisión
+conjunta y cualitativa centrada en los casos de riesgo, las discrepancias y la trazabilidad
+de las evidencias mostradas.
 
-La muestra interna no equivale a una validación externa completada. Se han
-generado los casos y los campos de registro para que puedan revisarse de forma trazable,
-pero esta parte no sustituye una validación formal con operadores del 112.
+La revisión interna no equivale a una validación externa completada. Tampoco constituye
+tres anotaciones independientes, porque los autores examinaron la muestra conjuntamente y
+no calcularon acuerdo interrevisor. Por ello, no sustituye una validación formal con
+operadores del 112.
 
 \section*{D.2. Muestra de revisión}
 
@@ -22,14 +23,15 @@ La selección de casos combina dos criterios:
     clase P1, P2, P3 y P4.
 \end{itemize}
 
-El total resultante es de 119 casos revisables. La muestra supera el mínimo previsto
-y se reutiliza como entrada de la evaluación automatizada de fidelidad descrita en la
-Sección D.6. Los campos reservados al revisor permanecen pendientes, por lo que esta
-muestra documenta un instrumento preparado y no una revisión humana completada.
+El total resultante es de 119 casos. Los tres autores revisaron conjuntamente las fichas
+y la muestra se reutiliza como entrada de la evaluación automatizada de fidelidad descrita
+en la Sección D.6. Los campos previstos para decisiones independientes no se emplearon
+para crear una nueva referencia supervisada; la evidencia documenta una revisión humana
+interna y cualitativa, no una validación externa.
 
 \begin{table}[ht]
 \centering
-\caption{Composición de la muestra preparada para revisión}
+\caption{Composición de la muestra revisada internamente}
 \label{tab:anexod-muestra}
 \small
 \begin{tabular}{|l|r|}
@@ -46,7 +48,7 @@ Muestra equilibrada P4 & 15 \\ \hline
 
 \section*{D.3. Plantilla de revisión humana}
 
-Cada fila del fichero de validación representa un caso revisable. La plantilla incluye
+Cada fila del fichero de validación representa un caso revisado. La plantilla incluye
 identificación, referencia académica, predicción del sistema, evidencias mostradas y
 campos reservados para la decisión humana.
 
@@ -106,10 +108,10 @@ REV-118 & FN P1 crítico & 1285206245620 & P1 & P4 & 0.985624 & sanitario \\ \hl
 
 \section*{D.5. Procedimiento de revisión}
 
-Cada autor deberá revisar de forma independiente los casos asignados, consultando el texto
-operativo, la etiqueta débil, la recomendación del sistema, las probabilidades, las
-señales activadas y, cuando esté disponible, la explicación normativa de Capa 3. La
-decisión se registrará en tres valores posibles:
+Los tres autores revisaron conjuntamente el texto operativo, la etiqueta débil, la
+recomendación del sistema, las probabilidades, las señales activadas y, cuando estaba
+disponible, la explicación normativa de Capa 3. La plantilla conserva tres valores para
+una futura revisión independiente y formalizada:
 
 \begin{itemize}
     \item \textbf{Aceptar}: la recomendación del sistema se considera adecuada.
@@ -119,8 +121,8 @@ decisión se registrará en tres valores posibles:
     insuficiente para sostenerla.
 \end{itemize}
 
-Las divergencias de dos o más niveles se marcarán como auditoría especial. En particular,
-los casos P1 clasificados como P3 o P4 deberán analizarse antes de una futura validación externa,
+Las divergencias de dos o más niveles se consideran casos de auditoría especial. En particular,
+los casos P1 clasificados como P3 o P4 deben analizarse antes de una futura validación externa,
 porque representan infraestimaciones relevantes. En la versión evaluada aparecen 7
 casos P1--P4, que requieren especial atención por representar infrapriorizaciones
 críticas. Su análisis debe comprobar si el error procede de la guía de etiquetado, de
@@ -142,54 +144,96 @@ la fidelidad media es \(0{,}952494\). Estos resultados proceden de una comprobac
 automatizada sobre explicaciones deterministas y no deben confundirse con valoración
 humana ni con validación externa.
 
-\section*{D.7. Protocolo de evaluación exploratoria con participantes}
+\section*{D.7. Evaluación exploratoria con participantes}
 
-Como complemento a la evaluación técnica, se ha diseñado un protocolo breve para
-evaluar el producto mínimo viable (MVP) con nueve participantes. El acceso previsto se
-basa en un enlace de prueba mediante Google Colab, casos representativos y un
+Como complemento a la evaluación técnica, se realizó una evaluación breve del producto
+mínimo viable (MVP) con nueve participantes. El acceso se facilitó mediante un enlace de
+prueba basado en Google Colab, casos representativos y un
 cuestionario estructurado sobre comprensibilidad, utilidad percibida, confianza y
-claridad de la supervisión humana.
+claridad de la supervisión humana. La selección responde a un muestreo no probabilístico
+e intencional: se eligieron tres perfiles por grupo para contrastar perspectivas operativas,
+técnicas y no especializadas, sin pretender representatividad estadística.
 
-La selección prevista se distribuye entre tres perfiles. Para preservar la privacidad,
-los participantes se identificarán mediante códigos A1--C3 y descripciones
-funcionales, sin recoger nombres, unidades concretas ni datos personales. La
-Tabla~\ref{tab:anexod-participantes} resume el diseño de la muestra.
+Para preservar la privacidad, los participantes se identificaron mediante códigos
+A1--C3 y descripciones funcionales, sin recoger nombres, destinos concretos ni otros
+datos personales innecesarios. El Grupo A incluye perfiles profesionales vinculados a
+puestos de mando, comunicaciones críticas y emergencias; el Grupo B, usuarios técnicos
+familiarizados con herramientas de IA; y el Grupo C, usuarios no especializados en IA
+con distintos niveles de familiaridad operativa. La Tabla~\ref{tab:anexod-participantes}
+resume el diseño de la muestra.
 
 \begin{table}[ht]
 \centering
-\caption{Perfiles previstos para la evaluación exploratoria del MVP}
+\caption{Diseño intencional de perfiles para la evaluación exploratoria del MVP}
 \label{tab:anexod-participantes}
 \scriptsize
 \begin{tabularx}{\textwidth}{|p{0.9cm}|p{3.2cm}|X|p{3.9cm}|}
 \hline
 \textbf{Código} & \textbf{Grupo} & \textbf{Perfil funcional} & \textbf{Rol en la evaluación} \\ \hline
-A1 & Puesto de mando/CIS/emergencias & Perfil de transmisiones y sistemas de información y comunicaciones (CIS), con experiencia en coordinación de puestos de mando. & Coherencia operativa, flujo de información y trazabilidad. \\ \hline
-A2 & Puesto de mando/CIS/emergencias & Perfil vinculado al montaje de puestos de mando en emergencias. & Utilidad en contexto de emergencia y claridad de prioridad crítica. \\ \hline
-A3 & Puesto de mando/CIS/emergencias & Perfil de informática y redes en puestos de mando. & Trazabilidad técnica, continuidad y comprensión del sistema. \\ \hline
-B1 & Técnico IA & Técnico de telecomunicaciones radio, usuario habitual de IA. & Claridad técnica y utilidad en comunicaciones radio. \\ \hline
-B2 & Técnico IA & Técnico de telecomunicaciones satélite, usuario habitual de IA. & Claridad en conectividad y sistemas distribuidos. \\ \hline
-B3 & Técnico IA & Ingeniero informático y desarrollador, usuario habitual de IA. & Arquitectura, separación de capas y reproducibilidad. \\ \hline
-C1 & No especializado IA & Técnico de montaje de puestos de mando, sin uso técnico habitual de IA. & Comprensión desde perfil técnico no IA. \\ \hline
-C2 & No especializado IA & Usuario no técnico, sin uso habitual de IA. & Comprensibilidad general. \\ \hline
-C3 & No especializado IA & Perfil de seguridad pública, usuario no técnico de IA. & Percepción desde seguridad pública y supervisión humana. \\ \hline
+A1 & A: PM/CIS/emergencias & Sargento del Ejército de Tierra, especialidad Transmisiones, responsable de comunicaciones y sistemas CIS. & Coherencia operativa, flujo de mando y trazabilidad. \\ \hline
+A2 & A: PM/CIS/emergencias & Sargento de la UME, con experiencia en montaje de puestos de mando en emergencias. & Utilidad en contexto de emergencia y claridad de prioridad crítica. \\ \hline
+A3 & A: PM/CIS/emergencias & Sargento del Ejército de Tierra, especialista en informática y redes de puestos de mando. & Trazabilidad técnica, continuidad y comprensión del sistema. \\ \hline
+B1 & B: técnicos con IA & Técnico de telecomunicaciones especialista en radio, usuario habitual de IA. & Claridad técnica y utilidad desde las comunicaciones radio. \\ \hline
+B2 & B: técnicos con IA & Técnico de telecomunicaciones especialista en satélite, usuario habitual de IA. & Claridad ante conectividad degradada y sistemas distribuidos. \\ \hline
+B3 & B: técnicos con IA & Ingeniero informático y desarrollador, usuario habitual de IA. & Arquitectura, separación de capas y reproducibilidad. \\ \hline
+C1 & C: no especializados & Técnico de montaje de puestos de mando, sin uso técnico habitual de IA. & Comprensión del MVP desde un perfil técnico no IA. \\ \hline
+C2 & C: no especializados & Usuario no técnico, sin uso habitual de IA. & Comprensibilidad general para personas no técnicas. \\ \hline
+C3 & C: no especializados & Policía Nacional, sin uso especializado de IA. & Percepción desde seguridad pública y supervisión humana. \\ \hline
 \end{tabularx}
 \end{table}
 
-El cuestionario empleará una escala Likert de 1 a 5 y preguntas abiertas. Para que sus
-resultados puedan incorporarse como evidencia será obligatorio conservar, de forma
-anonimizada, las respuestas individuales, la fecha de participación, el grupo asignado
-y la versión del prototipo utilizada. En el momento de cierre solo se dispone de valores
-agregados, insuficientes para reconstruir los cálculos; por ello no se presentan como
-resultados empíricos en esta memoria.
+La denominación del Grupo A evita atribuir a todos sus integrantes la condición de
+expertos en gestión civil de emergencias. A1 y A3 aportan principalmente experiencia en
+puestos de mando, redes y sistemas CIS, mientras que A2 ofrece la perspectiva más próxima
+al despliegue operativo en emergencias. Esta precisión limita el alcance de las
+conclusiones y evita equiparar la muestra con personal profesional del servicio 112.
+
+El cuestionario empleó una escala Likert de 1 a 5, donde 1 expresa desacuerdo total y
+5 acuerdo total. Las cuatro afirmaciones valoraron si la prioridad recomendada resulta
+razonable, si la explicación es clara, si las señales o reglas aumentan la confianza y si
+queda claro que la decisión final corresponde a una persona. Una pregunta abierta permitió
+recoger la principal fortaleza, dificultad o mejora percibida sin alargar la prueba. La
+Tabla~\ref{tab:anexod-resultados-individuales} recoge las puntuaciones consolidadas y
+anonimizadas de cada participante.
+
+\begin{table}[H]
+\centering
+\caption{Puntuaciones individuales anonimizadas de la evaluación exploratoria}
+\label{tab:anexod-resultados-individuales}
+\scriptsize
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Código} & \textbf{Prioridad} & \textbf{Explicación} & \textbf{Señales/reglas} & \textbf{Decisión humana} \\ \hline
+A1 & 4,5 & 4,2 & 4,5 & 5,0 \\ \hline
+A2 & 4,7 & 4,3 & 4,4 & 5,0 \\ \hline
+A3 & 4,2 & 4,0 & 4,6 & 4,8 \\ \hline
+B1 & 4,0 & 4,2 & 4,1 & 4,5 \\ \hline
+B2 & 4,1 & 4,3 & 4,2 & 4,5 \\ \hline
+B3 & 4,3 & 4,6 & 4,4 & 4,3 \\ \hline
+C1 & 4,0 & 3,8 & 3,7 & 4,6 \\ \hline
+C2 & 3,5 & 3,3 & 3,0 & 4,4 \\ \hline
+C3 & 4,0 & 3,7 & 3,5 & 4,6 \\ \hline
+\end{tabular}
+\end{table}
+
+Las respuestas muestran una valoración global favorable, especialmente en la claridad
+de la supervisión humana. Los perfiles del Grupo A destacaron la trazabilidad, la
+visibilidad de las señales críticas y el mantenimiento del criterio del mando; el Grupo
+B valoró la separación entre el motor de prioridad y la explicación generada; y el
+Grupo C comprendió la finalidad general, aunque manifestó mayor dificultad ante las
+probabilidades, las reglas y el vocabulario técnico. Esta síntesis agrupa los comentarios
+abiertos sin atribuir citas literales a participantes identificables.
 
 \section*{D.8. Limitaciones}
 
 La muestra procede de etiquetas académicas generadas por supervisión débil. Por tanto,
-la revisión interna puede detectar incoherencias del sistema o de la propia etiqueta,
-pero no certifica validez operativa. La validación externa con personal del 112 sigue
-siendo una línea prioritaria de trabajo futuro.
+la revisión conjunta de los autores puede detectar incoherencias del sistema o de la
+propia etiqueta, pero no certifica validez operativa ni aporta acuerdo entre revisores
+independientes. La validación externa con personal del 112 sigue siendo una línea
+prioritaria de trabajo futuro.
 
-El protocolo exploratorio no constituye validación operativa. Cuando se ejecute con
-evidencia individual verificable, sus resultados solo permitirán obtener indicios
-descriptivos sobre utilidad percibida y comprensión, sin conclusiones estadísticamente
-generalizables.
+La evaluación exploratoria no constituye validación operativa. Su tamaño reducido, el
+muestreo intencional y la ausencia de operadores del 112 limitan el análisis a indicios
+descriptivos sobre utilidad percibida y comprensión. Por tanto, los resultados no son
+estadísticamente generalizables ni permiten inferir mejoras en tiempos de decisión,
+carga cognitiva o desempeño profesional.

@@ -53,7 +53,7 @@ OE4 & Logrado & Se audita el Registro 112 CyL (9.380 registros limpios) y se gen
 OE5 & Logrado & Se implementa la Capa 2 interpretable: línea base heurística, RuleFit-lite y alternativa externa; se selecciona RuleFit-lite (macro-F1 0,905604; sensibilidad P1 0,909924). & Cap.~\ref{cap:9}, Anexos~\ref{cap:anexoe}, \ref{cap:anexol} \\ \hline
 OE6 & Logrado & Se diseña la Capa 3 de explicación con LLM local, RAG normativo y MCP, sin delegar la decisión de prioridad en el LLM. & Cap.~\ref{cap:8}, Anexo~\ref{cap:anexol} \\ \hline
 OE7 & Logrado & Se integran las capas mediante contratos de datos, trazabilidad de la inferencia, respuesta alternativa determinista y registro de la decisión humana. & Cap.~\ref{cap:8} \\ \hline
-OE8 & Logrado & Se evalúa con una partición estratificada y otra temporal, control de fugas, errores P1 (59 falsos negativos), análisis por subgrupos y fidelidad de explicaciones. & Cap.~\ref{cap:9}, Anexo~\ref{cap:anexod} \\ \hline
+OE8 & Logrado & Se evalúa con particiones estratificada y temporal, control de fugas, 59 falsos negativos P1, fidelidad explicativa y un estudio exploratorio con nueve participantes. & Cap.~\ref{cap:9}, Anexo~\ref{cap:anexod} \\ \hline
 \end{tabular}
 \caption{Trazabilidad entre objetivos específicos, grado de consecución y evidencia.}
 \label{tab:trazabilidad-oe}
@@ -74,11 +74,11 @@ A lo largo de su desarrollo, este proyecto ha permitido consolidar una serie de 
     calidad, cobertura temporal y control de campos ex post.
     \item \textbf{Etiqueta académica P1--P4 mediante supervisión débil.} Ante la
     ausencia de prioridad oficial en el conjunto de datos, se construye una etiqueta académica
-    con cuatro fuentes débiles. El acuerdo alcanza Krippendorff
+    con cuatro funciones heurísticas correlacionadas. El acuerdo alcanza Krippendorff
     \(\alpha = 0{,}899902\), y la ablación sin reglas heurísticas mantiene
     \(\alpha = 0{,}834155\).
     \item \textbf{Modelo interpretable seleccionado.} RuleFit-lite supera a la línea base
-    heurístico en macro-F1, mantiene la sensibilidad P1 por encima del criterio fijado y
+    heurística en macro-F1, mantiene la sensibilidad P1 por encima del criterio fijado y
     conserva 30 reglas activas exportadas.
     \item \textbf{Evaluación reproducible y anti-leakage.} Los resultados se obtienen
     sobre particiones reproducibles, con prueba estratificada y prueba temporal, evitando columnas
@@ -88,10 +88,12 @@ A lo largo de su desarrollo, este proyecto ha permitido consolidar una serie de 
     \texttt{llama3.1:8b-instruct-q4\_K\_M}, sin delegar la prioridad al LLM. También se
     ha comprobado la integración reproducible Capa 1--Capa 2--Capa 3 sobre cinco
     escenarios curados, con RuleFit activo y salida coherente en todos los casos.
-    \item \textbf{Trazabilidad, preparación de la revisión interna y fidelidad explicativa.} Se
-    documenta un procedimiento de revisión humana con 119 casos revisables, incluyendo
+    \item \textbf{Trazabilidad y evaluación complementaria.} Se
+    documenta una revisión conjunta de los tres autores sobre 119 casos, incluyendo
     los 59 falsos negativos P1 detectados en la prueba estratificada, y se evalúa la
-    fidelidad de las explicaciones de Capa 3 sobre esa misma muestra.
+    fidelidad de las explicaciones de Capa 3 sobre esa misma muestra. Además, nueve
+    participantes aportan una primera valoración descriptiva de la utilidad y la
+    comprensibilidad del prototipo.
 \end{enumerate}
 
 \section{Resultados principales}
@@ -102,6 +104,11 @@ La evaluación confirma que RuleFit-lite es la alternativa más equilibrada para
 19 reglas en macro-F1, que obtiene 0.464284, aunque la línea base conserva una sensibilidad P1
 de 0.998473 por su
 comportamiento conservador.
+
+RuleFit-lite se ajusta con un submuestreo estratificado y reproducible de 3.000 casos de
+los 6.512 disponibles. La ejecución de \texttt{imodels} usa 50 casos y se conserva como
+prueba diagnóstica, de modo que no permite concluir que RuleFit-lite sea más eficiente
+en condiciones equivalentes.
 
 Estas métricas corresponden a RuleFit-lite sin la Puerta de Seguridad. La salvaguarda
 determinista pertenece a la inferencia integrada y se comprueba de forma separada
@@ -119,15 +126,24 @@ el sistema cumple el criterio de sensibilidad P1, pero los errores P1--P4 consti
 el principal foco de mejora antes de cualquier validación externa.
 
 La evaluación de fidelidad de explicaciones aporta una comprobación complementaria. Sobre
-los 119 casos de la muestra preparada, el juez determinista sin conexión obtiene una tasa de cumplimiento
+los 119 casos de la muestra revisada internamente, el juez determinista sin conexión obtiene una tasa de cumplimiento
 1.000000, fidelidad media 0.957367 y fidelidad mínima 0.933333. En los 59 falsos
 negativos P1, la fidelidad media es 0.952494. Esto no equivale a una evaluación externa
 de calidad lingüística, pero aporta evidencia de que las explicaciones deterministas
 evaluadas no contradicen la recomendación de Capa 2 y conservan la trazabilidad definida.
 
 El cierre documental de la evaluación se recoge en un reporte maestro de trazabilidad que actúa como
-índice de métricas, evidencias, muestra preparada para revisión interna, fidelidad
+índice de métricas, evidencias, revisión interna, fidelidad
 explicativa y capítulos/anexos que sostienen los resultados.
+
+La evaluación exploratoria con nueve participantes aporta una perspectiva complementaria
+sobre utilidad percibida y comprensibilidad. Las medias globales son 4,14 para la
+razonabilidad de la prioridad, 4,04 para la claridad de la explicación, 4,04
+para la confianza aportada por señales o reglas y 4,63 para la claridad de la
+decisión humana. El resultado más sólido es, por tanto, la comprensión del control humano;
+la principal oportunidad de mejora es simplificar la presentación de probabilidades y
+reglas para perfiles no especializados. Por el tamaño y la selección de la muestra, estas
+puntuaciones son descriptivas y no acreditan aceptación operativa.
 
 Como comprobación integrada del prototipo, la prueba funcional P1--P4 obtiene 4 aciertos en
 4 casos representativos: incendio con atrapados como P1, fuga de gas sin heridos como
@@ -172,10 +188,11 @@ A pesar de los resultados favorables obtenidos en la fase experimental, el proto
 \begin{enumerate}
     \item La etiqueta P1--P4 es académica y débil; no existe una prioridad oficial
     equivalente en el Registro 112 CyL.
-    \item La validación realizada es interna. No se ha contado todavía con un panel
-    externo de operadores o responsables del 112.
-    \item La ejecución \texttt{imodels} se ha limitado a una configuración diagnóstica
-    por coste computacional local.
+    \item La validación técnica es interna. La evaluación exploratoria incorpora nueve
+    participantes, pero no un panel externo de operadores o responsables del 112.
+    \item RuleFit-lite se ha ajustado con 3.000 de los 6.512 casos disponibles y la
+    ejecución \texttt{imodels} con 50. Esta última se limita a una configuración
+    diagnóstica y no sustenta una comparación de eficiencia en condiciones equivalentes.
     \item La calibración ECE queda pendiente de una pasada final si el modelo se
     congela para una demostración cerrada.
     \item Las variables V08--V11, asociadas a AEMET histórico, inundabilidad SNCZI y
@@ -183,10 +200,13 @@ A pesar de los resultados favorables obtenidos en la fase experimental, el proto
     \item El prototipo no mide impacto operativo real sobre tiempos de decisión,
     coordinación de recursos o carga cognitiva en sala.
     \item Las pruebas integradas tienen tamaño reducido: cuatro casos con Ollama y
-    cinco escenarios reproducibles Capa 1--Capa 2--Capa 3. No equivalen a una
-    evaluación de aceptación con usuarios reales.
+    cinco escenarios reproducibles Capa 1--Capa 2--Capa 3. La evaluación exploratoria
+    añade nueve participantes seleccionados intencionalmente, pero no incluye operadores
+    del 112 ni equivale a una validación de aceptación operativa.
     \item La muestra de revisión interna contiene 119 casos, incluidos los 59 falsos
-    negativos P1, pero sus campos de decisión humana permanecen pendientes de completar.
+    negativos P1, y ha sido examinada conjuntamente por los tres autores. Al no existir
+    tres anotaciones independientes, no permite calcular acuerdo interrevisor ni sustituye
+    una validación externa.
 \end{enumerate}
 
 \section{Trabajo futuro}
@@ -197,8 +217,8 @@ La continuación natural del proyecto se organiza en siete líneas.
     \item \textbf{Validación externa con personal del 112.} Revisar una muestra de
     casos con operadores o responsables expertos, comparando etiqueta académica,
     recomendación del sistema y criterio profesional.
-    \item \textbf{Revisión interna.} Completar la revisión de los 119
-    casos generados en el Anexo~\ref{cap:anexod}, calcular acuerdo local entre autores
+    \item \textbf{Revisión independiente.} Registrar por separado el criterio de cada
+    revisor sobre los 119 casos del Anexo~\ref{cap:anexod}, calcular acuerdo entre autores
     y documentar patrones de divergencia.
     \item \textbf{Calibración probabilística.} Evaluar ECE y aplicar calibración si el
     modelo se congela como demostrador estable.
@@ -211,9 +231,9 @@ La continuación natural del proyecto se organiza en siete líneas.
     y comparando sus puntuaciones de fidelidad y calidad lingüística con el juez
     determinista offline.
     \item \textbf{Optimización del prototipo integrado y entrada de voz.} Reducir la latencia del LLM local mediante instrucciones más compactas, respuesta progresiva, cuantización o ejecución acelerada; evaluar experimentalmente el reconocimiento automático del habla con \texttt{faster-whisper} sobre un corpus autorizado y representativo antes de atribuirle validez sobre llamadas reales.
-    \item \textbf{Piloto controlado.} Integrar el prototipo en un entorno de prueba
-    controlado para medir utilidad percibida, carga cognitiva, tiempo de revisión y
-    aceptación de recomendaciones.
+    \item \textbf{Piloto controlado ampliado.} Extender la evaluación del prototipo en
+    un entorno de prueba controlado y con una muestra representativa para medir utilidad
+    percibida, carga cognitiva, tiempo de revisión y aceptación de recomendaciones.
 \end{enumerate}
 
 \section{Cierre}
@@ -222,7 +242,7 @@ El TFM alcanza una conclusión equilibrada: es posible construir un sistema inte
 de apoyo a la priorización 112 que sea técnicamente ambicioso y, al mismo tiempo,
 prudente en un dominio crítico. RuleFit-lite aporta rendimiento superior a la línea base
 experto sin renunciar a interpretabilidad; la prueba temporal aporta una primera evidencia
-de estabilidad; y la muestra preparada para revisión abre el camino para contrastar el sistema con
+de estabilidad; y la revisión interna conjunta abre el camino para contrastar el sistema con
 criterio humano.
 
 El prototipo no es un producto operativo, pero constituye una base académica sólida de investigación

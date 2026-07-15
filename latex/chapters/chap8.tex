@@ -50,8 +50,8 @@ El resultado no es una orden operativa, sino una recomendación estructurada. El
 
 El prototipo dispone de una ejecución integrada del flujo completo: texto del incidente, Capa 1 simbólica, Capa 2 RuleFit-lite, Capa 3 con LLM local y registro de la respuesta. El servicio de inferencia expone contratos de datos para comprobar la entrada y la salida, mientras que la interfaz permite introducir incidentes sintéticos por texto o por voz y visualizar la recomendación de Capa 2 junto con la explicación de Capa 3. El Anexo~\ref{cap:anexog} conserva solo las capturas indispensables: entrada manual, entrada de voz experimental, resultado P1 y registro de la decisión humana.
 
-Para facilitar una evaluación exploratoria con participantes externos, el equipo preparó
-también un acceso de prueba mediante un cuaderno en Google Colab. Este acceso no se
+Para realizar una evaluación exploratoria con participantes, el equipo habilitó
+y utilizó un acceso de prueba mediante un cuaderno en Google Colab. Este acceso no se
 plantea como despliegue productivo ni como integración con sistemas 112, sino como
 entorno reproducible de demostración: permite lanzar el prototipo, ejecutar casos
 sintéticos y recoger respuestas mediante un cuestionario estructurado. La finalidad es
@@ -132,13 +132,13 @@ coherencia del flujo de datos.
 
 El prototipo utiliza contratos versionados para separar responsabilidades entre capas. La salida de Capa 2 debe incluir, como mínimo, identificador del incidente, prioridad recomendada, probabilidades por clase, reglas o señales relevantes, versión del modelo y advertencias asociadas. La Capa 3 consume esa información y debe conservar la correspondencia entre explicación y evidencia.
 
-La trazabilidad se apoya en evidencias reproducibles: conjunto de datos auditado, etiquetas débiles, particiones, modelos entrenados, métricas, errores P1, muestra preparada para revisión interna y síntesis final de evaluación. Este diseño permite reconstruir qué datos se usaron, qué modelo produjo la recomendación y qué explicación se generó.
+La trazabilidad se apoya en evidencias reproducibles: conjunto de datos auditado, etiquetas débiles, particiones, modelos entrenados, métricas, errores P1, muestra revisada internamente y síntesis final de evaluación. Este diseño permite reconstruir qué datos se usaron, qué modelo produjo la recomendación y qué explicación se generó.
 
 \section{Modo degradado}
 
 El prototipo contempla un modo degradado para la explicación. Si el LLM local no está disponible o no cumple el tiempo esperado, el sistema puede generar una explicación determinista basada en reglas, probabilidades y evidencias de la Capa 2. Este modo evita que la ausencia del componente generativo bloquee la recomendación o fuerce dependencia de servicios externos.
 
-La respuesta alternativa determinista también ha permitido evaluar fidelidad explicativa de forma controlada sobre la muestra preparada de 119 casos, como se documenta en el Capítulo~\ref{cap:9}. En las pruebas reproducibles Capa 1--Capa 2--Capa 3, este modo ofrece respuestas submilisegundo y actúa como mecanismo de contingencia cuando el LLM local no está disponible o no cumple el tiempo esperado.
+La respuesta alternativa determinista también ha permitido evaluar fidelidad explicativa de forma controlada sobre la muestra de 119 casos revisada conjuntamente por los autores, como se documenta en el Capítulo~\ref{cap:9}. En las pruebas reproducibles Capa 1--Capa 2--Capa 3, este modo ofrece respuestas submilisegundo y actúa como mecanismo de contingencia cuando el LLM local no está disponible o no cumple el tiempo esperado.
 
 \section{Relación con la evaluación}
 

@@ -149,7 +149,7 @@ La escala no equivale a situaciones operativas 0--3. Una situación operativa es
 
 \subsection{Supervisión débil}
 
-Como el Registro 112 CyL no contiene prioridad oficial P1--P4, el entrenamiento de Capa 2 requiere construir una etiqueta académica. La estrategia es la supervisión débil: varios anotadores imperfectos generan votos que se agregan en una etiqueta final con confianza. Se emplean cuatro fuentes: reglas heurísticas, extracción NLP con intensificadores, aproximación semántica por agrupación y anotación auxiliar controlada con LLM.
+Como el Registro 112 CyL no contiene prioridad oficial P1--P4, el entrenamiento de Capa 2 requiere construir una etiqueta académica. La estrategia es la supervisión débil: cuatro funciones de etiquetado heurísticas y correlacionadas generan votos que se agregan en una etiqueta final con confianza. Todas comparten una puntuación programática de gravedad, con variaciones en el uso de la categoría y en patrones de intensificación, vulnerabilidad, emplazamiento y negación. En la ejecución evaluada no intervienen un modelo NER entrenado, un algoritmo de agrupamiento semántico ni un LLM anotador.
 
 La etiqueta débil no se presenta como verdad institucional. Es un recurso metodológico que permite entrenar y comparar modelos sobre datos reales abiertos. Por ello debe acompañarse de acuerdo entre fuentes de etiquetado, análisis de discrepancias y una ablación anti-circularidad que compare el resultado sin la fuente de reglas heurísticas.
 
@@ -163,9 +163,9 @@ Esta restricción es académica, no estética. Un modelo con cientos de reglas s
 
 La Capa 2 no se evalúa en aislamiento. Se compara con dos referencias. La línea base experta es un conjunto de reglas transparentes basadas en señales y variables V01--V15, con anclaje normativo. Sirve como referencia mínima: RuleFit debe aportar mejora cuantitativa sin perder explicabilidad.
 
-La segunda referencia es \texttt{imodels.RuleFitClassifier}, utilizada como implementación canónica de RuleFit. Dado que la librería trabaja en clasificación binaria, se adopta un esquema one-vs-rest P1--P4. La versión productiva del TFM selecciona RuleFit-lite porque mantiene la filosofía RuleFit, respeta el límite de reglas activas y ofrece mejor equilibrio entre rendimiento, latencia y reproducibilidad local.
+La segunda referencia es \texttt{imodels.RuleFitClassifier}, utilizada como implementación canónica de RuleFit. Dado que la librería trabaja en clasificación binaria, se adopta un esquema one-vs-rest P1--P4. La versión evaluada del TFM selecciona RuleFit-lite porque mantiene la filosofía RuleFit, respeta el límite de reglas activas y obtiene el mejor rendimiento de validación en la configuración ensayada.
 
-La ejecución diagnóstica con \texttt{imodels} queda como contraste externo de la familia RuleFit. Su utilidad es comprobar si una implementación canónica aporta ventaja frente al núcleo reproducible seleccionado. RuleFit-lite se mantiene como motor principal por su equilibrio entre rendimiento, interpretabilidad, coste local y trazabilidad.
+La alternativa externa se conserva como contraste diagnóstico de la familia RuleFit. El modelo RuleFit-lite se ajusta sobre un submuestreo estratificado y reproducible de 3.000 registros de los 6.512 disponibles, mientras que \texttt{imodels} se limita a 50 registros por su coste local. La diferencia de tamaños impide atribuir a RuleFit-lite una superioridad computacional en condiciones equivalentes; la selección se apoya en el rendimiento de validación, la interpretabilidad y la reproducibilidad de la configuración efectivamente evaluada.
 
 \subsection{Probabilidad, confianza e invariantes}
 

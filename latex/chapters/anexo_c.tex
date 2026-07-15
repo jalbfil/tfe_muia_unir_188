@@ -10,7 +10,7 @@ entrenar, comparar y evaluar la Capa 2 sin atribuir validez institucional a la e
 
 La guía se apoya en la decisión metodológica de tratar
 P1--P4 como escala académica, no jurídica ni institucional.
-La muestra preparada para una futura revisión humana se documenta en el
+La muestra revisada internamente por los tres autores se documenta en el
 Anexo~\ref{cap:anexod}.
 
 \section*{C.2. Principios generales}
@@ -94,12 +94,13 @@ Los conflictos más relevantes son:
 
 \section*{C.6. Funciones de etiquetado, agregación y acuerdo}
 
-Cuatro fuentes débiles y deterministas forman la etiqueta final. La primera aplica
-reglas heurísticas y la segunda combina señales con intensificadores. Las dos restantes
-se denominan proxy de agrupación y proxy de anotador LLM por compatibilidad con el
-diseño experimental. En la ejecución evaluada no realizan agrupamiento vectorial ni
-invocan un modelo generativo. Se trata, por tanto, de votos programáticos
-correlacionados y no de anotaciones humanas independientes ni de una verdad institucional.
+Cuatro funciones de etiquetado heurísticas y correlacionadas forman la etiqueta final.
+Todas comparten una puntuación programática de gravedad: dos incorporan la categoría,
+otra la excluye y la cuarta añade patrones de vulnerabilidad, emplazamiento y negación.
+Algunos nombres internos proceden del diseño experimental inicial, pero en la ejecución
+evaluada no se emplean un modelo NER, un agrupamiento vectorial ni un LLM anotador. Se
+trata, por tanto, de votos programáticos correlacionados y no de anotaciones humanas
+independientes ni de una verdad institucional.
 
 Los votos se agregan mediante suma ponderada. Los pesos son \(0{,}85\), \(1{,}00\),
 \(0{,}90\) y \(1{,}10\), respectivamente. Si varias prioridades obtienen el mismo
@@ -116,7 +117,7 @@ desaparece al retirar una fuente, no que se haya eliminado por completo la circu
 
 La guía reduce subjetividad, pero no elimina la necesidad de revisión humana. La
 evaluación final identifica 59 falsos negativos P1, incluidos 7 casos P1--P4, que
-constituyen la prioridad de la muestra preparada. Estos casos permiten estudiar
+constituyen la prioridad de la muestra revisada. Estos casos permiten estudiar
 límites de la guía, señales insuficientes o decisiones del modelo con riesgo de
 infrapriorización. La muestra completa se documenta en el
 Anexo~\ref{cap:anexod}.

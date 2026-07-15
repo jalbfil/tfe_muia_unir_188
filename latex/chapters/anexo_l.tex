@@ -51,9 +51,11 @@ información.
 \subsection*{L.3.2. Alternativas y selección}
 
 Se comparan una línea base de 19 reglas expertas, RuleFit-lite y una implementación
-externa de RuleFit mediante \texttt{imodels} \cite{Singh2021imodels}. Esta última se
-utiliza con finalidad diagnóstica. La selección se realiza con la partición de validación
-y la estimación final se obtiene una sola vez sobre la partición de prueba.
+externa de RuleFit mediante \texttt{imodels} \cite{Singh2021imodels}. RuleFit-lite se
+ajusta con un submuestreo estratificado y reproducible de 3.000 registros de los 6.512
+disponibles, mientras que la alternativa externa usa 50 registros y se limita a una
+prueba diagnóstica. La selección se realiza con la partición de validación y la estimación
+final se obtiene una sola vez sobre la partición de prueba.
 
 \begin{table}[htbp]
 \centering
@@ -70,8 +72,9 @@ RuleFit externo & 0,768385 & 0,568239 & 0,902778 & 30 \\ \hline
 \end{table}
 
 RuleFit-lite se selecciona porque presenta la mejor macro-F1, mantiene una sensibilidad
-P1 superior al umbral interno de (0{,}85), conserva reglas exportables y ofrece menor
-coste local que la configuración externa ensayada. En la prueba temporal alcanza
+P1 superior al umbral interno de (0{,}85) y conserva reglas exportables. La diferencia
+entre los tamaños de ajuste impide afirmar que su coste sea inferior al de la alternativa
+en condiciones equivalentes. En la prueba temporal alcanza
 exactitud (0{,}884354), macro-F1 (0{,}877594) y sensibilidad P1 (0{,}928767).
 
 Estas métricas corresponden al estimador RuleFit-lite \textbf{sin Puerta de Seguridad}.
@@ -83,9 +86,9 @@ la comparación estadística de modelos.
 
 La matriz de confusión identifica 59 falsos negativos P1: 34 casos clasificados como
 P2, 18 como P3 y 7 como P4. Los siete errores P1--P4 constituyen el riesgo principal y
-forman parte de la muestra de 119 casos preparada para revisión. Los campos reservados
-a la persona revisora permanecen vacíos, por lo que esta muestra no equivale a una
-validación humana completada.
+forman parte de la muestra de 119 casos revisada conjuntamente por los tres autores. La
+revisión es cualitativa y no equivale a tres anotaciones independientes ni a una
+validación externa con operadores del 112.
 
 \section*{L.4. Capa 3: explicación local y recuperación normativa}
 
@@ -111,7 +114,7 @@ de Capa 2.
 
 \textbf{Evaluación.} La prueba funcional con LLM local resuelve correctamente cuatro
 escenarios P1--P4 y observa una latencia media de (4{,}898) s en el entorno
-experimental. La evaluación automatizada de fidelidad sobre los 119 casos preparados
+experimental. La evaluación automatizada de fidelidad sobre los 119 casos revisados
 alcanza una tasa de cumplimiento de (1{,}000000), fidelidad media (0{,}957367) y
 mínima (0{,}933333). Se trata de un juez determinista sobre explicaciones controladas,
 no de una evaluación humana ni de un LLM-as-Judge independiente.
@@ -132,8 +135,9 @@ reales, ruido de sala o diversidad de locutores.
     controlados, no utilidad operativa ni cumplimiento de un acuerdo de nivel de servicio.
     \item La Puerta de Seguridad es una salvaguarda conservadora no certificada y debe
     evaluarse separadamente del modelo estadístico.
-    \item La muestra de 119 casos está preparada para revisión, pero no contiene
-    decisiones humanas completadas.
+    \item La muestra de 119 casos ha sido revisada conjuntamente por los tres autores,
+    pero no contiene tres anotaciones independientes ni permite calcular acuerdo
+    interrevisor.
     \item Los resultados no acreditan conformidad regulatoria ni autorizan el uso del
     prototipo en un servicio de emergencias real.
 \end{itemize}
