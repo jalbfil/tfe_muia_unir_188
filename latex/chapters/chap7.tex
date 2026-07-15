@@ -194,12 +194,12 @@ Estas columnas pueden conservarse para auditoría o evaluación ex post, siempre
 \hline
 \textbf{Grupo} & \textbf{Columnas o variables} & \textbf{Uso permitido} \\ \hline
 Texto inicial & Título, \texttt{DescripcionBlob}, texto operativo limpio & Entrada para Capa 1 y extracción de señales \\ \hline
-Contexto predecisiónal & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalización, taxonomia, análisis temporal y territorial \\ \hline
+Contexto predecisional & Fecha, localidad, provincia, coordenadas, \texttt{TipoIncidente} & Normalización, taxonomía, análisis temporal y territorial \\ \hline
 Variables derivadas permitidas & V01--V07, V12--V15 y señales textuales & Entrada de Capa 2 y explicabilidad \\ \hline
 Identificadores & \texttt{Identificador} & Trazabilidad, particiones y auditoría; no como predictor \\ \hline
 Columnas prohibidas & \texttt{MediosMov}, \texttt{PacientesAten}, \texttt{IncidenteCerrado}, \texttt{ultimaActualizacion} y derivados & Solo auditoría o análisis ex post; nunca entrenamiento ni inferencia \\ \hline
 \end{tabular}
-\caption{Columnas permitidas y prohibidas segun disponibilidad en la primera decisión.}
+\caption{Columnas permitidas y prohibidas según disponibilidad en la primera decisión.}
 \label{tab:permitidas-prohibidas-leakage-cap7}
 \end{table}
 
@@ -220,7 +220,7 @@ La partición principal divide el conjunto en 6.512 registros de entrenamiento, 
 Entrenamiento estratificado & 6.512 & P1=3.049; P2=1.504; P3=1.701; P4=258 \\ \hline
 Validación estratificada & 1.415 & P1=658; P2=329; P3=374; P4=54 \\ \hline
 Prueba estratificada & 1.453 & P1=655; P2=349; P3=375; P4=74 \\ \hline
-Prueba temporal 2022 & 735 & Evaluación de estabilidad fuera del periodo principal \\ \hline
+Prueba temporal 2022 & 735 & Evaluación de estabilidad fuera del período principal \\ \hline
 \end{tabular}
 \caption{Distribución de las particiones adoptadas en el estudio.}
 \label{tab:splits-final-cap7}
@@ -228,9 +228,9 @@ Prueba temporal 2022 & 735 & Evaluación de estabilidad fuera del periodo princi
 
 \subsection{Partición temporal}
 
-La partición temporal evalúa robustez fuera del periodo de entrenamiento. La versión ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tamaños son 7.935, 710 y 735 registros, respectivamente.
+La partición temporal evalúa robustez fuera del período de entrenamiento. La versión ejecutada entrena con registros hasta 2020, valida con 2021 y reserva 2022 como prueba temporal. Los tamaños son 7.935, 710 y 735 registros, respectivamente.
 
-Ambas particiones son necesarias. La estratificada mide rendimiento general controlando la distribución; la temporal mide estabilidad ante cambio de periodo.
+Ambas particiones son necesarias. La estratificada mide rendimiento general controlando la distribución; la temporal mide estabilidad ante cambio de período.
 
 \section{Uso en entrenamiento y evaluación}
 
@@ -244,7 +244,7 @@ La segunda limitación es que las cuatro funciones de etiquetado comparten la mi
 
 \section{Conclusiones}
 
-El diseño de datos presentado en este capítulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un conjunto totalmente sintetico, pero tampoco finge disponer de una prioridad oficial que no existe.
+El diseño de datos presentado en este capítulo conecta el Registro 112 CyL con la arquitectura de tres capas del sistema. La estrategia evita dos extremos: no inventa un conjunto totalmente sintético, pero tampoco finge disponer de una prioridad oficial que no existe.
 
 La aportación metodológica consiste en convertir datos abiertos reales en un conjunto explotable mediante limpieza, variables operativas, supervisión débil, control de \textit{leakage} y particiones reproducibles. Esta base es la que permite que Capa 2 pueda entrenarse y evaluarse de forma defendible.
 

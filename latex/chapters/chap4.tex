@@ -3,7 +3,7 @@
 
 \section{Introducción al capítulo}
 
-Este capítulo conecta el problema descrito en los capítulos anteriores con la estrategia seguida para resolverlo. El TFM no plantea una herramienta generica de emergencias, sino un prototipo software de apoyo a la decisión para priorización temprana de incidentes 112 en Castilla y León. La línea de trabajo se articula alrededor de datos reales abiertos, una etiqueta académica P1--P4 construida mediante supervisión débil, una Capa 2 interpretable basada en RuleFit-lite y una Capa 3 orientada a explicar la recomendación con trazabilidad normativa.
+Este capítulo conecta el problema descrito en los capítulos anteriores con la estrategia seguida para resolverlo. El TFM no plantea una herramienta genérica de emergencias, sino un prototipo software de apoyo a la decisión para priorización temprana de incidentes 112 en Castilla y León. La línea de trabajo se articula alrededor de datos reales abiertos, una etiqueta académica P1--P4 construida mediante supervisión débil, una Capa 2 interpretable basada en RuleFit-lite y una Capa 3 orientada a explicar la recomendación con trazabilidad normativa.
 
 La finalidad del capítulo es fijar con claridad qué se pretende conseguir, qué preguntas guían el desarrollo, qué aportación de inteligencia artificial realiza el trabajo y cómo se ha organizado el equipo para avanzar de forma incremental sin perder coherencia entre prototipo, evaluación y memoria.
 
@@ -22,7 +22,7 @@ El objetivo general se descompone en ocho objetivos específicos:
 \begin{enumerate}
     \item[OE1.] Analizar el problema de la priorización temprana de incidentes 112, identificando necesidades del operador, restricciones de información y riesgos de automatización en un dominio crítico.
     \item[OE2.] Revisar el marco normativo estatal y autonómico aplicable a Castilla y León, extrayendo criterios de gravedad, coordinación, escalado y trazabilidad que fundamentan el sistema.
-    \item[OE3.] Definir la taxonomia operativa, la escala académica P1--P4 y las variables V01--V15, separando variables disponibles en primera decisión de variables contextuales diferidas o potencialmente sujetas a \textit{leakage}.
+    \item[OE3.] Definir la taxonomía operativa, la escala académica P1--P4 y las variables V01--V15, separando variables disponibles en primera decisión de variables contextuales diferidas o potencialmente sujetas a \textit{leakage}.
     \item[OE4.] Auditar el Registro de Emergencias 112 de Castilla y León, construir el conjunto de datos limpio, documentar limitaciones y generar etiquetas académicas P1--P4 mediante supervisión débil.
     \item[OE5.] Diseñar e implementar una Capa 2 interpretable, comparar una línea base heurística con RuleFit-lite y una ejecución diagnóstica de \texttt{imodels}, seleccionar el modelo mediante la partición de validación y reservar la partición de prueba para la estimación final.
     \item[OE6.] Diseñar una Capa 3 de explicación que convierta reglas, probabilidades, evidencias y citas normativas en una justificación comprensible para el operador, sin delegar la decisión en un LLM.
@@ -54,11 +54,9 @@ OE8 & Evaluación final, errores P1, revisión interna, fidelidad automatizada y
 \end{tabular}
 \caption{Relación entre objetivos específicos, evidencias y criterios de cumplimiento.}
 \label{tab:objetivos-evidencias-cumplimiento}
+\smallskip
+{\small\textit{Fuente: elaboración propia.}\par}
 \end{table}
-
-\begin{center}
-\textit{Fuente: elaboración propia.}
-\end{center}
 
 \section{Preguntas de investigación}
 

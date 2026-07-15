@@ -215,11 +215,11 @@ La Capa 3 expone tres herramientas MCP para la búsqueda normativa, la consulta 
 
 Estas herramientas permiten consultar el corpus, recuperar el detalle de reglas y construir citas legales. El uso de MCP separa la capacidad del LLM de las funciones verificables del sistema: buscar, citar y explicar reglas son operaciones con entradas y salidas controladas. Esta separación facilita la auditoría del proceso de generación de explicaciones a nivel de llamada API.
 
-\subsection{Cache de sesión en Capa 3}
+\subsection{Caché de sesión en Capa 3}
 
-La Capa 3 incorpora una cache de sesión para evitar llamadas redundantes al LLM cuando se procesa el mismo texto operativo con la misma prioridad recomendada. La clave de cache se genera mediante SHA-256 a partir de la concatenación del texto del incidente y la prioridad: \texttt{sha256(texto || prioridad)}. Esta decisión reduce latencia en demostraciones y pruebas repetidas, sin alterar la recomendación de Capa 2 ni los contratos de salida.
+La Capa 3 incorpora una caché de sesión para evitar llamadas redundantes al LLM cuando se procesa el mismo texto operativo con la misma prioridad recomendada. La clave de la caché se genera mediante SHA-256 a partir de la concatenación del texto del incidente y la prioridad: \texttt{sha256(texto || prioridad)}. Esta decisión reduce latencia en demostraciones y pruebas repetidas, sin alterar la recomendación de Capa 2 ni los contratos de salida.
 
-El resultado cacheado es un objeto Pydantic \texttt{OperatorRecommendation}. Como ese objeto conserva el \texttt{incident\_id} del primer incidente que generó la explicación, la implementación clona el objeto mediante \texttt{model\_copy(update=\{...\})} cuando el \texttt{incident\_id} de la nueva inferencia es distinto. Esta copia evita colisiones en los logs de auditoría cruzada y mantiene la consistencia contractual: cada \texttt{InferenceLog} conserva hijos con el mismo identificador de incidente.
+El resultado almacenado en caché es un objeto Pydantic \texttt{OperatorRecommendation}. Como ese objeto conserva el \texttt{incident\_id} del primer incidente que generó la explicación, la implementación clona el objeto mediante \texttt{model\_copy(update=\{...\})} cuando el \texttt{incident\_id} de la nueva inferencia es distinto. Esta copia evita colisiones en los logs de auditoría cruzada y mantiene la consistencia contractual: cada \texttt{InferenceLog} conserva hijos con el mismo identificador de incidente.
 
 \section{Orquestador, fallback y latencia}
 
