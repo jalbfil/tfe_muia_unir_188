@@ -5,7 +5,7 @@ Señalamientos
 
 •	Muchos anexos no requeridos
 
-•	Pag 2: “Capa 1: extracción de variables operativas” adolece de poco nivel de IA, lo cual cuestiona el trabajo de Ancor González Carballo.
+•	Pag 2: “Capa 1: extracción de variables operativas” adolece de poco nivel de IA, lo cual cuestiona el trabajo de Ancor González Carballo. (arreglado por Ancor)
 
 •	Pag 46: “4.1 Esta separación evita mezclar responsabilidades.” ¿qué significa el 4.1?
 

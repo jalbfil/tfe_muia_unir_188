@@ -24,7 +24,7 @@ El sistema no moviliza recursos, no activa planes, no envía alertas y no toma d
 \section{Requisitos funcionales}
 
 \paragraph{RF1. Recepción y normalización del incidente}
-El sistema debe recibir incidentes desde carga de dataset o entrada controlada y transformarlos en un registro normalizado con identificador, texto operativo, categoría, fecha, provincia, municipio, coordenadas cuando existan y campos auxiliares permitidos.
+El sistema debe recibir incidentes desde la carga de conjuntos de datos, entrada textual manual o mediante la transcripción local de audios, transformándolos en un registro normalizado con identificador, texto operativo corregido, categoría, fecha, provincia, municipio, coordenadas cuando existan y campos auxiliares permitidos.
 
 \paragraph{RF2. Extracción de variables y señales}
 La Capa 1 debe extraer variables operativas V01--V15 y señales textuales relevantes para la priorización. En v0.1.0 esta extracción se realiza mediante un clasificador de aprendizaje automático multietiqueta (TF-IDF + Regresión Logística con balanceo de clases) entrenado sobre el corpus histórico de Castilla y León, y acoplado con guardarraíles deterministas léxicos (esquema híbrido neuro-simbólico) para garantizar un recall de \(1{,}00\) en situaciones críticas de seguridad y evitar falsos positivos. Deja V08--V11 como extensión futura cuando se integren AEMET, SNCZI y Seveso.
@@ -48,7 +48,9 @@ La Capa 3 debe generar una explicación breve y trazable que conecte la priorida
 El sistema debe permitir que una persona (operador del 112) revise la recomendación del DSS y registre una decisión explícita (aceptación, modificación o rechazo). Esta intervención humana (HITL) debe ser obligatoria para cerrar el caso y guardarse a nivel de base de datos mediante la persistencia del contrato estructurado \texttt{OperatorDecision}, vinculando la prioridad asignada y la justificación de cualquier discrepancia.
 
 \paragraph{RF9. Registro auditable}
-Cada inferencia debe quedar registrada de forma inalterable y asociada a su entrada original, variables extraídas por la Capa 1, modelo de Capa 2 y su versión, prioridad recomendada, probabilidades calculadas, explicación de Capa 3, y la decisión humana final (\texttt{OperatorDecision}) si ya fue registrada. Esta persistencia garantiza la trazabilidad exigida por las normativas de IA de alto riesgo \cite{EUAIAct2024}, sustentando la auditoría técnica y la defensa académica.
+Cada inferencia debe quedar registrada de forma inalterable y asociada a su entrada original, variables extraídas por la Capa 1, modelo de Capa 2 y su versión, prioridad recomendada, probabilidades calculadas, explicación de Capa 3, y la decisión humana final (\texttt{OperatorDecision}) si ya fue registrada. Esta persistencia garantiza la trazabilidad exigida por las normativas de IA de alto riesgo
+
+\cite{EUAIAct2024}, sustentando la auditoría técnica y la defensa académica.
 
 \paragraph{RF10. Reevaluación}
 El sistema debe poder reevaluar un incidente cuando cambien los datos de entrada, conservando el historial de recomendaciones para reconstruir la evolución del caso.

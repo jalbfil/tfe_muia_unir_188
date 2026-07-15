@@ -35,7 +35,7 @@ El diseño se apoya en seis principios que conectan los capítulos previos con l
 
 \section{Vista general de la arquitectura}
 
-La arquitectura se representa como una cadena de transformaciones controladas. La entrada inicial es un \texttt{IncidentInput}; la Capa 1 produce \texttt{IncidentFeatures}; la Capa 2 produce \texttt{PriorityRecommendation}; la Capa 3 produce \texttt{OperatorRecommendation}; y la decisión final del operador se registra como \texttt{OperatorDecision}. Todo el proceso queda recogido en un \texttt{InferenceLog}. Esta secuencia estructurada asegura que no existan dependencias circulares entre las diferentes fases del ciclo de inferencia.
+La arquitectura se representa como una cadena de transformaciones controladas. La entrada inicial es un \texttt{IncidentInput}; la Capa 1 produce \texttt{IncidentFeatures}; la Capa 2 produce \texttt{PriorityRecommendation}; la Capa 3 produce \texttt{OperatorRecommendation}; y la decisión final del operador se registra como \texttt{OperatorDecision}. Todo el proceso queda recogido en un \texttt{InferenceLog}. Esta secuencia estructurada asegura que no existan dependencias circulares entre las diferentes fases del ciclo de inferencia. Para facilitar la emulación operativa, el prototipo permite opcionalmente que la interfaz de usuario genere el objeto \texttt{IncidentInput} a partir de la transcripción local de una llamada de voz, delegando en un componente de ASR (basado en \texttt{faster-whisper}) y un parser estructurador.
 
 \begin{figure}[htbp]
 \centering
@@ -59,7 +59,6 @@ La arquitectura se representa como una cadena de transformaciones controladas. L
 \label{fig:flujo-logico-sistema}
 \end{figure}
 
-4.1
 Esta separación evita mezclar responsabilidades. La Capa 1 no decide prioridad; estructura el incidente. La Capa 2 no redacta explicaciones normativas extensas; recomienda prioridad y devuelve reglas activadas. La Capa 3 no recalcula el resultado; explica lo recibido, cita normas y advierte de incertidumbres.
 
 \section{Contratos de datos}
@@ -126,7 +125,7 @@ V15 & Accesibilidad de recursos & Modular complejidad de intervención & Activa 
 
 \subsection{Señales textuales}
 
-Además de variables estructuradas, la Capa 1 extrae señales textuales booleanas con confianza asociada. Algunas son críticas para no infraestimar incidentes graves: \texttt{signal\_herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_fallecido} o \texttt{riesgo\_vital\_textual}. Otras ayudan a contextualizar: \texttt{signal\_incendio}, \texttt{signal\_accidente\_trafico}, \texttt{signal\_rescate}, \texttt{signal\_varias\_llamadas} y \texttt{signal\_meteo\_inundacion}.
+Además de variables estructuradas, la Capa 1 extrae señales textuales booleanas con confianza asociada. Algunas son críticas para no infraestimar incidentes graves: \texttt{signal\_ herido\_grave}, \texttt{signal\_atrapado}, \texttt{signal\_intoxicacion}, \texttt{signal\_fallecido} o \texttt{riesgo\_ vital\_textual}. Otras ayudan a contextualizar: \texttt{signal\_incendio}, \texttt{signal\_accidente\_ trafico}, \texttt{signal\_rescate}, \texttt{signal\_varias\_llamadas} y \texttt{signal\_meteo\_inundacion}.
 
 En la versión \texttt{v0.1.0}, la Capa 1 se implementa como extractor determinista
 auditable. Reglas léxicas, patrones de negación y diccionarios operativos detectan

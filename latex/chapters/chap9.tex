@@ -45,6 +45,32 @@ coherencia funcional. Tercero, una prueba funcional integrada del prototipo con 
 cuyo objetivo no es medir rendimiento estad\'istico, sino comprobar la ejecuci\'on
 extremo a extremo en casos P1--P4.
 
+\begin{figure}[htbp]
+\centering
+\small
+\fbox{%
+\begin{tabular}{c}
+\textbf{Conjunto de Datos Limpio} (9.380 registros del Registro 112 CyL) \\
+\(\downarrow\) \\
+\textbf{Supervisión Débil} (4 funciones de etiquetado \(\rightarrow\) Krippendorff \(\alpha = 0{,}899\)) \\
+\(\downarrow\) \\
+\textbf{Etiqueta Académica Proxy} (Clases P1--P4) \\
+\(\downarrow\) \\
+\textbf{Particionamiento Estratificado y Robustez Temporal} (Entrenamiento / Validación / Test) \\
+\(\downarrow\) \\
+\textbf{Entrenamiento y Comparativa de Modelos} (Línea Base Heurística vs. RuleFit-lite vs. Alternativa Externa) \\
+\(\downarrow\) \\
+\textbf{Evaluación Offline Cuantitativa} (Métricas por clase, recall P1, análisis de 59 falsos negativos) \\
+\(\downarrow\) \\
+\textbf{Evaluación de Fidelidad Explicativa} (Rúbrica de 6 criterios sobre muestra de 119 casos) \\
+\(\downarrow\) \\
+\textbf{Evaluación Exploratoria con Usuarios} (Prueba de usabilidad con 9 participantes y escala Likert)
+\end{tabular}
+}
+\caption{Secuencia metodológica del flujo de evaluación experimental.}
+\label{fig:flujo-evaluacion-cap9}
+\end{figure}
+
 \section{Datos, etiquetas y particiones}
 
 El experimento usa el conjunto limpio, formado por 9.380 registros del Registro 112 Castilla y León. La etiqueta objetivo P1--P4 se
@@ -270,8 +296,8 @@ La Tabla~\ref{tab:9-comparativa-autores} contrasta el enfoque propuesto con los 
 \hline
 \textbf{Enfoque} & \textbf{Datos reales} & \textbf{Interp.} & \textbf{Expl. norm.} & \textbf{On-prem.} & \textbf{Superv.} & \textbf{Métrica clave} \\ \hline
 AIDR~\cite{Imran2014AIDR} & Redes sociales & No (DNN) & No & No & Fuerte & Acc. multi-label \\ \hline
-\begin{tabular}[t]{@{}l@{}}Crisis\\Transformers~\cite{Lamsal2024}\end{tabular} & Crisis real & No (transformer) & No & Parcial & Fuerte & F1 clasificación \\ \hline
-TREC-IS~\cite{TRECIS2021} & Twitter & No (ensemble) & No & No & Fuerte & Benchmarks \\ \hline
+\begin{tabular}[t]{@{}l@{}}Crisis\\Transformers\\\cite{Lamsal2024}\end{tabular} & Crisis real & No (transformer) & No & Parcial & Fuerte & F1 clasificación \\ \hline
+TREC-IS\\~\cite{TRECIS2021} & Twitter & No (ensemble) & No & No & Fuerte & Benchmarks \\ \hline
 L\'inea base heur\'istica (este TFM) & 112 CyL & S\'i (reglas) & Parcial & S\'i & D\'ebil & F1 0{,}704; sensibilidad P1 0{,}998 \\ \hline
 \textbf{RuleFit-lite~+~Capa~3} & \textbf{112 CyL} & \textbf{Si} & \textbf{Si} & \textbf{Si} & \textbf{Débil} & \textbf{F1 0{,}906; P1 0{,}910} \\ \hline
 \end{tabular}

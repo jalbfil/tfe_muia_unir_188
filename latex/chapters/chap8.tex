@@ -25,19 +25,11 @@ La separación entre capas evita que el LLM decida la prioridad. La prioridad pr
 
 \section{Componentes de Capa 2}
 
-La parte de priorización se estructura bajo \texttt{src/capa2\_rulefit/}. El submódulo de \texttt{weak\_supervision} contiene la lógica de etiquetas académicas P1--P4. El submódulo \texttt{baseline\_expert} implementa las reglas expertas que sirven como referencia interpretable. El submódulo \texttt{rulefit} contiene la preparación de features, entrenamiento, exportación de reglas y comparativa. El submódulo \texttt{inference} encapsula la inferencia para que el resto del prototipo consuma una salida estable.
+La parte de priorización se estructura en el módulo del motor de reglas y estimadores interpretables. Su lógica contiene la generación de etiquetas académicas P1--P4, la implementación de las reglas expertas que sirven como referencia y el cálculo comparativo con alternativas.
 
 Esta estructura permite que el modelo seleccionado, RuleFit-lite, no quede mezclado con scripts de preparación de datos ni con lógica de explicación. También facilita comparar alternativas sin alterar el contrato de salida que recibe la Capa 3. Asimismo, la organización interna simplifica las tareas de depuración en caso de fallos en la inferencia. De esta manera, el equipo de desarrollo puede realizar mejoras iterativas en el estimador de manera aislada.
 
-En el prototipo integrado, el modelo seleccionado se empaqueta como artefacto persistente
-\texttt{artifacts/models/capa2/v0.1.0/rulefit.joblib} y se carga en inferencia mediante
-\texttt{joblib}. Esta decisión permite separar el entrenamiento de la ejecución del MVP y
-evita reentrenamientos accidentales durante una demostración. Además, la clase
-\texttt{RuleSetClassifierModel} incorpora una comprobación de compatibilidad para artefactos
-persistidos de \texttt{scikit-learn}: si el regresor logístico cargado no contiene el atributo
-\texttt{multi\_class}, se inicializa de forma conservadora con el valor \texttt{auto}. Esta
-medida protege la reproducibilidad del prototipo ante diferencias menores entre versiones de
-librerías.
+En el prototipo integrado, el modelo seleccionado se empaqueta como un artefacto persistente y se carga durante la inferencia. Esta decisión permite separar el entrenamiento de la ejecución del demostrador y evita reentrenamientos accidentales. Además, el módulo incorpora comprobaciones de compatibilidad para asegurar la carga correcta de los parámetros del modelo, protegiendo la reproducibilidad del prototipo ante diferencias menores en el entorno de ejecución.
 
 \section{Flujo de procesamiento}
 
@@ -74,19 +66,16 @@ estructurada. Si Ollama no responde, el prototipo conserva el modo degradado
 determinista descrito en la sección siguiente.
 
 Como comprobación técnica, se ha ejecutado un \textit{smoke test} P1--P4 contra el
-backend en vivo. El resultado queda en
-\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.json} y
-\texttt{artifacts/reports/prototype\_v0.1.0\_smoke\_test.md}. La prueba verifica cuatro
-incidentes representativos, uno por prioridad, con Capa 2 RuleFit activa y Capa 3 no
-degradada.
+backend en vivo. Los resultados se conservan en los reportes reproducibles de validación
+integrada del repositorio. La prueba verifica cuatro incidentes representativos, uno por
+prioridad, con Capa 2 RuleFit activa y Capa 3 no degradada.
 
 Adicionalmente, tras integrar la rama de Capa 1, se ha regenerado una validación
-reproducible Capa 1--Capa 2--Capa 3. Estos
-informes se conservan en \texttt{artifacts/reports/}. Su finalidad es comprobar que
-la salida real de Capa 1 alimenta correctamente el motor RuleFit, incluyendo casos P1
-con atrapamiento, inconsciencia, incendio, intoxicación, inundación y una incidencia
-vial ordinaria con negaciones explícitas como ``no hay heridos ni vehículos
-atrapados''.
+reproducible Capa 1--Capa 2--Capa 3. Estos informes se conservan como artefactos de
+validación en el repositorio. Su finalidad es comprobar que la salida real de Capa 1
+alimenta correctamente el motor RuleFit, incluyendo casos P1 con atrapamiento,
+inconsciencia, incendio, intoxicación, inundación y una incidencia vial ordinaria con
+negaciones explícitas como ``no hay heridos ni vehículos atrapados''.
 
 \subsection{Interfaz de voz e inferencia inteligente}
 
@@ -155,7 +144,7 @@ El modo degradado también ha permitido evaluar fidelidad explicativa de forma c
 
 El prototipo no se evalúa por apariencia visual, sino por su capacidad para producir artefactos verificables. La evaluación experimental utiliza los mismos scripts, features, splits y modelos que la arquitectura declara. Por eso los resultados del Capítulo~\ref{cap:9} pueden enlazarse con el diseño de Capítulo~\ref{cap:6}, los datos del Capítulo~\ref{cap:7} y los anexos de validación.
 
-El reporte \texttt{artifacts/reports/final\_evaluation\_traceability\_v0.1.0.json} actúa como índice maestro de esta relación entre prototipo, resultados y documentación. En este archivo se indexan los hashes de los datasets de test, los pesos del modelo y las métricas calculadas. Esta estructura facilita una validación externa rápida y automatizada de los resultados declarados en la memoria.
+Un índice maestro estructurado actúa como registro de trazabilidad de esta relación entre prototipo, resultados y documentación. En este archivo de control se indexan los hashes de los conjuntos de datos de prueba, los pesos del modelo y las métricas calculadas. Esta estructura facilita una validación externa rápida y automatizada de los resultados declarados en la memoria.
 
 \section{Repositorio del código fuente}
 

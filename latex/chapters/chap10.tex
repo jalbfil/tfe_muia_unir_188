@@ -76,7 +76,7 @@ A lo largo de su desarrollo, este proyecto ha permitido consolidar una serie de 
     ausencia de prioridad oficial en el dataset, se construye una etiqueta académica
     con cuatro fuentes débiles. El acuerdo alcanza Krippendorff
     \(\alpha = 0{,}858348\) (\texttt{weak\_labels\_report.json}), y la ablación sin reglas heurísticas mantiene
-    \(\alpha = 0{,}834155\) (\texttt{weak\_labels\_ablation\_no\_rules.json}).
+    \(\alpha = 0{,}834155\) (\texttt{weak\_labels\_ablation\_ no\_rules.json}).
     \item \textbf{Modelo interpretable seleccionado.} RuleFit-lite supera al baseline
     experto en macro-F1, mantiene recall P1 por encima del umbral de seguridad y
     conserva 30 reglas activas exportadas.
@@ -119,9 +119,8 @@ negativos P1, la fidelidad media es 0.952494. Esto no equivale a una evaluación
 de calidad lingüística, pero sí demuestra que las explicaciones generadas en modo
 degradado no contradicen la recomendación de Capa 2 y conservan trazabilidad mínima.
 
-El cierre documental de la evaluación se recoge en
-\texttt{artifacts/reports/final\_evaluation\_ traceability\_v0.1.0.json}, que actúa como
-índice maestro de métricas, artefactos, muestra de validación interna, fidelidad
+El cierre documental de la evaluación se recoge en un reporte maestro de trazabilidad que actúa como
+índice de métricas, artefactos, muestra de validación interna, fidelidad
 explicativa y capítulos/anexos que sostienen los resultados.
 
 Como comprobación integrada del prototipo, el smoke test P1--P4 obtiene 4 aciertos en
@@ -200,9 +199,7 @@ La continuación natural del proyecto se organiza en siete líneas.
     ciega las explicaciones de la Capa 3, usando la muestra de 119 casos
     y comparando sus puntuaciones de fidelidad y calidad lingüística con el juez
     determinista offline.
-    \item \textbf{Optimización del prototipo integrado.} Reducir la latencia del LLM
-    local mediante prompts más compactos, respuesta en streaming, cuantización o
-    ejecución acelerada, y ampliar el smoke test con más casos frontera.
+    \item \textbf{Optimización del prototipo integrado e ingesta de voz.} Reducir la latencia del LLM local mediante prompts más compactos, respuesta en streaming, cuantización o ejecución acelerada; evaluar la robustez del transcriptor local \texttt{faster-whisper} bajo condiciones de ruido acústico típico de salas de control, y ampliar el smoke test con más casos frontera de audio.
     \item \textbf{Piloto controlado.} Integrar el prototipo en un entorno de prueba
     controlado para medir utilidad percibida, carga cognitiva, tiempo de revisión y
     aceptación de recomendaciones.
