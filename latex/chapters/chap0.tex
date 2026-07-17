@@ -14,6 +14,11 @@ El reparto no se limita a distribuir tareas de programación. Cada integrante as
 
 El equipo está formado por tres estudiantes del Máster Universitario en Inteligencia Artificial de la UNIR, bajo la dirección del Dr. Andrés Soto Villaverde. Cada integrante aporta un perfil complementario y una responsabilidad principal dentro de la arquitectura.
 
+\subsection{Capa 1: extracción de variables operativas}
+\textbf{Responsable principal:} Ancor González Carballo.
+
+Su bloque de trabajo se orienta a la transformación del texto libre del incidente en una representación estructurada compatible con la priorización posterior. Esta capa combina procesamiento del lenguaje natural auditable, detección de señales operativas, tratamiento de negaciones y normalización de variables V01--V15. En la versión evaluada se presenta como un extractor determinista y reproducible; la incorporación de clasificadores aprendidos queda como evolución futura sujeta a una validación específica. Esta contribución es importante porque la calidad de la priorización depende de que el sistema represente correctamente el incidente antes de aplicar reglas o modelos.
+
 \subsection{Capa 2: supervisión débil, RuleFit y evaluación}
 \textbf{Responsable principal:} Juan Carlos Albert Fillol.
 
@@ -25,11 +30,6 @@ Juan Carlos asume, además, la coordinación metodológica y el cierre del bloqu
 \textbf{Responsable principal:} Brian Mathias Pesci Juliani.
 
 Su bloque de trabajo comprende la explicación y la integración conceptual del prototipo. Incluye la recuperación normativa, la explicación generativa local y la trazabilidad de la inferencia. Su contribución consiste en convertir la salida del modelo interpretable en una recomendación comprensible y revisable, sin modificar la prioridad calculada por Capa 2 y manteniendo la ejecución local de los datos sensibles.
-
-\subsection{Capa 1: extracción de variables operativas}
-\textbf{Responsable principal:} Ancor González Carballo.
-
-Su bloque de trabajo se orienta a la transformación del texto libre del incidente en una representación estructurada compatible con la priorización posterior. Esta capa combina procesamiento del lenguaje natural auditable, detección de señales operativas, tratamiento de negaciones y normalización de variables V01--V15. En la versión evaluada se presenta como un extractor determinista y reproducible; la incorporación de clasificadores aprendidos queda como evolución futura sujeta a una validación específica. Esta contribución es importante porque la calidad de la priorización depende de que el sistema represente correctamente el incidente antes de aplicar reglas o modelos.
 
 \section{Distribución de capítulos y anexos}
 
